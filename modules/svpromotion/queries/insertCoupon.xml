@@ -1,0 +1,12 @@
+<query id="insertCoupon" action="insert">
+	<tables>
+		<table name="svpromotion_coupon_list" />
+	</tables>
+	<columns>
+		<column name="promotion_srl" var="promotion_srl" filter="number" notnull="notnull" />
+		<column name="member_srl" var="member_srl" filter="number" notnull="notnull" />
+		<column name="coupon_serial" var="coupon_serial" notnull="notnull" />
+		<column name="max_use_count" var="max_use_count" />
+		<column name="regdate" var="regdate" default="curdate()" />
+	</columns>
+</query>

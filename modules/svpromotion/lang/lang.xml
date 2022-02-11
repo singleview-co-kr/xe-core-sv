@@ -1,0 +1,489 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<lang>
+	<item name="promotion_on">
+		<value xml:lang="ko"><![CDATA[ON]]></value>
+	</item>
+	<item name="promotion_off">
+		<value xml:lang="ko"><![CDATA[OFF]]></value>
+	</item>
+	<item name="promotion_private">
+		<value xml:lang="ko"><![CDATA[비공개]]></value>
+	</item>
+	<item name="promotion_public">
+		<value xml:lang="ko"><![CDATA[공개]]></value>
+	</item>
+	<item name="coupon_promotion_title">
+		<value xml:lang="ko"><![CDATA[쿠폰 제목]]></value>
+	</item>
+	<item name="coupon_promotion_performance">
+		<value xml:lang="ko"><![CDATA[쿠폰 성과]]></value>
+	</item>
+	<item name="coupon_promotion_status">
+		<value xml:lang="ko"><![CDATA[쿠폰 상태]]></value>
+	</item>
+	<item name="coupon_promotion_status_public">
+		<value xml:lang="ko"><![CDATA[쿠폰 공개 상태]]></value>
+	</item>
+	<item name="coupon_promotion_description">
+		<value xml:lang="ko"><![CDATA[쿠폰 설명]]></value>
+	</item>
+	<item name="goto_performance">
+		<value xml:lang="ko"><![CDATA[성과보기]]></value>
+	</item>
+	<item name="promotion_begin_date">
+		<value xml:lang="ko"><![CDATA[시작일시]]></value>
+	</item>
+	<item name="promotion_end_date">
+		<value xml:lang="ko"><![CDATA[종료일시]]></value>
+	</item>
+	<item name="promotion_target_items">
+		<value xml:lang="ko"><![CDATA[쿠폰 할인 품목 선택]]></value>
+	</item>
+	<item name="about_promotion_target_items">
+		<value xml:lang="ko"><![CDATA[쿠폰으로 할인받을 수 있는 품목을 선택합니다. 아무것도 선택하지 않으면 모두 선택과 동일하지만 처리 속도는 아무것도 선택하지 않은 것이 더 빠릅니다.]]></value>
+	</item>
+	<item name="promotion_management">
+		<value xml:lang="ko"><![CDATA[프로모션 관리]]></value>
+	</item>
+	<item name="promotion_discount_amount">
+		<value xml:lang="ko"><![CDATA[프로모션 할인액]]></value>
+	</item>
+	<item name="promotion_discount_rate">
+		<value xml:lang="ko"><![CDATA[프로모션 할인률]]></value>
+	</item>
+	<item name="promotion_discount_type">
+		<value xml:lang="ko"><![CDATA[프로모션 할인유형]]></value>
+	</item>
+	<item name="promotion_discounted_amount_cutting">
+		<value xml:lang="ko"><![CDATA[프로모션 할인액 절삭]]></value>
+	</item>
+	<item name="promotion_discount_amount_cut_none">
+		<value xml:lang="ko"><![CDATA[절삭 없음]]></value>
+	</item>
+	<item name="promotion_discount_amount_cut_single_digit">
+		<value xml:lang="ko"><![CDATA[1원 절삭]]></value>
+	</item>
+	<item name="promotion_discount_amount_cut_double_digit">
+		<value xml:lang="ko"><![CDATA[10원 절삭]]></value>
+	</item>
+	<item name="promotion_discount_amount_cut_triple_digit">
+		<value xml:lang="ko"><![CDATA[100원 절삭]]></value>
+	</item>
+	<item name="promotion_discount_amount_cut_quadruple_digit">
+		<value xml:lang="ko"><![CDATA[1,000원 절삭]]></value>
+	</item>
+	<item name="promotion_discount_amount_cut_pentagonal_digit">
+		<value xml:lang="ko"><![CDATA[10,000원 절삭]]></value>
+	</item>
+	<item name="svpromotion_fb_app_id">
+		<value xml:lang="ko"><![CDATA[Fb App ID]]></value>
+	</item>
+	<item name="about_svpromotion_fb_app_id">
+		<value xml:lang="ko"><![CDATA[Fb App ID는 https://developers.facebook.com/에서 발급받으세요.]]></value>
+	</item>
+	<item name="svpromotion_discount_limit">
+		<value xml:lang="ko"><![CDATA[결제시 총 구매액의]]></value>
+	</item>
+	<item name="btn_refresh_coupon_regdate">
+		<value xml:lang="ko"><![CDATA[발행일 갱신]]></value>
+	</item>
+	<item name="svpromotion_discount_limit_1">
+		<value xml:lang="ko"><![CDATA[%로 최대 할인액 제한]]></value>
+	</item>
+	<item name="about_svpromotion_discount_limit">
+		<value xml:lang="ko"><![CDATA[개별품목 할인액과 전체 할인액이 설정한 제한을 초과할 수 없습니다. 비워두면 최대 50%입니다.]]></value>
+	</item>
+	<item name="about_coupon_max_qty">
+		<value xml:lang="ko"><![CDATA[쿠폰으로 할인받을 수 있는 최대 수량입니다. 0과 공란이면 무제한입니다.]]></value>
+	</item>
+	<item name="about_coupon_begin_date">
+		<value xml:lang="ko"><![CDATA[쿠폰이 작동하는 시작일을 지정합니다. 공란이면 항상 작동합니다. 예)YYYYMMDDHHMMSS]]></value>
+	</item>
+	<item name="about_coupon_end_date">
+		<value xml:lang="ko"><![CDATA[쿠폰이 작동하는 종료일을 지정합니다. 공란이면 항상 작동합니다. 예)YYYYMMDDHHMMSS<BR>"+숫자 minutes"로 입력하면 자동 생성되는 쿠폰의 유효기간을 동적으로 지정할 수 있습니다. ]]></value>
+	</item>
+	<item name="coupon_log_type">
+		<value xml:lang="ko"><![CDATA[유형]]></value>
+	</item>
+	<item name="coupon_no">
+		<value xml:lang="ko"><![CDATA[쿠폰번호]]></value>
+	</item>
+	<item name="member_id">
+		<value xml:lang="ko"><![CDATA[기명쿠폰정보]]></value>
+	</item>
+	<item name="coupon_max_usage">
+		<value xml:lang="ko"><![CDATA[최대사용횟수]]></value>
+	</item>
+	<item name="coupon_max_issue">
+		<value xml:lang="ko"><![CDATA[최대발급횟수]]></value>
+	</item>
+	<item name="coupon_max_qty">
+		<value xml:lang="ko"><![CDATA[최대허용수량]]></value>
+	</item>
+	<item name="about_coupon_max_issue">
+		<value xml:lang="ko"><![CDATA[쿠폰이 자동 발급될 때 확인하는 기존 발급 수량입니다. 관리자 수기 발급할 때는 이 제한값을 확인하지 않습니다.]]></value>
+	</item>
+	<item name="coupon_use_count">
+		<value xml:lang="ko"><![CDATA[사용횟수]]></value>
+	</item>
+	<item name="coupon_user">
+		<value xml:lang="ko"><![CDATA[사용자(ID)]]></value>
+	</item>
+	<item name="coupon_order_srl">
+		<value xml:lang="ko"><![CDATA[사용거래번호]]></value>
+	</item>
+	<item name="coupon_belonged_member_srl">
+		<value xml:lang="ko"><![CDATA[쿠폰지정 회원번호]]></value>
+	</item>
+	<item name="endorsed_coupon_member_srl">
+		<value xml:lang="ko"><![CDATA[쿠폰받을 member_srl]]></value>
+	</item>
+	<item name="endorsed_coupon_registration">
+		<value xml:lang="ko"><![CDATA[기명 쿠폰 개별 등록]]></value>
+	</item>
+	<item name="bearer_coupon_bulk_registration">
+		<value xml:lang="ko"><![CDATA[무기명 쿠폰 자동대량등록]]></value>
+	</item>
+	<item name="bearer_coupon_registration">
+		<value xml:lang="ko"><![CDATA[무기명 쿠폰 수동등록]]></value>
+	</item>
+	<item name="display_status">
+		<value xml:lang="ko"><![CDATA[진열]]></value>
+	</item>
+	<item name="item_thumbnail">
+		<value xml:lang="ko"><![CDATA[상품썸네일]]></value>
+	</item>
+	<item name="item_title">
+		<value xml:lang="ko"><![CDATA[상품명]]></value>
+	</item>
+	<item name="no_item_instance">
+		<value xml:lang="ko"><![CDATA[등록된 상품이 없습니다.]]></value>
+	</item>
+	<item name="display_page">
+		<value xml:lang="ko"><![CDATA[진열페이지]]></value>
+	</item>
+	<item name="item_discount_allow_duplicated">
+		<value xml:lang="ko"><![CDATA[상품별 기본 할인에 추가 할인 허용]]></value>
+	</item>
+	<item name="deny">
+		<value xml:lang="ko"><![CDATA[거부]]></value>
+	</item>
+	<item name="allow">
+		<value xml:lang="ko"><![CDATA[허용]]></value>
+	</item>
+	<item name="item_discount_amount_default">
+		<value xml:lang="ko"><![CDATA[상품별 기본 할인액<BR>OFF는 종료일 설정]]></value>
+	</item>
+	<item name="item_giveaway_default">
+		<value xml:lang="ko"><![CDATA[상품별 기본 증정]]></value>
+	</item>
+	<item name="item_discount_amount_fb_like">
+		<value xml:lang="ko"><![CDATA[상품별 FB Like 할인액, AppID를 먼저 입력하세요]]></value>
+	</item>
+	<item name="item_discount_amount_fb_share">
+		<value xml:lang="ko"><![CDATA[상품별 FB share 할인액, AppID를 먼저 입력하세요]]></value>
+	</item>
+	<item name="item_discount_title">
+		<value xml:lang="ko"><![CDATA[상품별 할인 제목]]></value>
+	</item>
+	<item name="item_begindate_title">
+		<value xml:lang="ko"><![CDATA[상품별 할인 기간 시작]]></value>
+	</item>
+	<item name="about_default_item_begindate_title">
+		<value xml:lang="ko"><![CDATA[상품별 할인의 시작일시를 지정하려면 yyyymmddhhiiss로 입력하세요. 비워두면 즉시 시작입니다.]]></value>
+	</item>
+	<item name="about_default_item_enddate_title">
+		<value xml:lang="ko"><![CDATA[상품별 할인을 종료하려면 종료일시를 yyyymmddhhiiss로 입력하세요. 비워두면 무기한입니다.]]></value>
+	</item>
+	<item name="item_enddate_title">
+		<value xml:lang="ko"><![CDATA[상품별 할인 기간 종료]]></value>
+	</item>
+	<item name="item_giveaway_title">
+		<value xml:lang="ko"><![CDATA[상품별 증정 제목]]></value>
+	</item>
+	<item name="giveaway_item_srl_remove">
+		<value xml:lang="ko"><![CDATA[상품별 증정 제거]]></value>
+	</item>
+	<item name="addgroup_after_purchase">
+		<value xml:lang="ko"><![CDATA[구매시 그룹추가]]></value>
+	</item>
+	<item name="ratio">
+		<value xml:lang="ko"><![CDATA[비율]]></value>
+	</item>
+	<item name="price">
+		<value xml:lang="ko"><![CDATA[금액]]></value>
+	</item>
+	<item name="allow_reserves_consumption">
+		<value xml:lang="ko"><![CDATA[적립금 사용 허용]]></value>
+	</item>
+	<item name="about_allow_reserves_consumption">
+		<value xml:lang="ko"><![CDATA[상품 결제 화면에서 적립금을 사용할 수 있도록 허용합니다.]]></value>
+	</item>
+	<item name="reserves_ratio">
+		<value xml:lang="ko"><![CDATA[거래완료 적립금 %]]></value>
+	</item>
+	<item name="about_reserves_ratio">
+		<value xml:lang="ko"><![CDATA[예를 들어, 5를 입력하면 구매완료 후 결제액의 5%가 적립됩니다. OFF하려면 0을 입력하세요.]]></value>
+	</item>
+	<item name="minimum_reserves_available">
+		<value xml:lang="ko"><![CDATA[사용가능 최소 적립금]]></value>
+	</item>
+	<item name="about_minimum_reserves_available">
+		<value xml:lang="ko"><![CDATA[입력한 금액 이상일 때 적립금을 사용할 수 있습니다.]]></value>
+	</item>
+	<item name="use_reserves">
+		<value xml:lang="ko"><![CDATA[사용할 적립금]]></value>
+	</item>
+	<item name="giveaway_item_srl">
+		<value xml:lang="ko"><![CDATA[증정품 고유번호]]></value>
+	</item>
+	<item name="giveaway_item_qty">
+		<value xml:lang="ko"><![CDATA[증정품 지급수량]]></value>
+	</item>
+	<item name="email_domain_name">
+		<value xml:lang="ko"><![CDATA[이메일 도메인명]]></value>
+	</item>
+	<item name="title_group_coupon_policy">
+		<value xml:lang="ko"><![CDATA[그룹 지정]]></value>
+	</item>
+	<item name="about_group_coupon_policy">
+		<value xml:lang="ko"><![CDATA[쿠폰을 지정한 회원 그룹에만 발급할 수 있습니다. 비워두면 무제한입니다.]]></value>
+	</item>
+	<item name="guest">
+		<value xml:lang="ko"><![CDATA[비회원]]></value>
+	</item>
+	<item name="coupon_allowed_group">
+		<value xml:lang="ko"><![CDATA[쿠폰 발급 허용 그룹]]></value>
+	</item>
+	<item name="about_email_domain_name">
+		<value xml:lang="ko"><![CDATA[회원의 이메일 도메인명에 대해서 자동 할인을 지정합니다.]]></value>
+	</item>
+	<item name="email_domain_discount_title">
+		<value xml:lang="ko"><![CDATA[이메일 도메인 할인 제목]]></value>
+	</item>
+	<item name="about_email_domain_discount_title">
+		<value xml:lang="ko"><![CDATA[회원의 이메일 도메인명에 대한 자동 할인의 제목을 입력합니다.]]></value>
+	</item>
+	<item name="email_domain_discount_policy">
+		<value xml:lang="ko"><![CDATA[이메일 도메인 할인 정책]]></value>
+	</item>
+	<item name="min_bulk_qty">
+		<value xml:lang="ko"><![CDATA[최소 수량]]></value>
+	</item>
+	<item name="discount_type">
+		<value xml:lang="ko"><![CDATA[할인 유형]]></value>
+	</item>
+	<item name="title_site_group_discount">
+		<value xml:lang="ko"><![CDATA[사이트 그룹할인]]></value>
+	</item>
+	<item name="title_email_domain_group_discount">
+		<value xml:lang="ko"><![CDATA[이메일 도메인 할인]]></value>
+	</item>
+	<item name="title_item_discount">
+		<value xml:lang="ko"><![CDATA[상품별 할인 정책]]></value>
+	</item>
+	<item name="title_item_group_discount">
+		<value xml:lang="ko"><![CDATA[상품별 그룹 할인 정책]]></value>
+	</item>
+	<item name="title_item_bulk_discount">
+		<value xml:lang="ko"><![CDATA[상품별 수량 할인 정책]]></value>
+	</item>
+	<item name="title_site_bulk_discount">
+		<value xml:lang="ko"><![CDATA[사이트 수량 할인 정책]]></value>
+	</item>
+	<item name="about_site_bulk_promotion">
+		<value xml:lang="ko"><![CDATA[사이트의 수량 할인 정책을 정합니다. 페이지별 수량 할인 정책과 품목별 수량 할인 정책이 우선 적용됩니다.]]></value>
+	</item>
+	<item name="allow_site_bulk_promotion">
+		<value xml:lang="ko"><![CDATA[사이트 수량 할인 허용]]></value>
+	</item>
+	<item name="about_allow_site_bulk_promotion_help">
+		<value xml:lang="ko"><![CDATA[사이트 수량 할인 사용 여부를 선택합니다.]]></value>
+	</item>
+	<item name="site_bulk_promotion_mode">
+		<value xml:lang="ko"><![CDATA[상품선택 방식]]></value>
+	</item>
+	<item name="site_bulk_promotion_except">
+		<value xml:lang="ko"><![CDATA[선택 상품을 수량할인에서 제외(주문화면 느려질 가능성)]]></value>
+	</item>
+	<item name="site_bulk_promotion_include">
+		<value xml:lang="ko"><![CDATA[선택 상품만 수량할인에 포함]]></value>
+	</item>
+	<item name="please_select_site_bulk_promotion_mode">
+		<value xml:lang="ko"><![CDATA[상품선택 방식을 지정해 주세요.]]></value>
+	</item>
+	<item name="select">
+		<value xml:lang="ko"><![CDATA[선택]]></value>
+	</item>
+	<item name="title_promotion_mall_check">
+		<value xml:lang="ko"><![CDATA[프로모션몰 페이지 선택]]></value>
+	</item>
+	<item name="about_svpromotion_promotion_mall">
+		<value xml:lang="ko"><![CDATA[선택한 결제 모듈은 배송비 외의 상품 결제금액을 금지합니다.]]></value>
+	</item>
+	<item name="cmd_coupon_promotion_list">
+		<value xml:lang="ko"><![CDATA[쿠폰 할인 목록]]></value>
+	</item>
+	<item name="cmd_coupon_promotion_add">
+		<value xml:lang="ko"><![CDATA[쿠폰 프로모션 등록]]></value>
+	</item>
+	<item name="cmd_coupon_promotion_info">
+		<value xml:lang="ko"><![CDATA[쿠폰 할인 정보]]></value>
+	</item>
+	<item name="cmd_manage_coupon">
+		<value xml:lang="ko"><![CDATA[쿠폰관리]]></value>
+	</item>
+	<item name="cmd_registration_promotion">
+		<value xml:lang="ko"><![CDATA[가입 혜택 등록]]></value>
+	</item>
+	<item name="cmd_site_discount_policy">
+		<value xml:lang="ko"><![CDATA[사이트 프로모션]]></value>
+	</item>
+	<item name="cmd_reserves_mgmt">
+		<value xml:lang="ko"><![CDATA[적립금 관리]]></value>
+	</item>
+	<item name="cmd_item_promotion">
+		<value xml:lang="ko"><![CDATA[품목별 할인 등록]]></value>
+	</item>
+	<item name="cmd_email_domain">
+		<value xml:lang="ko"><![CDATA[이메일 도메인 그룹 할인 등록]]></value>
+	</item>
+	<item name="cmd_basic_setting">
+		<value xml:lang="ko"><![CDATA[기본설정]]></value>
+	</item>
+	<item name="about_endorsed_coupon_member_srl">
+		<value xml:lang="ko"><![CDATA[기명 쿠폰을 받을 member_srl을 한개씩 입력합니다.]]></value>
+	</item>
+	<item name="about_coupon_length">
+		<value xml:lang="ko"><![CDATA[기명 쿠폰의 난수 문자열 길이를 입력하세요. 공란이나 4이하이면 6개로 처리됩니다.]]></value>
+	</item>
+	<item name="about_site_group_discount">
+		<value xml:lang="ko"><![CDATA[사이트 그룹별 할인을 적용할 수 있습니다. 비율 5를 입력했을 때 원가격에 5%가 할인되고 가격 5000을 입력했을 때 5000원이 일괄적으로 할인됩니다.]]></value>
+	</item>
+	<item name="about_email_domain_group_discount">
+		<value xml:lang="ko"><![CDATA[회원 정보에 입력한 이메일 도메인 그룹별 할인을 적용할 수 있습니다. 비율 5를 입력했을 때 원가격에 5%가 할인되고 가격 5000을 입력했을 때 5000원이 일괄적으로 할인됩니다.]]></value>
+	</item>
+	<item name="msg_invalid_coupon_promotion_srl">
+		<value xml:lang="ko"><![CDATA[잘못된 쿠폰 프로모션 정보입니다.]]></value>
+	</item>
+	<item name="msg_invalid_coupon_serial">
+		<value xml:lang="ko"><![CDATA[등록되지 않은 쿠폰번호입니다.]]></value>
+	</item>
+	<item name="msg_endorsed_coupon">
+		<value xml:lang="ko"><![CDATA[지정 고객이 로그인 후 사용할 수 있는 쿠폰입니다.]]></value>
+	</item>
+	<item name="msg_error_weird_coupon_serial_number">
+		<value xml:lang="ko"><![CDATA[등록되어 있지만 비정상적인 쿠폰번호입니다.]]></value>
+	</item>
+	<item name="msg_error_svpromtion_coupon_db_query">
+		<value xml:lang="ko"><![CDATA[쿠폰 DB 이상입니다.]]></value>
+	</item>
+	<item name="msg_error_expired_coupon_serial_number">
+		<value xml:lang="ko"><![CDATA[이미 사용한 쿠폰입니다.]]></value>
+	</item>
+	<item name="msg_bulk_range_exist">
+		<value xml:lang="ko"><![CDATA[개 수량 할인 구간이 존재합니다.]]></value>
+	</item>
+	<item name="msg_invalid_coupon_working_period">
+		<value xml:lang="ko"><![CDATA[쿠폰 종료일시는 시작일시보다 커야 합니다. ]]></value>
+	</item>
+	<item name="msg_duplicated_coupon_serial">
+		<value xml:lang="ko"><![CDATA[이미 등록된 쿠폰 번호입니다.]]></value>
+	</item>
+	<item name="msg_invalid_promotion_srl">
+		<value xml:lang="ko"><![CDATA[잘못된 쿠폰 캠페인 번호입니다.]]></value>
+	</item>
+	<item name="msg_not_privileged">
+		<value xml:lang="ko"><![CDATA[해당 쿠폰을 받을 수 없는 회원입니다.]]></value>
+	</item>
+	<item name="msg_guest_not_allowed">
+		<value xml:lang="ko"><![CDATA[대량 등록하려면 비회원 권한 허용해주세요.]]></value>
+	</item>
+	<item name="msg_not_allowed_group_for_coupon">
+		<value xml:lang="ko"><![CDATA[입력하신 쿠폰을 사용할 수 없는 회원 그룹에 속해 있습니다.]]></value>
+	</item>
+	<item name="msg_invalid_member_srl">
+		<value xml:lang="ko"><![CDATA[회원 고유 번호를 입력하세요.]]></value>
+	</item>
+	<item name="msg_coupon_closed">
+		<value xml:lang="ko"><![CDATA[사용 중지된 쿠폰입니다. ]]></value>
+	</item>
+	<item name="msg_invalid_coupon_qty">
+		<value xml:lang="ko"><![CDATA[쿠폰 수량을 정확하게 입력해 주세요.]]></value>
+	</item>
+	<item name="msg_invalid_coupon_length">
+		<value xml:lang="ko"><![CDATA[쿠폰 난수문자열 길이는 4 이상이어야 합니다.]]></value>
+	</item>
+	<item name="msg_meaningless_coupon">
+		<value xml:lang="ko"><![CDATA[유효한 쿠폰이지만 적용되는 상품이 없습니다.]]></value>
+	</item>
+	<item name="msg_error_promotion_mall_pay_not_allowed">
+		<value xml:lang="ko"><![CDATA[100% 할인 받으셔야 결제할 수 있습니다.]]></value>
+	</item>
+	<item name="msg_error_over_discount_not_allowed">
+		<value xml:lang="ko"><![CDATA[%s%% 이상의 할인 판매는 허용되자 않습니다.]]></value>
+	</item>
+	<item name="reserves">
+		<value xml:lang="ko"><![CDATA[적립금]]></value>
+	</item>
+	<item name="remaning_reserves">
+		<value xml:lang="ko"><![CDATA[적립금 잔액]]></value>
+	</item>
+	<item name="msg_too_much_reservers_claiming">
+		<value xml:lang="ko"><![CDATA[입력하신 적립금이 사용할 수 있는 적립금보다 많습니다.]]></value>
+	</item>
+	<item name="msg_error_not_enough_reserves">
+		<value xml:lang="ko"><![CDATA[적립금이 부족합니다.]]></value>
+	</item>
+	<item name="msg_error_no_claiming_reserves">
+		<value xml:lang="ko"><![CDATA[적립금 요청액이 0입니다.]]></value>
+	</item>
+	<item name="msg_error_svpromtion_reserves_log_db_query">
+		<value xml:lang="ko"><![CDATA[적립금 DB 이상입니다.]]></value>
+	</item>
+	<item name="msg_error_while_register_reserves_log">
+		<value xml:lang="ko"><![CDATA[적립금 DB 이상입니다.]]></value>
+	</item>
+	<item name="msg_error_incomplete_transaction_info">
+		<value xml:lang="ko"><![CDATA[완전하지 않은 주문정보입니다.]]></value>
+	</item>
+	<item name="msg_error_already_issued_transaction">
+		<value xml:lang="ko"><![CDATA[이미 적립금이 지급된 주문정보입니다.]]></value>
+	</item>
+	<item name="msg_error_coupon_not_began">
+		<value xml:lang="ko"><![CDATA[%s부터 사용할 수 있는 쿠폰입니다.]]></value>
+	</item>
+	<item name="msg_error_coupon_expired">
+		<value xml:lang="ko"><![CDATA[사용기한이 만료된 쿠폰입니다.]]></value>
+	</item>
+	<item name="msg_eternal_coupon">
+		<value xml:lang="ko"><![CDATA[기한이 없는 쿠폰입니다.]]></value>
+	</item>
+	<item name="msg_invalid_fb_app_id">
+		<value xml:lang="ko"><![CDATA[fb app id를 입력하세요.]]></value>
+	</item>	
+	<item name="msg_invalid_email_domain_name">
+		<value xml:lang="ko"><![CDATA[이메일 도메인명을 입력하세요.]]></value>
+	</item>
+	<item name="msg_invalid_email_domain_discount_title">
+		<value xml:lang="ko"><![CDATA[이메일 도메인 할인 제목을 입력하세요.]]></value>
+	</item>
+	<item name="msg_invalid_email_domain_policy_opt">
+		<value xml:lang="ko"><![CDATA[이메일 도메인 할인 정책을 선택하세요.]]></value>
+	</item>
+	<item name="msg_invalid_email_domain_discount_amount">
+		<value xml:lang="ko"><![CDATA[이메일 도메인 할인액을 입력하세요.]]></value>
+	</item>
+	<item name="msg_error_svpromotion_email_domain_group_db_query">
+		<value xml:lang="ko"><![CDATA[이메일 도메인 테이블에 문제가 있습니다. 사이트 관리자에게 문의하세요.]]></value>
+	</item>
+	<item name="msg_non_economic_coupon">
+		<value xml:lang="ko"><![CDATA[이미 받으신 혜택보다 입력하신 쿠폰의 혜택이 작습니다. 쿠폰번호를 지워주세요.]]></value>
+	</item>
+	<item name="msg_invalid_request">
+		<value xml:lang="ko"><![CDATA[잘못된 요청입니다.]]></value>
+	</item>
+	<item name="msg_error_no_claiming_reserves">
+		<value xml:lang="ko"><![CDATA[사용하실 적립금액을 입력하세요.]]></value>
+	</item>
+</lang>

@@ -1,0 +1,4 @@
+v 0.2.1
+20th, Dec 2020
+1. php v7.4.13에 대응
+모든 new Object()를 new BaseObject()로 변경

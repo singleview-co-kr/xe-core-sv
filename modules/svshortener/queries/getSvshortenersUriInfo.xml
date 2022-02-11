@@ -1,0 +1,17 @@
+<query id="getSvshortenersUriInfo" action="select">
+    <tables>
+        <table name="svshortener" />
+    </tables>
+    <columns>
+		<column name="utm_source_name" />
+		<column name="utm_medium_name" />
+		<column name="utm_service_name" />
+		<column name="utm_term" />
+		<column name="blogger_type" />
+		<column name="blogger_id" />
+		<column name="regdate" />
+    </columns>
+    <conditions>
+		<condition operation="equal" column="shorten_uri_value" var="shorten_uri_value" notnull="notnull" />
+    </conditions>
+</query>

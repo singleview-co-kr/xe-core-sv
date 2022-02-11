@@ -1,0 +1,140 @@
+{@
+$module_info->slide_img_urls_mob = explode("\n", $module_info->slide_img_urls_mob);
+if( !$module_info->header_bg_color_init_mob )
+	$module_info->header_bg_color_init_mob = '#7fbc43';
+
+if( !$module_info->header_bg_color_final_mob )
+	$module_info->header_bg_color_final_mob = '#d4e8b4';
+}
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id={$config->ga_v4_tracking_id}"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', '{$config->ga_v4_tracking_id}');
+</script>
+
+<!-- Google Analytics Code Begin (20170813) singleview.co.kr -->
+<script type='text/javascript' src='https://svapi.co.kr:5018/gaectk.js'></script>
+<script type="text/javascript">
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  gaectkHeader.init(['{$config->ga_v3_tracking_id}', '{$config->ga_v4_tracking_id}']);
+</script>
+<!-- Google Analytics Code End (20170813) singleview.co.kr -->
+
+<block cond="$config->facebook_pixel_id">
+<!-- Facebook Pixel Code Begin (20170801) singleview.co.kr -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '{$config->facebook_pixel_id}', {
+em: 'insert_email_variable,'
+});
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id={$config->facebook_pixel_id}&ev=PageView&noscript=1"
+/></noscript>
+<!-- DO NOT MODIFY -->
+<!-- End Facebook Pixel Code End (20170801) singleview.co.kr -->
+</block>
+
+<!--- http://idangero.us/swiper/api/#.WMcvwm-LRhE --->
+<link rel="stylesheet" href="/modules/svdocs/m.skins/education_slider_mob/css/normalize.css">
+<link rel="stylesheet" href="/modules/svdocs/m.skins/education_slider_mob/css/swiper.min.css">
+<link rel="stylesheet" href="/modules/svdocs/m.skins/education_slider_mob/css/main.css">
+<link rel="stylesheet" href="/modules/svdocs/m.skins/education_slider_mob/css/jquery.mobile-1.4.2.min.css">
+
+<style type="text/css">
+header:before{position:absolute;left:0;top:0;width:100%;height:100%;content:'';background:radial-gradient(circle at 70% 30%,{$module_info->header_bg_color_init_mob} 0%,{$module_info->header_bg_color_final_mob} 50%);z-index:0;}
+
+#textarea {
+-moz-appearance: textfield-multiline;
+-webkit-appearance: textarea;
+border: 1px solid gray;
+font: medium -moz-fixed;
+font: -webkit-small-control;
+overflow: auto;
+padding: 2px;
+resize: both;
+width: 100%;
+height: 100px;
+}
+</style>
+<header>
+	<nav>
+		<ul>
+			<li><a href="{$module_info->top_logo_link_url}" target="_blank">{$module_info->top_logo_text}</a></li>
+		</ul>
+	</nav>
+	<div class="header-title"><!---span class="logo"><img src="/i/logo-leaf.svg" class="logo-leaf"><img src="/i/logo-gear.svg" class="logo-gear"></span---><span>{$module_info->slide_title}</span></div>
+	<div class="header-text">
+		<div id="clockdiv">{$module_info->slide_description}<BR>
+<block cond="$teaser_open!='Y'">
+			<FONT SIZE='3'>종료까지 남은 시간 <span class="days"></span>일 <span class="hours"></span>시 <span class="minutes"></span>분 <span class="seconds"></span>초</FONT></div>
+</block>
+<block cond="$teaser_open=='Y'">
+			<FONT SIZE='3'>시작까지 남은 시간 <span class="days"></span>일 <span class="hours"></span>시 <span class="minutes"></span>분 <span class="seconds"></span>초</FONT></div>
+</block>
+	</div>
+</header>
+<div class="content">
+<!-------- slider begin ------------>
+	<link rel="stylesheet" href="./css/swiper.min.css">
+	<div class="swiper-container" id='swiper_div'>
+		<div class="swiper-wrapper">
+			<div class="swiper-slide" loop="$module_info->slide_img_urls_mob=>$key,$val">
+				<img src="{$val}" width='100%'/>
+			</div>
+			<div class="swiper-slide"><include target="_form.html"/></div>
+		</div>
+	</div>
+<!-------- slider end ------------>				
+</div>
+<script src="./js/swiper.min.js"></script>
+<script>
+var swiper = new Swiper('.swiper-container', {
+	pagination: '.swiper-pagination',
+	paginationClickable: true
+});
+
+var _g_nCurrent = 1;
+var _g_sModuleSrl = '{$module_info->module_srl}';
+
+// Add handler that will be executed only on
+swiper.on('SlideNextEnd', function () {
+	var nCurrent = _g_nCurrent++;
+	var nNext = nCurrent+1;
+//console.log( _g_sModuleSrl+'_mob_next_slide_'+nCurrent+'->'+nNext );
+	sendClickEventGaectk( 'banner', _g_sModuleSrl+'_mob_next_slide_'+nCurrent+'->'+nNext, '', '' );
+});
+swiper.on('SlidePrevEnd', function () {
+	var nCurrent = _g_nCurrent--;
+	var nPrev = nCurrent-1;
+//console.log( _g_sModuleSrl+'_mob_prev_slide_'+nCurrent+'->'+nPrev );
+	sendClickEventGaectk( 'banner', _g_sModuleSrl+'_mob_prev_slide_'+nCurrent+'->'+nPrev, '', '' );
+});
+</script>
+
+<script src="/modules/svdocs/m.skins/education_slider_mob/js/jquery.js"></script>
+<script src="/modules/svdocs/m.skins/education_slider_mob/js/jquery.mobile-1.4.2.min.js"></script>
+<script type="text/javascript" src="../../tpl/skin.js/countdown_timer.js"></script>
+<!-- Google Analytics Code Begin (20170813) singleview.co.kr -->
+<script>
+GaectkHeader.close();
+<block cond="$teaser_open=='Y'">
+initializeClock('clockdiv', '{$module_info->open_datetime}', {$remaining_applicants});
+</block>
+<block cond="$teaser_open!='Y'">
+initializeClock('clockdiv', '{$module_info->due_datetime}', {$remaining_applicants});
+</block>
+</script>
+<!-- Google Analytics Code End (20170813) singleview.co.kr -->

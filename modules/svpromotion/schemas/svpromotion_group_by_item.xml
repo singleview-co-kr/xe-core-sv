@@ -1,0 +1,14 @@
+<table name="svpromotion_group_by_item">
+	<column name="item_promotion_srl" type="number" size="11" notnull="notnull" primary_key="primary_key" auto_increment="auto_increment"/>
+	<column name="item_srl" type="number" size="11" notnull="notnull" index="idx_item_srl" />
+	<column name="module_srl" type="number" size="11" default="0" notnull="notnull" index="idx_module_srl" />
+	<column name="group_srl" type="number" size="11" notnull="notnull" index="idx_group_srl" />
+	<column name="allow_duplication" type="char" size="1" default="0" notnull="notnull" />
+	<!-- 1: price , 2: percentage -->
+	<column name="opt" type="char" size="1" default="1" notnull="notnull" />
+	<column name="price" type="number" size="11" default="0" notnull="notnull" />
+	<column name="discount_info" type="varchar" size="255" notnull="notnull" />
+	<column name="begindate" type="date" />
+	<column name="enddate" type="date" />
+	<column name="regdate" type="date" notnull="notnull" />
+</table>

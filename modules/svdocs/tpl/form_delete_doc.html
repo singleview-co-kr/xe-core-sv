@@ -1,0 +1,26 @@
+<div class="x_modal-header">
+	<h1>{$lang->title_doc_delete}</h1>
+</div>
+<div class="x_modal-content">
+	<table width='100%'>
+		<thead>
+			<tr>
+				<th WIDTH='10$' align='center'>{$lang->applicant_srl}</th>
+				<th WIDTH='10$' align='center'>{$lang->applicant_name}</th>
+				<th WIDTH='30$' align='center'>{$lang->applicant_phone_number}</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr loop="$doc_srls_to_be_deleted=>$key,$val">
+				<input name="doc_srls[]" type="hidden" value="{$val}" />
+				<td align='center'>{$val}</td>
+				<td align='center'>{$doc_names_to_be_deleted[$key]}</td>
+				<td align='center'>{$doc_phones_to_be_deleted[$key]}</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+
+<div class="x_modal-footer">
+	<button type="submit" class="x_btn x_btn-inverse">{$lang->cmd_delete}</button>
+</div>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<skin version="0.2">
+	<title xml:lang="ko">Bullsoneshot 2016 new model - fillout Skin</title>
+	<description xml:lang="ko">
+		 Bullsoneshot 2016 신모델 캠페인의 최종 당첨자 스킨입니다.
+	</description>
+	<version>0.1</version>
+	<date>2016-02-15</date>
+	<author email_address="root@singleview.co.kr" link="http://singleview.co.kr/">
+		<name xml:lang="ko">singleview.co.kr</name>
+	</author>
+	<extra_vars>
+	</extra_vars>
+</skin>

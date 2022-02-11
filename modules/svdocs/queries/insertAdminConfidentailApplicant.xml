@@ -1,0 +1,11 @@
+<query id="insertAdminConfidentailApplicant" action="insert">
+	<tables>
+		<table name="svdocs_confidential" />
+	</tables>
+	<columns>
+		<column name="doc_srl" var="doc_srl" filter="sequence()" notnull="notnull" />
+		<column name="module_srl" var="module_srl" filter="number" default="0" />
+		<column name="applicant_name" var="applicant_name" notnull="notnull" />
+		<column name="applicant_phone_number" var="applicant_phone_number" />
+	</columns>
+</query>

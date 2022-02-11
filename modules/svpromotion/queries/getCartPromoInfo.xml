@@ -1,0 +1,11 @@
+<query id="getCartPromoInfo" action="select">
+	<tables>
+		<table name="svpromotion_cart" />
+	</tables>
+	<columns>
+		<column name="promotion_info" />
+	</columns>
+	<conditions>
+		<condition operation="equal" column="cart_srl" var="cart_srl" />
+	</conditions>
+</query>

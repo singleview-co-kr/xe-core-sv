@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module>
+	<grants>
+	</grants>
+	<permissions>
+    </permissions>
+	<actions>
+		<action name="dispSvdocsAdminIndex" type="view" admin_index="true" menu_name="svdocs" menu_index="true" />
+		<action name="dispSvdocsAdminInsertModInst" type="view" />
+		<action name="dispSvdocsAdminInfo" type="view" />
+		<action name="dispSvdocsAdminExtraVars" type="view" />
+		<action name="dispSvdocsAdminGrantInfo" type="view" />
+		<action name="dispSvdocsAdminSkinInfo" type="view" />
+		<action name="dispSvdocsAdminMobileSkinInfo" type="view" />
+		<action name="dispSvdocsAdminDelete" type="view" />
+		<action name="dispSvdocsAdminApplicantsList" type="view" />
+		<action name="dispSvdocsAdminDocDetail" type="view" />
+		<action name="dispSvdocsAdminConfig" type="view" />
+		<action name="dispSvdocsAdminTermsPrivacyUsage" type="view" />
+		<action name="dispSvdocsAdminTermsPrivacyShr" type="view" />
+		<action name="dispSvdocsAdminApplicantInsert" type="view" />
+
+		<action name="getSvdocsExpiration" type="model" />
+		<action name="getSvdocsUpdatePermission" type="model" />
+		<action name="getSvdocsAdminDeleteDoc" type="model" />
+		
+		<action name="dispSvdocsIndex" type="view" index="true" />
+		<action name="dispSvdocsUpdate" type="view" />
+		<action name="dispSvdocsGuestLogin" type="view" />
+		<action name="dispSvdocsGuestDetail" type="view" />
+				
+		<action name="procSvdocsAdminUpdate" type="controller" ruleset="updatePage" />
+		<action name="procSvdocsAdminInsertConfig" type="controller" />
+		<action name="procSvdocsAdminInsertDocs" type="controller" />
+		<action name="procSvdocsAdminInsertConfidentialApplicant" type="controller" />
+		<action name="procSvdocsAdminTermPrivacyUsageUpdate" type="controller" />
+		<action name="procSvdocsAdminTermPrivacyShrUpdate" type="controller" />
+		<action name="procSvdocsAdminDelete" type="controller" />
+		<action name="procSvdocsAdminDeleteDoc" type="controller" />
+		<action name="procSvdocsAdminCSVDownloadByModule" type="controller" />
+		<action name="procSvdocsAdminInvalidateSmsAuth" type="controller" />
+		<action name="procSvdocsAdminInsertExtraVar" type="controller" />
+		<action name="procSvdocsAdminDeleteExtraVar" type="controller" />
+		<action name="procSvdocsAdminMoveExtraVar" type="controller" />
+		<action name="procSvdocsAdminInsertApplicant" type="controller" />
+		<action name="procSvdocsAdminApproveApplicant" type="controller" />
+
+		<action name="procSvdocsRegistration" type="controller" />
+		<action name="procSvdocsCertified" type="controller" />
+		<action name="procSvdocsValidatePrivacy" type="controller" />
+		<action name="procSvdocsSetAuthCode" type="controller" />		
+		<action name="procSvdocsUpdate" type="controller" />
+	</actions>
+	<menus>
+	</menus>
+</module>

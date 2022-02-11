@@ -1,0 +1,109 @@
+{@
+Context::addHtmlHeader('<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=yes, target-densitydpi=medium-dpi" />');
+$module_info->slide_img_urls_mob = explode("\n", $module_info->slide_img_urls_mob);
+
+if( !$module_info->header_bg_color_init_mob )
+	$module_info->header_bg_color_init_mob = '#7fbc43';
+
+if( !$module_info->header_bg_color_final_mob )
+	$module_info->header_bg_color_final_mob = '#d4e8b4';
+}
+<!--- http://idangero.us/swiper/api/#.WMcvwm-LRhE --->
+<link rel="stylesheet" href="/modules/svdocs/m.skins/education_slider_mob/css/normalize.css">
+<link rel="stylesheet" href="/modules/svdocs/m.skins/education_slider_mob/css/swiper.min.css">
+<link rel="stylesheet" href="/modules/svdocs/m.skins/education_slider_mob/css/main.css">
+<link rel="stylesheet" href="/modules/svdocs/m.skins/education_slider_mob/css/jquery.mobile-1.4.2.min.css">
+
+<style type="text/css">
+header:before{position:absolute;left:0;top:0;width:100%;height:100%;content:'';background:radial-gradient(circle at 70% 30%,{$module_info->header_bg_color_init_mob} 0%,{$module_info->header_bg_color_final_mob} 50%);z-index:0;}
+
+#textarea {
+-moz-appearance: textfield-multiline;
+-webkit-appearance: textarea;
+border: 1px solid gray;
+font: medium -moz-fixed;
+font: -webkit-small-control;
+overflow: auto;
+padding: 2px;
+resize: both;
+width: 100%;
+height: 100px;
+}
+</style>
+<header>
+	<nav>
+		<ul>
+			<li><a href="{$module_info->top_logo_link_url}" target="_blank">{$module_info->top_logo_text}</a></li>
+		</ul>
+	</nav>
+	<div cond="$module_info->slide_title_mob" class="header-title"><span>{$module_info->slide_title_mob}</span></div>
+	<div class="header-text">
+		<div id="clockdiv">{$module_info->slide_description_mob}<BR>
+<block cond="$teaser_open!='Y'">
+			<FONT SIZE='3'>종료까지 남은 시간 <span class="days"></span>일 <span class="hours"></span>시 <span class="minutes"></span>분 <span class="seconds"></span>초</FONT></div>
+</block>
+<block cond="$teaser_open=='Y'">
+			<FONT SIZE='3'>시작까지 남은 시간 <span class="days"></span>일 <span class="hours"></span>시 <span class="minutes"></span>분 <span class="seconds"></span>초</FONT></div>
+</block>
+	</div>
+</header>
+<div class="content">
+<!-------- slider begin ------------>
+	<div class="swiper-container" id='swiper_div'>
+		<div class="swiper-wrapper">
+<block cond="$test!='a'">
+			<div class="swiper-slide" loop="$module_info->slide_img_urls_mob=>$key,$val">
+				<img src="{$val}" width='100%'/>
+			</div>
+</block>
+<block cond="$test=='a'">
+			<div class="swiper-slide"><img src="/img_assets/site/20171029/cutting_board_slide_1_arr.png" width='100%'/></div>
+</block>
+<block cond="!$module_info->auth_session_var_name">
+			<div class="swiper-slide"><include target="_form_mob.html" cond="$remaining_applicants"/></div>
+</block>
+<block cond="$module_info->auth_session_var_name">
+			<div class="swiper-slide"><include target="_cta_slide_mob.html" cond="$remaining_applicants"/></div>
+</block>
+		</div>
+	</div>
+<!-------- slider end ------------>				
+</div>
+<script src="./js/swiper.min.js"></script>
+<script>
+var swiper = new Swiper('.swiper-container', {
+	pagination: '.swiper-pagination',
+	paginationClickable: true
+});
+
+var _g_nCurrent = 1;
+var _g_sModuleSrl = '{$module_info->module_srl}';
+
+// Add handler that will be executed only on
+swiper.on('SlideNextEnd', function () {
+	var nCurrent = _g_nCurrent++;
+	var nNext = nCurrent+1;
+//console.log( _g_sModuleSrl+'_mob_next_slide_'+nCurrent+'->'+nNext );
+<block cond="$test!='a'">
+	sendClickEventGaectk( 'banner', _g_sModuleSrl+'_mob_next_slide_'+nCurrent+'->'+nNext, '', '' );
+</block>
+<block cond="$test=='a'">
+	sendClickEventGaectk( 'banner', _g_sModuleSrl+'_mob_next_slide_type_a_'+nCurrent+'->'+nNext, '', '' );
+</block>
+});
+swiper.on('SlidePrevEnd', function () {
+	var nCurrent = _g_nCurrent--;
+	var nPrev = nCurrent-1;
+//console.log( _g_sModuleSrl+'_mob_prev_slide_'+nCurrent+'->'+nPrev );
+<block cond="$test!='a'">
+	sendClickEventGaectk( 'banner', _g_sModuleSrl+'_mob_prev_slide_'+nCurrent+'->'+nPrev, '', '' );
+</block>
+<block cond="$test=='a'">
+	sendClickEventGaectk( 'banner', _g_sModuleSrl+'_mob_prev_slide_type_a_'+nCurrent+'->'+nPrev, '', '' );
+</block>
+});
+</script>
+
+<script src="/modules/svdocs/m.skins/education_slider_mob/js/jquery.js"></script>
+<script src="/modules/svdocs/m.skins/education_slider_mob/js/jquery.mobile-1.4.2.min.js"></script>
+<script type="text/javascript" src="../../tpl/skin.js/countdown_timer.js"></script>

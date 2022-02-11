@@ -1,0 +1,137 @@
+{@
+$sPcSubmitBtnText = $sMobSubmitBtnText = '응모하기';
+if($module_info->submit_btn_text_pc)
+	$sPcSubmitBtnText = $module_info->submit_btn_text_pc;
+
+if($module_info->submit_btn_text_mob)
+	$sMobSubmitBtnText = $module_info->submit_btn_text_mob;
+
+$sPcSubmitBtnLink = '#';
+if($module_info->more_btn_link_pc)
+	$sPcSubmitBtnLink = $module_info->more_btn_link_pc;
+
+$sBtnBgColor = '#ed1c24';
+if($module_info->btn_color)
+	$sBtnBgColor = $module_info->btn_color;
+}
+
+<script>  
+<block cond="!Mobile::isMobileCheckByAgent()">
+var _g_sVirtualConversionPrefix = 'thankyou_{$module_info->module_srl}_pc';
+</block>
+<block cond="Mobile::isMobileCheckByAgent()">
+var _g_sVirtualConversionPrefix = 'thankyou_{$module_info->module_srl}_mob';
+</block>
+</script>
+
+<style type="text/css">
+/* section for the textarea like div begins */
+#textarea {
+	-moz-appearance: textfield-multiline;
+	-webkit-appearance: textarea;
+	border: 1px solid gray;
+	font: medium -moz-fixed;
+	font: -webkit-small-control;
+	overflow: auto;
+	padding: 2px;
+	resize: both;
+	height: 60px;
+	width: 100%;
+	-webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+    box-sizing: border-box;         /* Opera/IE 8+ */
+}
+/* section for the textarea like div ends */
+/* section for the applicant list begins */
+ul.applicant_list  {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: {$sApplicantListBgColor};
+}
+li.applicant {
+    float: left;
+}
+li.applicant a  {
+    display: block;
+    color: {$sApplicantListFontColor};
+    text-align: center;
+    padding: 16px;
+    text-decoration: none;
+}
+li.applicant a:hover{
+    background-color: #111111;
+}
+/* section for the applicant list ends */
+/* section for the floating button begins */
+.open_application {
+	position: fixed;
+	bottom: 2em;
+	right: 0px;
+	text-decoration: none;
+	color: #000000;
+	background-color: {$sBtnBgColor};
+	font-size: 12px;
+	padding: 1em;
+	display: none;
+}
+.open_application:hover {	
+	background-color: rgba(45, 135, 135, 0.50);
+}
+/* section for the floating button ends */
+</style>
+
+<include target="_add_pc.html" cond="!Mobile::isMobileCheckByAgent()"/>
+<include target="_add_mob.html" cond="Mobile::isMobileCheckByAgent()"/>
+
+<script type="text/javascript" src="../../tpl/skin.js/registration.js"></script>
+<script>
+//layer_open('layer1');
+function showApplicationForm()
+{
+	var nModuleSrl = jQuery('#module_srl').val();
+	var params = new Array();
+	params['module_srl'] = nModuleSrl;
+	var respons = ['msg', 'isRestricted'];
+	exec_xml('svdocs', 'getSvdocsExpiration', params, function(ret_obj) {
+		if( ret_obj['message'] == 'success' )
+		{
+			var bIsRestricted = ret_obj['isRestricted'];
+			if( bIsRestricted == 1 )
+			{
+				alert(ret_obj['msg']);
+				return;
+			}
+			if( typeof sendClickEventGaectk === 'function' )
+				sendClickEventGaectk( 'button', 'open_form_' + _g_sVirtualConversionPrefix, '#' );
+			layer_open('layer1');
+			// scroll top 
+			jQuery('body,html').animate({
+				scrollTop: 0
+			}, 800);
+		}
+	},respons);
+}
+
+var _g_nOffset = 220;
+var _g_nDuration = 500;
+jQuery(window).scroll(function()
+{
+	if (jQuery(this).scrollTop() > _g_nOffset)
+		jQuery('.open_application').fadeIn(_g_nDuration);
+	else
+		jQuery('.open_application').fadeOut(_g_nDuration);
+});
+
+jQuery(document).ready(function() {
+	jQuery('.open_application').click(function(event) {
+		event.preventDefault();
+		//showApplicationForm();
+		sendClickEventGaectk( 'button','svdocs_submit_{$module_info->module_srl}_pc', '#', 'self' );
+		askUpdate();
+		jQuery('html, body').animate({scrollTop: 0}, duration);
+		return false;
+	})
+});
+</script>

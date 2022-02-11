@@ -1,0 +1,415 @@
+<meta property="og:url" content="{$module_info->meta_og_url}" />
+<meta property="og:type" content="website" />
+<meta property="og:locale" content="ko" />
+<meta property="og:locale:alternate" content="en_US" />
+<meta property="og:title" content="{$module_info->meta_og_title}" />
+<meta property="og:description" content="{$module_info->meta_og_description}" />
+<meta property="og:image" content="{$module_info->meta_og_image}" />
+
+<link rel="stylesheet" href="./modules/svdocs/tpl/skin.css/countdown_timer.css" />
+
+<script>  
+window.fbAsyncInit = function () 
+{
+	FB.init({
+		appId: '{$module_info->facebook_app_id}', 
+		status: false,
+		cookie: false,
+		xfbml: true
+	});
+
+	//Additional
+	FB.Event.subscribe('edge.create',
+		function (response) {
+			g_bFB_liked = 1;
+			sendClickEventGatk( 'button', 'pc_facebook_liked_20160204', '#' );
+			//alert('LIKED: ' + response);
+			//document.write("do ya really like?");
+			//showApplicationButton();
+		}
+	);
+	FB.Event.subscribe('edge.remove', 
+		function (response) {
+			sendClickEventGatk( 'button', 'pc_facebook_unliked_20160204', '#' );
+			//alert('UNLIKED: ' + response);
+			//document.write("i hate you too!");
+		}
+	);
+};
+
+// Asynchronously
+(function (d) {
+var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+if (d.getElementById(id)) { return; }
+js = d.createElement('script'); js.id = id; js.async = true;
+js.src = "//connect.facebook.net/en_US/all.js";
+ref.parentNode.insertBefore(js, ref);
+} (document));
+
+(function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/en_US/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+
+var g_bFB_liked = 0;
+var g_bUploadImage = false;
+var currentdate = new Date();
+var g_timeEntryTime = currentdate.getFullYear() + '-' + (currentdate.getMonth()+1) + '-' + currentdate.getDate() + ' ' + currentdate.getHours() + ":" + currentdate.getMinutes() + ":" + currentdate.getSeconds();
+var g_nViewFinishCnt = 0;
+var g_fElapsedTimeWhenPaused = 0;
+var g_fElapsedTimeAfter17s = 0;
+</script>
+
+<!-- FACEBOOK JS SDK -->
+<div id="fb-root"></div>
+
+<!--- section for the floating application layer begins ------>
+<script type="text/javascript">
+function layer_open(el){
+	var temp = jQuery('#' + el);		//레이어의 id를 temp변수에 저장
+	var bg = temp.prev().hasClass('bg');	//dimmed 레이어를 감지하기 위한 boolean 변수
+
+	if(bg){
+		jQuery('.layer').fadeIn();
+	}else{
+		temp.fadeIn();	//bg 클래스가 없으면 일반레이어로 실행한다.
+	}
+
+	// 화면의 중앙에 레이어를 띄운다.
+	//if (temp.outerHeight() < jQuery(document).height() ) temp.css('margin-top', '-'+temp.outerHeight()/2+'px');
+	//else temp.css('top', '0px');
+	temp.css('top', '1300px');
+	//if (temp.outerWidth() < jQuery(document).width() ) temp.css('margin-left', '-'+temp.outerWidth()/2+'px');
+	if (temp.outerWidth() < jQuery(document).width() ) temp.css('margin-left', '-230px');
+	else temp.css('left', '0px');
+
+	temp.find('a.cbtn').click(function(e){
+		if(bg){
+			jQuery('.layer').fadeOut();
+		}else{
+			temp.fadeOut();		//'닫기'버튼을 클릭하면 레이어가 사라진다.
+		}
+		e.preventDefault();
+	});
+
+	jQuery('.layer .bg').click(function(e){
+		jQuery('.layer').fadeOut();
+		e.preventDefault();
+	});
+	//sendClickEventGatk( 'button', 'exchange_sale_promotion', '#' );
+}				
+</script>
+<style type="text/css">
+.pop-layer {display:none; position: absolute; top: 600px; left: 50%; width: 650px; height:auto;  background-color:#fff; border: 5px solid #3571B5; z-index: 10000;}	
+.pop-layer .pop-container {padding: 20px 25px;}
+.pop-layer p.ctxt {color: #666; line-height: 25px;}
+.pop-layer .btn-r {width: 100%; margin:10px 0 20px; padding-top: 10px; border-top: 1px solid #DDD; text-align:right;}
+
+a.cbtn {display:inline-block; height:25px; padding:0 14px 0; border:1px solid #304a8a; background-color:#3f5a9d; font-size:13px; color:#fff; line-height:25px;}	
+a.cbtn:hover {border: 1px solid #091940; background-color:#1f326a; color:#fff;}
+</style>
+
+<div id="layer1" class="pop-layer">
+	<div class="pop-container">
+		<div class="pop-conts">
+			<!--content //-->
+			<input type="hidden" name="module_srl" id="module_srl" value="{$module_srl}">
+			<input type="hidden" name="svauth_plugin_srl" id="svauth_plugin_srl" value="{$svauth_plugin_srl}"--->
+			<input type="hidden" name="gatk_thankyou_page_name" id="gatk_thankyou_page_name" value="newmodel_thankyou">
+			<div style="width: 100%; margin: 10px 0 20px; border-bottom: 1px solid #DDD; text-align: right;>"><a href="#" class="cbtn">Close</a></div>
+			<div id=''><label class='' for='applicant_name'>경품받을 이름</label>&nbsp;<input type='text' id='applicant_name' name='applicant_name' placeholder='경품받을 이름' value='김우상'>&nbsp;&nbsp;&nbsp;<label class='' for='applicant_phone_number'>경품받을 연락처</label>&nbsp;<input type='text' id='applicant_phone_number' name='applicant_phone_number' placeholder='경품받을 연락처' value='01012345678'></div>
+			<BR>
+			<div id='sms_auth' cond="$module_info->svdocs_application_type=='sms_auth'"><label class='' for='authcode'>응모자 인증</label>&nbsp;<input type='text' id='authcode' name='authcode' placeholder='인증번호' value='96984'><input type='button' id='get_authcode' name='get_authcode' value='인증번호 받기' onClick="getAuthCode();"></div>
+<block cond="$module_info->svdocs_application_type=='sms_auth'">
+			<h5><strong>휴대폰 인증서비스 개인정보 동의</strong></h5>
+			<div class="box">
+				<textarea rows="4" cols="96">
+{strip_tags($module_info->sms_agreement)}
+				</textarea>
+				<p><input type="checkbox"  name="privacy_collection" id="privacy_collection" value="Y" class="check" /> 위 개인정보 수집 및 이용에 대한 동의문을 모두 읽었으며, 동의합니다. </p>
+			</div>
+			<BR>
+</block>
+			<h5><strong>개인정보 수집 및 이용에 대한 동의</strong></h5>
+			<div class="box">
+				<textarea rows="4" cols="96">
+제1조 [개인정보 수집 및 이용목적]
+ - 이벤트 참여자 정보 확보
+ - 경품 당첨시 알림 문자(SMS) 발송
+ - 경품 당첨 시 본인 확인
+ - 경품 당첨시 경품 배송
+제2조 [수집하는 개인정보 항목]
+ <이벤트 참여>
+ - 필수항목 : 성명, 휴대폰 번호
+제3조 [개인정보 보유 및 이용기간]
+ - 이벤트 종료일로부터 3개월간
+제4조 [개인정보 수집 동의 거부의 권리]
+귀하께서는 개인정보 수집 이용에 동의하지 않으실 수 있으나, 이는 서비스   제공에 필수적으로 제공되어야 하는 정보이므로, 거부하실 경우 이벤트 참여가  제한되실 수 있습니다.
+				</textarea>
+				<p><input type="checkbox"  name="privacy_collection" id="privacy_collection" value="Y" class="check" /> 위 개인정보 수집 및 이용에 대한 동의문을 모두 읽었으며, 동의합니다. </p>
+			</div>
+			<BR>
+			<h5><strong>개인정보 제3자 제공 동의(필수)</strong></h5>
+			<div class="box">
+				<textarea rows="4" cols="96">
+㈜ 불스원(이하 ‘회사’라 한다)은 이벤트 서비스 이행을 위해 본 회사가 수집한 개인정보를  아래와 같이 외부 전문 업체에 위탁하여 처리하고 있습니다. 회사 사정에 따라 담당업체가 변경될 수 있으며 변경 시에는 서면,  이메일, Fax, 전화, SMS, 또는 이와 유사한 방법 중 1개 이상의 방법으로 알려드립니다.
+<이벤트 진행>
+○ 개인정보를 제공받는 자 : singleview.co.kr
+○ 제공하는 개인정보 항목 : 이름, 휴대폰 번호
+○ 정보의 이용목적 :  이벤트 진행 및 운영, 경품 당첨자 확인 및 알림 문자, 경품배송
+○ 정보의 보유 및 이용기간 : 이벤트 종료일로부터 3개월간
+
+○ 귀하께서는 개인정보 처리 업무 위탁에 동의하지 않으실 수 있으나, 이는 이벤트 운영에 필수적인 업무 위탁이므로, 거부하실 경우 이벤트 참여가 제한되실 수 있습니다.
+<br />
+				</textarea>
+				<p><input type="checkbox" name="privacy_sharing" id="privacy_sharing" value="Y" class="check" /> 위 개인정보 제3자 제공 동의 조항을 모두 읽었으며, 이에 동의합니다. </p>
+			</div>
+			
+			<div class="btn-r">
+				<button type="button" id='btn_registration' name='btn_registration' onClick="doRegistration();" STYLE='display: inline-block; height: 25px; padding: 0 14px 0; border: 1px solid #ed1c24; background-color: #ed1c24; font-size: 13px; color: #fff; line-height: 25px;'>응모하기</button >
+			</div>
+			<!--// content-->
+		</div>
+	</div>
+</div>
+<!--- section for the floating application layer ends ------>
+
+<!-- Save for Web Slices (oneshot_img_732.psd) -->
+
+<table id="__01" width="732" height="2028" border="0" cellpadding="0" cellspacing="0">
+<!---- event header secion begins ------->
+	<tr>
+		<td colspan="6">
+			<div id='pc_01_event_header_20160204' STYLE='margin:0; padding:0; border:none;'><img src="./pimages/oneshot_img_732_01.png" width="732" height="461" alt=""></div>
+		</td>
+	</tr>
+	<tr>
+		<td colspan="6">
+			<img src="./pimages/oneshot_img_732_02.png" width="732" height="62" alt="">
+		</td>
+	</tr>
+<!---- event header secion ends ------->
+<!---- TVCF secion begins ------->
+	<tr>
+		<td colspan="6">
+			<div id='pc_02_event_header_20160204' STYLE='margin:0; padding:0; border:none;'><img src="./pimages/oneshot_img_732_17.png" width="732" height="96" alt=""></div>
+		</td>
+	</tr>
+	<tr>
+		<td colspan="2">
+			<img src="./pimages/oneshot_img_732_18.png" width="29" height="353" alt="">
+		</td>
+		<td colspan="3">
+
+			<!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
+			<div id="player"></div>
+			<!---img src="./pimages/oneshot_img_732_19.png" width="676" height="353" alt=""---->
+		</td>
+		<td>
+			<img src="./pimages/oneshot_img_732_20.png" width="27" height="353" alt="">
+		</td>
+	</tr>
+	<tr>
+		<td colspan="6">
+			<img src="./pimages/oneshot_img_732_21.png" width="732" height="24" alt="">
+		</td>
+	</tr>
+
+	<tr>
+		<td colspan="6">
+			<img src="./pimages/oneshot_img_732_02.png" width="732" height="32" alt="">
+		</td>
+	</tr>
+<!---- TVCF secion ends ------->
+	<TR ID='countdown_timer'>
+		<td colspan="6" align='CENTER'>
+			 <div id="clockdiv">이벤트 종료까지
+				<div>
+					<span class="days"></span>일
+				</div>
+				<div>
+					<span class="hours"></span>시
+				</div>
+				<div>
+					<span class="minutes"></span>분
+				</div>
+				<div>
+					<span class="seconds"></span>초
+				</div> 남았습니다!
+			</div>
+		</td>
+	</TR>
+	<TR ID='remaining_qty'>
+		<td colspan="6" align='CENTER'>
+			 <div id="remainingQtydiv"> <span id='qty'>0</span>개의 경품이 남았습니다!</div>
+		</td>
+	</TR>
+
+	<TR>
+		<td colspan="6" align='CENTER'>
+			 <div id="clockdiv">모바일 기프티콘 발송이 완료되었습니다!</div>
+		</td>
+	</TR>
+	<tr>
+		<td colspan="6">
+			<img src="./pimages/oneshot_img_732_02.png" width="732" height="32" alt="">
+		</td>
+	</tr>
+<!---- application secion begins ------->
+	<tr>
+		<td colspan="4">
+			<div id='pc_03_how_to_paricipate_20160204' STYLE='margin:0; padding:0; border:none;'><img src="./pimages/oneshot_img_732_03.png" width="366" height="178" alt=""></div>
+		</td>
+		<td colspan="2" rowspan="4">
+			<img src="./pimages/oneshot_img_732_04.png" width="366" height="418" alt="">
+		</td>
+	</tr>
+	<tr>
+		<td rowspan="3">
+			<img src="./pimages/oneshot_img_732_05.png" width="28" height="240" alt="">
+		</td>
+		<td colspan="2">
+			<form id="upload" action="upload.php" method="POST" enctype="multipart/form-data">
+			<input type="hidden" id="MAX_FILE_SIZE" name="MAX_FILE_SIZE" value="30000000" />
+			<div>
+				<label for="fileselect">업로드할 이미지</label>
+				<input type="file" id="fileselect" name="fileselect[]" multiple="multiple" />
+				<div id="filedrag"></div>
+			</div>
+			<div id='user_thumbnail'><img src="./pimages/oneshot_img_732_06.png" width="314" height="191" alt=""></div>
+			
+			<div id="submitbutton"><button type="submit">이미지 올리기</button></div>
+			</form>
+			<div id="progress"></div>
+			<div id="messages"></div>
+		</td>
+		<td rowspan="3">
+			<img src="./pimages/oneshot_img_732_07.png" width="24" height="240" alt="">
+		</td>
+	</tr>
+	<tr>
+		<td colspan="2">
+			<img src="./pimages/oneshot_img_732_08.png" width="314" height="9" alt="">
+		</td>
+	</tr>
+	<tr>
+		<td colspan="2">
+			<div class="share" style='display:visible';>
+				<div class="fb-like" data-share="true" data-width="310" data-show-faces="true"></div>
+			</div>
+			<!--div><button type="button" onclick="show();">open registration form</button></div--->
+			<!---img src="./pimages/oneshot_img_732_09.png" width="314" height="40" alt=""--->
+		</td>
+	</tr>
+	<tr>
+		<td height='60'>
+			<img src="./pimages/blank.gif" width="28" height="1" alt="">
+		</td>
+		<td colspan="5" >
+			<div class="try_to_apply" id="try_to_apply" style='display:visible;'>
+				<input type='button' value='스니커즈 받고 기뻐하기' STYLE='width:314px; background-color: #ed1c24; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; border-radius:10px;' onclick="showApplicationForm();">
+			</div>
+		</td>
+	</tr>
+<!---- application secion ends ------->
+<!---- instruction secion begins ------->
+	<tr>
+		<td colspan="6">
+			<img src="./pimages/oneshot_img_732_10.png" width="732" height="57" alt="">
+		</td>
+	</tr>
+	<tr>
+		<td colspan="6">
+			<div id='pc_04_how_to_overview_20160204' STYLE='margin:0; padding:0; border:none;'><img src="./pimages/oneshot_img_732_11.png" width="732" height="297" alt=""></div>
+		</td>
+	</tr>
+<!---- instruction secion ends ------->
+	<tr>
+		<td colspan="6">
+			<BR>
+			<input type='button' value='이벤트에 관해 묻고 답하기' STYLE='width:732px; background-color: #ed1c24; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; border-radius:10px;' onclick="window.location.href='/QNA';sendClickEventGatk( 'button', 'mob_goto_qna_20160204', '#' );">
+		</td>
+	</tr>
+	<tr>
+		<td colspan="6">
+			<img src="./pimages/oneshot_img_732_16.png" width="732" height="41" alt="">
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<img src="./pimages/blank.gif" width="28" height="1" alt="">
+		</td>
+		<td>
+			<img src="./pimages/blank.gif" width="1" height="1" alt="">
+		</td>
+		<td>
+			<img src="./pimages/blank.gif" width="313" height="1" alt="">
+		</td>
+		<td>
+			<img src="./pimages/blank.gif" width="24" height="1" alt="">
+		</td>
+		<td>
+			<img src="./pimages/blank.gif" width="339" height="1" alt="">
+		</td>
+		<td>
+			<img src="./pimages/blank.gif" width="27" height="1" alt="">
+		</td>
+	</tr>
+</table>
+
+<script type="text/javascript" src="../../tpl/skin.js/filedrag.js"></script>
+<script type="text/javascript" src="../../tpl/skin.js/youtube.js"></script>
+<script type="text/javascript" src="../../tpl/skin.js/countdown_timer.js"></script>
+<script type="text/javascript" src="../../tpl/skin.js/registration.js"></script>
+
+<script>
+initializeClock('clockdiv', '{$module_info->due_datetime}', {$remaining_applicantion});
+initializeCounter('#remainingQtydiv', {$remaining_applicantion} );
+var aPlaylist = [];
+<block loop="$youtube_playlist=>$key,$val">
+aPlaylist.push('{$val}');
+</block>
+//setPlayerDimension( '676', '351' );
+initPlayer( aPlaylist, '676', '351' );
+layer_open('layer1');
+function showApplicationForm()
+{
+	var nModuleSrl = jQuery('#module_srl').val();
+	var params = new Array();
+	params['module_srl'] = nModuleSrl;
+	var respons = ['msg', 'isRestricted'];
+	exec_xml('svdocs', 'getSvdocsExpiration', params, function(ret_obj) {
+		if( ret_obj['message'] == 'success' )
+		{
+			var bIsRestricted = ret_obj['isRestricted'];
+			if( bIsRestricted == 1 )
+			{
+				alert(ret_obj['msg']);
+				return;
+			}
+
+			if( g_bUploadImage )
+			{
+				sendClickEventGatk( 'button', 'mob_show_application_form_after_upload_image_20160204', '#' );
+				layer_open('layer1');
+			}
+			else
+			{
+				sendClickEventGatk( 'button', 'mob_show_application_form_before_upload_image_20160204', '#' );
+				alert( '먼저 이미지를 등록해주세요!' );
+			}
+		}
+	},respons);
+}
+
+jQuery(window).scroll(function()
+{
+	//checkVisibilityGatk( jQuery('#pc_01_event_header_20160204') );
+	//checkVisibilityGatk( jQuery('#pc_02_event_header_20160204') );
+	//checkVisibilityGatk( jQuery('#pc_03_how_to_paricipate_20160204') );
+	//checkVisibilityGatk( jQuery('#pc_04_how_to_overview_20160204') );
+});
+</script>

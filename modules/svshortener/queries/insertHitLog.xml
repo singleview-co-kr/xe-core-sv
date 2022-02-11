@@ -1,0 +1,12 @@
+<query id="insertHitLog" action="insert">
+	<tables>
+		<table name="svshortener_log" />
+	</tables>
+	<columns>
+		<column name="shorten_uri_value" var="shorten_uri_value" notnull="notnull" />
+		<column name="is_mobile_access" var="is_mobile_access" notnull="notnull" />
+		<column name="ipaddress" var="ipaddress" notnull="notnull" default="ipaddress()" />
+		<column name="user_agent" var="user_agent" />
+		<column name="regdate" var="regdate" default="curdate()" notnull="notnull" />
+	</columns>
+</query>

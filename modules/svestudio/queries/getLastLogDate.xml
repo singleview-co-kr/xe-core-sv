@@ -1,0 +1,14 @@
+<query id="getLastLogDate" action="select">
+    <tables>
+        <table name="svestudio_gross_compiled_daily_log" />
+    </tables>
+    <columns>
+        <column name="logdate" />
+    </columns>
+	<navigation>
+		<index var="sort_index" default="logdate" order="desc" />
+		<list_count var="list_count" default="1" />
+		<page_count var="page_count" default="1" />
+		<page var="page" default="1" />
+	</navigation>
+</query>

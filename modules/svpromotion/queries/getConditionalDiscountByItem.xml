@@ -1,0 +1,12 @@
+<query id="getConditionalDiscountByItem" action="select">
+	<tables>
+		<table name="svpromotion_conditional_by_item" />
+	</tables>
+	<columns>
+		<column name="*" />
+	</columns>
+	<conditions>
+		<condition operation="equal" column="item_srl" var="item_srl" />
+		<condition operation="equal" column="promotion_type" var="promotion_type" notnull="notnull" pipe="and" />
+	</conditions>
+</query>

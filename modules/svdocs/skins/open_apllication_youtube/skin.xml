@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<skin version="0.2">
+	<title xml:lang="ko">공개응모 영상 공유 스킨 - 반응형</title>
+	<description xml:lang="ko">
+		 공개응모 영상 공유 스킨 - 반응형, 다음의 hidden 사용자 정의 변수 추가해야 합니다. elapsed_secs(재생초수), play_finish_count(재생완료횟수), elapsed_secs_when_paused(정지시재생초수)
+	</description>
+	<version>0.1</version>
+	<date>2017-08-22</date>
+	<author email_address="root@singleview.co.kr" link="http://singleview.co.kr/">
+		<name xml:lang="ko">singleview.co.kr</name>
+	</author>
+	<extra_vars>
+		<group>
+			<title xml:lang="ko">PC MOB 공통 설정</title>
+			<var name="meta_og_url" type="text">
+				<title xml:lang="ko">meta태그 og:url</title>
+				<description xml:lang="ko">facebook에 전송할 페이지 URL</description>
+			</var>
+			<var name="meta_og_title" type="text">
+				<title xml:lang="ko">meta태그 og:title</title>
+				<description xml:lang="ko">facebook에 전송할 페이지 제목</description>
+			</var>
+			<var name="meta_og_description" type="text">
+				<title xml:lang="ko">meta태그 og:description</title>
+				<description xml:lang="ko">facebook에 전송할 페이지 설명</description>
+			</var>
+			<var name="meta_og_image" type="image">
+				<title xml:lang="ko">meta태그 og:image</title>
+				<description xml:lang="ko">facebook에 전송할 페이지 썸네일</description>
+			</var>
+			<var name="btn_color" type="text">
+				<title xml:lang="ko">버튼 배경 색상</title>
+				<description xml:lang="ko">버튼 배경 색상 예)#ffffff</description>
+			</var>
+			<var name="youtube_playlist" type="text">
+				<title xml:lang="ko">유튜브 재생목록</title>
+				<description xml:lang="ko">응모 페이지에서 재생할 유튜브 목록, 복수 동영상은 ,로 구분합니다.</description>
+			</var>
+			<var name="is_shuffle_playlist" type="radio">
+				<title xml:lang="ko">동영상 재생 순서</title>
+				<description xml:lang="ko">복수 동영상 재생 시 화면 호출마다 순서를 섞습니다.</description>
+				<options value="">
+					<title xml:lang="ko">순서대로</title>
+				</options>
+				<options value="Y">
+					<title xml:lang="ko">무작위 섞기</title>
+				</options>
+			</var>
+			<var name="youtube_minimum_duraction_sec" type="text">
+				<title xml:lang="ko">유튜브 최소 재생 시간</title>
+				<description xml:lang="ko">이벤트 응모를 허용하는 유튜브 최소 재생 시간, 공란이면 검사하지 않습니다.</description>
+			</var>
+			<var name="is_like_mandatory" type="radio">
+				<title xml:lang="ko">페이스북 라이크 필수</title>
+				<description xml:lang="ko">이벤트 응모를 허용하는 페이스북 라이크 조건, 공란이면 검사하지 않습니다.</description>
+				<options value="">
+					<title xml:lang="ko">선택</title>
+				</options>
+				<options value="Y">
+					<title xml:lang="ko">필수</title>
+				</options>
+			</var>
+			<var name="is_applicant_display" type="radio">
+				<title xml:lang="ko">응모자 목록 표시</title>
+				<description xml:lang="ko">이벤트에 응모한 목록을 표시합니다.</description>
+				<options value="">
+					<title xml:lang="ko">숨김</title>
+				</options>
+				<options value="Y">
+					<title xml:lang="ko">표시</title>
+				</options>
+			</var>
+			<var name="applicant_list_title" type="text">
+				<title xml:lang="ko">응모자 영역 제목</title>
+				<description xml:lang="ko">응모자 영역 제목</description>
+			</var>
+			<var name="applicant_font_color" type="text">
+				<title xml:lang="ko">응모자 폰트 색상</title>
+				<description xml:lang="ko">응모자 폰트 색상 예)#ffffff</description>
+			</var>
+			<var name="applicant_bgcolor" type="text">
+				<title xml:lang="ko">응모자 목록 영역의 배경색</title>
+				<description xml:lang="ko">응모자 목록 영역의 배경색 예)#ffffff</description>
+			</var>
+			<var name="complete_title" type="text">
+				<title xml:lang="ko">완료화면 제목</title>
+				<description xml:lang="ko">완료화면 제목을 적습니다. HTML허용</description>
+			</var>
+			<var name="complete_description" type="textarea">
+				<title xml:lang="ko">완료화면 설명</title>
+				<description xml:lang="ko">완료화면 설명을 적습니다. HTML허용</description>
+			</var>
+		</group>
+		<group>
+			<title xml:lang="ko">PC 설정</title>
+			<var name="header_img_pc" type="image">
+				<title xml:lang="ko">PC 헤더에 표시할 이미지</title>
+				<description xml:lang="ko">PC 페이지 헤더에 표시할 이미지, 입력하지 않으면 영역이 표시되지 않습니다.</description>
+			</var>
+			<var name="header_html_pc" type="textarea">
+				<title xml:lang="ko">PC 헤더에 표시할 HTML</title>
+				<description xml:lang="ko">PC 페이지 헤더에 표시할 HTML, 공란이면 영역이 표시되지 않습니다.</description>
+			</var>
+			<var name="info_img_pc" type="image">
+				<title xml:lang="ko">PC 정보에 표시할 이미지</title>
+				<description xml:lang="ko">PC 페이지 정보에 표시할 이미지, 입력하지 않으면 영역이 표시되지 않습니다.</description>
+			</var>
+			<var name="info_html_pc" type="textarea">
+				<title xml:lang="ko">PC 정보에 표시할 HTML</title>
+				<description xml:lang="ko">PC 페이지 정보에 표시할 HTML, 공란이면 영역이 표시되지 않습니다.</description>
+			</var>
+			<var name="info_bgcolor_pc" type="text">
+				<title xml:lang="ko">PC 정보 영역의 배경색</title>
+				<description xml:lang="ko">PC 페이지 정보 영역의 배경색 예)#ffffff</description>
+			</var>
+			<var name="caution_img_pc" type="image">
+				<title xml:lang="ko">PC 주의사항에 표시할 이미지</title>
+				<description xml:lang="ko">PC 페이지 주의사항에 표시할 이미지, 입력하지 않으면 영역이 표시되지 않습니다.</description>
+			</var>
+			<var name="caution_html_pc" type="textarea">
+				<title xml:lang="ko">PC 주의사항에 표시할 HTML</title>
+				<description xml:lang="ko">PC 페이지 주의사항에 표시할 HTML, 공란이면 영역이 표시되지 않습니다.</description>
+			</var>
+			<var name="caution_bgcolor_pc" type="text">
+				<title xml:lang="ko">PC 주의사항 영역의 배경색</title>
+				<description xml:lang="ko">PC 페이지 주의사항 영역의 배경색 예)#ffffff</description>
+			</var>
+			<var name="video_title_img_pc" type="image">
+				<title xml:lang="ko">PC 비디오 타이틀 이미지</title>
+				<description xml:lang="ko">동영상 위에 표시할 이미지를 입력하세요. 입력하지 않으면 영역이 표시되지 않습니다.</description>
+			</var>
+			<var name="video_title_html_pc" type="textarea">
+				<title xml:lang="ko">PC 비디오 타이틀 HTML</title>
+				<description xml:lang="ko">동영상 위에 표시할 PC HTML을 입력하세요. 입력하지 않으면 영역이 표시되지 않습니다.</description>
+			</var>
+			<var name="video_bgcolor_pc" type="text">
+				<title xml:lang="ko">PC 동영상 영역의 배경색</title>
+				<description xml:lang="ko">PC 페이지 동영상 영역의 배경색 예)#ffffff</description>
+			</var>
+			<var name="submit_btn_text_pc" type="text">
+				<title xml:lang="ko">PC 응모버튼 문구</title>
+				<description xml:lang="ko">PC 응모 버튼에 표시할 문구를 입력하세요. 빈칸이면 "응모하기"를 표시합니다.</description>
+			</var>
+			<var name="footer_img_pc" type="image">
+				<title xml:lang="ko">PC 푸터에 표시할 이미지</title>
+				<description xml:lang="ko">PC 페이지 푸터에 표시할 이미지, 입력하지 않으면 영역이 표시되지 않습니다.</description>
+			</var>
+			<var name="footer_html_pc" type="textarea">
+				<title xml:lang="ko">PC 푸터에 표시할 HTML</title>
+				<description xml:lang="ko">PC 페이지 푸터에 표시할 PC HTML, 공란이면 영역이 표시되지 않습니다.</description>
+			</var>
+			<var name="more_btn_text_pc" type="text">
+				<title xml:lang="ko">PC 더보기 버튼 문구</title>
+				<description xml:lang="ko">PC 더보기 버튼에 표시할 문구, 공란이면 버튼이 표시되지 않습니다. HTML 금지</description>
+			</var>
+			<var name="more_btn_link_pc" type="text">
+				<title xml:lang="ko">PC 더보기 버튼 링크</title>
+				<description xml:lang="ko">PC 더보기 버튼을 누르면 연결된 링크</description>
+			</var>
+		</group>
+		<group>
+			<title xml:lang="ko">MOB 설정</title>
+			<var name="header_img_mob" type="image">
+				<title xml:lang="ko">MOB 헤더에 표시할 이미지</title>
+				<description xml:lang="ko">MOB 페이지 헤더에 표시할 이미지, 입력하지 않으면 영역이 표시되지 않습니다.</description>
+			</var>
+			<var name="header_html_mob" type="textarea">
+				<title xml:lang="ko">MOB 헤더에 표시할 HTML</title>
+				<description xml:lang="ko">MOB 페이지 헤더에 표시할 HTML, 공란이면 영역이 표시되지 않습니다.</description>
+			</var>
+			<var name="info_img_mob" type="image">
+				<title xml:lang="ko">MOB 정보에 표시할 이미지</title>
+				<description xml:lang="ko">MOB 페이지 정보에 표시할 이미지, 입력하지 않으면 영역이 표시되지 않습니다.</description>
+			</var>
+			<var name="info_html_mob" type="textarea">
+				<title xml:lang="ko">MOB 정보에 표시할 HTML</title>
+				<description xml:lang="ko">MOB 페이지 정보에 표시할 HTML, 공란이면 영역이 표시되지 않습니다.</description>
+			</var>
+			<var name="caution_img_mob" type="image">
+				<title xml:lang="ko">MOB 주의사항에 표시할 이미지</title>
+				<description xml:lang="ko">MOB 페이지 주의사항에 표시할 이미지, 입력하지 않으면 영역이 표시되지 않습니다.</description>
+			</var>
+			<var name="caution_html_mob" type="textarea">
+				<title xml:lang="ko">MOB 주의사항에 표시할 HTML</title>
+				<description xml:lang="ko">MOB 페이지 주의사항에 표시할 HTML, 공란이면 영역이 표시되지 않습니다.</description>
+			</var>
+			<var name="video_title_img_mob" type="image">
+				<title xml:lang="ko">MOB 비디오 타이틀 이미지</title>
+				<description xml:lang="ko">동영상 위에 표시할 MOB 이미지를 입력하세요. 입력하지 않으면 영역이 표시되지 않습니다.</description>
+			</var>
+			<var name="video_title_html_mob" type="textarea">
+				<title xml:lang="ko">MOB 비디오 타이틀 HTML</title>
+				<description xml:lang="ko">동영상 위에 표시할 MOB HTML을 입력하세요. 입력하지 않으면 영역이 표시되지 않습니다.</description>
+			</var>
+			<var name="submit_btn_text_mob" type="text">
+				<title xml:lang="ko">MOB 응모버튼 문구</title>
+				<description xml:lang="ko">MOB 응모 버튼에 표시할 문구를 입력하세요. 빈칸이면 "응모하기"를 표시합니다.</description>
+			</var>
+			<var name="footer_img_mob" type="image">
+				<title xml:lang="ko">MOB 푸터에 표시할 이미지</title>
+				<description xml:lang="ko">MOB 페이지 푸터에 표시할 이미지, 입력하지 않으면 영역이 표시되지 않습니다.</description>
+			</var>
+			<var name="footer_html_mob" type="textarea">
+				<title xml:lang="ko">MOB 푸터에 표시할 HTML</title>
+				<description xml:lang="ko">MOB 페이지 푸터에 표시할 HTML, 공란이면 영역이 표시되지 않습니다.</description>
+			</var>
+			<var name="more_btn_text_mob" type="text">
+				<title xml:lang="ko">MOB 더보기 버튼 문구</title>
+				<description xml:lang="ko">MOB 더보기 버튼에 표시할 문구, 공란이면 버튼이 표시되지 않습니다. HTML 금지</description>
+			</var>
+			<var name="more_btn_link_mob" type="text">
+				<title xml:lang="ko">MOB 더보기 버튼 링크</title>
+				<description xml:lang="ko">MOB 더보기 버튼을 누르면 연결된 링크</description>
+			</var>
+		</group>
+	</extra_vars>
+</skin>

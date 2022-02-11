@@ -1,0 +1,24 @@
+<div class="x_page-header">
+	<h1>
+		{$lang->promotion_management} 
+		<span class="path" cond="$module_info->mid">
+			&gt; <a href="{getSiteUrl($module_info->domain,'','mid',$module_info->mid)}" target="_blank"|cond="$module=='admin'">{$module_info->mid}<block cond="$module_info->is_default=='Y'">({$lang->is_default})</block></a>
+		</span>
+		<a href="#aboutModule" data-toggle class="x_icon-question-sign">{$lang->help}</a>
+	</h1>
+</div>
+<p class="x_alert x_alert-info" id="aboutModule" hidden>{$lang->about_board}</p>
+<ul class="x_nav x_nav-tabs" cond="$module_info">
+	<li class="x_active"|cond="$act=='dispSvpromotionAdminIndex'"><a href="{getUrl('act','dispSvpromotionAdminIndex','promotion_srl','')}">{$lang->cmd_coupon_promotion_list}</a></li>
+	<li class="x_active"|cond="$act=='dispSvpromotionAdminItemDiscountList'"><a href="{getUrl('act','dispSvpromotionAdminItemDiscountList')}">{$lang->cmd_item_promotion}</a></li>
+	<li class="x_active"|cond="$act=='dispSvpromotionAdminSitePromotion'"><a href="{getUrl('act','dispSvpromotionAdminSitePromotion')}">{$lang->cmd_site_discount_policy}</a></li>
+	<li class="x_active"|cond="$act=='dispSvpromotionAdminReserves'"><a href="{getUrl('act','dispSvpromotionAdminReserves')}">{$lang->cmd_reserves_mgmt}</a></li>
+	<li class="x_active"|cond="$act=='dispSvpromotionAdminConfig'"><a href="{getUrl('act','dispSvpromotionAdminConfig')}">{$lang->cmd_basic_setting}</a></li>
+</ul>
+<ul class="x_nav x_nav-tabs" cond="$module_info">
+	<li cond="$promotion_srl" class="x_active"|cond="$act=='dispSvpromotionAdminCouponInfo'"><a href="{getUrl('act','dispSvpromotionAdminCouponInfo' )}">{$lang->cmd_manage_coupon}</a></li>
+	<li cond="$promotion_srl" class="x_active"|cond="$act=='dispSvpromotionAdminCouponPromotionInfo'"><a href="{getUrl('act','dispSvpromotionAdminCouponPromotionInfo' )}">{$lang->cmd_coupon_promotion_info}</a></li>
+</ul>
+<div cond="$XE_VALIDATOR_MESSAGE && $XE_VALIDATOR_ID == ''" class="message {$XE_VALIDATOR_MESSAGE_TYPE}">
+	<p>{$XE_VALIDATOR_MESSAGE}</p>
+</div>

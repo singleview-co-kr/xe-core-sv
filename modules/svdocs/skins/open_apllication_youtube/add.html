@@ -1,0 +1,237 @@
+{@
+if($module_info->youtube_playlist)
+	$aPlaylist = explode( ',',$module_info->youtube_playlist);
+
+$sPcSubmitBtnText = $sMobSubmitBtnText = '응모하기';
+if($module_info->submit_btn_text_pc)
+	$sPcSubmitBtnText = $module_info->submit_btn_text_pc;
+
+if($module_info->submit_btn_text_mob)
+	$sMobSubmitBtnText = $module_info->submit_btn_text_mob;
+
+$sQnaBtnLink = '#';
+if($module_info->more_btn_link_pc)
+	$sQnaBtnLink = $module_info->more_btn_link_pc;
+
+$sBtnBgColor = '#ed1c24';
+if($module_info->btn_color)
+	$sBtnBgColor = $module_info->btn_color;
+
+$sApplicantListFontColor = '#000000';
+if($module_info->applicant_font_color)
+	$sApplicantListFontColor = $module_info->applicant_font_color;
+
+$sApplicantListBgColor = '#ed1c24';
+if($module_info->applicant_bgcolor)
+	$sApplicantListBgColor = $module_info->applicant_bgcolor;
+
+if( $teaser_open == 'Y' )
+	$sTimerTitle = '이벤트 시작까지';
+else
+	$sTimerTitle = '이벤트 종료까지';
+}
+<meta property="og:url" content="{$module_info->meta_og_url}" />
+<meta property="og:type" content="website" />
+<meta property="og:locale" content="ko" />
+<meta property="og:locale:alternate" content="en_US" />
+<meta property="og:title" content="{$module_info->meta_og_title}" />
+<meta property="og:description" content="{$module_info->meta_og_description}" />
+<meta property="og:image" content="{$module_info->meta_og_image}" />
+<link rel="stylesheet" href="./modules/svdocs/tpl/skin.css/countdown_timer.css" />
+
+<block cond="$config->nvad_conv_id">
+<!-- naver conversion code -->
+<script type="text/javascript" src="//wcs.naver.net/wcslog.js"></script> 
+</block>
+
+<script>  
+window.fbAsyncInit = function () 
+{
+	FB.init({
+		appId: '{$config->facebook_app_id}', 
+		status: false,
+		cookie: false,
+		xfbml: true
+	});
+
+	//Additional
+	FB.Event.subscribe('edge.create',
+		function (response) {
+			g_bFB_liked = 1;
+			sendClickEventGaectk( 'button', 'mob_facebook_liked_20160204', '#' );
+			//alert('LIKED: ' + response);
+			//document.write("do ya really like?");
+		}
+	);
+	FB.Event.subscribe('edge.remove', 
+		function (response) {
+			sendClickEventGaectk( 'button', 'mob_facebook_unliked_20160204', '#' );
+			//alert('UNLIKED: ' + response);
+			//document.write("i hate you too!");
+		}
+	);
+};
+
+// Asynchronously
+(function (d) {
+var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+if (d.getElementById(id)) { return; }
+js = d.createElement('script'); js.id = id; js.async = true;
+js.src = "//connect.facebook.net/en_US/all.js";
+ref.parentNode.insertBefore(js, ref);
+} (document));
+
+(function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/en_US/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+
+var g_bFB_liked = 0;
+<block cond="!Mobile::isMobileCheckByAgent()">
+var _g_sVirtualConversionPrefix = 'thankyou_{$module_info->module_srl}_pc';
+</block>
+<block cond="Mobile::isMobileCheckByAgent()">
+var _g_sVirtualConversionPrefix = 'thankyou_{$module_info->module_srl}_mob';
+</block>
+</script>
+<!-- FACEBOOK JS SDK -->
+<div id="fb-root"></div>
+
+<style type="text/css">
+/* section for the textarea like div begins */
+#textarea {
+	-moz-appearance: textfield-multiline;
+	-webkit-appearance: textarea;
+	border: 1px solid gray;
+	font: medium -moz-fixed;
+	font: -webkit-small-control;
+	overflow: auto;
+	padding: 2px;
+	resize: both;
+	height: 60px;
+	width: 100%;
+	-webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+    box-sizing: border-box;         /* Opera/IE 8+ */
+}
+/* section for the textarea like div ends */
+/* section for the applicant list begins */
+ul.applicant_list  {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: {$sApplicantListBgColor};
+}
+li.applicant {
+    float: left;
+}
+li.applicant a  {
+    display: block;
+    color: {$sApplicantListFontColor};
+    text-align: center;
+    padding: 16px;
+    text-decoration: none;
+}
+li.applicant a:hover{
+    background-color: #111111;
+}
+/* section for the applicant list ends */
+</style>
+
+<include target="_add_pc.html" cond="!Mobile::isMobileCheckByAgent()"/>
+<include target="_add_mob.html" cond="Mobile::isMobileCheckByAgent()"/>
+
+<script type="text/javascript" src="../../tpl/skin.js/youtube.js"></script>
+<script type="text/javascript" src="../../tpl/skin.js/countdown_timer.js"></script>
+<script type="text/javascript" src="../../tpl/skin.js/registration.js"></script>
+<script>
+<block cond="$teaser_open=='Y'">
+initializeClock('clockdiv', '{$module_info->open_datetime}', {$remaining_applicants});
+</block>
+<block cond="$teaser_open!='Y'">
+initializeClock('clockdiv', '{$module_info->due_datetime}', {$remaining_applicants});
+</block>
+
+initializeCounter('#remainingQtydiv', {$remaining_applicants} );
+var aPlaylist = [];
+<block loop="$aPlaylist=>$key,$val">
+aPlaylist.push('{$val}');
+</block>
+
+setAutostart();
+setVolume(5);
+setLoop();
+
+<block cond="$module_info->is_shuffle_playlist == 'Y'">
+setShuffle();
+</block>
+
+<block cond="!Mobile::isMobileCheckByAgent()">
+initPlayer( aPlaylist, '732', '482' );
+</block>
+<block cond="Mobile::isMobileCheckByAgent()">
+initPlayer( aPlaylist, '95%','' );
+</block>
+
+//layer_open('layer1');
+function showApplicationForm()
+{
+<block cond="$module_info->youtube_minimum_duraction_sec">
+	var nMinPlayedSec = '{$module_info->youtube_minimum_duraction_sec}';
+	if( nMinPlayedSec > g_nElapsedSecond )
+	{
+		var nRemainingSeconds = nMinPlayedSec - g_nElapsedSecond;
+		alert( nRemainingSeconds + '초만 더 시청해 주세요~');
+		return;
+	}
+</block>
+<block cond="$module_info->is_like_mandatory">
+	if( !g_bFB_liked )
+	{
+		alert('Like 해주시면 응모가 가능합니다!');
+		return;
+	}
+</block>
+	pauseVideo();
+	var nModuleSrl = jQuery('#module_srl').val();
+	var params = new Array();
+	params['module_srl'] = nModuleSrl;
+	var respons = ['msg', 'isRestricted'];
+	exec_xml('svdocs', 'getSvdocsExpiration', params, function(ret_obj) {
+		if( ret_obj['message'] == 'success' )
+		{
+			var bIsRestricted = ret_obj['isRestricted'];
+			if( bIsRestricted == 1 )
+			{
+				alert(ret_obj['msg']);
+				return;
+			}
+			if( typeof sendClickEventGaectk === 'function' )
+				sendClickEventGaectk( 'button', 'open_form_' + _g_sVirtualConversionPrefix, '#' );
+			layer_open('layer1');
+			// scroll top 
+			jQuery('body,html').animate({
+				scrollTop: 0
+			}, 800);
+		}
+	},respons);
+}
+
+function _doPreRegistration()
+{
+<block cond="$config->nvad_conv_id">
+	var _nasa={};
+	_nasa["cnv"] = wcs.cnv("4","500"); // 전환유형, 전환가치 설정해야함. 설치매뉴얼 참고
+</block>
+	//jQuery('input[name="extra_vars1"]').val(g_nElapsedSecond);
+	jQuery('input[id="elapsed_secs"]').val(g_nElapsedSecond);
+	jQuery('input[id="play_finish_count"]').val(g_nPlayingFinishCnt);
+	jQuery('input[id="elapsed_secs_when_paused"]').val(g_fElapsedSecondWhenPaused);
+	//jQuery('#elapsed_secs').val(g_nElapsedSecond);  / not work on mobile
+	doRegistration( _g_sVirtualConversionPrefix );
+}
+</script>

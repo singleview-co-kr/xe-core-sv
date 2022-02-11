@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon version="0.2">
+	<title xml:lang="ko">싱글뷰 Tracker 애드온</title>
+	<title xml:lang="en">Singleview Tracker Addon</title>
+	<description xml:lang="ko">
+		추적 코드와 referrer를 확인하고 세션과 쿠키를 설정합니다. utm_term, NVADKWD, DMKW query value를 $_SESSION['HTTP_INIT_KEYWORD']로 설정합니다. HTTP_REFERER header를 $_SESSION['HTTP_INIT_REFERER']로 설정합니다.
+	</description>
+	<description xml:lang="en">
+		Set and fix session and cookie according to initial tracking code and referrer
+	</description>
+	<version>0.1.0</version>
+	<date>2021-08-26</date>
+	<author email_address="root@singleview.co.kr" link="http://www.singleview.co.kr/">
+		<name xml:lang="ko">Singleview.co.kr</name>
+		<name xml:lang="en">Singleview.co.kr</name>
+	</author>
+	<extra_vars>
+		<group>
+		<title xml:lang="ko">UTM_CAMPAIGN 확인 설정</title>
+			<var name="use_utm_campaign" type="select">
+				<title xml:lang="ko">사용</title>
+				<description xml:lang="ko">UTM_CAMPAIGN 값에 따라 레이어 팝업을 표시할 수 있습니다.</description>
+				<options value="off">
+					<title xml:lang="ko">Off</title>
+				</options>
+				<options value="on">
+					<title xml:lang="ko">On</title>
+				</options>
+			</var>
+			<var name="utm_campaign_value" type="textarea">
+				<title xml:lang="ko">UTM_CAMPAIGN 값</title>
+				<description xml:lang="ko">메세지를 출력할 UTM_CAMPAIGN 쿼리의 값을 입력해 주세요. ;로 구분합니다. all만 입력하면 모든 접근에 표시합니다.</description>
+			</var>
+			<var name="utm_campaign_inform_message" type="textarea">
+				<title xml:lang="ko">출력 문장</title>
+				<description xml:lang="ko">설정한 캠페인으로 접속했을 때 표시할 안내문을 입력해 주세요.</description>
+			</var>
+			<var name="utm_campaign_cta_message" type="text">
+				<title xml:lang="ko">CTA 문장</title>
+				<description xml:lang="ko">설정한 캠페인으로 접속했을 때 표시할 Call to action을 입력해 주세요.</description>
+			</var>
+			<var name="utm_campaign_cta_link" type="text">
+				<title xml:lang="ko">CTA 링크</title>
+				<description xml:lang="ko">CTA 버튼을 눌렀을 때 이동할 페이지를 입력해 주세요.</description>
+			</var>
+			<var name="utm_campaign_close_text" type="text">
+				<title xml:lang="ko">창닫기 문장</title>
+				<description xml:lang="ko">창닫기 버튼의 텍스트를 입력해 주세요. 비우면 "24시간 OFF"</description>
+			</var>
+			<var name="utm_campaign_close_hrs" type="text">
+				<title xml:lang="ko">창 표시하지 않는 시간</title>
+				<description xml:lang="ko">재방문 고객이 창을 닫은 후 다음 표시할 때까지 시간을 입력하세요. 비우면 24시간</description>
+			</var>
+		</group>
+		<group>
+		<title xml:lang="ko">단축URL 설정</title>
+			<var name="shortner_query_name" type="text">
+				<title xml:lang="ko">단축추적코드 쿼리명</title>
+				<description xml:lang="ko">svtracker addon이 단축 URL로 인식할 query name을 입력해 주세요</description>
+			</var>
+			<var name="debug_mode" type="select">
+				<title xml:lang="ko">디버그 모드</title>
+				<title xml:lang="en">Debug mode</title>
+				<description xml:lang="ko">로거 애드온의 동작 상태를 HTML comment로 표시합니다.</description>
+				<description xml:lang="en">You can recognize logger addon working status by HTML comment</description>
+				<options value=''>
+					<title xml:lang="ko">해제</title>
+					<title xml:lang="en">Off</title>
+				</options>
+				<options value='on'>
+					<title xml:lang="ko">사용</title>
+					<title xml:lang="en">On</title>
+				</options>
+		</var>
+		</group>
+		<group>
+		<title xml:lang="ko">접속 로그 기록</title>
+			<var name="toggle_action_log" type="select">
+				<title xml:lang="ko">On/Off</title>
+				<title xml:lang="en">On/Off</title>
+				<description xml:lang="ko">활성화시키면 로거 애드온이 모든 사이트 작동 상황을 기록합니다.</description>
+				<description xml:lang="en">You can record all site activity log</description>
+				<options value=''>
+					<title xml:lang="ko">해제</title>
+					<title xml:lang="en">Off</title>
+				</options>
+				<options value='on'>
+					<title xml:lang="ko">사용</title>
+					<title xml:lang="en">On</title>
+				</options>
+			</var>
+			<var name="watch_parital_query" type="text">
+				<title xml:lang="ko">감시할 쿼리 문자열</title>
+				<description xml:lang="ko">입력하면 로거 애드온이 특정 name value를 포함한 URL이 감지될 경우에만 기록합니다.</description>
+			</var>
+		</group>
+	</extra_vars>
+</addon>

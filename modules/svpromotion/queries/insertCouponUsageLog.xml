@@ -1,0 +1,13 @@
+<query id="insertCouponUsageLog" action="insert">
+	<tables>
+		<table name="svpromotion_coupon_list_used" />
+	</tables>
+	<columns>
+		<column name="promotion_srl" var="promotion_srl" filter="number" notnull="notnull" />
+		<column name="type" var="type" default="consume" />
+		<column name="coupon_srl" var="coupon_srl" notnull="notnull" />
+		<column name="member_srl" var="member_srl" filter="number" notnull="notnull" />
+		<column name="order_srl"  var="order_srl" filter="number" notnull="notnull" />
+		<column name="regdate" var="regdate" default="curdate()" />
+	</columns>
+</query>

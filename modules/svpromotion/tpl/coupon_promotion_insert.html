@@ -1,0 +1,188 @@
+<include target="_header.html" />
+<form class="x_form-horizontal" action="./" method="post" enctype="multipart/form-data">
+<input type="hidden" name="module" value="{$module}" />
+<input type="hidden" name="promotion_srl" value="{$promotion_srl}" />
+<input type="hidden" name="act" value="procSvpromotionAdminInsertCouponPromotion" />
+<input type="hidden" name="page" value="{$page}" />
+	<section class="section">
+		<div cond="$logged_info->is_admin == 'Y'" class="x_control-group">
+			<label class="x_control-label" for="board_name">{$lang->coupon_promotion_title}</label>
+			<div class="x_controls">
+				<input type="text" name="sv_promotion_title" id="sv_promotion_title" value="{$promotion_detail->promotion_title}" />
+				<a href="#module_name_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="module_name_help" class="x_help-block" hidden>{$lang->about_promotion_title}</p>
+			</div>
+		</div>
+		<div class="x_control-group">
+            <label class="x_control-label">{$lang->coupon_promotion_status}</label>
+            <div class="x_controls">
+                <label for="status" class="x_inline"><input type="radio" name="status" id="status" value="1" checked="checked"|cond="$promotion_detail->status == 1" /> {$lang->promotion_on}</label>
+                <label for="status" class="x_inline"><input type="radio" name="status" id="status" value="0" checked="checked"|cond="$promotion_detail->status == 0" /> {$lang->promotion_off}</label>
+            </div>
+        </div>
+		<div class="x_control-group">
+            <label class="x_control-label">{$lang->coupon_promotion_status_public}</label>
+            <div class="x_controls">
+                <label for="status" class="x_inline"><input type="radio" name="public" id="public" value="0" checked="checked"|cond="$promotion_detail->public == 0 || !$promotion_detail->public" /> {$lang->promotion_private}</label>
+                <label for="status" class="x_inline"><input type="radio" name="public" id="public" value="1" checked="checked"|cond="$promotion_detail->public == 1" /> {$lang->promotion_public}</label>
+            </div>
+        </div>
+		<div class="x_control-group">
+			<label class="x_control-label" for="lang_header_text">{$lang->coupon_promotion_description}</label>
+			<div class="x_controls">
+				<textarea name="sv_promotion_description" id="sv_promotion_description" class="lang_code" rows="8" cols="42" placeholder="{$lang->about_header_text}">{$promotion_detail->promotion_description}</textarea>
+				<a href="#header_text_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="header_text_help" class="x_help-block" hidden>{$lang->about_header_text}</p>
+			</div>
+		</div>
+		<div cond="$logged_info->is_admin == 'Y'" class="x_control-group">
+			<label class="x_control-label" for="sv_promotion_descount_amount">{$lang->promotion_discount_amount}</label>
+			<div class="x_controls">
+				<input type="text" name="sv_promotion_descount_amount" id="sv_promotion_descount_amount" value="{$promotion_detail->descount_amount_policy}" />
+				<a href="#module_name_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="module_name_help" class="x_help-block" hidden>{$lang->about_promotion_title}</p>
+			</div>
+		</div>
+		<div cond="$logged_info->is_admin == 'Y'" class="x_control-group">
+			<label class="x_control-label" for="sv_promotion_descount_rate">{$lang->promotion_discount_rate}</label>
+			<div class="x_controls">
+				<input type="text" name="sv_promotion_descount_rate" id="sv_promotion_descount_rate" value="{$promotion_detail->descount_rate_policy}" />
+				<a href="#module_name_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="module_name_help" class="x_help-block" hidden>{$lang->about_promotion_title}</p>
+			</div>
+		</div>
+		<div class="x_control-group">
+            <label class="x_control-label">{$lang->promotion_discount_type}</label>
+            <div class="x_controls">
+                <label for="sv_promotion_discount_type" class="x_inline"><input type="radio" name="sv_promotion_descount_type" id="sv_promotion_descount_type" value="amount" checked="checked"|cond="$promotion_detail->descount_type == 'amount'" /> {$lang->promotion_discount_amount}</label>
+                <label for="sv_promotion_discount_type" class="x_inline"><input type="radio" name="sv_promotion_descount_type" id="sv_promotion_descount_type" value="rate" checked="checked"|cond="$promotion_detail->descount_type == 'rate'" /> {$lang->promotion_discount_rate}</label>
+            </div>
+        </div>
+		<div class="x_control-group">
+			<label class="x_control-label" for="sv_promotion_descount_rate">{$lang->coupon_max_issue}</label>
+			<div class="x_controls">
+				<input type="text" name="coupon_max_issue" id="coupon_max_issue" value="{$promotion_detail->max_issue_count}" />
+				<a href="#coupon_max_issue_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="coupon_max_issue_help" class="x_help-block" hidden>{$lang->about_coupon_max_issue}</p>
+			</div>
+		</div>
+		<div class="x_control-group">
+			<label class="x_control-label" for="sv_promotion_descount_rate">{$lang->coupon_max_usage}</label>
+			<div class="x_controls">
+				<input type="text" name="coupon_max_usage" id="coupon_max_usage" value="{$promotion_detail->max_use_count}" />
+				<a href="#module_name_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="module_name_help" class="x_help-block" hidden>{$lang->about_promotion_title}</p>
+			</div>
+		</div>
+		<div class="x_control-group">
+			<label class="x_control-label" for="sv_promotion_descount_rate">{$lang->coupon_max_qty}</label>
+			<div class="x_controls">
+				<input type="text" name="max_qty" id="max_qty" value="{$promotion_detail->max_qty}" />
+				<a href="#coupon_max_qty_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="coupon_max_qty_help" class="x_help-block" hidden>{$lang->about_coupon_max_qty}</p>
+			</div>
+		</div>
+
+		<div class="x_control-group">
+			<label class="x_control-label" for="coupon_begin_date">{$lang->promotion_begin_date}</label>
+			<div class="x_controls">
+				<input type="text" name="begin_date" id="begin_date" value="{$promotion_detail->begin_date}" />
+				<a href="#coupon_begin_date_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="coupon_begin_date_help" class="x_help-block" hidden>{$lang->about_coupon_begin_date}</p>
+			</div>
+		</div>
+		<div class="x_control-group">
+			<label class="x_control-label" for="coupon_end_date">{$lang->promotion_end_date}</label>
+			<div class="x_controls">
+				<input type="text" name="end_date" id="end_date" value="{$promotion_detail->end_date}" />
+				<a href="#coupon_end_date_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="coupon_end_date_help" class="x_help-block" hidden>{$lang->about_coupon_end_date}</p>
+			</div>
+		</div>
+	</section>
+	<section class="section">
+		<h1>
+			{$lang->title_group_coupon_policy}
+			<a href="#aboutGroupDiscount" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+		</h1>
+		<p id="aboutGroupDiscount" class="x_alert x_alert-info-block" hidden>{$lang->about_group_coupon_policy}</p>
+		<label class="x_control-label" for="board_name">{$lang->coupon_allowed_group}</label>
+		<div class="x_controls">
+			<label for="status" class="x_inline"><input type="checkbox" name="group_allow_0" id="group_allow_0" value="Y" checked="checked"|cond="$promotion_detail->allowed_grp[0] == 'Y'" /> {$lang->guest}</label>
+			<label loop="$group_list=>$key,$val" for="status" class="x_inline"><input type="checkbox" name="group_allow_{$val->group_srl}" id="group_allow_{$val->group_srl}" value="Y" checked="checked"|cond="$promotion_detail->allowed_grp[$val->group_srl] == 'Y'" /> {$val->title}</label>
+			<a href="#svpromotion_coupon_group_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+			<p id="svpromotion_coupon_group_help" class="x_help-block" hidden>{$lang->about_group_coupon_policy}</p></label>
+		</div>
+	</section>
+	<section class="section">
+		<h1>{$lang->promotion_target_items} <a href="#aboutCouponPromotionTarget" data-toggle class="x_icon-question-sign">{$lang->help}</a></h1>
+		<p class="x_alert x_alert-info" id="aboutCouponPromotionTarget" hidden>{$lang->about_promotion_target_items}</p>
+		<table id="boardList" class="x_table x_table-striped x_table-hover">
+			<caption>
+				<strong>Total: {number_format($total_count)}, Page: {number_format($page)}/{number_format($total_page)}</strong>
+			</caption>
+			<thead>
+				<tr>
+					<th scope="col">{$lang->select}</th>
+					<th scope="col">{$lang->mid}</th>
+					<th scope="col">{$lang->display_status}</th>
+					<th scope="col">{$lang->item_title}</th>
+					<th scope="col">{$lang->regdate}</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr loop="$item_list=>$no,$val">
+					<td><input type="radio" name="target_items_{$val->item_srl}" value="{$val->item_srl}_Y" CHECKED|cond="$promotion_detail->target_items[$val->item_srl]=='Y'">적용
+					<input type="radio" name="target_items_{$val->item_srl}" value="{$val->item_srl}_N" CHECKED|cond="$promotion_detail->target_items[$val->item_srl]!='Y'">제외
+					</td>
+					<td>{$val->mid}</td>
+					<td>{$val->display}</td>
+					<td>{$val->item_name}</td>
+					<td>{zdate($val->regdate,"Y-m-d")}</td>
+				</tr>
+				<tr cond="!$item_list">
+					<td>{$lang->no_item_instance}</td>
+				</tr>
+			</tbody>
+		</table>
+	</section>
+	<div class="x_clearfix btnArea">
+		<input type="submit" class="x_btn x_btn-primary" value="{$lang->cmd_registration}" accesskey="s" />
+	</div>
+</form>
+<div class="pagenation">
+	<form action="" class="pagination" method="post">
+		<input type="hidden" name="error_return_url" value="" />
+		<input type="hidden" name="module" value="{$module}" />
+		<input type="hidden" name="act" value="{$act}" />
+		<input type="hidden" name="module_srl" value="{$module_srl}" />
+		<input cond="$category_srl" type="hidden" name="category_srl" value="{$category_srl}" />
+		<input cond="$childrenList" type="hidden" name="childrenList" value="{$childrenList}" />
+		<input cond="$search_keyword" type="hidden" name="search_keyword" value="{$search_keyword}" />
+
+		<a href="{getUrl('page', '')}" class="direction">&laquo; FIRST</a>
+
+		<block cond="$page_navigation->first_page + $page_navigation->page_count > $page_navigation->last_page && $page_navigation->page_count != $page_navigation->total_page">
+			{@$isGoTo = true}
+			<a href="{getUrl('page', '')}">1</a>
+			<a href="#goTo" class="tgAnchor" title="{$lang->cmd_go_to_page}">...</a>
+		</block>
+
+		<!--@while($page_no = $page_navigation->getNextPage())-->
+			{@$last_page = $page_no}
+			<strong cond="$page_no == $page">{$page_no}</strong>
+			<a cond="$page_no != $page" href="{getUrl('page', $page_no)}">{$page_no}</a>
+		<!--@end-->
+
+		<block cond="$last_page != $page_navigation->last_page">
+			{@$isGoTo = true}
+			<a href="#goTo" class="tgAnchor" title="{$lang->cmd_go_to_page}">...</a>
+			<a href="{getUrl('page', $page_navigation->last_page)}">{$page_navigation->last_page}</a>
+		</block>
+		<a href="{getUrl('page', $page_navigation->last_page)}" class="direction">LAST &raquo;</a>
+		<span cond="$isGoTo" id="goTo" class="tgContent">
+			<input name="page" title="{$lang->cmd_go_to_page}" />
+			<button type="submit">Go</button>
+		</span>
+	</form>
+</div>

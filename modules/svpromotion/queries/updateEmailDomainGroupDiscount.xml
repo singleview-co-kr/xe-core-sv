@@ -1,0 +1,15 @@
+<query id="updateEmailDomainGroupDiscount" action="update">
+    <tables>
+        <table name="svpromotion_member_email_domain_group" />
+    </tables>
+    <columns>
+		<column name="email_domain" var="email_domain_name" notnull="notnull" />
+		<column name="description" var="email_domain_discount_title" notnull="notnull" />
+		<column name="opt" var="email_domain_policy_opt" notnull="notnull" />
+		<column name="price" var="email_domain_discount_amount" notnull="notnull" />
+		<column name="regdate" var="regdate" default="curdate()" />
+    </columns>
+    <conditions>
+		<condition operation="equal" column="email_domain_srl" var="email_domain_srl" filter="number" notnull="notnull" />
+    </conditions>
+</query>

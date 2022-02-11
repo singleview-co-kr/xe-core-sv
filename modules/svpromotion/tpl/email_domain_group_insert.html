@@ -1,0 +1,37 @@
+<include target="_header.html" />
+<form method="post" class="x_form-horizontal" enctype="multipart/form-data">
+<input type="hidden" name="module" value="{$module}" />
+<input type="hidden" name="act" value="procSvpromotionAdminUpdateEmailDomainPolicy" />
+<input type="hidden" name="email_domain_srl" value="{$email_domain_srl}" />
+	<section class="section">
+		<h1>{$lang->cmd_email_domain}</h1>
+		<div cond="$logged_info->is_admin == 'Y'" class="x_control-group">
+			<label class="x_control-label" for="email_domain_name">{$lang->email_domain_name}</label>
+			<div class="x_controls">
+				<input type="text" name="email_domain_name" id="email_domain_name" value="{$promotion_detail->email_domain}" />
+				<a href="#email_domain_name_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="email_domain_name_help" class="x_help-block" hidden>{$lang->about_email_domain_name}</p>
+			</div>
+		</div>
+		<div cond="$logged_info->is_admin == 'Y'" class="x_control-group">
+			<label class="x_control-label" for="email_domain_discount_title">{$lang->email_domain_discount_title}</label>
+			<div class="x_controls">
+				<input type="text" name="email_domain_discount_title" id="email_domain_discount_title" value="{$promotion_detail->description}" />
+				<a href="#email_domain_name_title_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="email_domain_name_title_help" class="x_help-block" hidden>{$lang->about_email_domain_discount_title}</p>
+			</div>
+		</div>
+		
+		<div class="x_control-group">
+			<label class="x_control-label" for="discount_info_default">{$lang->email_domain_discount_policy}</label>
+			<div class="x_controls">
+				<label for="email_domain_policy_opt"><input type="radio" name="email_domain_policy_opt" id="email_domain_policy_opt" value="1" checked="checked"|cond="$promotion_detail->opt=='1'">{$lang->price}</label>
+				<label for="email_domain_policy_opt"><input type="radio" name="email_domain_policy_opt" id="email_domain_policy_opt" value="2" checked="checked"|cond="$promotion_detail->opt=='2'">{$lang->ratio}&nbsp;<input type="text" name="email_domain_discount_amount" id="fb_like_item_discount_amount" value="{$promotion_detail->price}" /></label>
+			</div>
+		</div>
+	</section>
+	<div class="btnArea">
+		<button type="submit" class="x_btn x_btn-primary">{$lang->cmd_save}</button>
+		<a class="x_btn" href="{getUrl('act','dispSvpromotionAdminSitePromotion')}">{$lang->cmd_list}</a>
+	</div>
+</form>

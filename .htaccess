@@ -32,6 +32,9 @@ RewriteRule ^([a-zA-Z0-9_]+)/([0-9]+)/(.+)/trackback$ ./index.php?mid=$1&documen
 RewriteRule ^([a-zA-Z0-9_]+)/([0-9]+)/(.+)/trackback$ ./index.php?vid=$1&document_srl=$2&key=$3&act=trackback [L]
 RewriteRule ^([a-zA-Z0-9_]+)/([a-zA-Z0-9_]+)/([0-9]+)/(.+)/trackback$ ./index.php?vid=$1&mid=$2&document_srl=$3&key=$4&act=trackback [L]
 
+#svshop / mid / Catalog / product
+RewriteRule ^([a-zA-Z0-9_]+)/Catalog/([a-zA-Z0-9_\.-]+)$ ./index.php?mid=$1&catalog=$2 [L,QSA]
+
 # document permanent link
 RewriteRule ^([0-9]+)$ ./index.php?document_srl=$1 [L,QSA]
 

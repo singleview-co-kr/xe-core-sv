@@ -1,0 +1,38 @@
+{@
+if(!$module_info->submit_btn_text)
+	$module_info->submit_btn_text = '응모하기';
+}
+<style type="text/css">
+/* section for the floating application layer begins */
+.pop-layer {display:none; position: absolute; top: 50%; left: 50%; width: 90%; height:auto;  background-color:#fff; border: 5px solid #3571B5; z-index: 10000;}	
+.pop-layer .pop-container {padding: 20px 25px;overflow-y : scroll;}
+.pop-layer p.ctxt {color: #666; line-height: 25px;}
+.pop-layer .btn-r {width: 100%; margin:10px 0 20px; padding-top: 10px; border-top: 1px solid #DDD; text-align:right;}
+a.cbtn {display:inline-block; height:25px; padding:0 14px 0; border:1px solid #304a8a; background-color:#3f5a9d; font-size:13px; color:#fff; line-height:25px;}	
+a.cbtn:hover {border: 1px solid #091940; background-color:#1f326a; color:#fff;}
+/* section for the floating application layer ends */
+</style>
+
+<div id="layer_finish">
+	<div class="center">
+		<div class="content-block">
+			<div style="width: 100%; margin: 10px 0 20px; border-bottom: 1px solid #DDD; font-size:20px;text-align: left; font-weight:bold;>">{$module_info->form_title}</div>
+			<img src="{$module_info->cta_slide_img_url_mob}" width='100%'/>
+			<BR><BR>
+			<div id='' style="font-size:18px;text-align: left; font-weight:bold;>">{$module_info->form_description_mob}</div>
+			<BR>
+			<input type="hidden" name="module_srl" id="module_srl" value="{$module_srl}">
+			<input type="button" id='btnSubmit' onClick="_doPreCertified();" data-theme="b" value="{$module_info->submit_btn_text_mob}">
+		</div>
+	</div>
+</div>
+<div id="layer_thankyou" class="pop-layer">
+	<div class="pop-container">
+		<div class="pop-conts">
+			<!--content //-->
+			<div style="width: 100%; margin: 10px 0 20px; border-bottom: 1px solid #DDD; font-size:14px;text-align: left; font-weight:bold;text-align:center;>">{$module_info->complete_title}</div>
+			<div id='' style="font-size:14px;text-align: left; font-weight:bold;text-align:center;>">{$module_info->complete_description}</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript" src="/modules/svdocs/tpl/skin.js/registration.js"></script>

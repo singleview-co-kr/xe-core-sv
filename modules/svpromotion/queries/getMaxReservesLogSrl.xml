@@ -1,0 +1,8 @@
+<query id="getMaxReservesLogSrl" action="select">
+    <tables>
+        <table name="svpromotion_reserves_log" />
+    </tables>
+    <columns>
+        <column name="max(reserves_srl)" alias="reserves_srl" />
+    </columns>
+</query>

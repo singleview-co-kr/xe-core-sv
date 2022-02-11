@@ -1,0 +1,737 @@
+v 0.0.1
+22th, Mar 2015
+1. svshopmaster 모듈 런칭
+
+v 0.0.2
+2nd, Aug 2015
+1. nstore 모듈을 svorder 모듈로 명칭 변경에 대응
+2. ./functions.php 제거
+3. ./svshopmaster.class.php에서 require_once('functions.php'); 제거
+4. ./functions.php::getCympusStatus()를 getSvshopStatus()로 변경하고 ./svshopmaster.admin.view.php의 메소드로 이동
+3. ./svshopmaster.admin.view.php::svshopmasterAdminView()에서 getCympusStatus() 호출을 $this->getSvshopStatus() 호출로 변경
+4. ./svshopmaster.admin.view.php::dispSvshopmasterAdminDashboard()에서 getCympusStatus() 호출을 $this->getSvshopStatus() 호출로 변경
+
+v 0.0.3
+9th, Aug 2015
+1. "마일리지" 메뉴명을 "적립금"으로 변경
+
+v 0.0.4
+15th, Aug 2015
+1. svcurrency 모듈 메뉴 제거
+
+v 0.0.5
+16th, Aug 2015
+1. ./svshopmaster.class.php::getNewsFromSingleview()를 http://singleview.co.kr/svshopnews에서 XML 추출하도록 변경
+
+v 0.0.6
+12th, Sep 2015
+1. ./tpl/js/control.js::resizeIframe()에서 모듈의 기본 offsetHeight에 30px->300px를 추가로 변경
+상품의 dispSvitemAdminItemExtraSetup와 같은 레이어 팝업에 대응
+
+v 0.0.7
+18th, Oct 2015
+1. ./tpl/dashboard.html 상품판매와 상품매출 표시 논리 변경
+./svshopmaster.admin.view.php에 require_once(_XE_PATH_.'modules/svitem/svitem.item.php'); 추가
+./lang.xml::product_sell을 상품판매 -> 상품판매건수
+./svshopmaster.admin.view.php::getSvshopStatus()에서 $oItem = new svitemItem($val, $config->currency, $config->as_sign, $config->decimals); 추가
+./svshopmaster.admin.view.php::getSvshopStatus()에서 $oSvorderAdminModel->getSalesInfo($today);를 $oSvorderAdminModel->getTodaySalesInfo();로 변경
+./svshopmaster.admin.view.php::getSvshopStatus()에서 $oSvorderAdminModel->getSalesInfo();를 $oSvorderAdminModel->getTotalSalesInfo();로 변경
+
+v 0.0.8
+1st, Dec 2015
+1. svpromotion 포함
+./conf/menu.xml에서 svpromotion 호출 영역 추가
+
+v 0.0.9
+24th, Apr 2016
+1. https://colorlib.com/ dashboard 템플릿 적용
+./conf/menu.xml에서 svpromotion 호출 영역 추가
+
+v 0.1.0
+19th, Mar 2017
+1. svcrm 추가
+./conf/menu.xml에서 svcrm 호출 영역 추가
+
+v 0.1.1
+1st, Apr 2017
+1. 좌측 메뉴에서 "전체현황" 제거
+./conf/menu.xml에서 아래의 코드 추가
+<item>
+	<title xml:lang="ko">전체현황</title>
+	<title xml:lang="en">Site Status</title>
+	<title xml:lang="jp">サイト現状</title>
+	<title xml:lang="zh-TW">Site Status</title>
+	<action>dispSvshopmasterAdminDashboard</action>
+	<description xml:lang="ko">전체현황</description>
+</item>
+
+v 0.1.2
+17th, Jun 2017
+1. 적립금 모듈 제거
+./conf/menu.xml에서 아래의 코드 제거
+<item cond="getClass('svreserves')">
+	<title xml:lang="ko">적립금</title>
+	<title xml:lang="en">Reserves</title>
+	<title xml:lang="jp">マイレージ</title>
+	<title xml:lang="zh-TW">Reserves</title>
+	<action>dispSvreservesAdminAllReservesHistory</action>
+	<action_prefix>dispSvreservesAdmin</action_prefix>
+	<description xml:lang="ko">적립금 관리</description>
+</item>
+
+2. 미사용 코드 제거
+./conf/menu.xml에서 아래의 코드 제거
+<item cond="getClass('svorder_digital') || getClass('svorder_digital_contents')">
+	<title xml:lang="ko">콘텐츠몰</title>
+	<title xml:lang="en">Contents-mall</title>
+	<title xml:lang="jp">コンテンツモール</title>
+	<title xml:lang="zh-TW">Contents-mall</title>
+	<icon>product</icon>
+	<action>dispSvorder_digitalAdminOrderManagement</action>
+	<description xml:lang="ko">콘텐츠몰을 관리합니다.</description>
+	<item cond="getClass('svorder_digital_contents')">
+		<title xml:lang="ko">콘텐츠관리</title>
+		<title xml:lang="en">Contents Management</title>
+		<title xml:lang="jp">コンテンツ管理</title>
+		<title xml:lang="zh-TW">Contents Management</title>
+		<action>dispSvorder_digital_contentsAdminItemList</action>
+		<action_prefix>dispSvorder_digital_contentsAdmin</action_prefix>
+		<description xml:lang="ko">콘텐츠몰 상품의 콘텐츠를 업로드 합니다.</description>
+	</item>
+	<item cond="getClass('svorder_digital')">
+		<title xml:lang="ko">판매관리</title>
+		<title xml:lang="en">Sales Management</title>
+		<title xml:lang="jp">販売管理</title>
+		<title xml:lang="zh-TW">Sales Management</title>
+		<action>dispSvorder_digitalAdminOrderManagement</action>
+		<action_prefix>dispSvorder_digitalAdmin</action_prefix>
+		<description xml:lang="ko">콘텐츠몰 판매를 관리합니다.</description>
+		<description xml:lang="en">콘텐츠몰 판매를 관리합니다.</description>
+	</item>
+</item>
+
+v 1.0.0
+23rd, Aug 2018
+1. 상점 관리자 메뉴 XML 설정 제거
+./conf/menu.xml 제거
+
+2. 대쉬보드 디자인 코드 완전 변경
+./tpl/layout.html 완전 변경
+
+v 1.0.1
+24th, Aug 2018
+1. svestudio와 데이터 연동
+./svshopmaster.admin.view.php::getSvshopStatus() 제거
+
+2. 미사용 코드 제거
+./svshopmaster.admin.view.php::dispSvshopmasterAdminDashboard() 제거
+./svshopmaster.class.php::getNewsFromSingleview() 제거
+./svshopmaster.class.php::getMenu() 제거
+
+./svshopmaster.class.php::init()에서 아래의 코드 제거
+$act = Context::get( 'act' );
+$oXmlParser = new XmlParser();
+$xml_obj = $oXmlParser->loadXmlFile( './modules/svshopmaster/conf/menu.xml' );
+$admin_menu = array();
+$admin_menu = svshopmaster::getMenu( $xml_obj->menu->item );
+Context::set( 'svshopmaster_menu', $admin_menu );
+
+./svshopmaster.admin.view.php::dispSvshopmasterAdminIndex()에서 아래의 코드 제거
+$logged_info = Context::get('logged_info');
+if(is_null($logged_info))
+	return new Object(-1, 'msg_error_not_a_member');
+
+v 1.0.2
+29th, Aug 2018
+1. 주문 현황에 템플릿 유지 쿼리 추가
+./tpl/dashboard.html에서 아래의 코드를
+<td loop="$order_status=>$key,$val" cond="$key!='0'" style="text-align:center;"><a href="{getUrl('act','dispSvorderAdminOrderManagement','status',$key)}">{$val->count}</a></td>
+아래와 같이 변경
+<td loop="$order_status=>$key,$val" cond="$key!='0'" style="text-align:center;"><a href="{getUrl('module','svshopmaster','act','dispSvorderAdminOrderManagement','status',$key)}">{$val->count}</a></td>
+
+v 1.0.3
+31st, Aug 2018
+1. 여러가지 수정 개선 작업
+
+v 1.0.4
+4th, Sep 2018
+1. svestudio 설정 메뉴 추가
+./tpl/common_layout.html에 아래의 코드 추가
+<a href="/index.php?module=svshopmaster&act=dispSvestudioAdminConfig" title="설정">설정</a>
+
+v 1.0.5
+7th, Sep 2018
+1. "Insite 월간 객단가"를 "Insite 월간 평균 구매액"으로 이름 변경
+./tpl/dashboard.html에서 아래의 코드를
+<h2>Insite 월간 객단가 <small></small></h2>
+아래와 같이 변경
+<h2>Insite 월간 평균 구매액 <small></small></h2>
+
+v 1.0.6
+20th, Sep 2018
+1. 기간 선택 기능 활성화
+./tpl/dashboard.html에서 관련 코드 변경
+
+2. 대쉬보드 메인 화면의 숫자에 콤마 적용
+
+v 1.0.7
+25th, Sep 2018
+1. chartjs 버전업
+./tpl/chartjs/2.7.2.Chart.bundle.js 추가
+
+./tpl/common_layout.html에서 아래의 코드를
+<script src="js/chartjs/chart.min.js"></script>
+아래와 같이 변경
+<script src="js/chartjs/2.7.2.Chart.bundle.js"></script>
+
+v 1.0.8
+26th, Sep 2018
+1. svestudio interface 변화에 대응
+./tpl/dashboard.html에서 아래의 코드를
+ value: '{$val->revenue}',
+아래와 같이 변경
+value: '{$val->amnt}',
+
+v 1.0.9
+2nd, Oct 2018
+1. 전월 vs 당월 주요 성과 비교 데이터가 GA 기준임을 명시함
+./tpl/dashboard.html에서 아래의 코드를
+<h3>전월 vs 당월 주요 성과 비교 <small>더보기 클릭</small></h3>
+아래와 같이 변경
+<h3>GA 전월 vs 당월 주요 성과 비교 <small>더보기 클릭</small></h3>
+
+v 1.0.10
+27th, Oct 2018
+1. svestudio v 0.0.2에 대응
+./tpl/dashboard.hmlt에서 아래의 코드를
+'{$val->media_cost_wo_vat}',
+아래와 같이 변경
+'{$val->media_raw_cost}',
+
+v 1.0.11
+29th, Oct 2018
+1. 매체별 당월 일비용 자세히 보기 링크 추가
+./tpl/dashboard.html에 아래의 코드 추가
+<thead>
+	<tr>
+		<th><a href='/index.php?module=svshopmaster&act=dispSvestudioAdminReportMediaCost'>자세히 보기</a></th>
+	</tr>
+</thead>
+
+./tpl/dashboard.hmlt에서 아래의 코드를
+<li class="active"><a href="#expenditure" data-toggle="tab">매체비(VAT제외)</a></li>
+아래와 같이 변경
+<li class="active"><a href="#expenditure" data-toggle="tab">매체비</a></li>
+
+./tpl/dashboard.hmlt에서 아래의 코드를
+'{$val->media_raw_cost}',
+아래와 같이 변경
+'{$val->media_gross_cost}',
+
+v 1.0.12
+1st, Nov 2018
+1. 매월 1일의 GA 대쉬보는 전월 전체 기간이 되도록 개선
+./svshopmaster.admin.view.php::dispSvshopmasterAdminIndex()에서 아래의 코드를
+$sFirstDayLastMonth = date('Ymd', strtotime('first day of last month'));
+$sLatDayLastMonth = date('Ymd', strtotime('last day of last month'));
+$aPerformanceInfoPrevMonth = $oSvestudioAdminModel->getPerformanceInfo($sFirstDayLastMonth,$sLatDayLastMonth);
+
+$sFirstDayThisMonth = date('Ym01'); // hard-coded '01' for first day
+$sLatDayThisMonth  = date('Ymt');
+$aPerformanceInfoCurMonth = $oSvestudioAdminModel->getPerformanceInfo($sFirstDayThisMonth,$sLatDayThisMonth);
+
+아래와 같이 변경
+$aMonthlyPeriod = $oSvestudioAdminModel->getMontlyPeriod();
+$aPerformanceInfoPrevMonth = $oSvestudioAdminModel->getPerformanceInfo($aMonthlyPeriod['first_day_of_last_month'],$aMonthlyPeriod['last_day_of_last_month']);
+$aPerformanceInfoCurMonth = $oSvestudioAdminModel->getPerformanceInfo($aMonthlyPeriod['first_day_of_this_month'],$aMonthlyPeriod['last_day_of_this_month']);
+
+v 1.0.13
+1st, Jun 2019
+1. ./svshopmaster.class.php::init()에 아래의 코드 추가
+$this->setLayoutFile('common_layout');
+
+v 1.0.14
+6th, Jan 2019
+1. 총 누적 지표 표시 기능 추가
+./svshopmaster.admin.view.php::dispSvshopmasterAdminIndex()에 아래의 코드 추가
+$oHistoricalStatus = $oSvestudioAdminModel->getHistoricalStatus();
+Context::set( 'historical_status', $oHistoricalStatus);
+
+./tpl/dashboard.html에 아래의 코드 추가
+<div class="row tile_count">
+	<div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
+		<div class="left"></div>
+		<div class="right">
+			<span class="count_top"><i class="fa fa-user"></i> 회원수</span>
+			<div class="count">{number_format($historical_status->member->todayCnt)}</div>
+			<span class="count_bottom">누적 <i class="green">{number_format($historical_status->member->totalCnt)} </i></span>
+		</div>
+	</div>
+	<div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
+		<div class="left"></div>
+		<div class="right">
+			<span class="count_top"><i class="fa fa-home"></i> 세션수</span>
+			<div class="count">TBD</div>
+			<span class="count_bottom">누적 <i class="green">{number_format($historical_status->member->totalCnt)} </i></span>
+		</div>
+	</div>
+	<div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
+		<div class="left"></div>
+		<div class="right">
+			<span class="count_top"><i class="fa fa-question"></i> 글수</span>
+			<div class="count green">{number_format($historical_status->document->todayCnt)}</div>
+			<span class="count_bottom">누적 <i class="green">{number_format($historical_status->document->totalCnt)} </i></span>
+		</div>
+	</div>
+	<div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
+		<div class="left"></div>
+		<div class="right">
+			<span class="count_top"><i class="fa fa-eye"></i> 댓글수</span>
+			<div class="count">{number_format($historical_status->comment->todayCnt)}</div>
+			<span class="count_bottom">누적 <i class="green">{number_format($historical_status->comment->totalCnt)} </i></span>
+		</div>
+	</div>
+	<div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
+		<div class="left"></div>
+		<div class="right">
+			<span class="count_top"><i class="fa fa-user"></i> 유효 거래수</span>
+			<div class="count">{number_format($historical_status->sales->todayTrs)}</div>
+			<span class="count_bottom">누적 <i class="green">{number_format($historical_status->sales->totalTrs)} </i></span>
+		</div>
+	</div>
+	<div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
+		<div class="left"></div>
+		<div class="right">
+			<span class="count_top"><i class="fa fa-money"></i> 유효 매출액</span>
+			<div class="count">{number_format($historical_status->sales->todayRev)/1000}K</div>
+			<span class="count_bottom">누적 <i class="green">{number_format($historical_status->sales->totalRev )} </i></span>
+		</div>
+	</div>
+</div>
+
+2. svestudio v 1.0.8에 대응
+./svshopmaster.admin.view.php::dispSvshopmasterAdminIndex()에서 아래의 코드를
+$oSkuPerformance = $oSvestudioAdminModel->getSkuPerfInfoDaily($aMonthlyPeriod['first_day_of_this_month'],$aMonthlyPeriod['last_day_of_this_month']);
+Context::set( 'sku_perf_gross_cur_month', $oSkuPerformance['sku_gross'] );
+
+아래와 같이 변경
+$oSkuPerfRst = $oSvestudioAdminModel->getSkuPerfInfoDaily($aMonthlyPeriod['first_day_of_this_month'],$aMonthlyPeriod['last_day_of_this_month']);
+if (!$oSkuPerfRst->toBool()) 
+	return $oSkuPerfRst;
+$aSkuPerformance = $oSkuPerfRst->get( 'aDatePeriod' );
+Context::set( 'sku_perf_gross_cur_month', $aSkuPerformance['sku_gross'] );
+
+v 1.0.15
+18th, Mar 2020
+1. insite deaily revenue 그래프 추가
+./svshopmaster.admin.view.php::dispSvshopmasterAdminIndex()에 아래의 코드를 추가
+$oSvestudioConfig = $oSvestudioAdminModel->getModuleConfig();
+if( $oSvestudioConfig->revenue_referrence == 'insite' )
+	Context::set( 'data_referrence', 'InSite');
+else
+	Context::set( 'data_referrence', 'GA');
+
+./tpl/dashboard.html의 일간 그래프 div ID에서 GA와 InSite 구분함
+
+v 1.0.16
+17th, Apr 2020
+1. popup layout 추가
+./tpl/popup_layout.html 추가
+
+v 1.1.0
+20th, Dec 2020
+1. php v7.4.13에 대응
+모든 new Object()를 new BaseObject()로 변경
+
+v 1.1.1
+12th, Jan 2021
+1. php v7.4.13에 대응
+./svshopmaster.class.php::init()에서 아래의 코드를
+$this->setLayoutPath( './modules/svshopmaster/tpl' );
+$this->setLayoutFile('common_layout');
+
+아래와 같이 변경
+if($oThis)
+{
+	$oThis->setLayoutPath( './modules/svshopmaster/tpl' );
+	$oThis->setLayoutFile('common_layout');
+}
+else
+{
+	$this->setLayoutPath( './modules/svshopmaster/tpl' );
+	$this->setLayoutFile('common_layout');
+}
+
+v 1.1.2
+23rd, Mar 2021
+1. 대쉬보드 메인 화면의 스파크 그래프 가독성 개선
+./tpl/dashboard.html에서 아래의 코드를
+<script>
+jQuery('document').ready(function() {
+	var data_cpc_impression_mob = [
+<block loop="$performance_daily_cur_month=>$key,$val">
+			'{$val->media_imp_mob}',
+</block>
+		];
+	jQuery(".media_tot_imp_mob").sparkline(data_cpc_impression_mob, {
+		type: 'line',
+		width: '200',
+		height: '40',
+		lineColor: '#26B99A',
+		fillColor: 'rgba(223, 223, 223, 0.57)',
+		lineWidth: 2,
+		spotColor: '#26B99A',
+		minSpotColor: '#26B99A'
+	});
+
+		var data_cpc_ctr_mob = [
+<block loop="$performance_daily_cur_month=>$key,$val">
+			'{$val->media_ctr_mob}',
+</block>
+		];
+	jQuery(".media_tot_ctr_mob").sparkline(data_cpc_ctr_mob, {
+		type: 'line',
+		width: '200',
+		height: '40',
+		lineColor: '#26B99A',
+		fillColor: 'rgba(223, 223, 223, 0.57)',
+		lineWidth: 2,
+		spotColor: '#26B99A',
+		minSpotColor: '#26B99A'
+	});
+
+
+	var data_click_impression_mob = [
+<block loop="$performance_daily_cur_month=>$key,$val">
+			'{$val->media_click_mob}',
+</block>
+		];
+	jQuery(".media_tot_click_mob").sparkline(data_click_impression_mob, {
+		type: 'line',
+		width: '200',
+		height: '40',
+		lineColor: '#26B99A',
+		fillColor: 'rgba(223, 223, 223, 0.57)',
+		lineWidth: 2,
+		spotColor: '#26B99A',
+		minSpotColor: '#26B99A'
+	});
+
+	var data_insite_tot_session_mob = [
+<block loop="$performance_daily_cur_month=>$key,$val">
+			'{$val->in_site_tot_session_mob}',
+</block>
+		];
+	jQuery(".in_site_tot_session_mob").sparkline(data_insite_tot_session_mob, {
+		type: 'bar',
+		height: '40',
+		barWidth: 5,
+		barSpacing: 2,
+		barColor: '#26B99A'
+	});
+
+	var data_insite_tot_eff_session_mob = [
+<block loop="$performance_daily_cur_month=>$key,$val">
+			'{$val->tot_eff_session_mob}',
+</block>
+		];
+	jQuery(".in_site_tot_eff_session_mob").sparkline(data_insite_tot_eff_session_mob, {
+		type: 'bar',
+		height: '40',
+		barWidth: 5,
+		barSpacing: 2,
+		barColor: '#26B99A'
+	});
+
+	var data_insite_tot_new_session_mob = [
+<block loop="$performance_daily_cur_month=>$key,$val">
+			'{$val->in_site_tot_new_mob}',
+</block>
+		];
+	jQuery(".in_site_tot_new_session_mob").sparkline(data_insite_tot_new_session_mob, {
+		type: 'bar',
+		height: '40',
+		barWidth: 5,
+		barSpacing: 2,
+		barColor: '#26B99A'
+	});
+
+	var data_cpc_impression_pc = [
+<block loop="$performance_daily_cur_month=>$key,$val">
+			'{$val->media_imp_pc}',
+</block>
+		];
+	jQuery(".media_tot_imp_pc").sparkline(data_cpc_impression_pc, {
+		type: 'line',
+		width: '200',
+		height: '40',
+		lineColor: '#26B99A',
+		fillColor: 'rgba(223, 223, 223, 0.57)',
+		lineWidth: 2,
+		spotColor: '#26B99A',
+		minSpotColor: '#26B99A'
+	});
+
+		var data_cpc_ctr_pc = [
+<block loop="$performance_daily_cur_month=>$key,$val">
+			'{$val->media_ctr_pc}',
+</block>
+		];
+	jQuery(".media_tot_ctr_pc").sparkline(data_cpc_ctr_pc, {
+		type: 'line',
+		width: '200',
+		height: '40',
+		lineColor: '#26B99A',
+		fillColor: 'rgba(223, 223, 223, 0.57)',
+		lineWidth: 2,
+		spotColor: '#26B99A',
+		minSpotColor: '#26B99A'
+	});
+
+
+	var data_click_impression_pc = [
+<block loop="$performance_daily_cur_month=>$key,$val">
+			'{$val->media_click_pc}',
+</block>
+		];
+	jQuery(".media_tot_click_pc").sparkline(data_click_impression_pc, {
+		type: 'line',
+		width: '200',
+		height: '40',
+		lineColor: '#26B99A',
+		fillColor: 'rgba(223, 223, 223, 0.57)',
+		lineWidth: 2,
+		spotColor: '#26B99A',
+		minSpotColor: '#26B99A'
+	});
+
+	var data_insite_tot_session_pc = [
+<block loop="$performance_daily_cur_month=>$key,$val">
+			'{$val->in_site_tot_session_pc}',
+</block>
+		];
+	jQuery(".in_site_tot_session_pc").sparkline(data_insite_tot_session_pc, {
+		type: 'bar',
+		height: '40',
+		barWidth: 5,
+		barSpacing: 2,
+		barColor: '#26B99A'
+	});
+
+	var data_insite_tot_eff_session_pc = [
+<block loop="$performance_daily_cur_month=>$key,$val">
+			'{$val->tot_eff_session_pc}',
+</block>
+		];
+	jQuery(".in_site_tot_eff_session_pc").sparkline(data_insite_tot_eff_session_pc, {
+		type: 'bar',
+		height: '40',
+		barWidth: 5,
+		barSpacing: 2,
+		barColor: '#26B99A'
+	});
+
+	var data_insite_tot_new_session_pc = [
+<block loop="$performance_daily_cur_month=>$key,$val">
+			'{$val->in_site_tot_new_pc}',
+</block>
+		];
+	jQuery(".in_site_tot_new_session_pc").sparkline(data_insite_tot_new_session_pc, {
+		type: 'bar',
+		height: '40',
+		barWidth: 5,
+		barSpacing: 2,
+		barColor: '#26B99A'
+	});
+});
+</script>
+
+아래와 같이 변경
+<script>
+jQuery('document').ready(function() {
+	var data_cpc_impression_mob = [
+<block loop="$performance_daily_cur_month=>$key,$val">
+			'{$val->media_imp_mob}',
+</block>
+		];
+	jQuery(".media_tot_imp_mob").sparkline(data_cpc_impression_mob, {
+		type: 'line',
+		width: '170',
+		height: '40',
+		lineColor: '#26B99A',
+		fillColor: 'rgba(223, 223, 223, 0.57)',
+		lineWidth: 2,
+		spotColor: '#26B99A',
+		minSpotColor: '#26B99A'
+	});
+
+		var data_cpc_ctr_mob = [
+<block loop="$performance_daily_cur_month=>$key,$val">
+			'{$val->media_ctr_mob}',
+</block>
+		];
+	jQuery(".media_tot_ctr_mob").sparkline(data_cpc_ctr_mob, {
+		type: 'line',
+		width: '170',
+		height: '40',
+		lineColor: '#26B99A',
+		fillColor: 'rgba(223, 223, 223, 0.57)',
+		lineWidth: 2,
+		spotColor: '#26B99A',
+		minSpotColor: '#26B99A'
+	});
+
+
+	var data_click_impression_mob = [
+<block loop="$performance_daily_cur_month=>$key,$val">
+			'{$val->media_click_mob}',
+</block>
+		];
+	jQuery(".media_tot_click_mob").sparkline(data_click_impression_mob, {
+		type: 'line',
+		width: '170',
+		height: '40',
+		lineColor: '#26B99A',
+		fillColor: 'rgba(223, 223, 223, 0.57)',
+		lineWidth: 2,
+		spotColor: '#26B99A',
+		minSpotColor: '#26B99A'
+	});
+
+	var data_insite_tot_session_mob = [
+<block loop="$performance_daily_cur_month=>$key,$val">
+			'{$val->in_site_tot_session_mob}',
+</block>
+		];
+	jQuery(".in_site_tot_session_mob").sparkline(data_insite_tot_session_mob, {
+		type: 'bar',
+		width: '180',
+		height: '40',
+		barWidth: 3,
+		barSpacing: 2,
+		barColor: '#26B99A'
+	});
+
+	var data_insite_tot_eff_session_mob = [
+<block loop="$performance_daily_cur_month=>$key,$val">
+			'{$val->tot_eff_session_mob}',
+</block>
+		];
+	jQuery(".in_site_tot_eff_session_mob").sparkline(data_insite_tot_eff_session_mob, {
+		type: 'bar',
+		width: '180',
+		height: '40',
+		barWidth: 3,
+		barSpacing: 2,
+		barColor: '#26B99A'
+	});
+
+	var data_insite_tot_new_session_mob = [
+<block loop="$performance_daily_cur_month=>$key,$val">
+			'{$val->in_site_tot_new_mob}',
+</block>
+		];
+	jQuery(".in_site_tot_new_session_mob").sparkline(data_insite_tot_new_session_mob, {
+		type: 'bar',
+		width: '180',
+		height: '40',
+		barWidth: 3,
+		barSpacing: 2,
+		barColor: '#26B99A'
+	});
+
+	var data_cpc_impression_pc = [
+<block loop="$performance_daily_cur_month=>$key,$val">
+			'{$val->media_imp_pc}',
+</block>
+		];
+	jQuery(".media_tot_imp_pc").sparkline(data_cpc_impression_pc, {
+		type: 'line',
+		width: '170',
+		height: '40',
+		lineColor: '#26B99A',
+		fillColor: 'rgba(223, 223, 223, 0.57)',
+		lineWidth: 2,
+		spotColor: '#26B99A',
+		minSpotColor: '#26B99A'
+	});
+
+		var data_cpc_ctr_pc = [
+<block loop="$performance_daily_cur_month=>$key,$val">
+			'{$val->media_ctr_pc}',
+</block>
+		];
+	jQuery(".media_tot_ctr_pc").sparkline(data_cpc_ctr_pc, {
+		type: 'line',
+		width: '170',
+		height: '40',
+		lineColor: '#26B99A',
+		fillColor: 'rgba(223, 223, 223, 0.57)',
+		lineWidth: 2,
+		spotColor: '#26B99A',
+		minSpotColor: '#26B99A'
+	});
+
+
+	var data_click_impression_pc = [
+<block loop="$performance_daily_cur_month=>$key,$val">
+			'{$val->media_click_pc}',
+</block>
+		];
+	jQuery(".media_tot_click_pc").sparkline(data_click_impression_pc, {
+		type: 'line',
+		width: '170',
+		height: '40',
+		lineColor: '#26B99A',
+		fillColor: 'rgba(223, 223, 223, 0.57)',
+		lineWidth: 2,
+		spotColor: '#26B99A',
+		minSpotColor: '#26B99A'
+	});
+
+	var data_insite_tot_session_pc = [
+<block loop="$performance_daily_cur_month=>$key,$val">
+			'{$val->in_site_tot_session_pc}',
+</block>
+		];
+	jQuery(".in_site_tot_session_pc").sparkline(data_insite_tot_session_pc, {
+		type: 'bar',
+		width: '180',
+		height: '40',
+		barWidth: 3,
+		barSpacing: 2,
+		barColor: '#26B99A'
+	});
+
+	var data_insite_tot_eff_session_pc = [
+<block loop="$performance_daily_cur_month=>$key,$val">
+			'{$val->tot_eff_session_pc}',
+</block>
+		];
+	jQuery(".in_site_tot_eff_session_pc").sparkline(data_insite_tot_eff_session_pc, {
+		type: 'bar',
+		width: '180',
+		height: '40',
+		barWidth: 3,
+		barSpacing: 2,
+		barColor: '#26B99A'
+	});
+
+	var data_insite_tot_new_session_pc = [
+<block loop="$performance_daily_cur_month=>$key,$val">
+			'{$val->in_site_tot_new_pc}',
+</block>
+		];
+	jQuery(".in_site_tot_new_session_pc").sparkline(data_insite_tot_new_session_pc, {
+		type: 'bar',
+		width: '180',
+		height: '40',
+		barWidth: 3,
+		barSpacing: 2,
+		barColor: '#26B99A'
+	});
+});
+</script>
+
+----------------- todo ---------------------
+그룹별 접속 권한 기능 추가

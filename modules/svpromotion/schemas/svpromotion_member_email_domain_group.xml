@@ -1,0 +1,10 @@
+<table name="svpromotion_member_email_domain_group">
+	<column name="email_domain_srl" type="number" size="11" notnull="notnull" primary_key="primary_key" />
+	<column name="module_srl" type="number" size="11" default="0" notnull="notnull" index="idx_module_srl" />
+	<column name="email_domain" type="varchar" size="50" notnull="notnull" unique="unique_email_domain" />
+	<column name="description" type="varchar" size="50" notnull="notnull" />
+	<!-- 1: price , 2: percentage -->
+	<column name="opt" type="char" size="1" default="1" notnull="notnull" />
+	<column name="price" type="number" size="11" default="0" notnull="notnull" />
+	<column name="regdate" type="date" notnull="notnull" />
+</table>

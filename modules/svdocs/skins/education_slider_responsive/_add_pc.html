@@ -1,0 +1,88 @@
+{@
+$module_info->slide_img_urls = explode("\n", $module_info->slide_img_urls);
+}
+<!-----http://bxslider.com/---->
+<link rel="stylesheet" href="/modules/svdocs/skins/education_slider/css/jquery.bxslider.css" type="text/css" />
+<link rel="stylesheet" href="/modules/svdocs/skins/education_slider/css/styles.css" type="text/css" />
+
+<!--[if lt IE 9]>
+<script src="./js/html5shiv.js"></script>
+<![endif]-->
+<script src="./js/jquery.min.js"></script>
+<script src="./js/jquery.bxslider.js"></script>
+
+<header>
+	<div class="inner clearfix">
+		<div class="logo">
+			<a href="{$module_info->top_logo_link_url}">{$module_info->top_logo_text}</a>
+		</div>
+		<nav>
+			<a cond="$teaser_open!='Y'" id="clockdiv">이벤트 종료까지 <span class="days"></span>일 <span class="hours"></span>시 <span class="minutes"></span>분 <span class="seconds"></span>초 남았습니다!</a>
+			<a cond="$teaser_open=='Y'" id="clockdiv">이벤트 시작까지 <span class="days"></span>일 <span class="hours"></span>시 <span class="minutes"></span>분 <span class="seconds"></span>초 남았습니다!</a>
+			<a href="/" >나가기</a>
+		</nav>
+	</div>
+</header>
+<section id="main">
+	<div class="inner clearfix">
+		<div id="primary">
+			<h2>{$module_info->slide_title}</h2>
+			<p class="note">{$module_info->slide_description} </p>
+			<div class="slider">
+				<ul class="bxslider">
+<block cond="$test!='a'">
+					<li loop="$module_info->slide_img_urls=>$key,$val">
+						<img src="{$val}" />
+					</li>
+</block>
+<block cond="$test=='a'">
+					<li><img src="/img_assets/site/20171029/cutting_board_slide_1.png"/></li>
+</block>
+<block cond="!$module_info->auth_session_var_name">
+					<li><include target="_form_pc.html" cond="$remaining_applicants"/></li>
+</block>
+<block cond="$module_info->auth_session_var_name">
+					<li><include target="_cta_slide_pc.html" cond="$remaining_applicants"/></li>
+</block>
+				</ul>
+			</div>
+		</div>
+	</div>
+</section>
+<script type="text/javascript" src="../../tpl/skin.js/countdown_timer.js"></script>
+<script type="text/javascript">
+jQuery(document).ready(function(){
+	var _g_nCurrent = 1;
+	var _g_sModuleSrl = '{$module_info->module_srl}';
+	var slider = jQuery('.bxslider').bxSlider({
+		infiniteLoop: false,
+		hideControlOnEnd: true,
+		pager: false,
+		mode: 'fade',
+		onSlideNext: function(){
+			//Executes immediately before each "Next" slide transition. Function argument is the target (next) slide element.
+			var nCurrent = _g_nCurrent++;
+			var nNext = nCurrent+1;
+//console.log( _g_sModuleSrl+'_pc_next_slide_'+nCurrent+'->'+nNext );
+<block cond="$test!='a'">
+			sendClickEventGaectk( 'banner', _g_sModuleSrl+'_pc_next_slide_'+nCurrent+'->'+nNext, '#' );
+</block>
+<block cond="$test=='a'">
+			sendClickEventGaectk( 'banner', _g_sModuleSrl+'_pc_next_slide_type_a_'+nCurrent+'->'+nNext, '#' );
+</block>
+		},
+		onSlidePrev: function(){
+			//Executes immediately before each "Prev" slide transition. Function argument is the target (prev) slide element.
+			var nCurrent = _g_nCurrent--;
+			var nPrev = nCurrent-1;
+//console.log( _g_sModuleSrl+'_pc_prev_slide_'+nCurrent+'->'+nPrev );
+<block cond="$test!='a'">
+			sendClickEventGaectk( 'banner', _g_sModuleSrl+'_pc_prev_slide_'+nCurrent+'->'+nPrev, '#' );
+</block>
+<block cond="$test=='a'">
+			sendClickEventGaectk( 'banner', _g_sModuleSrl+'_pc_prev_slide_type_a_'+nCurrent+'->'+nPrev, '#' );
+</block>
+		}
+	});
+});
+</script>

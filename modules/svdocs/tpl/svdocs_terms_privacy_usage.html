@@ -1,0 +1,29 @@
+<!--#include("header.html")-->
+<load target="../../editor/tpl/js/editor_module_config.js" usecdn="true" />
+<div cond="$XE_VALIDATOR_MESSAGE" class="message {$XE_VALIDATOR_MESSAGE_TYPE}">
+	<p>{$XE_VALIDATOR_MESSAGE}</p>
+</div>
+<form ruleset="updatePage" action="./" method="post" enctype="multipart/form-data" class="x_form-horizontal">
+<section class="section">
+	<input type="hidden" name="module" value="svdocs" />
+	<input type="hidden" name="mid" value="{$mid}" />
+	<input type="hidden" name="act" value="procSvdocsAdminTermPrivacyUsageUpdate" />
+	<input type="hidden" name="module_srl" value="{$module_srl}" />
+	<input type="hidden" name="privacy_usage_term" value="{$privacy_usage_term}" />
+	<input type="hidden" name="success_return_url" value="{getRequestUriByServerEnviroment()}" />
+
+	<div class="x_control-group">
+		<label class="x_control-label" for="privacy_usage_term">{$lang->cmd_manage_term_privacy_usage}</label>
+		<div class="x_controls">{$editor}</div>
+		<style scoped>
+			#smart_content,
+			#smart_content>.tool{clear:none !important}
+		</style>
+	</div>
+	<div class="x_clearfix btnArea">
+		<div class="x_pull-right">
+			<button type="submit" class="x_btn x_btn-primary">{$lang->cmd_save}</button>
+		</div>
+	</div>
+</form>
+</section>

@@ -53,7 +53,8 @@ class boardController extends board
 		}
 
 		settype($obj->title, "string");
-		if($obj->title == '') $obj->title = cut_str(trim(strip_tags(nl2br($obj->content))),20,'...');
+		$nAutoSubjectLen = $module_config->subject_len_count ? (int)$module_config->subject_len_count : 20;
+		if($obj->title == '') $obj->title = cut_str(trim(strip_tags(nl2br($obj->content))),$nAutoSubjectLen,'...');
 		//setup dpcument title tp 'Untitled'
 		if($obj->title == '') $obj->title = 'Untitled';
 

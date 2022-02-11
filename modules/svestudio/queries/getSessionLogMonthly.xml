@@ -1,0 +1,11 @@
+<query id="getSessionLogMonthly" action="select">
+    <tables>
+        <table name="svestudio_gross_compiled_daily_log" />
+    </tables>
+    <columns>
+        <column name="sum(in_site_tot_session)" alias="tot_session" />
+    </columns>
+	<conditions>
+        <condition operation="like_prefix" column="logdate" var="logdate" />
+    </conditions>
+</query>

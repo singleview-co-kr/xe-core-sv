@@ -281,7 +281,15 @@ class FileHandler
 	 */
 	function makeDir($path_string)
 	{
-		$path_string = preg_replace("/[^a-z0-9-_\\\\\/\.]+/i", '', $path_string);
+		if(strncasecmp(PHP_OS, 'WIN', 3) == 0) 
+		{
+			$sRegEx = "/[^a-z0-9-_\\\\\/\.:]+/i";  // for xampp, e.g. D:\sdfg\sdfg
+		} 
+		else 
+		{
+			$sRegEx = "/[^a-z0-9-_\\\\\/\.]+/i";
+		}
+		$path_string = preg_replace($sRegEx, '', $path_string);
 		$path_string = self::getRealPath($path_string);
 		if(self::exists($path_string) !== FALSE)
 		{

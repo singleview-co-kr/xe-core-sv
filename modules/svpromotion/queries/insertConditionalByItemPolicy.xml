@@ -1,0 +1,13 @@
+<query id="insertConditionalByItemPolicy" action="insert">
+	<tables>
+		<table name="svpromotion_conditional_by_item" />
+	</tables>
+	<columns>
+		<column name="item_srl" var="item_srl" notnull="notnull" />
+		<column name="module_srl" var="module_srl" notnull="notnull" />
+		<column name="promotion_type" var="promotion_type" notnull="notnull" />
+		<column name="opt" var="opt" notnull="notnull" />
+		<column name="price" var="price" notnull="notnull" />
+		<column name="regdate" var="regdate" default="curdate()" />
+	</columns>
+</query>

@@ -1,0 +1,12 @@
+<query id="getGiveawayPromotionByItem" action="select">
+	<tables>
+		<table name="svpromotion_giveaways" />
+	</tables>
+	<columns>
+		<column name="*" />
+	</columns>
+	<conditions>
+		<condition operation="equal" column="item_srl" var="item_srl" />
+		<condition operation="equal" column="module_srl" var="module_srl" pipe="and" />
+	</conditions>
+</query>

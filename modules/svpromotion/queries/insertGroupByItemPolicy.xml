@@ -1,0 +1,17 @@
+<query id="insertGroupByItemPolicy" action="insert">
+	<tables>
+		<table name="svpromotion_group_by_item" />
+	</tables>
+	<columns>
+		<column name="item_srl" var="item_srl" notnull="notnull" />
+		<column name="module_srl" var="module_srl" notnull="notnull" />
+		<column name="group_srl" var="group_srl" notnull="notnull" />
+		<column name="allow_duplication" var="allow_duplication" />
+		<column name="opt" var="opt" notnull="notnull" />
+		<column name="price" var="price" notnull="notnull" />
+		<column name="discount_info" var="discount_info" notnull="notnull" />
+		<column name="begindate" var="begindate" />
+		<column name="enddate" var="enddate" />
+		<column name="regdate" var="regdate" default="curdate()" />
+	</columns>
+</query>

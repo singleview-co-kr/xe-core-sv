@@ -1,0 +1,14 @@
+<query id="insertPromotionFbLike" action="insert">
+	<tables>
+		<table name="svpromotion_fb_like" />
+	</tables>
+	<columns>
+		<column name="promotion_srl" var="sv_promotion_srl" filter="number" notnull="notnull" />
+		<column name="fb_app_id" var="svpromotion_fb_app_id" notnull="notnull" />
+		<column name="status" var="status" />
+		<column name="descount_amount_policy" var="sv_promotion_descount_amount" />
+		<column name="descount_rate_policy" var="sv_promotion_descount_rate" />
+		<column name="descount_type" var="sv_promotion_descount_type" />
+		<column name="regdate" var="regdate" default="curdate()" />
+	</columns>
+</query>

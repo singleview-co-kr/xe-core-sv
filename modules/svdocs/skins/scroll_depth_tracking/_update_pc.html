@@ -1,0 +1,133 @@
+<!--- section for the floating application layer begins ------>
+<script type="text/javascript">
+function layer_open(el){
+	var temp = jQuery('#' + el);		//레이어의 id를 temp변수에 저장
+	var bg = temp.prev().hasClass('bg');	//dimmed 레이어를 감지하기 위한 boolean 변수
+
+	if(bg){
+		jQuery('.layer').fadeIn();
+	}else{
+		temp.fadeIn();	//bg 클래스가 없으면 일반레이어로 실행한다.
+	}
+
+	// 화면의 중앙에 레이어를 띄운다.
+	if (temp.outerHeight() < jQuery(document).height() ) 
+		temp.css('margin-top', '-'+temp.outerHeight()/2+'px');
+	else 
+		temp.css('top', '0px');
+	//temp.css('top', '1300px');
+	//if (temp.outerWidth() < jQuery(document).width() ) temp.css('margin-left', '-'+temp.outerWidth()/2+'px');
+	if (temp.outerWidth() < jQuery(document).width() ) temp.css('margin-left', '-230px');
+	else temp.css('left', '0px');
+
+	temp.find('a.cbtn').click(function(e){
+		if(bg){
+			jQuery('.layer').fadeOut();
+		}else{
+			temp.fadeOut();		//'닫기'버튼을 클릭하면 레이어가 사라진다.
+		}
+		e.preventDefault();
+	});
+
+	jQuery('.layer .bg').click(function(e){
+		jQuery('.layer').fadeOut();
+		e.preventDefault();
+	});
+	//sendClickEventGaectk( 'button', 'exchange_sale_promotion', '#' );
+}				
+</script>
+<style type="text/css">
+.pop-layer {display:none; position: absolute; top: 600px; left: 50%; width: 650px; height:auto;  background-color:#fff; border: 5px solid #3571B5; z-index: 10000;}	
+.pop-layer .pop-container {padding: 20px 25px;}
+.pop-layer p.ctxt {color: #666; line-height: 25px;}
+.pop-layer .btn-r {width: 100%; margin:10px 0 20px; padding-top: 10px; border-top: 1px solid #DDD; text-align:right;}
+
+a.cbtn {display:inline-block; height:25px; padding:0 14px 0; border:1px solid #304a8a; background-color:#3f5a9d; font-size:13px; color:#fff; line-height:25px;}	
+a.cbtn:hover {border: 1px solid #091940; background-color:#1f326a; color:#fff;}
+</style>
+<div id="layer1" class="pop-layer">
+	<div class="pop-container">
+		<div class="pop-conts">
+			<!--content //-->
+			<input type="hidden" name="module_srl" id="module_srl" value="{$module_srl}">
+			<input type="hidden" name="svdocs_srl" id="svdocs_srl" value="{$svdocs_srl}">
+<block cond="count($extra_keys)">
+		<div id='exForm'>
+	<block loop="$extra_keys=>$key,$val">
+		<block cond="$val->type!='hidden'">
+			<em cond="$val->is_required=='Y'">(필수)</em> {$val->name}<strong>:</strong> {$val->getFormHTML()}<BR>
+		</block>
+		<block cond="$val->type=='hidden'">
+			{$val->getFormHTML()}
+		</block>
+	</block>
+		</div>
+</block>	
+			<div class="btn-r">
+				<button type="button" id='btnSubmit' name='btnSubmit' onClick="doUpdate();" STYLE='display: inline-block; height: 25px; padding: 0 14px 0; border: 1px solid #ed1c24; background-color: #ed1c24; font-size: 13px; color: #fff; line-height: 25px;'>등록하기</button >
+			</div>
+			<!--// content-->
+		</div>
+	</div>
+</div>
+<!--- section for the floating application layer ends ------>
+<div id="layer_thankyou" class="pop-layer">
+	<div class="pop-container">
+		<div class="pop-conts">
+			<!--content //-->
+			<div style="width: 100%; margin: 10px 0 20px; border-bottom: 1px solid #DDD; font-size:14px;text-align: left; font-weight:bold;text-align:center;>">{$module_info->complete_title}</div>
+			<div id='' style="font-size:14px;text-align: left; font-weight:bold;text-align:center;>">{$module_info->complete_description}</div>
+		</div>
+	</div>
+</div>
+<!-- Save for Web Slices (oneshot_img_732.psd) -->
+<CENTER>
+<table width="732" border="0" cellpadding="0" cellspacing="0">
+<!---- event header secion begins ------->
+	<tr cond="$module_info->header_img_pc">
+		<td>
+			<img src="{$module_info->header_img_pc}" width="732" alt="">
+		</td>
+	</tr>
+	<tr cond="$module_info->header_html_pc">
+		<td>
+			<div id='pc_01_event_header_20160204' STYLE='margin:0; padding:0; border:none;'>
+			{$module_info->header_html_pc}
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td><img src="images/line_dotted_pc.jpg" width="100%" alt=""></td>
+	</tr>
+	<tr cond="$module_info->info_img_pc">
+		<td bgcolor='{$module_info->info_bgcolor_pc}'>
+			<img src="{$module_info->info_img_pc}" width="732" alt="">
+		</td>
+	</tr>
+	<tr cond="$module_info->info_html_pc">
+		<td bgcolor='{$module_info->info_bgcolor_pc}'>
+			<div id='pc_01_event_header_20160204' STYLE='margin:0; padding:0; border:none;'>
+			{$module_info->info_html_pc}
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td><img src="images/line_dotted_pc.jpg" width="100%" alt=""></td>
+	</tr>
+	<tr cond="$module_info->caution_img_pc">
+		<td bgcolor='{$module_info->caution_bgcolor_pc}'>
+			<img src="{$module_info->caution_img_pc}" width="732" alt="">
+		</td>
+	</tr>
+	<tr cond="$module_info->caution_html_pc">
+		<td bgcolor='{$module_info->caution_bgcolor_pc}'>
+			<div id='pc_01_event_header_20160204' STYLE='margin:0; padding:0; border:none;'>
+			{$module_info->caution_html_pc}
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td><img src="images/line_dotted_pc.jpg" width="100%" alt=""></td>
+	</tr>
+</table>
+</CENTER>

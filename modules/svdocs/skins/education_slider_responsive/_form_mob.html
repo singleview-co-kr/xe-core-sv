@@ -1,0 +1,69 @@
+{@
+if(!$module_info->submit_btn_text)
+	$module_info->submit_btn_text = '응모하기';
+}
+<style type="text/css">
+/* section for the floating application layer begins */
+.pop-layer {display:none; position: absolute; top: 50%; left: 50%; width: 90%; height:auto;  background-color:#fff; border: 5px solid #3571B5; z-index: 10000;}	
+.pop-layer .pop-container {padding: 20px 25px;overflow-y : scroll;}
+.pop-layer p.ctxt {color: #666; line-height: 25px;}
+.pop-layer .btn-r {width: 100%; margin:10px 0 20px; padding-top: 10px; border-top: 1px solid #DDD; text-align:right;}
+a.cbtn {display:inline-block; height:25px; padding:0 14px 0; border:1px solid #304a8a; background-color:#3f5a9d; font-size:13px; color:#fff; line-height:25px;}	
+a.cbtn:hover {border: 1px solid #091940; background-color:#1f326a; color:#fff;}
+/* section for the floating application layer ends */
+</style>
+
+<div id="layer_finish">
+	<div class="center">
+		<div class="content-block">
+			<div style="width: 100%; margin: 10px 0 20px; border-bottom: 1px solid #DDD; font-size:14px;text-align: left; font-weight:bold;>">{$module_info->form_title}</div>
+			<div id='' style="font-size:14px;text-align: left; font-weight:bold;>">{$module_info->form_description}</div>
+			<BR>
+			<em>(필수)</em> 성함<strong>:</strong> <input type="text" name="applicant_name" id="applicant_name" value="" class="text" placeholder='신청자 성함'/><BR>
+	<block cond="$svauth_on=='Y'">
+			<em>(필수)</em> 연락처<strong>:</strong> <input type="text" name="applicant_phone_number" id="applicant_phone_number" value="" class="text" placeholder='SMS 수신 연락처'/><input type='button' id='get_authcode' name='get_authcode' value='인증번호 받기' onClick="getAuthCode();"><BR>
+			<em>(필수)</em> 응모자 인증<strong>:</strong> <input type='text' id='authcode' name='authcode' placeholder='인증번호'>
+	</block>
+	<block cond="count($extra_keys)">
+			<div id='exForm'>
+		<block loop="$extra_keys=>$key,$val">
+			<block cond="$val->type!='hidden'">
+				<em cond="$val->is_required=='Y'">(필수)</em> {$val->name}<strong>:</strong>	{$val->getFormHTML()}<BR>
+			</block>
+			<block cond="$val->type=='hidden'">
+				{$val->getFormHTML()}
+			</block>
+		</block>
+			</div>
+	</block>
+			<div class="ui-field-contain">
+				<em>개인정보 수집 및 이용에 대한 동의</em>
+				<div id="textarea">{$module_info->privacy_usage_term}</div>
+			</div>
+			<label>
+				<input type="checkbox" name="privacy_collection" id="privacy_collection" value="Y">위 개인정보 수집 및 이용에 대한 동의문을 모두 읽었으며, 동의합니다.
+			</label>
+	<block cond="$module_info->is_hide_privacy_shr_term!='Y'">
+			<div class="ui-field-contain">
+				<label for="textarea-a">개인정보 제3자 제공 동의(필수)</label>
+				<div id="textarea">{$module_info->privacy_shr_term}</div>
+			</div>
+			<label>
+				<input type="checkbox" name="privacy_sharing" id="privacy_sharing" value="Y">위 개인정보 제3자 제공 동의 조항을 모두 읽었으며, 이에 동의합니다.
+			</label>
+	</block>
+			<input type="hidden" name="module_srl" id="module_srl" value="{$module_srl}">
+			<input type="button" id='btnSubmit' onClick="_doPreRegistration();" data-theme="b" value="{$module_info->submit_btn_text}">
+		</div>
+	</div>
+</div>
+<div id="layer_thankyou" class="pop-layer">
+	<div class="pop-container">
+		<div class="pop-conts">
+			<!--content //-->
+			<div style="width: 100%; margin: 10px 0 20px; border-bottom: 1px solid #DDD; font-size:14px;text-align: left; font-weight:bold;text-align:center;>">{$module_info->complete_title}</div>
+			<div id='' style="font-size:14px;text-align: left; font-weight:bold;text-align:center;>">{$module_info->complete_description}</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript" src="/modules/svdocs/tpl/skin.js/registration.js"></script>

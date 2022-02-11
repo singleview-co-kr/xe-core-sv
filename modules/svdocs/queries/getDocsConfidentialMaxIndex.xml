@@ -1,0 +1,16 @@
+<query id="getDocsConfidentialMaxIndex" action="select">
+    <tables>
+        <table name="svdocs_confidential" />
+    </tables>
+    <columns>
+        <column name="doc_srl" />
+    </columns>
+    <conditions>
+    </conditions>
+	<navigation>
+        <index var="sort_index" default="doc_srl" order="desc" />
+        <list_count var="list_count" default="1" />
+        <page_count var="page_count" default="1" />
+        <page var="page" default="1" />
+    </navigation>
+</query>

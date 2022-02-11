@@ -1,0 +1,324 @@
+v 0.0.1
+24th, Oct 2015
+1. GA utm_params set 기능 추가
+
+v 0.0.2
+8th, Feb 2016
+1. 명칭 변경 tracker -> svtracker
+2. setUtmParamsGatk 호출 후에 _sendGaEventWithoutInteraction 호출함, XE는 addon의 명령을 레이아웃 최상단 혹은 최하단에서만 호출할 수 있기 때문에 해당 명령이 레이아웃 파일 내에서 gatk 선언보다 외곽에 위치하게 되는 현상을 해결
+
+v 0.0.3
+6th, Apr 2016
+1. svshortener의 increaseCounter 호출 추가
+./class/svtracker.class.php::getShortenerInfo()에 아래의 코드 추가
+$oSvshortenerController = getController('svshortener');
+$aShortenerInfo = $oSvshortenerController->increaseCounter( $aValue[1] );
+
+v 0.0.4
+20th, May 2016
+1. utm_param 단축 웹쿼리가 없을때도 utm_param 존재 검사해서 세션 설정
+./class/svtracker.class.php::getShortenerInfo()에 아래의 코드 추가
+$this->setNormalTracker();
+
+./class/svtracker.class.php::_getSource() 추가
+./class/svtracker.class.php::_getMedium() 추가
+./class/svtracker.class.php::_getCampaign() 추가
+
+./class/svtracker.class.php::_extractPsKeyword()를 _getKeyword()로 변경
+./class/svtracker.class.php::_setNormalKeyword() 비활성화
+./class/svtracker.class.php::_setSource() 비활성화
+
+./class/svtracker.class.php::_setSessionKeyword()에서 아래의 코드를
+if( is_null( $_SESSION['HTTP_INIT_KEYWORD'] ) && strlen( $sKeyword ) > 0 )
+아래와 같이 변경
+if( strlen( $sKeyword ) > 0 )
+
+v 0.0.5
+6th, Apr 2017
+1. 애드온 설정에서 [단축추적코드정보] 항목 제거
+./conf/info.xml에서 아래의 코드 제거
+<var name="shortner_infos" type="textarea">
+	<title xml:lang="ko">단축추적코드정보</title>
+	<description xml:lang="ko">google에서 접속시 띄울 메세지를 입력해 주세요</description>
+</var>
+
+2. 애드온 설정에서 [트위터], [페이스북], [네이버], [다음], [구글] 항목 제거
+페이스북은 대부분 앱이라서 REFERRER 헤더 작동안함
+./conf/info.xml에서 아래의 코드 제거
+<var name="twitter">
+	<title xml:lang="ko">twitter</title>
+	<description xml:lang="ko">트위터에서 접속시 띄울 메세지를 입력해 주세요</description>
+</var>
+<var name="twitter_image">
+	<title xml:lang="ko">twitter image</title>
+	<description xml:lang="ko">트위터에서 접속시 띄울 그림의 URL을 입력해 주세요</description>
+</var>
+<var name="facebook">
+	<title xml:lang="ko">facebook</title>
+	<description xml:lang="ko">페이스북에서 접속시 띄울 메세지를 입력해 주세요</description>
+</var>
+<var name="facebook_image">
+	<title xml:lang="ko">facebook image</title>
+	<description xml:lang="ko">페이스북에서 접속시 띄울 그림의 URL을 입력해 주세요</description>
+</var>
+<var name="naver">
+	<title xml:lang="ko">네이버</title>
+	<description xml:lang="ko">네이버에서 접속시 띄울 메세지를 입력해 주세요</description>
+</var>
+<var name="daum">
+	<title xml:lang="ko">다음</title>
+	<description xml:lang="ko">다음에서 접속시 띄울 메세지를 입력해 주세요</description>
+</var>
+<var name="google_image">
+	<title xml:lang="ko">google image</title>
+	<description xml:lang="ko">google에서 접속시 띄울 그림의 URL을 입력해 주세요</description>
+</var>
+<var name="naver_image">
+	<title xml:lang="ko">네이버 image</title>
+	<description xml:lang="ko">네이버에서 접속시 띄울 그림의 URL을 입력해 주세요</description>
+</var>
+<var name="daum_image">
+	<title xml:lang="ko">다음 image</title>
+	<description xml:lang="ko">다음에서 접속시 띄울 그림의 URL을 입력해 주세요</description>
+</var>
+
+3. utm_source값에 따라 layer popup 기능 추가
+./css/layer_popup.css 추가
+./js/layer_popup.js 추가
+./class/svtracker.class.php::getCampaignInfo()추가
+./svtracker.addon.php에 아래의 코드 블록 추가
+if( $addon_info->use_utm_campaign == 'on' && $_COOKIE['svcampaign'] != 'off' )
+{
+	$aValue = explode( ';', $addon_info->utm_campaign_value );	
+	$sUtmCampaign = $oSvTracker->getCampaignInfo();
+	foreach( $aValue as $key=>$val)
+	{
+		if( strlen($val) && preg_match( "/$val/i", $sUtmCampaign ) )
+		{
+			$refhead = "<div class='layer'>
+				<div class='bg'></div>
+				<div id='layer2' class='pop-layer'>
+					<div class='pop-container'>
+						<div class='pop-conts'>
+							<p class='ctxt mb20'>".$addon_info->utm_campaign_message."</p>
+							<div class='btn-r'>
+								<a href='#' class='cbtn'>24시간 동안 안 보기</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>";
+			Context::addCssFile( './addons/svtracker/css/layer_popup.css' );
+			Context::addJsFile( './addons/svtracker/js/layer_popup.js' );
+			Context::addbodyHeader( $refhead.$refbody.$reffoot );
+			Context::addHtmlFooter( "<script>layer_open('layer2');</script>" );
+			break;
+		}
+	}
+}
+
+v 0.0.6
+7th, Apr 2017
+1. 레이어 팝업 CSS를 모바일과 PC 분리
+./css/layer_popup.css 제거
+./css/layer_popup_pc.css 추가
+./css/layer_popup_mob.css 추가
+
+2. CTA 버튼 기능 분리
+./conf/info.xml에서 아래의 코드를 
+utm_campaign_message
+아래와 같이 변경
+utm_campaign_inform_message
+
+./conf/info.xml에서 아래의 코드 추가
+<var name="utm_campaign_cta_message" type="textarea">
+	<title xml:lang="ko">CTA 문장</title>
+	<description xml:lang="ko">설정한 캠페인으로 접속했을 때 표시할 Call to action을 입력해 주세요.</description>
+</var>
+
+3. 불완정한 설정일 경우 예외 처리 코드 블록 추가
+./svtracker.addon.php에서 아래의 코드를 
+$refhead = "<div class='layer'><div class='bg'></div><div id='layer2' class='pop-layer'><div class='pop-container'><div class='pop-conts'>";
+$refhead .= "<p class='ctxt mb20'>".$addon_info->utm_campaign_inform_message."</p><div class='btn-r'><a href='#' class='cbtn'>24시간 OFF</a>&nbsp;&nbsp;&nbsp;&nbsp;";
+$refhead .= "<a href='".$addon_info->utm_campaign_cta_link."' class='ccta_btn'>".$addon_info->utm_campaign_cta_message."</a>";
+$refhead .= "</div></div>";
+$refhead .= "</div></div></div>";
+아래와 같이 변경
+if( !$addon_info->utm_campaign_inform_message )
+	$addon_info->utm_campaign_inform_message = '안내문을 입력해 주세요.';
+$refhead = "<div class='layer'><div class='bg'></div><div id='layer2' class='pop-layer'><div class='pop-container'><div class='pop-conts'>";
+$refhead .= "<p class='ctxt mb20'>".$addon_info->utm_campaign_inform_message."</p><div class='btn-r'><a href='#' class='cbtn'>24시간 OFF</a>&nbsp;&nbsp;&nbsp;&nbsp;";
+if( $addon_info->utm_campaign_cta_link && $addon_info->utm_campaign_cta_message )
+	$refhead .= "<a href='".$addon_info->utm_campaign_cta_link."' class='ccta_btn'>".$addon_info->utm_campaign_cta_message."</a>";
+$refhead .= "</div></div>";
+$refhead .= "</div></div></div>";
+
+v 0.0.7
+23rd, Apr 2017
+1. 레이어 팝업 노출수, 클릭수 측정하는 GATK snippet code 추가
+./js/layer_popup.js::layer_open()에 아래의 코드 추가
+sendDisplayEventGatk( 'svtracker_layer_popup' );
+sendClickEventGatk( 'button', 'svtracker_layer_popup_close', '#' );
+sendClickEventGatk( 'button', 'svtracker_layer_popup_cta', '#' );
+
+v 0.0.8
+14th, Sep 2017
+1. svshortener module이 설치되지 않아도 단축 url을 호출해도 에러 발생하지 않도록 개석
+./class/svtracker.class.php::getShortenerInfo()에서 아래의 코드를
+$oSvshortenerModel = getModel('svshortener');
+$aShortenerInfo = $oSvshortenerModel->getShortenerInfo( $aValue[1] );
+if( !$aShortenerInfo )
+	return false;
+아래와 같이 변경
+if(getClass('svshortener'))
+{
+	$oSvshortenerModel = getModel('svshortener');
+	$aShortenerInfo = $oSvshortenerModel->getShortenerInfo( $aValue[1] );
+}
+if( !$aShortenerInfo )
+	return false;
+
+v 0.0.9
+31st, Jan 2018
+1. UTM_CAMPAIGN 값에 all 입력하면 레이어 팝업이 모든 방문에 표시되도록 변경
+./svtracker.addon.php에서 아래의 코드를 
+if( strlen($val) && preg_match( "/$val/i", $sUtmCampaign ) )
+아래와 같이 변경
+if( $val == 'all' || ( strlen($val) && preg_match( "/$val/i", $sUtmCampaign ) ) )
+
+v 0.0.10
+3rd, Feb 2018
+1. svshopmaster에서 레이어 팝업이 표시되지 않도록 수정
+./svtracker.addon.php에서 아래의 코드를 
+if( Context::get( 'module' ) == 'admin' )
+아래와 같이 변경
+$sModule = Context::get( 'module' );
+if( $sModule == 'admin' || $sModule == 'svshopmaster' )
+
+v 0.0.11
+8th, Feb 2018
+./svtracker.addon.php에서 아래의 코드를 
+if($_COOKIE['mobile'] == "true")
+아래와 같이 변경
+if(Mobile::isMobileCheckByAgent())
+
+v 0.0.12
+9th, Feb 2018
+특정 관리 화면에서 레이어 팝업 표시되지 않도록 개선
+./svtracker.addon.php에서 아래의 코드 추가
+$sAct = Context::get( 'act' );
+if( $sAct == 'dispDocumentManageDocument' || $sAct == 'dispModuleSelectList' )
+	return;
+if( $this->module == 'svdocs' )
+	return;
+
+v 0.0.13
+1st, Apr 2018
+1. 사이트 전체 access log 기능 추가
+./class/svaction_logger.class.php 추가
+./svtracker.addon.php에서 아래의 코드 추가
+if( $addon_info->toggle_action_log == 'on' )
+{
+	if( $this->module && $this->act )
+	{
+		require_once(_XE_PATH_ . 'addons/svtracker/class/svaction_logger.class.php');
+		new SvActionLogger($this);
+	}
+}
+
+v 0.0.14
+14th, Nov 2018
+1. 레이어 팝업의 24시간 OFF 문구 변경 기능 추가
+
+./conf/info.xml에 아래의 코드 추가
+<var name="utm_campaign_close_text" type="text">
+	<title xml:lang="ko">창닫기 문장</title>
+	<description xml:lang="ko">창닫기 버튼의 텍스트를 입력해 주세요. 비우면 "24시간 OFF"</description>
+</var>
+
+./svtracker.addon.php에 아래의 코드 추가
+if( $addon_info->utm_campaign_close_text == '' )
+	$sCloseText = '24시간 OFF';
+else
+	$sCloseText = trim( $addon_info->utm_campaign_close_text );
+
+./conf/info.xml에 아래의 코드 추가
+<var name="utm_campaign_close_hrs" type="text">
+	<title xml:lang="ko">창 표시하지 않는 시간</title>
+	<description xml:lang="ko">재방문 고객이 창을 닫은 후 다음 표시할 때까지 시간을 입력하세요. 비우면 "24시간 OFF"</description>
+</var>
+
+./js/layer_popup.js 변경
+
+v 0.0.15
+19th, Dec 2018
+1. IE 구버전에서 레이어 팝업 작동하지 않는 문제 수정
+./js/layer_popup.js에서 아래의 코드를
+function layer_open(el, nExpHrs=0)
+아래와 같이 변경
+function layer_open(el, nExpHrs)
+
+v 0.0.16
+27th, Sep 2019
+1. 특정 URL 문자열이 존재할 때 기록하는 기능 추가
+./conf/info.xml에 아래의 코드 추가
+<var name="watch_parital_query" type="text">
+	<title xml:lang="ko">감시할 쿼리 문자열</title>
+	<description xml:lang="ko">입력하면 로거 애드온이 특정 name value를 포함한 URL이 감지될 경우에만 기록합니다.</description>
+</var>
+
+./class/svaction_logger.class.php::SvActionLogger()에서 아래의 코드를
+$sMemeberSrl = 'guest';
+$logged_info = Context::get('logged_info');
+if( $logged_info )
+	$sMemeberSrl = $logged_info->member_srl;
+
+$sMid = Context::get('mid');
+if( !$sMid )
+	$sMid = 'none';
+
+$sLog = date('h:i:s').'|@|'.$sMemeberSrl.'|@|'.$this->_g_oConfig->module.'|@|'.$sMid.'|@|'.$this->_g_oConfig->act.'|@|'.$_SERVER['REMOTE_ADDR'].'|@|'.$_SERVER['HTTP_USER_AGENT'].PHP_EOL;
+
+$sLogFile = './files/action_log/'.date('Ymd').'.log.php';
+if( FileHandler::exists($sLogFile) )
+	FileHandler::writeFile($sLogFile ,$sLog, 'a');
+else
+{
+	$sLog = '<?php exit() ?>'.PHP_EOL.$sLog;
+	FileHandler::writeFile($sLogFile, $sLog, 'w');
+}
+
+아래와 같이 변경
+if( $sWatchingUri )
+{
+	$nPos = strpos($_SERVER['QUERY_STRING'], $sWatchingUri);
+	if( $nPos === false )
+		;
+	else
+	{
+		$this->_g_oConfig = $oThis;
+		$this->_doLog();
+	}
+}
+else
+{
+	$this->_g_oConfig = $oThis;
+	$this->_doLog();
+}
+
+./class/svaction_logger.class.php::_doLog() 추가
+
+v 0.1.0
+26th, Aug 2021
+1. gaectk 대응
+./svtracker.addon.php에서 아래의 코드를
+$sShortTrackerScript = "<SCRIPT>setUtmParamsGatk( '$oShortnerInfo[source]', '$oShortnerInfo[medium]', '$oShortnerInfo[campaign]', '$oShortnerInfo[keyword]', '' ); _sendGaEventWithoutInteraction( 'tracking', 'paid_organic_captured', '$oShortnerInfo[campaign]__$oShortnerInfo[keyword]');</SCRIPT>";
+
+아래와 같이 변경
+$sShortTrackerScript = "<SCRIPT>setUtmParamsGaectk( '$oShortnerInfo[source]', '$oShortnerInfo[medium]', '$oShortnerInfo[campaign]', '$oShortnerInfo[keyword]', '' ); _sendGaEventWithoutInteraction( 'tracking', 'paid_organic_captured', '$oShortnerInfo[campaign]__$oShortnerInfo[keyword]');</SCRIPT>";
+
+./js/layer_popup.js::layer_open에서 아래의 코드를
+sendDisplayEventGatk( 'svtracker_layer_popup' );
+
+아래와 같이 변경
+sendDisplayEventGaectk( 'svtracker_layer_popup' );

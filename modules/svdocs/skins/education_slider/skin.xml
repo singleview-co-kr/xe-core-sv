@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<skin version="0.2">
+	<title xml:lang="ko">교육 슬라이더 스킨</title>
+	<description xml:lang="ko">
+		 레이아웃을 제외하고 사용하는 소비자 교육 슬라이더 반응형 스킨입니다.  
+	</description>
+	<version>0.1</version>
+	<date>2017-08-10</date>
+	<author email_address="root@singleview.co.kr" link="http://singleview.co.kr/">
+		<name xml:lang="ko">singleview</name>
+	</author>
+	<extra_vars>
+		<var name="top_logo_text" type="text">
+			<title xml:lang="ko">좌상단 로고 텍스트</title>
+			<description xml:lang="ko">좌상단 로고 영역에 표시할 텍스트를 입력하세요. HTML허용</description>
+		</var>
+		<var name="top_logo_link_url" type="text">
+			<title xml:lang="ko">좌상단 로고 링크 URL</title>
+			<description xml:lang="ko">좌상단 로고 링크 URL을 입력하세요.</description>
+		</var>
+		<var name="slide_title" type="text">
+			<title xml:lang="ko">슬라이드 제목</title>
+			<description xml:lang="ko">슬라이드 제목을 입력하세요. HTML허용</description>
+		</var>
+		<var name="slide_description" type="text">
+			<title xml:lang="ko">슬라이드 설명</title>
+			<description xml:lang="ko">슬라이드 설명을 입력하세요. HTML허용</description>
+		</var>
+		<var name="slide_img_urls" type="textarea">
+			<title xml:lang="ko">슬라이드 이미지 주소</title>
+			<description xml:lang="ko">슬라이드 이미지 URL을 엔터로 구분하여 적습니다. 예) http://server.com/img.png</description>
+		</var>
+		<var name="form_title" type="text">
+			<title xml:lang="ko">입력화면 제목</title>
+			<description xml:lang="ko">입력화면 제목을 적습니다. HTML허용</description>
+		</var>
+		<var name="form_description" type="text">
+			<title xml:lang="ko">입력화면 안내글</title>
+			<description xml:lang="ko">입력화면 안내를 적습니다. HTML허용</description>
+		</var>
+		<var name="submit_btn_text" type="text">
+			<title xml:lang="ko">응모버튼 텍스트</title>
+			<description xml:lang="ko">응모버튼에 표시할 텍스트 적습니다.</description>
+		</var>
+		<var name="complete_title" type="text">
+			<title xml:lang="ko">완료화면 제목</title>
+			<description xml:lang="ko">완료화면 제목을 적습니다. HTML허용</description>
+		</var>
+		<var name="complete_description" type="textarea">
+			<title xml:lang="ko">완료화면 설명</title>
+			<description xml:lang="ko">완료화면 설명을 적습니다. HTML허용</description>
+		</var>
+	</extra_vars>
+</skin>

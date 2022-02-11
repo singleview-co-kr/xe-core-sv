@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module>
+	<grants>
+	</grants>
+	<permissions>
+	</permissions>
+	<actions>
+		<action name="dispSvpromotionAdminIndex" type="view" admin_index="false" />
+		<action name="dispSvpromotionAdminCouponPromotionInfo" type="view" />
+		<action name="dispSvpromotionAdminCouponPerformance" type="view" />
+		<action name="dispSvpromotionAdminCouponInfo" type="view" />
+		<action name="dispSvpromotionAdminDeleteCoupon" type="view" />
+		<action name="dispSvpromotionAdminUpdateCoupon" type="view" />
+		<action name="dispSvpromotionAdminSitePromotion" type="view" />
+		<action name="dispSvpromotionAdminEmailDomainGroupInsert" type="view" />
+		<action name="dispSvpromotionAdminItemDiscountList" type="view" />
+		<action name="dispSvpromotionAdminItemDiscountDetail" type="view" />
+		<action name="dispSvpromotionAdminItemListPopup" type="view" />
+		<action name="dispSvpromotionAdminReserves" type="view" />
+		<action name="dispSvpromotionAdminConfig" type="view" />
+
+		<action name="procSvpromotionAdminInsertCouponPromotion" type="controller" />
+		<action name="procSvpromotionAdminInsertCoupon" type="controller" />
+		<action name="procSvpromotionAdminSiteGroupDiscount" type="controller" />
+		<action name="procSvpromotionAdminUpdateItemDetail" type="controller" />
+		<action name="procSvpromotionAdminConfig" type="controller" />
+		<action name="procSvpromotionAdminUpdateEmailDomainPolicy" type="controller" />
+		<action name="procSvpromotionAdminDeleteCoupon" type="controller" />
+		<action name="procSvpromotionAdminUpdateCoupon" type="controller" />
+		<action name="procSvpromotionAdminRefreshCoupon" type="controller" />
+		<action name="procSvpromotionAdminReservesMgmt" type="controller" />
+		<action name="procSvpromotionAdminSiteBulkPromotionMgmt" type="controller" />
+
+		<action name="procSvprmotionMarkUsedCoupon" type="controller" />
+		<action name="getCouponInfoBySerialNumber" type="model" />
+	</actions>
+	<menus>
+	</menus>
+</module>

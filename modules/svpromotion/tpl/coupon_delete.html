@@ -1,0 +1,21 @@
+<include target="_header.html" />
+<form class='section' action="./" method="post" enctype="multipart/form-data">
+<input type="hidden" name="module" value="svpromotion" />
+<input type="hidden" name="act" value="procSvpromotionAdminDeleteCoupon" />
+<input type="hidden" name="promotion_srl" value="{$promotion_srl}" />
+<input type="hidden" name="coupon_srl" value="{$coupon_srl}" />
+<input type="hidden" name="success_return_url" value="{getUrl('act','dispSvpromotionAdminCouponInfo', 'coupon_srl', '' )}" />
+    <h1>{$lang->confirm_delete}</h1>
+	<dl class="x_dl-horizontal">
+		<dt>{$lang->coupon_no}</dt>
+		<dd>{$coupon_serial}</dd>
+		<dt>{$lang->coupon_max_usage}</dt>
+		<dd>{$max_use_count}</dd>
+		<dt>{$lang->coupon_use_count}</dt>
+		<dd>{$used_count}</dd>
+	</dl>
+	<div class="btnArea">
+		<a href="{getUrl('act','dispSvpromotionAdminCouponInfo' )}" class="x_btn x_pull-left">{$lang->cmd_back}</a>
+		<span><input class="x_btn x_btn-danger" type="submit" value="{$lang->cmd_delete}" /></span>
+	</div>
+</form>

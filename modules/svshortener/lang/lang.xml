@@ -1,0 +1,96 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<lang>
+	<item name="about_svshortener">
+		<value xml:lang="ko"><![CDATA[Organic Search Execution의 ROAS 추적을 위한 단축 URL을 관리합니다.]]></value>
+	</item>
+	<item name="svshortener_management">
+		<value xml:lang="ko"><![CDATA[싱글뷰 shortener 관리]]></value>
+	</item>
+	<item name="shorten_url_setting">
+		<value xml:lang="ko"><![CDATA[단축URL 추가]]></value>
+	</item>
+	<item name="shorten_uri_value">
+		<value xml:lang="ko"><![CDATA[Query ID]]></value>
+	</item>
+	<item name="about_shorten_uri_value">
+		<value xml:lang="ko"><![CDATA[svtracker addon이 인식하는 URI query value입니다.]]></value>
+	</item>	
+	<item name="click_count">
+		<value xml:lang="ko"><![CDATA[클릭수]]></value>
+	</item>	
+	<item name="utm_source_name">
+		<value xml:lang="ko"><![CDATA[GA인식 소스]]></value>
+	</item>
+	<item name="about_utm_source_name">
+		<value xml:lang="ko"><![CDATA[Google Analytics에서 인식하는 source명입니다.]]></value>
+	</item>
+	<item name="utm_medium_name">
+		<value xml:lang="ko"><![CDATA[GA인식 매체]]></value>
+	</item>
+	<item name="about_utm_medium_name">
+		<value xml:lang="ko"><![CDATA[Google Analytics에서 인식하는 medium명입니다.]]></value>
+	</item>
+	<item name="utm_service_name">
+		<value xml:lang="ko"><![CDATA[서비스명]]></value>
+	</item>
+	<item name="about_utm_service_name">
+		<value xml:lang="ko"><![CDATA[svshortener가 별도로 인식하는 서비스명입니다. ex)지식인, 블로그, 포스트 등]]></value>
+	</item>
+	<item name="blogger_type">
+		<value xml:lang="ko"><![CDATA[블로거 유형]]></value>
+	</item>
+	<item name="about_blogger_type">
+		<value xml:lang="ko"><![CDATA[볼로거 등급을 구분합니다.]]></value>
+	</item>
+	<item name="term_and_blogger_id">
+		<value xml:lang="ko"><![CDATA[목표키워드 & 블로거ID]]></value>
+	</item>
+	<item name="about_term_and_blogger_id">
+		<value xml:lang="ko"><![CDATA[목표키워드와 블로거ID를 ; 혹은 탭으로 구분하여 여러 줄 입력합니다.]]></value>
+	</item>
+	<item name="fixed_cost_incl_vat">
+		<value xml:lang="ko"><![CDATA[고정 비용 VAT포함]]></value>
+	</item>
+	<item name="allocation_start_date">
+		<value xml:lang="ko"><![CDATA[비용 일배분 시작일]]></value>
+	</item>
+	<item name="about_allocation_start_date">
+		<value xml:lang="ko"><![CDATA[지정방식 일자: YYYYMMDD, 등록일부터 몇일 후: +2d, 등록일부터 몇주 후: +2w]]></value>
+	</item>
+	<item name="allocation_end_date">
+		<value xml:lang="ko"><![CDATA[비용 일배분 종료일]]></value>
+	</item>
+	<item name="about_allocation_end_date">
+		<value xml:lang="ko"><![CDATA[지정방식 일자: YYYYMMDD, 배분시작일부터 몇일 후: +2d, 배분시작일부터 몇주 후: +2w]]></value>
+	</item>
+	<item name="about_fixed_cost_incl_vat">
+		<value xml:lang="ko"><![CDATA[VAT포함된 집행 고정 비용을 기록합니다.]]></value>
+	</item>
+	<item name="cpc">
+		<value xml:lang="ko"><![CDATA[클릭단가]]></value>
+	</item>
+	<item name="cost_period">
+		<value xml:lang="ko"><![CDATA[비용 배분 기간]]></value>
+	</item>
+	<item name="msg_error_existing_shorten_uri_value">
+		<value xml:lang="ko"><![CDATA[이미 존재하는 Query Value입니다.]]></value>
+	</item>
+	<item name="msg_error_no_utm_source_name">
+		<value xml:lang="ko"><![CDATA[GA인식 소스를 입력하세요.]]></value>
+	</item>
+	<item name="msg_error_no_utm_medium_name">
+		<value xml:lang="ko"><![CDATA[GA인식 매체를 입력하세요.]]></value>
+	</item>
+	<item name="msg_error_no_utm_service_name">
+		<value xml:lang="ko"><![CDATA[서비스명을 입력하세요.]]></value>
+	</item>
+	<item name="msg_error_invalid_utm_service_name">
+		<value xml:lang="ko"><![CDATA[서비스명이 올바르지 않습니다.]]></value>
+	</item>
+	<item name="msg_error_svshortener_db_query">
+		<value xml:lang="ko"><![CDATA[svshortener DB 오류입니다. 관리자에게 문의해 주세요.]]></value>
+	</item>
+	<item name="msg_error_svtracker_addon_not_installed">
+		<value xml:lang="ko"><![CDATA[svtracker 애드온을 먼저 설치해주세요.]]></value>
+	</item>
+</lang>

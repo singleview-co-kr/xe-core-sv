@@ -1,0 +1,34 @@
+<include target="_header.html" />
+<form class="x_form-horizontal" action="./" method="post" enctype="multipart/form-data">
+<input type="hidden" name="module" value="{$module}" />
+<input type="hidden" name="act" value="procSvpromotionAdminConfig" />
+	<section class="section">
+		<div cond="$logged_info->is_admin == 'Y'" class="x_control-group">
+			<label class="x_control-label" for="svpromotion_fb_app_id">{$lang->svpromotion_fb_app_id}</label>
+			<div class="x_controls">
+				<input type="text" name="svpromotion_fb_app_id" id="svpromotion_fb_app_id" value="{$config->svpromotion_fb_app_id}" />
+				<a href="#svpromotion_fb_app_id_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="svpromotion_fb_app_id_help" class="x_help-block" hidden>{$lang->about_svpromotion_fb_app_id}</p>
+			</div>
+		</div>
+		<div class="x_control-group">
+			<label class="x_control-label" for="discount_info_default">{$lang->svpromotion_discount_limit}</label>
+			<div class="x_controls">
+				<label for="default_item_opt_1"> <input type="text" name="discount_rate_limit" id="discount_rate_limit" value="{$config->discount_rate_limit}" /> {$lang->svpromotion_discount_limit_1}
+				<a href="#svpromotion_discount_limit_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="svpromotion_discount_limit_help" class="x_help-block" hidden>{$lang->about_svpromotion_discount_limit}</p></label>
+			</div>
+		</div>
+		<div class="x_control-group">
+			<label class="x_control-label">{$lang->title_promotion_mall_check}</label>
+			<div class="x_controls">
+				<label loop="$svorder_page=>$key,$val" for="status" class="x_inline"><input type="checkbox" name="{$val->module_srl}" id="{$val->module_srl}" value="Y" checked="checked"|cond="$config->aPromotionMallOrderModuleSrl[$val->module_srl] == 'Y'" /> {$val->mid}</label>
+				<a href="#svpromotion_promotion_mall_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="svpromotion_promotion_mall_help" class="x_help-block" hidden>{$lang->about_svpromotion_promotion_mall}</p></label>
+			</div>
+		</div>
+	</section>
+	<div class="x_clearfix btnArea">
+		<input type="submit" class="x_btn x_btn-primary" value="{$lang->cmd_registration}" accesskey="s" />
+	</div>
+</form>

@@ -1,0 +1,16 @@
+<query id="getEmailDomainMaxIndex" action="select">
+    <tables>
+        <table name="svpromotion_member_email_domain_group" />
+    </tables>
+    <columns>
+        <column name="email_domain_srl" />
+    </columns>
+    <conditions>
+    </conditions>
+	<navigation>
+        <index var="sort_index" default="email_domain_srl" order="desc" />
+        <list_count var="list_count" default="1" />
+        <page_count var="page_count" default="1" />
+        <page var="page" default="1" />
+    </navigation>
+</query>

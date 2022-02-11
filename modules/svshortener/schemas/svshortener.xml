@@ -1,0 +1,16 @@
+<table name="svshortener">
+	<column name="shortener_srl" type="number" size="11" notnull="notnull" primary_key="primary_key" auto_increment="auto_increment" />
+	<column name="shorten_uri_value" type="varchar" size="50" notnull="notnull" index="idx_shorten_uri_value" unique="unique_shorten_uri_value"/>
+	<column name="utm_source_name" type="varchar" size="50" notnull="notnull"/>
+	<column name="utm_medium_name" type="varchar" size="50" notnull="notnull"/>
+	<column name="utm_service_name" type="varchar" size="50" notnull="notnull"/>
+	<column name="utm_term" type="varchar" size="50" default="no_term"/>
+	<column name="blogger_type" type="char" size="1"/>
+	<column name="blogger_id" type="varchar" size="50" />
+	<column name="fixed_cost_incl_vat" type="number" size="11" default="0" />
+	<column name="svshortener_click_cnt" type="number" size="4" default="0" />
+	<column name="svshortener_memo" type="text"/>
+	<column name="start_date" type="date" />
+	<column name="end_date" type="date" />
+	<column name="regdate" type="date" />
+</table>

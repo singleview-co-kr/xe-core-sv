@@ -1,0 +1,44 @@
+{@
+if(!$module_info->submit_btn_text)
+	$module_info->submit_btn_text = '응모하기';
+}
+<div class="center">
+	<div class="content-block">
+		<em>(필수)</em> 성함<strong>:</strong> <input type="text" name="applicant_name" id="applicant_name" value="" class="text" placeholder='신청자 성함'/><BR>
+<block cond="$svauth_on=='Y'">
+		<em>(필수)</em> 연락처<strong>:</strong> <input type="text" name="applicant_phone_number" id="applicant_phone_number" value="" class="text" placeholder='SMS 수신 연락처'/><BR>
+		<em>(필수)</em> 응모자 인증<strong>:</strong> <input type='text' id='authcode' name='authcode' placeholder='인증번호'><input type='button' id='get_authcode' name='get_authcode' value='인증번호 받기' onClick="getAuthCode();">
+</block>
+<block cond="count($extra_keys)">
+		<div id='exForm'>
+	<block loop="$extra_keys=>$key,$val">
+		<block cond="$val->type!='hidden'">
+			<em cond="$val->is_required=='Y'">(필수)</em> {$val->name}<strong>:</strong>	{$val->getFormHTML()}<BR>
+		</block>
+		<block cond="$val->type=='hidden'">
+			{$val->getFormHTML()}
+		</block>
+	</block>
+		</div>
+</block>
+		<div class="ui-field-contain">
+			<em>개인정보 수집 및 이용에 대한 동의</em>
+			<div id="textarea">{$module_info->privacy_usage_term}</div>
+		</div>
+		<label>
+			<input type="checkbox" name="privacy_collection" id="privacy_collection" value="Y">위 개인정보 수집 및 이용에 대한 동의문을 모두 읽었으며, 동의합니다.
+		</label>
+<block cond="$module_info->is_hide_privacy_shr_term!='Y'">
+		<div class="ui-field-contain">
+			<label for="textarea-a">개인정보 제3자 제공 동의(필수)</label>
+			<div id="textarea">{$module_info->privacy_shr_term}</div>
+		</div>
+		<label>
+			<input type="checkbox" name="privacy_sharing" id="privacy_sharing" value="Y">위 개인정보 제3자 제공 동의 조항을 모두 읽었으며, 이에 동의합니다.
+		</label>
+</block>
+		<input type="hidden" name="module_srl" id="module_srl" value="{$module_srl}">
+		<input type="button" id='btnSubmit' onClick="doRegistration();" data-theme="b" value="{$module_info->submit_btn_text}">
+	</div>
+</div>
+<script type="text/javascript" src="/modules/svdocs/tpl/skin.js/registration.js"></script>

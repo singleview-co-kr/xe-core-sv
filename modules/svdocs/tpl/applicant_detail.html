@@ -1,0 +1,104 @@
+<load target="js/applicants_list.js" />
+<include target="header.html" />
+
+<div cond="$XE_VALIDATOR_MESSAGE && $XE_VALIDATOR_ID == 'modules/module/tpl/manage_selected'" class="message {$XE_VALIDATOR_MESSAGE_TYPE}">
+	<p>{$XE_VALIDATOR_MESSAGE}</p>
+</div>
+<table class="x_table x_table-striped x_table-hover">
+	<tr>
+		<th scope="row" WIDTH='20%'>{$lang->member_id}</th>
+		<td class="text" WIDTH='80%'><a href="#popup_menu_area" class="member_{$svdocs_detail->member_srl}" title="Info">{$svdocs_detail->user_id}</a>&nbsp;일련번호({$svdocs_detail->member_srl})</td>
+	</tr>
+	<tr cond="$svdocs_detail->applicant_name">
+		<th scope="row">{$lang->applicant_name}</th>
+		<td class="text">{$svdocs_detail->applicant_name}</td>
+	</tr>
+	<tr cond="$svdocs_detail->applicant_phone">
+		<th scope="row">{$lang->applicant_phone}</th>
+		<td class="text">{$svdocs_detail->applicant_phone}</td>
+	</tr>
+	<tr>
+		<th scope="row">{$lang->cmd_manage_term_privacy_usage}</th>
+		<td class="text">{$svdocs_detail->privacy_collection}</td>
+	</tr>
+	<tr>
+		<th scope="row">{$lang->cmd_manage_term_privacy_shr}</th>
+		<td class="text">{$svdocs_detail->privacy_sharing}</td>
+	</tr>
+	<tr loop="$svdocs_extra_vars => $key,$val">
+		<th scope="row" >{$val->name}</th>
+		<td class="text">{$val->value}</td>
+	</tr>
+	<tr>
+		<th scope="row">{$lang->datetimestamp_entry}</th>
+		<td class="text">{$svdocs_detail->datetimestamp_entry} from <strong>{$lang->ipaddress}</strong> {$svdocs_detail->ipaddress}</td>
+	</tr>
+	<tr>
+		<th scope="row">{$lang->datetimestamp_final}</th>
+		<td class="text">{$svdocs_detail->datetimestamp_final} &rarr; <strong>{$lang->regdate}</strong> {zdate($svdocs_detail->regdate,'Y-m-d H:i:s' )}</td>
+	</tr>
+{@
+$sDeviceType = 'PC';
+if( $svdocs_detail->is_mobile == 'Y' )
+	$sDeviceType = 'MOB';
+}
+	<tr>
+		<th scope="row">{$lang->user_agent}</th>
+		<td class="text"><strong>{$sDeviceType}</strong> {$svdocs_detail->user_agent}</td>
+	</tr>
+	<tr>
+		<th scope="row">{$lang->init_referral}</th>
+		<td class="text">{$svdocs_detail->init_referral}</td>
+	</tr>
+	<tr>
+		<th scope="row">{$lang->utm_source}</th>
+		<td class="text">{$svdocs_detail->utm_source}</td>
+	</tr>
+	<tr>
+		<th scope="row">{$lang->utm_medium}</th>
+		<td class="text">{$svdocs_detail->utm_medium}</td>
+	</tr>
+	<tr>
+		<th scope="row">{$lang->utm_campaign}</th>
+		<td class="text">{$svdocs_detail->utm_campaign}</td>
+	</tr>
+	<tr>
+		<th scope="row">{$lang->utm_term}</th>
+		<td class="text">{$svdocs_detail->utm_term}</td>
+	</tr>
+<style scoped>
+.x_table th{text-align:right}
+table {
+    table-layout: fixed;
+    width: 100%;
+}
+
+table td {
+    word-wrap: break-word;         /* All browsers since IE 5.5+ */
+    overflow-wrap: break-word;     /* Renamed property in CSS3 draft spec */
+}
+</style>
+</table>
+
+<form class="x_form-horizontal" action="./" method="post" enctype="multipart/form-data">
+	<input type="hidden" name="module" value="svdocs" />
+	<input type="hidden" name="act" value="procSvdocsAdminApproveApplicant" />
+	<input type="hidden" name="module_srl" value="{$module_srl}" />
+	<input type="hidden" name="doc_srl" value="{$doc_srl}" />
+	<input cond="$doc_srl" type="hidden" name="success_return_url" value="{getRequestUriByServerEnviroment()}" />
+	<section class="section">
+		<div class="x_control-group">
+			<label class="x_control-label" for="lang_header_text">{$lang->applicants_approval}</label>
+			<div class="x_controls">
+				<label class="x_inline" for="is_allow_update">
+				<input type="radio" name="approve" value="Y" checked="checked"|cond="$svdocs_detail->is_accepted=='Y'"> 채택 <input type="radio" name="approve" value="N" checked="checked"|cond="$svdocs_detail->is_accepted=='N'"> 거부</label>
+				<a href="#header_text_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="header_text_help" class="x_help-block" hidden>{$lang->about_coupon_registration}</p>
+			</div>
+		</div>
+	</section>
+	<div class="x_clearfix btnArea">
+		<span class="x_pull-left" cond="$member_srl"><button class="x_btn" type="button" onclick="history.go(-1)">{$lang->cmd_back}</button></span>
+		<input cond="$svdocs_detail->is_accepted!='Y' && $svdocs_detail->is_accepted!='N'" type="submit" class="x_btn x_btn-primary" value="{$lang->cmd_registration}" accesskey="s" />
+	</div>
+</form>

@@ -1,0 +1,11 @@
+<query id="getMemberDiscountInfoByEmailDomain" action="select">
+	<tables>
+        <table name="svpromotion_member_email_domain_group" />
+	</tables>
+	<columns>
+		<column name="*" />
+	</columns>
+	<conditions>
+        <condition operation="equal" column="email_domain" var="email_domain" notnull="notnull" />
+    </conditions>
+</query>

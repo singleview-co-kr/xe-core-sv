@@ -1,0 +1,25 @@
+<query id="insertSvdocs" action="insert">
+	<tables>
+		<table name="svdocs" />
+	</tables>
+	<columns>
+		<column name="module_srl" var="module_srl" filter="number" default="0" />
+		<column name="member_srl" var="member_srl" filter="number" default="0" />
+		<column name="applicant_name" var="applicant_name" />
+		<column name="applicant_phone" var="applicant_phone" />
+		<column name="user_agent" var="user_agent" />
+		<column name="ipaddress" var="ipaddress" default="ipaddress()" />
+		<column name="privacy_collection" var="privacy_collection" />
+		<column name="privacy_sharing" var="privacy_sharing" />
+		<column name="datetimestamp_entry" var="datetimestamp_entry" />
+		<column name="datetimestamp_final" var="datetimestamp_final" />
+		<column name="is_mobile" var="is_mobile" />
+		<column name="certify_id" var="certify_id" />
+		<column name="init_referral" var="init_referral" />
+		<column name="utm_source" var="utm_source" />
+		<column name="utm_medium" var="utm_medium" />
+		<column name="utm_campaign" var="utm_campaign" />
+		<column name="utm_term" var="utm_term" />
+		<column name="regdate" var="regdate" default="curdate()" />
+	</columns>
+</query>

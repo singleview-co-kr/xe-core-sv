@@ -1,0 +1,63 @@
+<include target="header.html" />
+
+<div cond="$XE_VALIDATOR_MESSAGE" class="message {$XE_VALIDATOR_MESSAGE_TYPE}">
+	<p>{$XE_VALIDATOR_MESSAGE}</p>
+</div>
+<form ruleset="updatePage" action="./" method="post" enctype="multipart/form-data" class="x_form-horizontal">
+<input type="hidden" name="module" value="{$module}" />
+<input type="hidden" name="act" value="procSvdocsAdminInsertConfig" />
+	<section class="section">
+		<h1>{$lang->cmd_basic_setting}</h1>
+		<div class="x_control-group">
+			<label class="x_control-label">google analytics v3 ID</label>
+			<div class="x_controls">
+				<input type="text" name="ga_v3_tracking_id" value="{$config->ga_v3_tracking_id}" />
+				<a href="#ga_v3_tracking_id_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="ga_v3_tracking_id_help" class="x_help-block" hidden>{$lang->about_ga_v3_tracking_id}</p>
+			</div>
+		</div>
+		<div class="x_control-group">
+			<label class="x_control-label">google analytics v4 ID</label>
+			<div class="x_controls">
+				<input type="text" name="ga_v4_tracking_id" value="{$config->ga_v4_tracking_id}" />
+				<a href="#ga_v4_tracking_id_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="ga_v4_tracking_id_help" class="x_help-block" hidden>{$lang->about_ga_v4_tracking_id}</p>
+			</div>
+		</div>
+		<div class="x_control-group">
+			<label class="x_control-label">Naver wcs ID</label>
+			<div class="x_controls">
+				<input type="text" name="nvad_conv_id" value="{$config->nvad_conv_id}" />
+				<a href="#nvad_conv_id_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="nvad_conv_id_help" class="x_help-block" hidden>{$lang->about_nvad_conv_id}</p>
+			</div>
+		</div>
+		<div class="x_control-group">
+			<label class="x_control-label">Facebook Pixel ID</label>
+			<div class="x_controls">
+				<input type="text" name="facebook_pixel_id" value="{$config->facebook_pixel_id}" />
+				<a href="#facebook_pixel_id_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="facebook_pixel_id_help" class="x_help-block" hidden>{$lang->about_facebook_pixel_id}</p>
+			</div>
+		</div>
+		<div class="x_control-group">
+			<label class="x_control-label">facebook app id</label>
+			<div class="x_controls">
+				<input type="text" name="facebook_app_id" value="{$config->facebook_app_id}" />
+				<a href="#facebook_app_id_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="facebook_app_id_help" class="x_help-block" hidden>{$lang->about_facebook_app_id}</p>
+			</div>
+		</div>
+		<div class="x_control-group">
+			<label class="x_control-label">kakao app JavaScript key</label>
+			<div class="x_controls">
+				<input type="text" name="kakao_app_js_key" value="{$config->kakao_app_js_key}" />
+				<a href="#kakao_app_js_key_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="kakao_app_js_key_help" class="x_help-block" hidden>{$lang->about_kakao_app_js_key}</p>
+			</div>
+		</div>
+	</section>
+<div class="x_clearfix btnArea">
+	<button type="submit" class="x_btn x_btn-primary">{$lang->cmd_submit}</button>
+</div>
+</form>

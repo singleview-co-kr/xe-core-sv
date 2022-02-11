@@ -1,0 +1,10 @@
+<table name="svpromotion_quantity_by_item">
+	<column name="bulk_discount_srl" type="number" size="11" notnull="notnull" index="idx_bulk_discount_srl" primary_key="primary_key" />
+	<column name="module_srl" type="number" size="11" default="0" notnull="notnull" index="idx_module_item_srl" />
+	<column name="item_srl" type="number" size="11" notnull="notnull" index="idx_module_item_srl" />
+	<column name="min_quantity" type="number" size="11" notnull="notnull" />
+	<!-- 1: price , 2: percentage -->
+	<column name="opt" type="char" size="1" default="1" notnull="notnull" />
+	<column name="price" type="number" size="11" notnull="notnull" />
+	<column name="regdate" type="date" notnull="notnull" />
+</table>

@@ -1,0 +1,10 @@
+<query id="insertCompiledByMonth" action="insert">
+	<tables>
+		<table name="svestudio_compiled_monthly" />
+	</tables>
+	<columns>
+		<column name="logdate" var="logdate" notnull="notnull" />
+		<column name="tot_monthly_session" var="tot_monthly_session" notnull="notnull" />
+		<column name="last_update_date" var="last_update_date" />
+	</columns>
+</query>

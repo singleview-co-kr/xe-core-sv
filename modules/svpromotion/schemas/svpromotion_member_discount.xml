@@ -1,0 +1,7 @@
+<table name="svpromotion_member_discount">
+	<column name="member_srl" type="number" size="11" notnull="notnull" index="idx_module_srl" />
+	<column name="description" type="varchar" size="50" notnull="notnull" />
+	<column name="price" type="number" size="11" notnull="notnull" />
+	<column name="opt" type="char" size="1" default="1" notnull="notnull" />
+	<column name="regdate" type="date" notnull="notnull" />
+</table>

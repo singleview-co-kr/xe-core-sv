@@ -1,0 +1,5 @@
+<query id="deleteSiteGroupDiscount" action="delete">
+	<tables>
+		<table name="svpromotion_site_group" />
+	</tables>
+</query>

@@ -1,0 +1,12 @@
+<query id="getDocByMemberSrl" action="select">
+    <tables>
+        <table name="svdocs" />
+    </tables>
+    <columns>
+        <column name="doc_srl" />
+    </columns>
+    <conditions>
+		<condition operation="equal" column="member_srl" var="member_srl" filter="number" notnull="notnull" />
+        <condition operation="equal" column="module_srl" var="module_srl" filter="number" notnull="notnull" pipe="and" />
+    </conditions>
+</query>

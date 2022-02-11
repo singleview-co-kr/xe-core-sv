@@ -1,0 +1,27 @@
+<div class="x_page-header">
+	<h1>
+		{$lang->svdocs_management}
+		<span class="path" cond="$module_info->mid">
+			&gt; <a href="{getSiteUrl($module_info->domain,'','mid',$module_info->mid)}" target="_blank"|cond="$module=='admin'">{$module_info->mid}</a><block cond="$module_info->is_default=='Y'">({$lang->is_default})</block>
+		</span>
+		<a href="#aboutSvdocs" class="x_icon-question-sign" data-toggle cond="!$module_info->mid"></a>
+	</h1>
+</div>
+<p id="aboutSvdocs" class="x_alert x_alert-info" cond="!$module_info->mid" hidden>{nl2br($lang->about_svdocs)}</p>
+<ul class="x_nav x_nav-tabs" cond="$act != 'dispSvdocsAdminDelete' && $module_info">
+	<li class="x_active"|cond="$act=='dispSvdocsAdminIndex'"><a href="{getUrl('act','dispSvdocsAdminIndex','module_srl','', 'rcpt_no','')}">{$lang->cmd_list}</a></li>
+	<li class="x_active"|cond="$act=='dispSvdocsAdminConfig'"><a href="{getUrl('act','dispSvdocsAdminConfig')}">{$lang->cmd_basic_setting}</a></li>
+<block cond="$module_srl">
+	<li class="x_active"|cond="$act=='dispSvdocsAdminInfo'"><a href="{getUrl('act','dispSvdocsAdminInfo', 'rcpt_no','')}">{$lang->module_info}</a></li>
+	<li class="x_active"|cond="$act=='dispSvdocsAdminGrantInfo'"><a href="{getUrl('act','dispSvdocsAdminGrantInfo', 'rcpt_no','')}">{$lang->cmd_manage_grant}</a></li>
+	<li class="x_active"|cond="$act=='dispSvdocsAdminSkinInfo'"><a href="{getUrl('act','dispSvdocsAdminSkinInfo', 'rcpt_no','')}">{$lang->cmd_manage_skin}</a></li>
+	<li class="x_active"|cond="$act=='dispSvdocsAdminMobileSkinInfo'"><a href="{getUrl('act','dispSvdocsAdminMobileSkinInfo', 'rcpt_no','')}">{$lang->cmd_manage_mobile_skin}</a></li>
+</block>
+</ul>
+<ul class="x_nav x_nav-tabs" cond="$module_srl">
+	<li class="x_active"|cond="$act=='dispSvdocsAdminApplicantsList'"><a href="{getUrl('act','dispSvdocsAdminApplicantsList','page','','search_target','','search_keyword','', 'rcpt_no','')}">{$lang->cmd_applicants_info}</a></li>
+	<li class="x_active"|cond="$act=='dispSvdocsAdminTermsPrivacyUsage'"><a href="{getUrl('act','dispSvdocsAdminTermsPrivacyUsage', 'rcpt_no','')}">{$lang->cmd_manage_term_privacy_usage}</a></li>
+	<li class="x_active"|cond="$act=='dispSvdocsAdminTermsPrivacyShr'"><a href="{getUrl('act','dispSvdocsAdminTermsPrivacyShr', 'rcpt_no','')}">{$lang->cmd_manage_term_privacy_shr}</a></li>
+	<li class="x_active"|cond="$act=='dispSvdocsAdminExtraVars'"><a href="{getUrl('act','dispSvdocsAdminExtraVars', 'rcpt_no','', 'selected_var_idx','' )}">{$lang->extra_vars}</a></li>
+	<li class="x_active"|cond="$act=='dispSvdocsAdminApplicantInsert'"><a href="{getUrl('act','dispSvdocsAdminApplicantInsert', 'rcpt_no','', 'selected_var_idx','' )}">{$lang->applicant_insert}</a></li>
+</ul>

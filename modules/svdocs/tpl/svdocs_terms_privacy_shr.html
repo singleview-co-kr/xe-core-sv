@@ -1,0 +1,36 @@
+<!--#include("header.html")-->
+<load target="../../editor/tpl/js/editor_module_config.js" usecdn="true" />
+<div cond="$XE_VALIDATOR_MESSAGE" class="message {$XE_VALIDATOR_MESSAGE_TYPE}">
+	<p>{$XE_VALIDATOR_MESSAGE}</p>
+</div>
+<form ruleset="updatePage" action="./" method="post" enctype="multipart/form-data" class="x_form-horizontal">
+<section class="section">
+	<input type="hidden" name="module" value="svdocs" />
+	<input type="hidden" name="mid" value="{$mid}" />
+	<input type="hidden" name="act" value="procSvdocsAdminTermPrivacyShrUpdate" />
+	<input type="hidden" name="module_srl" value="{$module_srl}" />
+	<input type="hidden" name="privacy_shr_term" value="{$privacy_shr_term}" />
+	<input type="hidden" name="success_return_url" value="{getRequestUriByServerEnviroment()}" />
+	<div class="x_control-group">
+		<label class="x_control-label">{$lang->is_hide_privacy_shr_term}</label>
+		<div class="x_controls">
+			<label class="x_inline" for="is_hide_privacy_shr_term"><input type="checkbox" name="is_hide_privacy_shr_term" id="is_hide_privacy_shr_term" value="Y" checked="checked"|cond="$module_info->is_hide_privacy_shr_term=='Y'" /> {$lang->hide}</label>
+			<a href="#aboutHidePrivacyShrTerm" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+			<p class="x_help-block" id="aboutHidePrivacyShrTerm" hidden>{$lang->about_is_hide_privacy_shr_term}</p>
+		</div>
+	</div>
+	<div class="x_control-group">
+		<label class="x_control-label" for="privacy_shr_term">{$lang->cmd_manage_term_privacy_shr}</label>
+		<div class="x_controls">{$editor}</div>
+		<style scoped>
+			#smart_content,
+			#smart_content>.tool{clear:none !important}
+		</style>
+	</div>
+	<div class="x_clearfix btnArea">
+		<div class="x_pull-right">
+			<button type="submit" class="x_btn x_btn-primary">{$lang->cmd_save}</button>
+		</div>
+	</div>
+</form>
+</section>

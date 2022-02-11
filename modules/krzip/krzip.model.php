@@ -1,271 +1,238 @@
 <?php
-/* Copyright (C) XEHub <https://www.xehub.io> */
-/**
- * @class  krzipModel
- * @author XEHub (developers@xpressengine.com)
- * @brief  Krzip module model class.
- */
 
 class krzipModel extends krzip
 {
-	/**
-	 * @brief 한국 우편번호 모듈 설정 반환
-	 * @return object
-	 */
-	function getConfig()
-	{
-		if(!isset($this->module_config))
+    // 공식 모듈 및 구 버전 모듈과의 호환성을 위해 존재하는 메소드들
+    
+    public function init()
+    {
+        // no-op
+    }
+    
+    public function getKrzipCodeList()
+    {
+        return new BaseObject(-1, 'krzip_incompatible_version');
+    }
+    
+    public function getKrzipStandardFormat($values)
+    {
+        return $this->convertDataFormat($values);
+    }
+    
+    public function getMigratedPostcode($values)
+    {
+        return $this->convertDataFormat($values);
+    }
+    
+    // 기존 krzip 모듈이나 구버전 모듈이 저장한 값이 있을 경우 안정화 버전의 포맷에 맞추어 변환한다
+    
+    public function convertDataFormat($values)
+    {
+        // 배열 키를 정리한다
+        
+        $values = array_map('trim', array_values($values));
+        
+        // Postcodify 또는 새 krzip 모듈의 포맷을 인식한다
+        
+        if (is_array($values) && count($values))
+        {
+            // 반환할 배열을 준비한다
+            
+            $result = array(null, null, null, null, null);
+            
+            // 우편번호를 인식한다
+            
+            if (preg_match('/^([0-9]{5}|[0-9]{3}-[0-9]{3})$/i', trim($values[count($values) - 1])))
+            {
+                $result[0] = array_pop($values);
+            }
+            elseif (preg_match('/^([0-9]{5}|[0-9]{3}-[0-9]{3})$/i', trim($values[0])))
+            {
+                $result[0] = array_shift($values);
+            }
+            
+            // 포맷 인식에 성공한 경우
+            
+            if ($result[0] !== null)
+            {
+                // 도로명주소를 인식한다
+                
+                if (preg_match('/^((?:서울|부산|인천|대[전구]|광주|울산|세종|경[기상남북]|전[라남북]|충[청남북]|강원|제주)[가-힣]*)\s+([가-힣]+)\s+/u', $values[0], $matches))
+                {
+                    $result[1] = array_shift($values);
+                    
+                    // 지번주소를 인식한다
+                    
+                    if (strpos($matches[1], '세종') === 0) $matches[2] = '';
+                    if (preg_match('/^' . $matches[1] . '\s+' . $matches[2] . '.+/', $values[count($values) - 1]))
+                    {
+                        $result[4] = array_pop($values);
+                    }
+                    elseif (preg_match('/^\(' . $matches[1] . '\s+' . $matches[2] . '.+\)/', $values[0]))
+                    {
+                        $result[4] = trim(array_shift($values), ' ()');
+                    }
+                }
+                
+                // 참고항목을 인식한다
+                
+                if (preg_match('/^\([가-힣0-9]+[동리가로](,.*)?\)$/u', $values[count($values) - 1]))
+                {
+                    $result[3] = array_pop($values);
+                }
+                
+                // 남은 항목들은 상세주소로 취급한다
+                
+                foreach ($values as $value)
+                {
+                    if ($result[1] === null && preg_match('/^((?:서울|부산|인천|대[전구]|광주|울산|세종|경[기상남북]|전[라남북]|충[청남북]|강원|제주)[가-힣]*)\s+([가-힣]+)\s+/u', $value, $matches))
+                    {
+                        $result[1] = $value;
+                    }
+                    elseif ($result[3] === null && preg_match('/^\([가-힣0-9]+[동리가로](,.*)?\)$/u', $value))
+                    {
+                        $result[3] = $value;
+                    }
+                    else
+                    {
+                        $result[2] = ($result[2] === null) ? $value : ($result[2] . ' ' . $value);
+                    }
+                }
+                
+                // 결과를 반환한다
+                
+                if ($result[1] !== null || $result[2] !== null || $result[3] !== null || $result[4] !== null)
+                {
+                    return $result;
+                }
+            }
+        }
+        
+        // 기존 krzip 모듈 (#17ed81e 이후)
+        
+        if (is_array($values) && count($values) == 3 && preg_match('/^(.*)\(([0-9]{5}|[0-9]{3}-[0-9]{3})\)\s*$/', $values[2], $matches))
+        {
+            $postcode = $matches[2];
+            $values[2] = preg_replace('/,\s*\)/', ')', $matches[1]);
+            return array($postcode, $values[0], $values[1], $values[2], null);
+        }
+        
+        // 기존 krzip 모듈 (#3a932f6 이전)
+        
+        if (is_array($values) && count($values) == 2 && preg_match('/^(.*)\(([0-9]{5}|[0-9]{3}-[0-9]{3})\)\s*$/', $values[0], $matches))
+        {
+            $postcode = $matches[2];
+            $values[0] = $matches[1];
+            if (preg_match('/^(.*)(\(.+\))\s*$/', $values[0], $exmatches))
+            {
+                $values[2] = preg_replace('/,\s*\)/', ')', $exmatches[2]);
+                $values[0] = trim($exmatches[1]);
+            }
+            else
+            {
+                $values[2] = '';
+            }
+            return array($postcode, $values[0], $values[1], $values[2], null);
+        }
+        
+        // 그 밖의 주소는 일정한 규칙에 따라 각각의 구성요소를 분리한다
+        
+        if (is_array($values)) $values = implode(' ', $values);
+        $address = trim(preg_replace('/\s+/', ' ', $values));
+        
+        if (preg_match('/\(([0-9]{3}-[0-9]{3})\)/', $address, $matches))
+        {
+            $address = trim(preg_replace('/\s+/', ' ', str_replace($matches[0], '', $address)));
+            $postcode = $matches[1];
+        }
+        elseif (preg_match('/^([0-9]{3}-[0-9]{3})\s/', $address, $matches))
+        {
+            $address = trim(preg_replace('/\s+/', ' ', str_replace($matches[0], '', $address)));
+            $postcode = $matches[1];
+        }
+        else
+        {
+            $postcode = '';
+        }
+        
+        if (preg_match('/\(.+[동리](?:,.*)?\)/u', $address, $matches))
+        {
+            $address = trim(preg_replace('/\s+/', ' ', str_replace($matches[0], '', $address)));
+            $extra_info = $matches[0];
+        }
+        else
+        {
+            $extra_info = '';
+        }
+        
+        if (preg_match('/^(.+ [가-힝]+[0-9]*[동리로길]\s*[0-9-]+(?:번지?)?),?\s+(.+)$/u', $address, $matches))
+        {
+            $address = trim($matches[1]);
+            $details = trim($matches[2]);
+        }
+        else
+        {
+            $details = '';
+        }
+        
+        return array($postcode, $address, $details, $extra_info, null);
+    }
+    
+    // 우편번호 검색 폼 HTML을 생성하여 반환한다
+    
+    public function getKrzipCodeSearchHtml($column_name, $values)
+    {
+        $config = $this->getKrzipConfig();
+        
+        $values = $this->convertDataFormat($values);
+        
+		///////////////////////////////////////////////////////////////////
+		////////// kakao 주소 검색 선택 기능 추가 - 시작 20200903 /////////
+		if($config->krzip_address_format === 'kakaokrzip' )
 		{
-			$oModuleModel = getModel('module');
-			$module_config = $oModuleModel->getModuleConfig('krzip');
-			if(!is_object($module_config))
-			{
-				$module_config = new stdClass();
-			}
-
-			/* 기본 설정 추가 */
-			$default_config = self::$default_config;
-			foreach($default_config as $key => $val)
-			{
-				if(!isset($module_config->{$key}))
-				{
-					$module_config->{$key} = $val;
-				}
-			}
-
-			$this->module_config = $module_config;
+			$oKrzipConfig = new stdClass();
+			$oKrzipConfig->column_name = $column_name;
+			$oKrzipConfig->values = $values;
+			Context::set('krzip', $oKrzipConfig);
+			$oTemplate = &TemplateHandler::getInstance();
+			return $oTemplate->compile($this->module_path.'tpl', 'kakao_search');
 		}
+		////////// kakao 주소 검색 선택 기능 추가 - 끝 20200903 /////////
+		///////////////////////////////////////////////////////////////////
+		
+		if ($config->krzip_address_format === 'newkrzip' && strlen($values[4]) > 0)
+        {
+        	$values[4] = '(' . $values[4] . ')';
+        }
 
-		return $this->module_config;
-	}
-
-	/**
-	 * @brief 여러 포맷의 우편번호를 모듈 표준 포맷으로 변환
-	 * @param mixed $values
-	 * @return array
-	 */
-	function getMigratedPostcode($values)
-	{
-		if(is_array($values))
-		{
-			$values = array_values($values);
-
-			/* 5자리 우편변호 마이그레이션 */
-			if(count($values) == 4 && preg_match('/^\(?[0-9a-z\x20-]{5,10}\)?$/i', trim($values[0])))
-			{
-				return $values;
-			}
-
-			$values = implode(' ', $values);
-		}
-
-		$output = array('', trim(preg_replace('/\s+/', ' ', $values)), '', '', '');
-
-		/* 우편번호 */
-		if(preg_match('/\(?([0-9-]{5,7})\)?/', $output[1], $matches))
-		{
-			$output[1] = trim(preg_replace('/\s+/', ' ', str_replace($matches[0], '', $output[1])));
-			$output[0] = $matches[1];
-		}
-
-		/* 지번 주소 */
-		if(preg_match('/\(.+\s.+[읍면동리(마을)(0-9+가)]\s[0-9-]+\)/', $output[1], $matches))
-		{
-			$output[1] = trim(str_replace($matches[0], '', $output[1]));
-			$output[2] = $matches[0];
-		}
-
-		/* 부가 정보 */
-		if(preg_match('/\(.+[읍면동리(마을)(0-9+가)](?:,.*)?\)/u', $output[1], $matches))
-		{
-			$output[1] = trim(str_replace($matches[0], '', $output[1]));
-			$output[4] = $matches[0];
-		}
-
-		/* 상세 주소 */
-		if(preg_match('/^(.+ [가-힝]+[0-9]*[동리로길]\s*[0-9-]+(?:번지?)?),?\s+(.+)$/u', $output[1], $matches))
-		{
-			$output[1] = trim($matches[1]);
-			$output[3] = trim($matches[2]);
-		}
-
-		return $output;
-	}
-
-	/**
-	 * @brief 외부 서버로부터 주소 검색 결과 반환
-	 * @param string $query
-	 * @return mixed
-	 */
-	function getKrzipCodeList($query)
-	{
-		$module_config = $this->getConfig();
-		if($module_config->api_handler != 1)
-		{
-			return $this->makeObject(-1, 'msg_invalid_request');
-		}
-		if(!isset($query))
-		{
-			$query = Context::get('query');
-		}
-
-		$query = trim(strval($query));
-		if($query === '')
-		{
-			return $this->stop('msg_krzip_no_query');
-		}
-
-		$output = $this->getEpostapiSearch($query);
-		/* XML Request에서는 Array 치환에 대한 문제로 이 함수를 제대로 사용할 수 없음 */
-		$this->add('address_list', $output->get('address_list'));
-		if(!$output->toBool())
-		{
-			return $output;
-		}
-	}
-
-	/**
-	 * @brief 우체국 우편번호 API 검색 결과 반환
-	 * @param string $query
-	 * @return object
-	 */
-	function getEpostapiSearch($query = '')
-	{
-		/**
-		 * @brief 문자열 인코딩 변환
-		 * @note 우체국 우편번호 API는 검색어를 EUC-KR로 넘겨주어야 함
-		 */
-		$encoding = strtoupper(mb_detect_encoding($query));
-		if($encoding !== 'EUC-KR')
-		{
-			$query = iconv($encoding, 'EUC-KR', $query);
-		}
-
-		$module_config = $this->getConfig();
-		$regkey = $module_config->epostapi_regkey;
-
-		$fields = array(
-			'target' => 'postNew', /* 도로명 주소 */
-			'regkey' => $regkey,
-			'query' => $query
-		);
-		$headers = array(
-			'accept-language' => 'ko'
-		);
-		$request_config = array(
-			'ssl_verify_peer' => FALSE
-		);
-
-		$buff = FileHandler::getRemoteResource(
-			self::$epostapi_host,
-			NULL,
-			30,
-			'POST',
-			'application/x-www-form-urlencoded',
-			$headers,
-			array(),
-			$fields,
-			$request_config
-		);
-
-		$oXmlParser = new XmlParser();
-		$result = $oXmlParser->parse($buff);
-		if($result->error)
-		{
-			$err_msg = trim($result->error->message->body);
-			if(!$err_msg)
-			{
-				$err_code = intval(str_replace('ERR-', '', $result->error->error_code->body));
-				switch($err_code)
-				{
-					case 1:
-						$err_msg = 'msg_krzip_is_maintenance';
-						break;
-					case 2:
-						$err_msg = 'msg_krzip_wrong_regkey';
-						break;
-					case 3:
-						$err_msg = 'msg_krzip_no_result';
-						break;
-					default:
-						$err_msg = 'msg_krzip_riddling_wrong';
-						break;
-				}
-			}
-
-			return $this->makeObject(-1, $err_msg);
-		}
-		if(!$result->post)
-		{
-			return $this->makeObject(-1, 'msg_krzip_riddling_wrong');
-		}
-
-		$item_list = $result->post->itemlist->item;
-		if(!is_array($item_list))
-		{
-			$item_list = array($item_list);
-		}
-		if(!$item_list)
-		{
-			return $this->makeObject(-1, 'msg_krzip_no_result');
-		}
-
-		$addr_list = array();
-		foreach($item_list as $key => $val)
-		{
-			$postcode = $val->postcd->body;
-			$road_addr = $val->address->body;
-			$jibun_addr = $val->addrjibun->body;
-			$detail = '';
-			$extra = '';
-
-			if(preg_match('/\((?<detail>.+[읍면동리(마을)(0-9+가)](?:,.*)?)\)/', $road_addr, $matches))
-			{
-				$road_addr = trim(str_replace($matches[0], '', $road_addr));
-				$extra = '(' . $matches['detail'] . ')';
-			}
-			if(preg_match('/\((?<detail>.+[읍면동리(마을)(빌딩)(0-9+가)](?:,.*)?)\)/', $jibun_addr, $matches))
-			{
-				$jibun_addr = '(' . trim(str_replace($matches[0], '', $jibun_addr)) . ')';
-			}
-
-			$addr_list[] = array(
-				$postcode, // 0 우편번호
-				$road_addr, // 1 도로명 주소
-				$jibun_addr, // 2 지번 주소
-				$detail, // 3 상세 주소
-				$extra // 4 부가 정보 (**동, **빌딩)
-			);
-		}
-
-		$output = $this->makeObject();
-		$output->add('address_list', $addr_list);
-
-		return $output;
-	}
-
-	/**
-	 * @brief HTML 입력 폼 반환
-	 * @param string $column_name
-	 * @param mixed $values
-	 * @return string
-	 */
-	//06232 서울특별시 강남구 강남대로 382 서울특별시 강남구 역삼동 825-2
-	function getKrzipCodeSearchHtml($column_name, $values)
-	{
-		$template_config = $this->getConfig();
-		$template_config->sequence_id = ++self::$sequence_id;
-		$template_config->column_name = $column_name;
-		$template_config->values = $this->getMigratedPostcode($values);
-		Context::set('template_config', $template_config);
-
-		$api_name = strval(self::$api_list[$template_config->api_handler]);
-		$oTemplate = TemplateHandler::getInstance();
-		$output = $oTemplate->compile($this->module_path . 'tpl', 'template.' . $api_name);
-debugPrint($output);
-		return $output;
-	}
+        foreach ($values as &$value)
+        {
+            $value = htmlspecialchars($value, ENT_COMPAT, 'UTF-8', false);
+        }
+        if (!strncasecmp($server_url, 'https://api.poesis.kr/', 22) && preg_match('/MSIE [56]\./', $_SERVER['HTTP_USER_AGENT']))
+        {
+            $server_url = 'http:' . substr($server_url, 6);
+        }
+        
+        $krzip_config = new stdClass();
+        $krzip_config->column_name = $column_name;
+        $krzip_config->values = $values;
+        $krzip_config->instance_id = ++self::$instance_sequence;
+        $krzip_config->server_url = $config->krzip_server_url;
+        $krzip_config->map_provider = $config->krzip_map_provider;
+        $krzip_config->address_format = $config->krzip_address_format;
+        $krzip_config->display_postcode = $config->krzip_display_postcode;
+        $krzip_config->display_address = $config->krzip_display_address;
+        $krzip_config->display_details = $config->krzip_display_details;
+        $krzip_config->display_extra_info = $config->krzip_display_extra_info;
+        $krzip_config->display_jibeon_address = $config->krzip_display_jibeon_address;
+        $krzip_config->postcode_format = $config->krzip_postcode_format;
+        $krzip_config->server_request_format = $config->krzip_server_request_format;
+        $krzip_config->require_exact_query = $config->krzip_require_exact_query;
+        $krzip_config->use_full_jibeon = $config->krzip_use_full_jibeon;
+        Context::set('krzip', $krzip_config);
+        
+        $oTemplate = &TemplateHandler::getInstance();
+        return $oTemplate->compile($this->module_path.'tpl', 'search');
+    }
 }
-
-/* End of file krzip.model.php */
-/* Location: ./modules/krzip/krzip.model.php */

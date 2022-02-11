@@ -1,0 +1,16 @@
+<query id="getSvShortenersMaxIndex" action="select">
+    <tables>
+        <table name="svshortener" />
+    </tables>
+    <columns>
+        <column name="shortener_srl" />
+    </columns>
+    <conditions>
+    </conditions>
+	<navigation>
+        <index var="sort_index" default="shortener_srl" order="desc" />
+        <list_count var="list_count" default="1" />
+        <page_count var="page_count" default="1" />
+        <page var="page" default="1" />
+    </navigation>
+</query>

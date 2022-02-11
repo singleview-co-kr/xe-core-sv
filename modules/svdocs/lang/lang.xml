@@ -1,0 +1,380 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<lang>
+	<item name="sv_column_type_list" type="array">
+		<item name="text">
+			<value xml:lang="ko"><![CDATA[한줄 입력칸(text)]]></value>
+			<value xml:lang="en"><![CDATA[one-line text]]></value>
+			<value xml:lang="jp"><![CDATA[入力フィールド(text)]]></value>
+			<value xml:lang="zh-CN"><![CDATA[单行文本输入区(text)]]></value>
+			<value xml:lang="zh-TW"><![CDATA[單行文字]]></value>
+			<value xml:lang="fr"><![CDATA[Texte en une seul ligne]]></value>
+			<value xml:lang="de"><![CDATA[eine Zeile Text]]></value>
+			<value xml:lang="ru"><![CDATA[Однострочное окно ввода]]></value>
+			<value xml:lang="es"><![CDATA[Texto sin cambio de línea]]></value>
+			<value xml:lang="tr"><![CDATA[tek satırlık metin]]></value>
+			<value xml:lang="vi"><![CDATA[Ô nhập liệu]]></value>
+			<value xml:lang="mn"><![CDATA[Нэг мөрөөр оруулах(text)]]></value>
+		</item>
+		<item name="hidden">
+			<value xml:lang="ko"><![CDATA[숨김값(hidden)]]></value>
+		</item>
+		<item name="homepage">
+			<value xml:lang="ko"><![CDATA[URL 형식]]></value>
+			<value xml:lang="en"><![CDATA[URL]]></value>
+			<value xml:lang="jp"><![CDATA[URLタイプ(url)]]></value>
+			<value xml:lang="zh-CN"><![CDATA[网址格式(url)]]></value>
+			<value xml:lang="zh-TW"><![CDATA[網址格式]]></value>
+			<value xml:lang="fr"><![CDATA[URL]]></value>
+			<value xml:lang="de"><![CDATA[Url-Adresse]]></value>
+			<value xml:lang="es"><![CDATA[URL de la página web]]></value>
+			<value xml:lang="vi"><![CDATA[URL]]></value>
+			<value xml:lang="mn"><![CDATA[Веб хуудас хэлбэр(url)]]></value>
+		</item>
+		<item name="email_address">
+			<value xml:lang="ko"><![CDATA[이메일 형식(email)]]></value>
+			<value xml:lang="en"><![CDATA[Email]]></value>
+			<value xml:lang="jp"><![CDATA[メールアドレスタイプ(email)]]></value>
+			<value xml:lang="zh-CN"><![CDATA[邮件格式(email)]]></value>
+			<value xml:lang="zh-TW"><![CDATA[電子郵件]]></value>
+			<value xml:lang="fr"><![CDATA[Mél]]></value>
+			<value xml:lang="de"><![CDATA[E-Mail]]></value>
+			<value xml:lang="es"><![CDATA[Correo Electrónico]]></value>
+			<value xml:lang="tr"><![CDATA[e-posta]]></value>
+			<value xml:lang="vi"><![CDATA[Email]]></value>
+			<value xml:lang="mn"><![CDATA[Мэйл хэлбэр(email)]]></value>
+		</item>
+		<item name="tel">
+			<value xml:lang="ko"><![CDATA[전화번호 형식(phone)]]></value>
+			<value xml:lang="en"><![CDATA[Phone number]]></value>
+			<value xml:lang="jp"><![CDATA[電話番号タイプ(phone)]]></value>
+			<value xml:lang="zh-CN"><![CDATA[电话号码格式(phone)]]></value>
+			<value xml:lang="zh-TW"><![CDATA[電話號碼格式(phone)]]></value>
+			<value xml:lang="fr"><![CDATA[Numéro de Telephone]]></value>
+			<value xml:lang="de"><![CDATA[Telefonnummer]]></value>
+			<value xml:lang="ru"><![CDATA[номер телефона]]></value>
+			<value xml:lang="es"><![CDATA[Número de teléfono]]></value>
+			<value xml:lang="tr"><![CDATA[telefon numarası]]></value>
+			<value xml:lang="vi"><![CDATA[Số điện thoại]]></value>
+			<value xml:lang="mn"><![CDATA[Утасны дугаар хэлбэр(phone)]]></value>
+		</item>
+		<item name="textarea">
+			<value xml:lang="ko"><![CDATA[여러 줄 입력칸(textarea)]]></value>
+			<value xml:lang="en"><![CDATA[multi-line textarea]]></value>
+			<value xml:lang="jp"><![CDATA[テキストエリア(textarea)]]></value>
+			<value xml:lang="zh-CN"><![CDATA[多行文本框(textarea)]]></value>
+			<value xml:lang="zh-TW"><![CDATA[文字區域(textarea)]]></value>
+			<value xml:lang="fr"><![CDATA[Texte en plusieurs lignes]]></value>
+			<value xml:lang="de"><![CDATA[Mehrere Zeilen Text]]></value>
+			<value xml:lang="ru"><![CDATA[Многострочное окно ввода]]></value>
+			<value xml:lang="es"><![CDATA[Texto multi-linea]]></value>
+			<value xml:lang="tr"><![CDATA[cok satırlı metin alanı]]></value>
+			<value xml:lang="vi"><![CDATA[Khu vực nội dung]]></value>
+			<value xml:lang="mn"><![CDATA[Олон мөрөөр оруулах(textarea)]]></value>
+		</item>
+		<item name="radio">
+			<value xml:lang="ko"><![CDATA[단일 선택(radio)]]></value>
+			<value xml:lang="en"><![CDATA[radio button(radio)]]></value>
+			<value xml:lang="jp"><![CDATA[ラジオボタン(radio)]]></value>
+			<value xml:lang="zh-CN"><![CDATA[单选框(radio)]]></value>
+			<value xml:lang="zh-TW"><![CDATA[選項按紐(radio)]]></value>
+			<value xml:lang="de"><![CDATA[Radiobutton]]></value>
+			<value xml:lang="ru"><![CDATA[Кнопка радио(радио)]]></value>
+			<value xml:lang="tr"><![CDATA[radyo tuşu(radyo)]]></value>
+			<value xml:lang="mn"><![CDATA[Нэг eдeр сонгох(radio)]]></value>
+		</item>
+		<item name="select">
+			<value xml:lang="ko"><![CDATA[단일 선택(single select)]]></value>
+			<value xml:lang="en"><![CDATA[single select box]]></value>
+			<value xml:lang="jp"><![CDATA[ひとつ選択(select)]]></value>
+			<value xml:lang="zh-CN"><![CDATA[下拉列表框(select)]]></value>
+			<value xml:lang="zh-TW"><![CDATA[下拉式選單(select)]]></value>
+			<value xml:lang="fr"><![CDATA[Case d'option(seul choix)]]></value>
+			<value xml:lang="de"><![CDATA[Nur eine Auswahl]]></value>
+			<value xml:lang="ru"><![CDATA[Выбор(один вариант)]]></value>
+			<value xml:lang="es"><![CDATA[Selección(selección individual)]]></value>
+			<value xml:lang="tr"><![CDATA[kutuyu seç(tekli seçim)]]></value>
+			<value xml:lang="vi"><![CDATA[Ô chọn(Một lựa chọn)]]></value>
+			<value xml:lang="mn"><![CDATA[Ганц сонголт хийх(select)]]></value>
+		</item>
+		<item name="checkbox">
+			<value xml:lang="ko"><![CDATA[다중 선택(checkbox)]]></value>
+			<value xml:lang="en"><![CDATA[checkbox(multiple selection)]]></value>
+			<value xml:lang="jp"><![CDATA[チェックボックス(checkbox)]]></value>
+			<value xml:lang="zh-CN"><![CDATA[复选框(checkbox)]]></value>
+			<value xml:lang="zh-TW"><![CDATA[核取方塊(checkbox)]]></value>
+			<value xml:lang="fr"><![CDATA[Case à cocher(multichoix)]]></value>
+			<value xml:lang="de"><![CDATA[Multiple Auswahl]]></value>
+			<value xml:lang="ru"><![CDATA[Чекбокс(мульти вариант)]]></value>
+			<value xml:lang="es"><![CDATA[Caja de chequeo(selección múltiple)]]></value>
+			<value xml:lang="tr"><![CDATA[onay kutusu(çoklu seçim)]]></value>
+			<value xml:lang="vi"><![CDATA[Ô chọn(Nhiều lựa chọn)]]></value>
+			<value xml:lang="mn"><![CDATA[Олон сонголт хийх(checkbox)]]></value>
+		</item>
+		<item name="kr_zip">
+			<value xml:lang="ko"><![CDATA[한국주소(zip)]]></value>
+			<value xml:lang="en"><![CDATA[zip code(Korean)]]></value>
+			<value xml:lang="jp"><![CDATA[韓国住所(zip)]]></value>
+			<value xml:lang="zh-CN"><![CDATA[韩国邮编(zip)]]></value>
+			<value xml:lang="zh-TW"><![CDATA[韓國郵編(zip)]]></value>
+			<value xml:lang="fr"><![CDATA[Code postal(coréen)]]></value>
+			<value xml:lang="de"><![CDATA[Postleitzahl(aber nur in Korean)]]></value>
+			<value xml:lang="ru"><![CDATA[Почтовый индекс(Корейский)]]></value>
+			<value xml:lang="tr"><![CDATA[zip kodu(Kore)]]></value>
+			<value xml:lang="vi"><![CDATA[Mã số bưu điện(Korean)]]></value>
+			<value xml:lang="mn"><![CDATA[Солонгос хаяг(zip)]]></value>
+		</item>
+		<item name="date">
+			<value xml:lang="ko"><![CDATA[일자(연월일)]]></value>
+			<value xml:lang="en"><![CDATA[date(yyyy/mm/dd)]]></value>
+			<value xml:lang="jp"><![CDATA[日付(年月日)]]></value>
+			<value xml:lang="zh-CN"><![CDATA[日期(年月日)]]></value>
+			<value xml:lang="zh-TW"><![CDATA[日期(年月日)]]></value>
+			<value xml:lang="fr"><![CDATA[Jour(yyyy/mm/dd)]]></value>
+			<value xml:lang="de"><![CDATA[Datum(dd / mm /jjjj)]]></value>
+			<value xml:lang="ru"><![CDATA[Дата(гггг / мм / дд)]]></value>
+			<value xml:lang="es"><![CDATA[fecha(dd/mm/aaaa)]]></value>
+			<value xml:lang="tr"><![CDATA[tarih(gg/aa/yyyy)]]></value>
+			<value xml:lang="vi"><![CDATA[Ngày(yyyy/mm/dd)]]></value>
+			<value xml:lang="mn"><![CDATA[Онсар (Жил сар өдөр)]]></value>
+		</item>
+	</item>
+	<item name="about_default_value">
+		<value xml:lang="ko"><![CDATA[다중/단일 선택 등 기본 값이 여러 개가 필요하면 ,(콤마)로 연결하세요. 마지막에 "기타"를 입력하면 자율입력상자가 표시됩니다.]]></value>
+	</item>
+	<item name="about_svdocs">
+		<value xml:lang="ko"><![CDATA[간단한 정보 수집용 페이지를 제작하고 응모자들을 관리할 수 있습니다.]]></value>
+	</item>
+	<item name="svdocs_management">
+		<value xml:lang="ko"><![CDATA[싱글뷰 Docs 관리]]></value>
+	</item>
+	<item name="svauth_plugin_srl">
+		<value xml:lang="ko"><![CDATA[본인인증 플러그인]]></value>
+	</item>
+	<item name="about_svauth_plugin_srl">
+		<value xml:lang="ko"><![CDATA[svauth 모듈이 설치되어야 합니다. 본인인증 플러그인을 통해서 인증 방식을 선택할 수 있습니다.]]></value>
+	</item>
+	<item name="member_id">
+		<value xml:lang="ko"><![CDATA[회원ID]]></value>
+	</item>
+	<item name="title_multiple_choice">
+		<value xml:lang="ko"><![CDATA[(복수선택)]]></value>
+	</item>
+	
+	<item name="applicant_name">
+		<value xml:lang="ko"><![CDATA[응모자명]]></value>
+	</item>
+	<item name="applicant_phone">
+		<value xml:lang="ko"><![CDATA[응모자 핸드폰 번호]]></value>
+	</item>
+	<item name="applicant_duration">
+		<value xml:lang="ko"><![CDATA[체류시간]]></value>
+	</item>
+	<item name="max_applicants">
+		<value xml:lang="ko"><![CDATA[최대 응모자수]]></value>
+	</item>
+	<item name="is_allow_update">
+		<value xml:lang="ko"><![CDATA[응모자 수정 허용]]></value>
+	</item>
+	<item name="is_closed_application">
+		<value xml:lang="ko"><![CDATA[폐쇄 응모 활성화]]></value>
+	</item>
+	<item name="is_hide_privacy_shr_term">
+		<value xml:lang="ko"><![CDATA[개인정보3자제공약관 숨기기]]></value>
+	</item>
+	<item name="allow">
+		<value xml:lang="ko"><![CDATA[허용]]></value>
+	</item>
+	<item name="hide">
+		<value xml:lang="ko"><![CDATA[숨기기]]></value>
+	</item>
+	<item name="datetimestamp_entry">
+		<value xml:lang="ko"><![CDATA[시작일시]]></value>
+	</item>
+	<item name="datetimestamp_final">
+		<value xml:lang="ko"><![CDATA[완료일시]]></value>
+	</item>
+	<item name="user_agent">
+		<value xml:lang="ko"><![CDATA[접속기기]]></value>
+	</item>
+	<item name="init_referral">
+		<value xml:lang="ko"><![CDATA[진입 Referral]]></value>
+	</item>
+	<item name="utm_source">
+		<value xml:lang="ko"><![CDATA[광고 소스]]></value>
+	</item>
+	<item name="utm_medium">
+		<value xml:lang="ko"><![CDATA[광고 매체]]></value>
+	</item>
+	<item name="utm_campaign">
+		<value xml:lang="ko"><![CDATA[광고 캠페인]]></value>
+	</item>
+	<item name="utm_term">
+		<value xml:lang="ko"><![CDATA[광고 키워드]]></value>
+	</item>
+	<item name="applicants_registration">
+		<value xml:lang="ko"><![CDATA[응모자 목록]]></value>
+	</item>
+
+	<item name="about_max_applicants">
+		<value xml:lang="ko"><![CDATA[입력된 최대 응모자수에 도달하면 응모가 차단됩니다.]]></value>
+	</item>
+	<item name="open_datetime">
+		<value xml:lang="ko"><![CDATA[응모시작일시]]></value>
+	</item>
+	<item name="about_open_datetime">
+		<value xml:lang="ko"><![CDATA[ex) feb 21 2016 00:00:01, 티저모드를 사용하면 svdocs를 차단하지 않고 개시일까지 남은 시간이 표시됩니다.]]></value>
+	</item>
+	<item name="due_datetime">
+		<value xml:lang="ko"><![CDATA[응모마감일시]]></value>
+	</item>
+	<item name="applicant_insert">
+		<value xml:lang="ko"><![CDATA[응모자 입력]]></value>
+	</item>
+	
+	<item name="about_due_datetime">
+		<value xml:lang="ko"><![CDATA[ex) feb 21 2016 23:59:59]]></value>
+	</item>
+	<item name="applicants_registration_format">
+		<value xml:lang="ko"><![CDATA[member_srl, name, cellphone]]></value>
+	</item>
+	<item name="about_applicants_registration">
+		<value xml:lang="ko"><![CDATA[폐쇄 응모에 필요한 명단을 입력합니다. 비회원 member_srl은 0]]></value>
+	</item>
+	<item name="acceptance_status">
+		<value xml:lang="ko"><![CDATA[채택/거부]]></value>
+	</item>
+	<item name="applicants_approval">
+		<value xml:lang="ko"><![CDATA[이 응모자를 승인]]></value>
+	</item>
+	<item name="svdocs_confidential_applicant_info">
+		<value xml:lang="ko"><![CDATA[폐쇄 응모자 정보]]></value>
+	</item>
+	<item name="about_is_allow_closed">
+		<value xml:lang="ko"><![CDATA[폐쇄 응모를 활성화합니다. 응모자 수정 허용을 허용해야 합니다.]]></value>
+	</item>
+	<item name="about_is_allow_update">
+		<value xml:lang="ko"><![CDATA[등록된 응모 정보 수정을 허용할지 선택합니다.]]></value>
+	</item>
+	<item name="about_svdocs_confidential_applicant_info">
+		<value xml:lang="ko"><![CDATA[폐쇄 응모자 정보를 입력합니다. 이름,전화번호(엔터)]]></value>
+	</item>
+	<item name="duplicate_restriction_sec">
+		<value xml:lang="ko"><![CDATA[중복응모 제한초]]></value>
+	</item>
+	<item name="duplicate_restriction_field">
+		<value xml:lang="ko"><![CDATA[중복제한 필드]]></value>
+	</item>
+	<item name="about_duplicate_restriction_sec">
+		<value xml:lang="ko"><![CDATA[첫 응모 뒤 입력하신 초가 경과한 후에 재응모가 가능합니다. 0이면 시간제한이 없어집니다.]]></value>
+	</item>
+	<item name="about_duplicate_restriction_field">
+		<value xml:lang="ko"><![CDATA[중복값을 제한하는 필드를 선택합니다.]]></value>
+	</item>
+	<item name="about_ga_v3_tracking_id">
+		<value xml:lang="ko"><![CDATA[구글 유니버설 애널리틱스 추적 ID ex) UA-123455-1]]></value>
+	</item>
+	<item name="about_ga_v4_tracking_id">
+		<value xml:lang="ko"><![CDATA[구글 애널리틱스 v4 추적 ID ex) G-NEOEM34VC2]]></value>
+	</item>
+	<item name="about_nvad_conv_id">
+		<value xml:lang="ko"><![CDATA[네이버 에이스카운터에서 발급받은 전환추적 id를 입력합니다.]]></value>
+	</item>
+	<item name="about_facebook_pixel_id">
+		<value xml:lang="ko"><![CDATA[https://business.facebook.com/에서 발급받은 pixel id를 입력합니다.]]></value>
+	</item>
+	<item name="about_facebook_app_id">
+		<value xml:lang="ko"><![CDATA[https://developers.facebook.com/에서 발급받은 web app id를 입력합니다.]]></value>
+	</item>
+	<item name="about_kakao_app_js_key">
+		<value xml:lang="ko"><![CDATA[카카오 공유하기 버튼을 위한 개발자 키.]]></value>
+	</item>	
+	<item name="about_is_hide_privacy_shr_term">
+		<value xml:lang="ko"><![CDATA[입력양식에 개인정보 3자 제공 약관을 숨길지 선택합니다. ]]></value>
+	</item>
+	
+	<item name="cmd_detail">
+		<value xml:lang="ko"><![CDATA[자세히]]></value>
+	</item>
+	<item name="cmd_applicants_info">
+		<value xml:lang="ko"><![CDATA[응모자 정보]]></value>
+	</item>
+	<item name="cmd_download_docs">
+		<value xml:lang="ko"><![CDATA[다운로드]]></value>
+	</item>
+	<item name="cmd_use_teaser_mode">
+		<value xml:lang="ko"><![CDATA[티저모드 사용]]></value>
+	</item>
+	<item name="cmd_manage_term_privacy_usage">
+		<value xml:lang="ko"><![CDATA[개인정보 수집,이용 약관]]></value>
+	</item>
+	<item name="cmd_manage_term_privacy_shr">
+		<value xml:lang="ko"><![CDATA[개인정보 3자 제공 약관]]></value>
+	</item>
+	<item name="cmd_basic_setting">
+		<value xml:lang="ko"><![CDATA[기본설정]]></value>
+	</item>
+	<item name="svdocs_delete_warning">
+		<value xml:lang="ko"><![CDATA[Svdoc를 삭제하시면 응모자 정보도 같이 삭제됩니다.]]></value>
+	</item>
+	<item name="svdocs_is_valid">
+		<value xml:lang="ko"><![CDATA[무효처리]]></value>
+	</item>	
+	<item name="cmd_svdocs_invalidate_sms_auth">
+		<value xml:lang="ko"><![CDATA[무효처리]]></value>
+	</item>	
+	<item name="msg_already_registered">
+		<value xml:lang="ko"><![CDATA[이미 응모하셨습니다.]]></value>
+	</item>
+	<item name="msg_svodcs_not_opened_yet">
+		<value xml:lang="ko"><![CDATA[%s부터 신청할 수 있습니다.]]></value>
+	</item>
+	<item name="msg_application_closed">
+		<value xml:lang="ko"><![CDATA[종료되었습니다.]]></value>
+	</item>
+	<item name="msg_application_not_started">
+		<value xml:lang="ko"><![CDATA[아직 시작되지 않았습니다.]]></value>
+	</item>
+	<item name="msg_error_svdocs_db_query">
+		<value xml:lang="ko"><![CDATA[svdocs DB에 문제가 있습니다. 사이트 관리자에게 문의하세요.]]></value>
+	</item>
+	<item name="msg_error_no_docs_registered">
+		<value xml:lang="ko"><![CDATA[수정 권한이 없습니다. 사이트 관리자에게 문의하세요.]]></value>
+	</item>
+	<item name="msg_error_svdocs_confidential_db_query">
+		<value xml:lang="ko"><![CDATA[svdocs_confidential DB에 문제가 있습니다. 사이트 관리자에게 문의하세요.]]></value>
+	</item>
+	<item name="msg_not_selected_doc">
+		<value xml:lang="ko"><![CDATA[선택된 doc가 없습니다.]]></value>
+	</item>
+	<item name="msg_value_must_be_filled">
+		<value xml:lang="ko"><![CDATA[%s에 값을 입력해 주세요.]]></value>
+	</item>	
+	
+	<item name="msg_value_must_be_unique">
+		<value xml:lang="ko"><![CDATA[%s에 이미 등록된 값입니다.]]></value>
+	</item>
+	<item name="msg_no_applicant_name">
+		<value xml:lang="ko"><![CDATA[이름을 입력해 주세요.]]></value>
+	</item>
+	<item name="msg_error_unregistered_phone_number">
+		<value xml:lang="ko"><![CDATA[등록되지 않은 전화번호입니다.]]></value>
+	</item>
+	<item name="msg_error_weird_phone_number">
+		<value xml:lang="ko"><![CDATA[등록된 전화번호이지만 오류가 있습니다.]]></value>
+	</item>
+	<item name="msg_invalid_module_srl">
+		<value xml:lang="ko"><![CDATA[잘못된 모듈 번호입니다.]]></value>
+	</item>
+	<item name="msg_invalid_confidential_applicant_info_list">
+		<value xml:lang="ko"><![CDATA[폐쇄 응모자 정보를 입력해 주세요.]]></value>
+	</item>
+	<item name="msg_invalid_confidential_application_list">
+		<value xml:lang="ko"><![CDATA[폐쇄 응모자 정보가 올바르지 않습니다.]]></value>
+	</item>
+	<item name="msg_error_textmessage_module_not_installed">
+		<value xml:lang="ko"><![CDATA[textmessage 모듈이 설치되지 않았습니다.]]></value>
+	</item>
+	<item name="title_doc_delete">
+		<value xml:lang="ko"><![CDATA[doc 삭제]]></value>
+	</item>
+</lang>

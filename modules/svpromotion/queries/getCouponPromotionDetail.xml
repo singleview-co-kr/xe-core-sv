@@ -1,0 +1,11 @@
+<query id="getCouponPromotionDetail" action="select">
+    <tables>
+        <table name="svpromotion_coupon" />
+    </tables>
+    <columns>
+        <column name="*" />
+    </columns>
+    <conditions>
+        <condition operation="equal" column="promotion_srl" var="promotion_srl" notnull="notnull" />
+    </conditions>
+</query>

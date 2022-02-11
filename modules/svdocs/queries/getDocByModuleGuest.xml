@@ -1,0 +1,13 @@
+<query id="getDocByModuleGuest" action="select">
+    <tables>
+        <table name="svdocs" />
+    </tables>
+    <columns>
+        <column name="*" />
+    </columns>
+    <conditions>
+        <condition operation="equal" column="module_srl" var="module_srl" filter="number" notnull="notnull" />
+        <condition operation="equal" column="applicant_name" var="applicant_name" notnull="notnull" pipe="and" />
+        <condition operation="equal" column="applicant_phone" var="applicant_phone" notnull="notnull" pipe="and" />
+    </conditions>
+</query>

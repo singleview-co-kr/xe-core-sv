@@ -1,0 +1,4899 @@
+v 0.0.1
+27th, Nov 2015
+1. svpromotion 생성
+./schemas/svpromotions.xml에서 아래의 필드명을 discount로 하면 원인을 알 수없는 DB 파서 에러 발생
+<column name="descount_amount" type="number" size="11"/>
+<column name="descount_rate" type="char" size="4" />
+<column name="descount_type" type="char" size="10" />
+
+v 0.0.2
+28th, Nov 2015
+1. 프로모션 할인율일 때 소수점 자리수가 지나치게 많아지는 현상 방지
+./svpromotion.model.php::getCouponInfoBySerialNumber()에서
+$fDisc = sprintf( "%.2f", $fDisc ); 추가
+
+2. 쿠폰 사용 횟수 체크 메소드 생성
+./svpromotion.controller.php::markUsedCoupon( $nCouponSrl ) 추가
+./queries/updateCouponInfoByCouponSrl.xml 추가
+
+v 0.0.3
+11th, Dec 2015
+1. XE 모듈 관리자에서 직접 접근 불가능하도록 변경
+./conf/module.xml에서 아래의 코드를
+<action name="dispSvpromotionAdminIndex" type="view" admin_index="true" />
+아래와 같이 변경
+<action name="dispSvpromotionAdminIndex" type="view" admin_index="false" />
+
+v 0.0.4
+12th, Dec 2015
+1. svitem의 프로모션 기능을 흡수
+아래의 메소드 추가
+./svpromotion.model.php::getItemPriceList( &$item_list, $group_list=null )
+./svpromotion.model.php::getItemPriceDetail( &$item, $group_list=null )
+./svpromotion.model.php::getItemPriceCart( &$item_list, $group_list=array() )
+./svpromotion.model.php::_discountItem( &$item, $group_list=null )
+./svpromotion.model.php::_getMemberDiscount( &$item_info, $logged_info )
+./svpromotion.model.php::_getQuantityDiscount(&$item_info, $logged_info)
+./svpromotion.model.php::_getItemDiscount( &$item_info )
+./svpromotion.model.php::_getGroupDiscount( &$item_info, $group_list )1
+./svpromotion.model.php::_getSiteGroupDiscount( $module_srl, &$item_info, $group_list )
+
+아래의 스키마 추가
+./schemas/svpromotions_quantity_discount.xml
+./schemas/svpromotions_site_group.xml
+./schemas/svpromotions_group_discount.xml
+./schemas/svpromotions_member_discount.xml
+
+./svpromotion.admin.view::dispSvpromotionAdminSiteGroupDiscount() 추가
+./conf/module.xml에서 아래의 코드 추가
+<action name="dispSvpromotionAdminSiteGroupDiscount" type="view" />
+
+./svpromotion.controller.view::procSvpromotionAdminSiteGroupDiscount() 추가
+./conf/module.xml에서 아래의 코드 추가
+<action name="procSvpromotionAdminSiteGroupDiscount" type="controller" />
+
+./conf/module.xml에서 아래의 코드 추가
+<action name="dispSvpromotionAdminItemDiscountList" type="view" />
+<action name="dispSvpromotionAdminItemDiscountDetail" type="view" />
+<action name="procSvpromotionAdminUpdateItemDetail" type="controller" />
+
+./svpromotion.admin.view::dispSvpromotionAdminItemDiscountList() 추가
+./svpromotion.admin.view::dispSvpromotionAdminItemDiscountDetail() 추가
+
+v 0.0.5
+13th, Dec 2015
+1. 정가보다 할인액이 크면 무조건 할인 정책 무효화
+./svpromotion.model.php::_discountItem()에서 해당 코드 블록 추가
+
+2. 수량 구간 별 할인 정책 추가
+./svpromotion.admin.view.php::dispSvpromotionAdminSiteBulkDiscount() 추가
+./svpromotion.admin.controller.php::procSvpromotionAdminSiteBulkDiscount() 추가
+./conf/module.xml에서 아래의 코드 추가
+<action name="dispSvpromotionAdminSiteBulkDiscount" type="view" />
+<action name="procSvpromotionAdminSiteBulkDiscount" type="controller" />
+./queries/getBulkDiscountByPage.xml 추가
+
+v 0.0.6
+16th, Dec 2015
+1. 프로모션 등록 후 svshopmaster 화면 표시
+./svpromotion.admin.view.php::init()를 svitem.admin.view.php::init()와 동일하게 변경
+./svpromotion.admin.controller.php::procSvpromotionAdminInsertPromotion()에서 
+아래의 코드를
+$this->setRedirectUrl(getNotEncodedUrl('', 'module', 'admin', 'act', 'dispSvpromotionAdminPromotionInfo', 'promotion_srl', $args->sv_promotion_srl ));
+아래와 같이 변경
+$this->setRedirectUrl(getNotEncodedUrl('', 'module', Context::get('module'), 'act', 'dispSvpromotionAdminPromotionInfo', 'promotion_srl', $args->sv_promotion_srl ));
+
+v 0.0.7
+20th, Dec 2015
+1. 프로모션 할인 후 지정 단위 절삭 기능 추가
+./svpromotion.model.php::getCouponInfoBySerialNumber()에 $aDiscountPolicyTable 인수 추가
+./svpromotion.model.php::getCouponInfoBySerialNumber()에 제품별 할인액 정책 루틴 추가
+./svpromotion.model.php::getCouponInfoBySerialNumber()에 아래의 코드 추가
+//unset( $output->data[0]->descount_type );
+unset( $output->data[0]->descount_amount_policy );
+
+./schemas/svpromotion.xml에 아래의 코드를
+<column name="descount_amount" type="number" size="11"/>
+아래와 같이 변경
+<column name="descount_amount_policy" type="varchar" size="255"/>
+
+./queries/insertPromotion.xml에 아래의 코드를
+<column name="descount_amoun" var="sv_promotion_descount_amount" />
+<column name="descount_rate" var="sv_promotion_descount_rate" />
+아래와 같이 변경
+<column name="descount_amount_policy" var="sv_promotion_descount_amount" />
+<column name="descount_rate_policy" var="sv_promotion_descount_rate" />
+
+v 0.0.8
+12th, Jan 2016
+1. 멤버 할인 루틴에서 로그인 이메일 주소 도메인으로 할인 기능 임시 추가
+./svpromotion.model.php::_getMemberDiscount()에서 아래의 코드 추가
+$aMemeberEmailInfo = explode( '@', $logged_info->email_address );
+if( $aMemeberEmailInfo[1] == 'bullsone.com' || $aMemeberEmailInfo[1] == 'shoemarker.co.kr' || $aMemeberEmailInfo[1] == 'scenton.co.kr' )
+{
+	$output = new Object();
+	$output->data->opt = 2;
+	$output->data->discount = 50;
+	$output->data->member_target = '불스원임직원';
+}
+else
+{
+	if(!$output->toBool())
+		return $output;
+	if(!$output->data)
+		return new Object();
+}
+
+v 0.0.9
+21th, Feb 2016
+1. Facebook Like 할인 기능 추가
+./svpromotion.admin.model.php::getModuleConfig() 추가
+
+./svpromotion.admin.controller.php::procSvpromotionAdminConfig() 추가
+./svpromotion.admin.controller.php::procSvpromotionAdminUpdateItemDetail()에 아래의 코드 추가
+./queries/deleteFbLikeByItemPolicy.xml 추가
+// 아이템별 FB like 할인 정책 가져오기 시작
+$args->item_srl = $item_srl;
+$output = executeQueryArray('svpromotion.getFbLikeDiscountByItem', $args );
+if(!$output->toBool()) 
+	return $output;
+
+foreach( $output->data as $key => $val )
+{
+	$item_fblike_discount_info->price = $val->price;
+	$item_fblike_discount_info->opt = $val->opt;
+}
+Context::set('item_fb_like_discount_info', $item_fblike_discount_info);
+// 아이템별 FB Like 할인 정책 가져오기 끝
+
+./svpromotion.model.php::_getFbLikeDiscountItem() 추가
+
+./svpromotion.model.php::getItemPriceCart()에 아래의 코드 추가
+// 아이템별 부가 할인 정책 가져오기
+if( $val->conditional_promotion == 'fblike' )
+{
+	$oConditionalPromotion = $this->_getFbLikeDiscountItem($val);
+	if( $oConditionalPromotion->fb_like_additional_discount_amount > 0 )
+	{
+		$item_list[$key]->discount_info = $item_list[$key]->discount_info.' '.$oConditionalPromotion->fb_like_additional_discount_info;
+		$item_list[$key]->discount_amount = $item_list[$key]->discount_amount + $oConditionalPromotion->fb_like_additional_discount_amount;
+		$item_list[$key]->discounted_price = $item_list[$key]->discounted_price - $oConditionalPromotion->fb_like_additional_discount_amount;
+		$item_list[$key]->sum_discount_amount = $item_list[$key]->sum_discount_amount + ( $oConditionalPromotion->fb_like_additional_discount_amount* $val->quantity );
+		$item_list[$key]->sum_discounted_price = $item_list[$key]->sum_discounted_price - ( $oConditionalPromotion->fb_like_additional_discount_amount* $val->quantity );
+	}
+}
+
+v 0.1.0
+28th, Feb 2016
+1. 멤버 할인-> 글로벌 회원별 이메일 정보 기준 할인 입력 기능 추가
+./tpl/site_group_discount.html에 관련 UI 추가
+./schemas/svpromotions_member_email_domain_group.xml 추가
+./svpromotion.admin.view.php::dispSvpromotionAdminSiteGroupDiscount()에 이메일 도메인 그룹 정보 표시 코드 블록 추가
+./svpromotion.admin.view.php::dispSvpromotionAdminEmailDomainGroupInsert() 추가
+./tpl/email_domain_group_insert.html 추가
+./svpromotion.admin.controller.php::procSvpromotionAdminUpdateEmailDomainPolicy() 추가
+./svpromotion.admin.model.php::getAdminEmailDomainMaxIndex() 추가
+./queries/getEmailDomainMaxIndex.xml 추가
+./queries/insertEmailDomainGroupDiscount.xml 추가
+./queries/getEmailDomainGroupDiscount.xml 추가
+./svpromotion.admin.model.php::getEmailDomainDiscountInfo() 추가
+./queries/updateEmailDomainGroupDiscount.xml 추가
+
+./svpromotion.model.php::_getMemberDiscount() 수정
+./queries/getMemberDiscountInfoByEmailDomain.xml 추가
+
+./svpromotion.admin.model.php::_discountItem()에서 아래의 코드를 추가
+$logged_info = Context::get('logged_info');
+if( $logged_info )
+{
+	$oMemberModel = &getModel('member');
+	$group_list = $oMemberModel->getMemberGroups($logged_info->member_srl);
+}
+else
+	$group_list = array();
+
+v 0.1.1
+9th, Mar 2016
+1. 프로모션 설정 정보 수정 기능 추가
+./queries/updatePromotion.xml 추가
+./svpromotion.admin.controller.php::procSvpromotionAdminInsertPromotion()에 아래의 코드 추가
+$nPromotionSrl = (int)Context::get('promotion_srl');
+if( $nPromotionSrl > 0 )
+{
+	$args->sv_promotion_srl = $nPromotionSrl;
+	$output = executeQuery('svpromotion.updatePromotion', $args );
+}
+else
+{
+	$args->sv_promotion_srl = getNextSequence();
+	$output = executeQuery('svpromotion.insertPromotion', $args );
+}
+
+v 0.1.2
+11th, Mar 2016
+1. 결제전 최종 계산서 발행 시점에서 쿠폰 할인액 계산 기능을 svcart.controller.php에서 흡수
+./svpromotion.model.php::getItemPriceCheckout() 추가
+
+v 0.1.3
+12th, Mar 2016
+1. 할인 정책 클래스 추가
+./svpromotion.unit.php 추가
+./svpromotion.model.php::_discountItem() 에서 svpromotionUnit 를 사용하여 프로모션 정책 결정하는 것으로 변경
+
+2. 할인액 상한선 설정 기능 추가
+./tpl/config.html에 최대 할인률 설정 추가
+./svpromotion.unit.php::__construct()에서 할인액 상한선 변수 추가
+아래의 코드 블록 추가
+if( $fMaxDiscRate > 0 && $fMaxDiscRate < 1 )
+	$this->_fItemMaxDiscountRate = $fMaxDiscRate;
+else if( $fMaxDiscRate > 1 && $fMaxDiscRate < 100 )
+	$this->_fItemMaxDiscountRate = $fMaxDiscRate/100;
+else
+	$this->_fItemMaxDiscountRate = 0.5;
+
+$this->_nItemMinPrice = $nItemPrice*(1-$this->_fItemMaxDiscountRate);
+
+3. 쿠폰 할인 정보에서 SQL 정보 제거하여 보안 강화
+./svpromotion.model.php::getCouponInfoBySerialNumber() 에서 아래의 코드 추가
+unset( $output->variables );
+
+4. ./svpromotion.model.php::getCouponInfoBySerialNumber()에서 아이템별 수량 측정 제거
+
+v 0.1.4
+14th, Mar 2016
+좋아요 할인과 기본 할인이 동시에 적용되도록 논리 변경
+1. ./svpromotion.model.php::getItemConditionalPromotionDetail() 추가
+
+2. 쿠폰 입력 시 쿠폰 할인 이미 적용된 할인보다 혜택이 적으면 쿠폰번호 있어도 처리 거부
+./svpromotion.model.php::getCouponInfoBySerialNumber() 에서 아래의 코드 블록 추가
+$nCouponDiscountedPayAmnt = 0;
+switch( $sDiscType )
+{
+	case 'amount':
+		$fDisc = $output->data->descount_amount_policy;
+		$nCouponDiscountedPayAmnt = $nOriginalPayAmnt - $fDisc;
+		break;
+	case 'rate':
+		$fDisc = sprintf( "%.2f", ((int)$output->data->descount_rate_policy)/100 );
+		$nCouponDiscountedPayAmnt = $nOriginalPayAmnt * (1- (int)$output->data->descount_rate_policy/100);
+		break;
+	default:
+		$fDisc = 0;
+		break;
+}
+
+// 쿠폰 할인의 혜택이 작으면 처리 거부
+if( $nAlreadyDiscountedPayAmnt <= $nCouponDiscountedPayAmnt )
+	return new Object( -1, 'msg_non_economic_coupon');
+
+3. 결제하기 요청 시 쿠폰 할인 이미 적용된 할인보다 혜택이 적으면 쿠폰번호 있어도 처리 거부
+./svpromotion.model.php::getItemPriceCheckout() 에서 아래의 코드 블록 추가
+$sCouponSerial = $in_args->coupon_number;
+if( strlen( $sCouponSerial ) > 0 )
+{
+	$nOriginalPayAmnt = 0;
+	$nAlreadyDiscountedPayAmnt = 0;
+
+	foreach( $in_args->cart->item_list as $key => $val )
+	{
+		// 이미 적용된 할인 혜택을 계산
+		$nOriginalPayAmnt += $val->price * $val->quantity;
+		$nAlreadyDiscountedPayAmnt += ($val->price - $val->discount_amount)*$val->quantity;
+	}
+
+	$nOriginalPayAmnt += $aSingleCartInfo->price * $aSingleCartInfo->quantity;
+	$nAlreadyDiscountedPayAmnt += ($aSingleCartInfo->price - $aSingleCartInfo->discount_amount)*$aSingleCartInfo->quantity;
+
+	$output = $this->getCouponInfoBySerialNumber( $sCouponSerial, $nOriginalPayAmnt, $nAlreadyDiscountedPayAmnt );
+	if( !$output->toBool() )
+		return $output;
+}
+
+v 0.1.5
+27th, Mar 2016
+1. 구매에 적용된 할인 체계 정리
+./svpromotion.model.php::getItemPriceCart()에서 아래의 코드를
+if( $val->conditional_promotion == 'fblike' )
+{
+	$oConditionalPromotion = $this->_getFbLikeDiscountItem($val);
+	if( $oConditionalPromotion->fb_like_additional_discount_amount > 0 )
+	{
+		$item_list[$key]->discount_info = $item_list[$key]->discount_info.' '.$oConditionalPromotion->fb_like_additional_discount_info;
+		$item_list[$key]->discount_amount = $item_list[$key]->discount_amount + $oConditionalPromotion->fb_like_additional_discount_amount;
+		$item_list[$key]->discounted_price = $item_list[$key]->discounted_price - $oConditionalPromotion->fb_like_additional_discount_amount;
+		$item_list[$key]->sum_discount_amount = $item_list[$key]->sum_discount_amount + ( $oConditionalPromotion->fb_like_additional_discount_amount* $val->quantity );
+		$item_list[$key]->sum_discounted_price = $item_list[$key]->sum_discounted_price - ( $oConditionalPromotion->fb_like_additional_discount_amount* $val->quantity );
+	}
+}
+아래와 같이 변경
+// 기존 버전과 호환성 해결
+$oConditionalPromotion = unserialize( $val->conditional_promotion );
+if( $oConditionalPromotion->version == '1.0' )
+{
+	if( $oConditionalPromotion->promotion[0]->type == 'fblike' )
+	{
+		$item_list[$key]->discount_info = $item_list[$key]->discount_info.'<BR>'.$oConditionalPromotion->promotion[0]->title;
+		$item_list[$key]->discount_amount = $oConditionalPromotion->promotion[0]->resultant_disc_amnt;
+		$item_list[$key]->discounted_price = $item->price - $oConditionalPromotion->promotion[0]->resultant_disc_amnt;
+		$item_list[$key]->sum_discount_amount = $oConditionalPromotion->promotion[0]->resultant_disc_amnt * $val->quantity;
+		$item_list[$key]->sum_discounted_price = $item_list[$key]->discounted_price * $val->quantity;
+	}
+}
+else // 20160601 이후에 코드 블록 제거
+{
+	if( $val->conditional_promotion == 'fblike' )
+	{
+		$oConditionalPromotion = $this->_getFbLikeDiscountItem($val);
+		if( $oConditionalPromotion->fb_like_additional_discount_amount > 0 )
+		{
+			$item_list[$key]->discount_info = $item_list[$key]->discount_info.' '.$oConditionalPromotion->fb_like_additional_discount_info;
+			$item_list[$key]->discount_amount = $item_list[$key]->discount_amount + $oConditionalPromotion->fb_like_additional_discount_amount;
+			$item_list[$key]->discounted_price = $item_list[$key]->discounted_price - $oConditionalPromotion->fb_like_additional_discount_amount;
+			$item_list[$key]->sum_discount_amount = $item_list[$key]->sum_discount_amount + ( $oConditionalPromotion->fb_like_additional_discount_amount* $val->quantity );
+			$item_list[$key]->sum_discounted_price = $item_list[$key]->sum_discounted_price - ( $oConditionalPromotion->fb_like_additional_discount_amount* $val->quantity );
+		}
+	}
+}
+
+v 0.1.6
+29th, Mar 2016
+1. ./svpromotion.model.php::getItemPriceCheckout()를 getCheckoutPrice()로 변경하고
+반올림 차이로 고객 결제완료 화면 표시 결제액과 관리자 화면 표시 결제액 차이를 없애기 위해 아래의 코드를 
+$nTotalDiscountAmount = $nInitialItemTotalPrice * $discount_policy;
+아래와 같이 변경
+$nTotalDiscountAmount = (int)($nInitialItemTotalPrice * $discount_policy);
+
+2. 조건부 할인 정책에서 사이트 최고 할인액 제한을 고려함
+./svpromotion.model.php::getItemConditionalPromotionDetail()에서 아래의 코드를
+$oLikePaybackResult = $this->_getFbLikeDiscountItem( $item );
+$oBasicDiscountPolicy = $this->_discountItem( $item );
+if( $oBasicDiscountPolicy->discount_amount > 0 )
+	$oLikePaybackResult->fb_like_additional_discount_amount += $oBasicDiscountPolicy->discount_amount;
+return $oLikePaybackResult;
+아래와 같이 변경
+$oDiscountPolicy = $this->_discountItem( $item );
+$oSvpromotionAdminModel = &getAdminModel('svpromotion');
+$config = $oSvpromotionAdminModel->getModuleConfig();
+
+$nMaxDiscountAmntLimit = (int)($item->price * $config->discount_rate_limit/100);
+$nRemainingDiscAmnt = $nMaxDiscountAmntLimit-$oDiscountPolicy->discount_amount;
+$oLikePaybackResult = $this->_getFbLikeDiscountItem( $item, $nRemainingDiscAmnt );
+
+if( $oDiscountPolicy->discount_amount > 0 )
+	$oLikePaybackResult->fb_like_additional_discount_amount += $oDiscountPolicy->discount_amount;
+return $oLikePaybackResult;
+
+./svpromotion.model.php::_getFbLikeDiscountItem()에서 아래의 코드를
+$oDiscountInfo = $output->data;
+if( $oDiscountInfo->opt == '1' )
+{
+	$nDiscountAmount = $oDiscountInfo->price;
+	$discount_info = '개당 '.number_format($nDiscountAmount,0).'원 Like 즉시 환불';
+}
+else if( $oDiscountInfo->opt == '2' )
+{
+	$nDiscountAmount = $item_info->price * $oDiscountInfo->price / 100;
+	$discount_info = '개당 '.number_format($nDiscountAmount,0).'% Like 즉시 환불';
+}
+아래와 같이 변경
+if( $oDiscountInfo->opt == '1' )
+{
+	$nDiscountAmount = $oDiscountInfo->price;
+	$nRestrictedDiscountAmnt = min( $nDiscountAmount, $nRemainingDiscAmnt );
+	//$discount_info = '개당 '.number_format($nDiscountAmount,0).'원 Like 즉시 환불';
+}
+else if( $oDiscountInfo->opt == '2' )
+{
+	$nDiscountAmount = $item_info->price * $oDiscountInfo->price / 100;
+	$nRestrictedDiscountAmnt = min( $nDiscountAmount, $nRemainingDiscAmnt );
+	//$discount_info = '개당 '.number_format($nDiscountAmount,0).'% Like 즉시 환불';
+}
+
+$discount_info = '개당 '.number_format($nRestrictedDiscountAmnt,0).'원 Like 즉시 환불';
+
+v 0.1.7
+2nd, Apr 2016
+1. ./svpromotion.model.php::_getFbLikeDiscountItem()에서 아래의 코드를
+$discount_info = '개당 '.number_format($nRestrictedDiscountAmnt,0).'원 Like 즉시 환불';
+아래와 같이 변경
+$discount_info = '개당 '.number_format($nRestrictedDiscountAmnt,0).'원 Like 즉시 할인';
+
+2. 상품별 FB 공유하기 할인 기능 추가
+./svpromotion.model.php::getItemConditionalPromotionDetail()에 $sPromotionType 인수 추가
+아래의 코드를 
+$oLikePaybackResult = $this->_getFbLikeDiscountItem( $item, $nRemainingDiscAmnt );
+아래와 같이 변경
+switch( $sPromotionType )
+{
+	case 'fblike':
+		$oLikePaybackResult = $this->_getFbLikeDiscountItem( $item, $nRemainingDiscAmnt );
+		break;
+	default:
+		break;
+}
+
+아래의 코드를
+$oLikePaybackResult->fb_like_additional_discount_amount += $oDiscountPolicy->discount_amount;
+아래와 같이 변경
+$oLikePaybackResult->conditional_additional_discount_amount += $oDiscountPolicy->discount_amount;
+
+./svpromotion.model.php::getItemConditionalPromotionList() 추가
+
+./svpromotion.model.php::getItemConditionalPromotionDetail()에서 아래의 코드를
+$oLikePaybackResult->fb_like_additional_discount_amount += $oDiscountPolicy->discount_amount;
+아래와 같이 변경
+$oLikePaybackResult->conditional_additional_discount_amount += $oDiscountPolicy->discount_amount;
+
+./svpromotion.model.php::_getFbLikeDiscountItem()에서 아래의 코드를
+$result->fb_like_app_id = '';
+$result->fb_like_additional_discount_amount = 0;
+$result->fb_like_additional_discount_info = '';
+$result->fb_like_app_id = $config->svpromotion_fb_app_id;
+아래와 같이 변경
+$result->fb_app_id = '';
+$result->conditional_additional_discount_amount = 0;
+$result->conditional__additional_discount_info = '';
+$result->fb_app_id = $config->svpromotion_fb_app_id;
+
+./svpromotion.model.php::getItemPriceCart()에서 아래의 코드를
+$oConditionalPromotion = $this->_getFbLikeDiscountItem($val);
+if( $oConditionalPromotion->fb_like_additional_discount_amount > 0 )
+{
+	$item_list[$key]->discount_info = $item_list[$key]->discount_info.' '.$oConditionalPromotion->fb_like_additional_discount_info;
+	$item_list[$key]->discount_amount = $item_list[$key]->discount_amount + $oConditionalPromotion->fb_like_additional_discount_amount;
+	$item_list[$key]->discounted_price = $item_list[$key]->discounted_price - $oConditionalPromotion->fb_like_additional_discount_amount;
+	$item_list[$key]->sum_discount_amount = $item_list[$key]->sum_discount_amount + ( $oConditionalPromotion->fb_like_additional_discount_amount* $val->quantity );
+	$item_list[$key]->sum_discounted_price = $item_list[$key]->sum_discounted_price - ( $oConditionalPromotion->fb_like_additional_discount_amount* $val->quantity );
+}
+아래와 같이 변경
+if( $oConditionalPromotion->conditional_additional_discount_amount > 0 )
+{
+	$item_list[$key]->discount_info = $item_list[$key]->discount_info.' '.$oConditionalPromotion->fb_like_additional_discount_info;
+	$item_list[$key]->discount_amount = $item_list[$key]->discount_amount + $oConditionalPromotion->conditional_additional_discount_amount;
+	$item_list[$key]->discounted_price = $item_list[$key]->discounted_price - $oConditionalPromotion->conditional_additional_discount_amount;
+	$item_list[$key]->sum_discount_amount = $item_list[$key]->sum_discount_amount + ( $oConditionalPromotion->conditional_additional_discount_amount* $val->quantity );
+	$item_list[$key]->sum_discounted_price = $item_list[$key]->sum_discounted_price - ( $oConditionalPromotion->conditional_additional_discount_amount* $val->quantity );
+}
+
+./svpromotion.model.php::getItemConditionalPromotionList() 에서 아래의 코드를
+$oLikePaybackResult->fb_like_additional_discount_amount += $oDiscountPolicy->discount_amount;
+아래와 같이 변경
+$oLikePaybackResult->conditional_additional_discount_amount += $oDiscountPolicy->discount_amount;
+
+./tpl/item_discount_detail.html에서 아래의 코드를 추가
+<div class="x_control-group">
+	<label class="x_control-label" for="discount_info_default">{$lang->item_discount_amount_fb_share}</label>
+	<div class="x_controls">
+		<label for="fb_share_item_opt_1"><input type="radio" name="fb_like_item_opt" id="fb_like_item_opt" value="1" checked="checked"|cond="$item_fb_like_discount_info->opt=='1'">{$lang->price}</label>
+		<label for="fb_share_item_opt_1"><input type="radio" name="fb_like_item_opt" id="fb_like_item_opt" value="2" checked="checked"|cond="$item_fb_like_discount_info->opt=='2'">{$lang->ratio}&nbsp;<input type="text" name="fb_share_item_discount_amount" id="fb_share_item_discount_amount" value="{$item_fb_share_discount_info->price}" /></label>
+	</div>
+</div>
+
+./schemas/svpromotion_fb_like_by_item.xml을 ./schemas/svpromotion_conditional_by_item.xml으로 변경
+아래의 코드를 추가
+<column name="promotion_type" type="varchar" size="50" notnull="notnull" />
+아래의 코드를
+<column name="discount_info" type="varchar" size="255" notnull="notnull" />
+아래와 같이 변경
+<column name="description" type="varchar" size="255" notnull="notnull" />
+
+./queries/deleteFbLikeByItemPolicy.xml을 deleteConditionalByItemPolicy.xml로 변경
+./queries/insertFbLikeByItemPolicy.xml을 insertConditionalByItemPolicy.xml로 변경
+./svpromotion.admin.controller.php::procSvpromotionAdminUpdateItemDetail()에서 아래의 코드를
+$output = executeQuery('svpromotion.deleteFbLikeByItemPolicy', $args );
+$output = executeQuery('svpromotion.insertFbLikeByItemPolicy', $args );
+아래와 같이 변경
+$args->promotion_type = 'fblike';
+$output = executeQuery('svpromotion.deleteConditionalByItemPolicy', $args );
+$output = executeQuery('svpromotion.insertConditionalByItemPolicy', $args );
+
+./queries/getFbLikeDiscountByItem.xml을 getConditionalDiscountByItem.xml로 변경
+./svpromotion.admin.view.php::procSvpromotionAdminUpdateItemDetail()에서 아래의 코드를
+$output = executeQueryArray('svpromotion.getFbLikeDiscountByItem', $args );
+아래와 같이 변경
+$output = executeQueryArray('svpromotion.getConditionalDiscountByItem', $args );
+
+./svpromotion.admin.controller.php::procSvpromotionAdminUpdateItemDetail()에 아이템별 FB 공유하기 할인 정책 갱신 코드 블록 추가
+$nFbShareDiscountAmount = Context::get('fb_share_item_discount_amount');
+$nFbShareDiscountOpt = Context::get('fb_share_item_opt');
+$args->promotion_type = 'fbshare';
+$output = executeQuery('svpromotion.deleteConditionalByItemPolicy', $args );
+if( !$output->toBool() )
+	return $output;
+$args->opt = $nFbShareDiscountOpt;
+$args->price = $nFbShareDiscountAmount;
+$output = executeQuery('svpromotion.insertConditionalByItemPolicy', $args );
+if( !$output->toBool() )
+	return $output;
+
+./svpromotion.admin.view.php::dispSvpromotionAdminItemDiscountDetail()에아이템별 FB 공유하기 할인 정책 가져오기 코드 블록 추가
+$args->item_srl = $item_srl;
+$args->promotion_type = 'fbshare';
+$output = executeQueryArray('svpromotion.getConditionalDiscountByItem', $args );
+if(!$output->toBool()) 
+	return $output;
+
+foreach( $output->data as $key => $val )
+{
+	$item_fbshare_discount_info->price = $val->price;
+	$item_fbshare_discount_info->opt = $val->opt;
+}
+Context::set('item_fb_share_discount_info', $item_fbshare_discount_info);
+
+./svpromotion.model.php::_getFbLikeDiscountItem()에서 아래의 코드 추가
+$args->promotion_type = 'fblike';
+
+./svpromotion.model.php::_getFbLikeDiscountItem()을 _getFbConditionalDiscountItem()으로 변경
+
+./svpromotion.model.php::_getFbConditionalDiscountItem()에서 아래의 코드 블록을 제거
+$oSvpromotionAdminModel = &getAdminModel('svpromotion');
+$config = $oSvpromotionAdminModel->getModuleConfig();
+$result->fb_app_id = $config->svpromotion_fb_app_id;
+
+./svpromotion.model.php::getItemConditionalPromotionList()에 아래의 코드 블록을 추가
+$oConditionalPromoResult->fb_app_id = $config->svpromotion_fb_app_id;
+
+./svpromotion.model.php::getItemConditionalPromotionDetail()에 아래의 코드 블록을 추가
+$oConditionalPromoResult->fb_app_id = $config->svpromotion_fb_app_id;
+
+./svpromotion.model.php::getItemPriceCart()에서 아래의 코드를
+if( $oConditionalPromotion->promotion[0]->type == 'fblike' )
+아래와 같이 변경
+if( $oConditionalPromotion->promotion[0]->type == 'fblike' || $oConditionalPromotion->promotion[0]->type == 'fbshare' )
+
+v 0.1.8
+20th, Jun 2016
+1. ./svpromotion.model.php::getItemPriceCart()에서 아래의 코드를
+$item = new svitemItem($val, $config->currency, $config->as_sign, $config->decimals);
+아래와 같이 변경
+$item = new svitemItem($val);
+
+2. ./svpromotion.model.php::getItemPriceList()에서 아래의 코드를
+$item = new svitemItem($val, $config->currency, $config->as_sign, $config->decimals);
+아래와 같이 변경
+$item = new svitemItem($val );
+
+v 0.1.9
+30th, Jun 2016
+1. 무조건 증정 프로모션 기능 추가
+./tpl/item_discount_detail.html에 아래의 코드 추가
+<div class="x_control-group">
+	<label class="x_control-label" for="discount_info_default">{$lang->item_giveaway_default}</label>
+	<div class="x_controls">
+		<label for="default_discount_title">{$lang->item_giveaway_title}&nbsp;<input type="text" name="default_giveaway_title" id="default_giveaway_title" value="{$item_giveaway_info->giveaway_title}" /></label>
+		<label for="default_item_opt_1">{$lang->giveaway_item_srl}&nbsp;<input type="text" name="default_item_giveaway_item_srl" id="default_item_giveaway_item_srl" value="{$item_giveaway_info->giveaway_item_srl}" /></label>
+		<label for="default_item_opt_1">{$lang->giveaway_item_qty}&nbsp;<input type="text" name="default_item_giveaway_item_qty" id="default_item_giveaway_item_qty" value="{$item_giveaway_info->giveaway_item_qty}" /></label>
+	</div>
+</div>
+
+./schemas/svpromotions_giveaways.xml 추가
+./queries/deleteGiveawayByItemPolicy.xml 추가
+./queries/insertGiveawayByItemPolicy.xml 추가
+
+3. ./svpromotion.controller.php::procSvpromotionAdminUpdateItemDetail()에 아래의 코드 추가
+$args->item_srl = $nItemSrl;
+$output = executeQuery('svpromotion.deleteGiveawayByItemPolicy', $args );
+if( !$output->toBool() )
+	return $output;
+
+$sDefaultGiveawayTitle = Context::get('default_giveaway_title');
+$nDefaultGiveawayItemSrl = Context::get('default_item_giveaway_item_srl');
+$nDefaultGiveawayItemQty = Context::get('default_item_giveaway_item_qty');
+$args->giveaway_info = $sDefaultGiveawayTitle;
+$args->giveaway_item_srl = $nDefaultGiveawayItemSrl;
+$args->giveaway_item_qty = $nDefaultGiveawayItemQty;
+$args->module_srl = $nModuleSrl;
+$output = executeQuery('svpromotion.insertGiveawayByItemPolicy', $args );
+if( !$output->toBool() )
+	return $output;
+
+unset( $args->giveaway_info );
+unset( $args->giveaway_item_srl );
+unset( $args->giveaway_item_qty );
+
+4. ./svpromotion.view.php::dispSvpromotionAdminItemDiscountDetail()에 아래의 코드 추가
+$args->item_srl = $item_srl;
+$output = executeQueryArray('svpromotion.getGiveawayPromotionByItem', $args );
+if(!$output->toBool()) 
+	return $output;
+
+foreach( $output->data as $key => $val )
+{
+	$item_giveaway_info->giveaway_title = $val->giveaway_info;
+	$item_giveaway_info->giveaway_item_srl = $val->giveaway_item_srl;
+	$item_giveaway_info->giveaway_item_qty = $val->giveaway_quantity;
+}
+Context::set('item_giveaway_info', $item_giveaway_info);
+
+5. ./svpromotion.model.php::getItemPriceCart()에 아래의 코드 추가
+if( $promotion_val->type == 'fblike' || $promotion_val->type == 'fbshare' )
+{
+	$item_list[$key]->discount_info .= '<BR>'.$promotion_val->title;
+	$item_list[$key]->discount_amount = $promotion_val->resultant_disc_amnt;
+	$item_list[$key]->discounted_price = $item->price + $item->option_price - $promotion_val->resultant_disc_amnt;
+	$item_list[$key]->sum_discount_amount = $promotion_val->resultant_disc_amnt * $val->quantity;
+	$item_list[$key]->sum_discounted_price = $item_list[$key]->discounted_price * $val->quantity;
+}
+else if( $promotion_val->type == 'giveaway' )
+	$item_list[$key]->discount_info .= '<BR>'.$promotion_val->title;
+
+v 0.2.0
+8th, Jul 2016
+1. 무조건 증정 프로모션 표시 변경
+./svpromotion.model.php::_getGiveawayItem()에서 아래의 코드를
+$result->conditional_additional_discount_info = $output->data->giveaway_info.'_'.$giveaway_item_info->item_name.' 증정';
+아래와 같이 변경
+$result->conditional_additional_discount_info = $output->data->giveaway_info.'_'.$giveaway_item_info->item_name.'증정';
+
+v 0.2.1
+1st, Oct 2016
+1.  상품별 할인정책 갱신할 때 값이 입력된 부분만 작동시킴
+./svpromotion.admin.controller.php::procSvpromotionAdminUpdateItemDetail()에서 아래의 조건부 코드 블록 추가
+if( $sDefaultGiveawayTitle && $nDefaultGiveawayItemSrl && $nDefaultGiveawayItemQty )
+{
+}
+
+if( $nFbShareDiscountOpt && $nFbShareDiscountAmount )
+{
+}
+
+v 0.2.2
+9th, Jan 2017
+1.  난수 쿠폰 번호 대량 입력할 때 \n\r을 모두 없애는 기능으로 개선
+./svpromotion.admin.controller.php::procSvpromotionAdminInsertCoupon()에서 아래의 코드를
+$aCouponList = explode( PHP_EOL, $sCouponList );
+아래와 같이 변경
+$aCouponList = preg_split('/\n|\r\n?/', $sCouponList);
+
+v 0.2.3
+15th, Mar 2017
+1.  프로모션 -> 쿠폰프로모션으로 개념을 명확하게 변경
+./svpromotion.admin.view.php::dispSvpromotionAdminInsertPromotion()에서 아래의 코드를
+$this->setTemplateFile('promotion_insert');
+아래와 같이 변경
+$this->setTemplateFile('coupon_promotion_insert');
+
+./svpromotion.admin.view.php::dispSvpromotionAdminPromotionInfo()를
+dispSvpromotionAdminCouponPromotionInfo()으로 이름 변경
+
+./svpromotion.admin.view.php::dispSvpromotionAdminInsertPromotion()를
+_dispSvpromotionAdminInsertCouponPromotion()으로 이름 변경
+
+./svpromotion.admin.controller.php::procSvpromotionAdminInsertPromotion()를
+procSvpromotionAdminInsertCouponPromotion으로 이름 변경
+
+./svpromotion.admin.controller.php::procSvpromotionAdminInsertCouponPromotion()에서 아래의 코드를
+$this->setRedirectUrl(getNotEncodedUrl('', 'module', Context::get('module'), 'act', 'dispSvpromotionAdminPromotionInfo', 'promotion_srl', $args->sv_promotion_srl ));
+아래와 같이 변경
+$this->setRedirectUrl(getNotEncodedUrl('', 'module', Context::get('module'), 'act', 'dispSvpromotionAdminCouponPromotionInfo', 'promotion_srl', $args->sv_promotion_srl ));
+
+./tpl/promotion_insert.html을 coupon_promotion_insert.html로 변경
+
+./schemas/svpromotions.xml을 svpromotions_coupon.xml으로 변경
+./queries/getPromotionList.xml을 getCouponPromotionList.xml로 변경
+./svpromotion.admin.model.php::getPromotionList()를 getCouponPromotionList()로 이름 변경
+./svpromotion.admin.view.php::dispSvpromotionAdminIndex()에서 아래의 코드를
+$output = $oSvpromotionAdminModel->getPromotionList();
+아래와 같이 변경
+$output = $oSvpromotionAdminModel->getCouponPromotionList();
+
+./svpromotion.admin.model.php::getPromotionSetupInfo()를 getCouponPromotionSetupInfo()로 이름 변경
+./queries/getPromotionDetail.xml을 getCouponPromotionDetail.xml로 변경
+./svpromotion.admin.view.php::_dispSvpromotionAdminInsertCouponPromotion()에서 아래의 코드를
+$output = $oSvpromotionAdminModel->getPromotionSetupInfo();
+아래와 같이 변경
+$output = $oSvpromotionAdminModel->getCouponPromotionSetupInfo();
+
+./queries/updatePromotion.xml을 updateCouponPromotion.xml로 변경
+./queries/insertPromotion.xml을 insertCouponPromotion.xml로 변경
+
+./svpromotion.admin.controller.php::procSvpromotionAdminInsertCouponPromotion()에서 아래의 코드를
+if( $nPromotionSrl > 0 )
+{
+	$args->sv_promotion_srl = $nPromotionSrl;
+	$output = executeQuery('svpromotion.updatePromotion', $args );
+}
+else
+{
+	$args->sv_promotion_srl = getNextSequence();
+	$output = executeQuery('svpromotion.insertPromotion', $args );
+}
+아래와 같이 변경
+if( $nPromotionSrl > 0 )
+{
+	$args->sv_promotion_srl = $nPromotionSrl;
+	$output = executeQuery('svpromotion.updateCouponPromotion', $args );
+}
+else
+{
+	$args->sv_promotion_srl = getNextSequence();
+	$output = executeQuery('svpromotion.insertCouponPromotion', $args );
+}
+
+./svpromotion.admin.model.php::getCouponListByPromotion()를 getCouponListByCouponPromotion()로 이름 변경
+./queries/getPromotionDetail.xml을 getCouponPromotionDetail.xml로 변경
+
+
+
+2. 구형 프로모션 정보 처리하는 코드 블럭 비활성화
+./svpromotion.model.php::getItemPriceCart()에서 아래의 코드 비활성화
+else // 20160601 이후에 코드 블록 제거
+{
+	if( $val->conditional_promotion == 'fblike' )
+	{
+		$oConditionalPromotion = $this->_getFbConditionalDiscountItem($val);
+		if( $oConditionalPromotion->conditional_additional_discount_amount > 0 )
+		{
+			$item_list[$key]->discount_info = $item_list[$key]->discount_info.' '.$oConditionalPromotion->fb_like_additional_discount_info;
+			$item_list[$key]->discount_amount = $item_list[$key]->discount_amount + $oConditionalPromotion->conditional_additional_discount_amount;
+			$item_list[$key]->discounted_price = $item_list[$key]->discounted_price - $oConditionalPromotion->conditional_additional_discount_amount;
+			$item_list[$key]->sum_discount_amount = $item_list[$key]->sum_discount_amount + ( $oConditionalPromotion->conditional_additional_discount_amount* $val->quantity );
+			$item_list[$key]->sum_discounted_price = $item_list[$key]->sum_discounted_price - ( $oConditionalPromotion->conditional_additional_discount_amount* $val->quantity );
+		}
+	}
+}
+
+3. 개별 쿠폰 사용 횟수 기록 오류 수정
+./svpromotion.model.php::getCheckoutPrice()에 아래의 코드를 추가
+$oRst->add('coupon_srl', $output->data->coupon_srl );
+
+v 0.2.4
+18th, Mar 2017
+1.  svcrm에서 쿠폰 추가 메서도 생성
+./svpromotion.admin.controller.php::insertCoupon() 추가
+./svpromotion.admin.controller.php::procSvpromotionAdminInsertCoupon()에서 아래의 코드를
+$nPromotionSrl = Context::get('promotion_srl' );
+if( strlen( $nPromotionSrl ) == 0 )
+	return new Object( -1, 'msg_invalid_promotion_srl' );
+
+// generate module model object
+$oSvPromotionAdminModel = getAdminModel('svpromotion');
+
+$output = $oSvPromotionAdminModel->getCouponPromotionSetupInfo( $nPromotionSrl );
+if( count( $output ) != 1 )
+	return new Object( -1, 'msg_invalid_promotion_srl' );
+
+if( $output->data[0]->promotion_srl <= 0 || $output->data[0]->promotion_srl != $nPromotionSrl )
+	return new Object( -1, 'msg_invalid_promotion_srl' );
+
+$nMaxUseCnt = 1;
+if( $output->data[0]->max_use_count > 1 )
+	$nMaxUseCnt = $output->data[0]->max_use_count;
+
+$sCouponList = Context::get('coupon_registration' );
+if( strlen( $sCouponList ) == 0 )
+	return new Object( -1, 'msg_invalid_coupon_list' );
+
+//$aCouponList = explode( PHP_EOL, $sCouponList );
+$aCouponList = preg_split('/\n|\r\n?/', $sCouponList);
+
+if( count( $aCouponList ) == 0 )
+	return new Object( -1, 'msg_invalid_coupon_list' );
+
+$args->promotion_srl = $nPromotionSrl;
+$args->max_use_count = $nMaxUseCnt;
+$oSvpromotionAdminModel = &getAdminModel('svpromotion');
+
+$nCnt = $oSvpromotionAdminModel->getCouponCount();
+$nCnt++;
+
+foreach( $aCouponList as $key => $val )
+{
+	$args->coupon_srl = $nCnt++;
+	$args->coupon_serial = utf8_encode( $val );
+	$output = executeQuery('svpromotion.insertCoupon', $args );
+	if(!$output->toBool())
+		return $output;
+}
+$this->setRedirectUrl(getNotEncodedUrl('', 'module', Context::get('module'), 'act', 'dispSvpromotionAdminCouponInfo', 'promotion_srl', $nPromotionSrl ) );
+아래와 같이 변경
+$nPromotionSrl = Context::get('promotion_srl' );
+if( strlen( $nPromotionSrl ) == 0 )
+	return new Object( -1, 'msg_invalid_promotion_srl' );
+
+$sCouponList = Context::get('coupon_registration' );
+if( strlen( $sCouponList ) == 0 )
+	return new Object( -1, 'msg_invalid_coupon_list' );
+
+$oRst = $this->insertCoupon($nPromotionSrl, $sCouponList);
+if(!$oRst->toBool())
+	return $output;
+$this->setRedirectUrl(getNotEncodedUrl('', 'module', Context::get('module'), 'act', 'dispSvpromotionAdminCouponInfo', 'promotion_srl', $nPromotionSrl ) );
+
+2. 개별 쿠폰 삭제 메서드 추가
+./svpromotion.admin.view.php::dispSvpromotionAdminDeleteCoupon()추가
+./svpromotion.admin.model.php::getCouponInfo() 추가
+./svpromotion.admin.controller.php::procSvpromotionAdminDeleteCoupon() 추가
+
+3. 가입혜택 관리 기능 추가
+./svpromotion.admin.view.php::dispSvpromotionAdminRegistrationDiscount() 추가
+./svpromotion.admin.controller.php::procSvpromotionAdminUpdateRegistrationDiscount() 추가
+
+v 0.2.5
+22th, Mar 2017
+1.  쿠폰에 member_srl 지명 기능 추가
+./schemas/svpromotions_coupon_list.xml에 아래의 코드 추가
+<column name="member_srl" type="number" size="11" default="0" index="idx_member_srl" />
+
+./svpromotion.admin.controller.php::insertCoupon()에 아래의 코드 추가
+$nMemberSrl = (int)$nMemberSrl;
+if( is_null($nMemberSrl) )
+	$nMemberSrl = 0;
+$args->member_srl = $nMemberSrl;
+
+./queries/insertCoupon.xml에 아래의 코드 추가
+<column name="member_srl" var="member_srl" filter="number" notnull="notnull" />
+
+./svpromotion.model.php::getCouponInfoBySerialNumber()에 아래의 코드 추가
+if( $output->data->member_srl > 0 )
+{
+	$logged_info = Context::get('logged_info');
+	if (!$logged_info) 
+		return new Object( -1, 'msg_endorsed_coupon');
+
+	if( $output->data->member_srl != $logged_info->member_srl )
+		return new Object( -1, 'msg_endorsed_coupon');
+}
+
+v 0.2.6
+7th, Apr 2017
+1.  기명 쿠폰에 회원 아이디 표시 기능 추가
+./svpromotion.admin.model.php::getCouponListByCouponPromotion()에 아래의 코드 추가
+$oMemberModel = &getModel('member');
+foreach( $output->data as $key=>$val)
+{
+	if( $val->member_srl > 0 )
+	{
+		$oMemberInfo = $oMemberModel->getMemberInfoByMemberSrl($val->member_srl);
+		if( is_null( $oMemberInfo ) )
+			$output->data[$key]->user_id = 'quit';
+		else
+			$output->data[$key]->user_id = $oMemberInfo->user_id;
+	}
+}
+
+./tpl/coupon_list_by_promotion.html에 아래의 코드 추가
+<th scope="col">{$lang->coupon_no}</th>
+<block cond="$val->member_srl && $val->user_id!='quit'">
+			<a href="{getUrl('module','admin','act','dispMemberAdminInsert','member_srl',$val->member_srl)}" target='_new'>{$val->user_id}</a>
+</block>
+<block cond="!$val->member_srl">
+			무기명쿠폰
+</block>
+<block cond="$val->user_id=='quit'">
+			탈퇴회원
+</block>
+
+v 0.2.7
+16th, Apr 2017
+1. 관리자 화면에서 메세지 처리 루틴 통합
+./tpl의 모든 스킨에서 아래의 코드를 ./tpl/_header.html로 이동
+<div cond="$XE_VALIDATOR_MESSAGE && $XE_VALIDATOR_ID == ''" class="message {$XE_VALIDATOR_MESSAGE_TYPE}">
+	<p>{$XE_VALIDATOR_MESSAGE}</p>
+</div>
+
+v 0.2.8
+18th, Apr 2017
+1. 관리자 화면에서 발급 쿠폰 리스트에 페이지 보기 기능 추가
+./svpromotion.admin.model.php::getCouponListByCouponPromotion()에 아래의 코드 추가
+$args->page = Context::get('page');
+
+./svpromotion.admin.view.php::dispSvpromotionAdminCouponInfo()에 아래의 코드 추가
+Context::set('total_count', $output->total_count);
+Context::set('total_page', $output->total_page);
+Context::set('page', $output->page);
+Context::set('page_navigation', $output->page_navigation);
+
+v 0.2.9
+25th, Apr 2017
+1. 관리자 화면에서 생성된 쿠폰 정보 수정 기능 추가
+./tpl/coupon_list_by_promotion.html에 아래의 코드를
+ <a href="{getUrl('act','dispSvpromotionAdminPromotionInfo','promotion_srl',$val->promotion_srl)}" class="x_icon-cog" title="{$lang->cmd_setup}">{$lang->cmd_setup}</a>
+ 아래와 같이 변경
+<a href="{getUrl('act','dispSvpromotionAdminUpdateCoupon','promotion_srl', $val->promotion_srl,'coupon_srl', $val->coupon_srl)}" class="x_icon-cog" title="{$lang->cmd_setup}">{$lang->cmd_setup}</a>
+
+./svpromotion.admin.view.php::dispSvpromotionAdminUpdateCoupon() 추가
+./conf/module.xml에 아래의 코드 추가
+<action name="dispSvpromotionAdminUpdateCoupon" type="view" />
+./tpl/coupon_update.html 추가
+
+./svpromotion.admin.view.php::procSvpromotionAdminUpdateCoupon() 추가
+./conf/module.xml에 아래의 코드 추가
+<action name="procSvpromotionAdminUpdateCoupon" type="controller" />
+
+./queries/updateCouponInfoByCouponSrl.xml을 updateCouponUsedCountByCouponSrl.xml로 변경
+./svpromotion.controller.php::procSvprmotionMarkUsedCoupon()에서 아래의 코드를
+$output = executeQuery( 'svpromotion.updateCouponInfoByCouponSrl', $args );
+아래와 같이 변경
+$output = executeQuery( 'svpromotion.updateCouponUsedCountByCouponSrl', $args );
+
+v 0.3.0
+27th, Apr 2017
+1. 쿠폰 일련번호 생성방식을 쿠폰 갯수에서 마지막 쿠폰 일련번호+1로 변경
+./queries/getCouponCount.xml 제거
+./queries/getMaxCouponSrl.xml 추가
+
+./svpromotion.admin.model.php::getCouponCount() 제거
+./svpromotion.admin.model.php::getNextCouponSrl() 추가
+
+./svpromotion.admin.controller.php::insertCoupon()에서 아래의 코드를
+$nCnt = $oSvpromotionAdminModel->getCouponCount();
+아래와 같이 변경
+$nSrl = $oSvpromotionAdminModel->getNextCouponSrl();
+
+v 0.3.1
+28th, Apr 2017
+1. 관리자 화면에서 쿠폰 관리 기능을 하단으로 이동
+./tpl/_header.html에서 하단 메뉴를 추가
+
+v 0.3.2
+28th, May 2017
+1. svreserve의 적립금 기능 흡수
+./svpromotion.admin.view.php::dispSvpromotionAdminReserves() 추가
+./svpromotion.admin.controller.php::procSvpromotionAdminReservesMgmt() 추가
+./svpromotion.admin.model.php::isClaimingReservesAcceptable() 추가
+./svpromotion.admin.model.php::getRemainigReservesByMemberSrl() 추가
+./tpl/reserves_mgmt.html 추가
+
+./svpromotion.model.php::getNextReservesLogSrl() 추가
+./queries/getMaxReservesLogSrl.xml 추가
+
+./svpromotion.model.php::getReservesLogByReservesSrl() 추가
+./queries/getReservesLogByReserveSrl.xml 추가
+
+./svpromotion.model.php::getReservesLogByOrderSrl() 추가
+./queries/getReservesLogByOrderSrl.xml 추가
+
+2. module config 저장 메소드 개선
+./svpromotion.admin.controller.php::_saveModuleConfig() 추가
+./svpromotion.admin.controller.php::procSvpromotionAdminConfig()에서 아래의 코드를
+$oModuleControll = getController('module');
+$output = $oModuleControll->insertModuleConfig('svpromotion', $args);
+$this->setMessage( 'success_updated' );
+아래와 같이 변경
+$output = $this->_saveModuleConfig($oArgs);
+if(!$output->toBool())
+	$this->setMessage( 'error_occured' );
+else
+	$this->setMessage( 'success_updated' );
+
+3. svpromotion.model.php::getModuleConfig()추가
+
+4. 오작동을 일으킬 수 있는 코드 제거
+./queries/insertCoupon.xml에서 아래의 코드를
+<column name="coupon_srl" var="coupon_srl" default="sequence()" notnull="notnull" />
+아래와 같이 변경
+<column name="coupon_srl" var="coupon_srl" notnull="notnull" />
+
+v 0.3.3
+9th, Jun 2017
+1. 관리자 화면의 [사이트그룹할인 등록] 메뉴를 [사이트 프로모션]으로 변경
+./svpromotion.admin.view.php::dispSvpromotionAdminSiteGroupDiscount()를 dispSvpromotionAdminSitePromotion()으로 변경
+./tpl/site_group_discount.html을 site_promotion.html로 변경
+
+./svpromotion.admin.view.php::dispSvpromotionAdminSitePromotion()에 아래의 코드 추가
+$oSvpromotionAdminModel = &getAdminModel('svpromotion');
+$config = $oSvpromotionAdminModel->getModuleConfig();
+//var_dump( $config );
+Context::set('config',$config);
+
+$oSvitemAdminModel = &getAdminModel('svitem');
+$output = $oSvitemAdminModel->getSvitemAdminItemList();
+Context::set('total_count', $output->total_count);
+Context::set('total_page', $output->total_page);
+Context::set('page', $output->page);
+Context::set('page_navigation', $output->page_navigation);
+Context::set('item_list', $output->data );
+
+2. 관리자 화면의 [페이지 수량할인 등록] 메뉴를 [페이지별 프로모션]으로 변경
+./svpromotion.admin.view.php::dispSvpromotionAdminSiteBulkDiscount()를 dispSvpromotionAdminPagePromotion()으로 변경
+./tpl/item_bulk_discount.html을 page_promotion.html로 변경
+
+3. 사이트 수량 할인 등록 기능 추가
+./svpromotion.admin.controller.php::procSvpromotionAdminSiteBulkPromotionMgmt() 추가
+./svpromotion.admin.controller.php::getCheckoutPrice()에서 아래의 코드를 
+$sCouponSerial = $in_args->coupon_number;
+if( strlen( $sCouponSerial ) > 0 )
+{
+	$nOriginalPayAmnt = 0;
+	$nAlreadyDiscountedPayAmnt = 0;
+
+	foreach( $in_args->cart->item_list as $key => $val )
+	{
+		// 이미 적용된 할인 혜택을 계산
+		$nOriginalPayAmnt += $val->price * $val->quantity;
+		$nAlreadyDiscountedPayAmnt += ($val->price - $val->discount_amount)*$val->quantity;
+	}
+
+	$nOriginalPayAmnt += $aSingleCartInfo->price * $aSingleCartInfo->quantity;
+	$nAlreadyDiscountedPayAmnt += ($aSingleCartInfo->price - $aSingleCartInfo->discount_amount)*$aSingleCartInfo->quantity;
+
+	$output = $this->getCouponInfoBySerialNumber( $sCouponSerial, $nOriginalPayAmnt, $nAlreadyDiscountedPayAmnt );
+	if( !$output->toBool() )
+		return $output;
+}
+$sDiscountType = $output->data->descount_type;
+$discount_policy = $output->data->discpolicy;
+// 주문서 입력 후 할인액; 주문서 입력전 할인액은 무시함
+$nInitialItemTotalPrice = $in_args->cart->sum_price;
+$nTotalDiscountAmount = 0;
+if( $sDiscountType == 'rate' && ( $discount_policy > 0 && $discount_policy < 1 ) )
+	$nTotalDiscountAmount = (int)($nInitialItemTotalPrice * $discount_policy);
+else if( $sDiscountType == 'amount' && $discount_policy > 1 )
+	$nTotalDiscountAmount = $discount_policy;
+
+$sPromotionInfo = $output->data->promotion_title.' '.number_format($nTotalDiscountAmount,0).'원 할인';
+$oRst = new Object();
+$oRst->add('coupon_srl', $output->data->coupon_srl );
+$oRst->add('total_discount_amount', $nTotalDiscountAmount );
+$oRst->add('promotion_info', $sPromotionInfo );
+return $oRst;
+
+아래와 같이 변경
+$oCheckoutPromotionInfo = new stdClass();
+$oCheckoutPromotionInfo->version = '1.0';
+$oRst = new Object();
+$nInitialItemTotalPrice = $in_args->cart->sum_price;
+
+$oSiteBulkOutput = $this->getSiteLevelQuantityDiscount( $in_args );
+$nBulkQtyRange = (int)$oSiteBulkOutput->get('matched_qty_range');
+$fBulkDiscountRate = (float)$oSiteBulkOutput->get('matched_discount_rate');
+$nBulkQtyRecommendedRange = (int)$oSiteBulkOutput->get('recommeded_qty_range');
+$fBulkDiscountRecommendedRate = (float)$oSiteBulkOutput->get('recommeded_discount_rate');
+$nRemainingQty = (int)$oSiteBulkOutput->get('remaining_qty');
+$aBulkDiscountRecommendedItemList = $oSiteBulkOutput->get('recommeded_item_list');
+if( $nBulkQtyRange > 0 )
+{
+	$nTotalDiscountAmount = (int)($nInitialItemTotalPrice * $fBulkDiscountRate);
+	$oCheckoutPromotionInfo->promotion[0]->type = 'site_bulk';
+	unset($oCheckoutPromotionInfo->promotion[0]->coupon_srl); // 쿠폰 사용 무효화
+	$oCheckoutPromotionInfo->promotion[0]->total_disc_amnt = $nTotalDiscountAmount;
+	$oCheckoutPromotionInfo->promotion[0]->title = $nBulkQtyRange.'개 이상  '.number_format($nTotalDiscountAmount,0).'원 할인';
+}
+
+if( $nBulkQtyRecommendedRange )
+{
+	$oRst->add('remaining_qty', $nRemainingQty );
+	$oRst->add('recommeded_qty_range', $nBulkQtyRecommendedRange );
+	$oRst->add('recommeded_discount_rate', $fBulkDiscountRecommendedRate );
+	$oRst->add('recommeded_item_list', $aBulkDiscountRecommendedItemList );
+}
+
+$oCouponOutput = new Object();
+$sCouponSerial = $in_args->coupon_number;
+if( strlen( $sCouponSerial ) > 0 )
+{
+	$nOriginalPayAmnt = 0;
+	$nAlreadyDiscountedPayAmnt = 0;
+	foreach( $in_args->cart->item_list as $key => $val ) // 이미 적용된 할인 혜택을 계산
+	{
+		$nOriginalPayAmnt += $val->price * $val->quantity;
+		$nAlreadyDiscountedPayAmnt += ($val->price - $val->discount_amount)*$val->quantity;
+	}
+	if( $nOriginalPayAmnt - $nAlreadyDiscountedPayAmnt < $nTotalDiscountAmount )
+		$nAlreadyDiscountedPayAmnt = $nInitialItemTotalPrice - $nTotalDiscountAmount;
+	$oCouponOutput = $this->getCouponInfoBySerialNumber( $sCouponSerial, $nOriginalPayAmnt, $nAlreadyDiscountedPayAmnt );
+	$sDiscountType = $oCouponOutput->data->descount_type;
+	$discount_policy = $oCouponOutput->data->discpolicy;
+	$nTotalDiscountAmount = 0;
+	if( $sDiscountType == 'rate' && ( $discount_policy > 0 && $discount_policy < 1 ) )
+		$nTotalDiscountAmount = (int)($nInitialItemTotalPrice * $discount_policy);
+	else if( $sDiscountType == 'amount' && $discount_policy > 1 )
+		$nTotalDiscountAmount = $discount_policy;
+	
+	if( $nTotalDiscountAmount > 0 )
+	{
+		$oCheckoutPromotionInfo->promotion[0]->type = 'coupon';
+		$oCheckoutPromotionInfo->promotion[0]->coupon_srl = $oCouponOutput->data->coupon_srl;
+		$oCheckoutPromotionInfo->promotion[0]->total_disc_amnt = $nTotalDiscountAmount;
+		$oCheckoutPromotionInfo->promotion[0]->title = $oCouponOutput->data->promotion_title.' '.number_format($nTotalDiscountAmount,0).'원 할인';
+		
+		$oRst->add('disctype', $oCouponOutput->data->descount_type);
+		$oRst->add('discpolicy', $oCouponOutput->data->discpolicy);
+		$oRst->add('promotion_title', $oCouponOutput->data->promotion_title);
+	}
+}
+
+if( !$oCouponOutput->toBool() )
+	return $oCouponOutput;
+if( !$oSiteBulkOutput->toBool() )
+	return $oSiteBulkOutput;
+
+$oRst->add('total_discount_amount', $nTotalDiscountAmount );
+$oRst->add('promotion_info', $oCheckoutPromotionInfo );
+return $oRst;
+
+./svpromotion.model.php::getSiteLevelQuantityDiscount() 추가
+
+4. svitem.view.php::dispSvitemItemDetail()에서 호출하는 메소드 통일하여 _discountItem() 중복 호출 제거
+./svpromotion.model.php::getPromotionInfoForItemDetailPage() 추가
+./svpromotion.model.php::getItemConditionalPromotionList() 제거
+
+5. 미사용 메소드 제거
+./svpromotion.model.php::getItemPriceOrder() 제거
+
+./svpromotion.model.php::_getFbConditionalDiscountItem()에서 아래의 코드 제거
+$args->module_srl = $item_info->module_srl;
+
+6. fb like 할인 계산방식 개선
+./svpromotion.model.php::_getFbConditionalDiscountItem()에서 아래의 코드를
+$result->conditional_additional_discount_amount = $nRestrictedDiscountAmnt;
+아래와 같이 변경
+$result->conditional_additional_discount_amount = (int)$nRestrictedDiscountAmnt;
+
+7. 메소드 이름 변경
+./svpromotion.model.php::_discountItem()를 _discountSpecificItem()로 변경
+./svpromotion.model.php::_getQuantityDiscount()를 _getItemLevelQuantityDiscount()로 변경
+
+v 0.3.4
+19th, Jun 2017
+1. 불필요한 tbl::svorder_order 필드 제거에 대응
+./svpromotion.model.php::getItemPriceCart()에서 아래의 코드 제거
+$ret_obj->taxation_amount=0;
+$ret_obj->supply_amount=0;
+$ret_obj->taxfree_amount=0;
+$ret_obj->vat=0;
+
+if( $val->taxfree=='Y' )
+	$ret_obj->taxfree_amount += $item_list[$key]->sum_discounted_price;
+else 
+	$ret_obj->taxation_amount += $item_list[$key]->sum_discounted_price;
+
+$ret_obj->supply_amount = $ret_obj->taxation_amount / 1.1;
+$ret_obj->vat = $ret_obj->taxation_amount - $ret_obj->supply_amount;
+
+2. svcart의 배송비 관련 설정을 svorder로 이전하는 작업에 대응함
+./svpromotion.model.php::getItemPriceCart()에서 아래의 코드 제거
+$ret_obj->delivery_fee=0;
+if(in_array('svorder', $proc_modules))
+{
+	if( !$config->freedeliv_amount || ( $ret_obj->total_discounted_price < (int)$config->freedeliv_amount ) )
+	{
+		if( $config->shipping_fee_payment_type == 'prepaid' || $config->shipping_fee_payment_type == 'buyer_define' )
+			$ret_obj->delivery_fee = $config->delivery_fee;
+	}
+}
+
+if( !$ret_obj->delivery_fee )
+	$ret_obj->delivery_fee = 0;
+if( $free_delivery == 'Y' )
+	$ret_obj->delivery_fee = 0;
+
+v 0.3.5
+21st, Jun 2017
+1. 라이크 할인 표시액과 실제 할인액 일치시킴
+./svpromotion.model.php::_getFbConditionalDiscountItem()에 아래의 코드 추가
+$nRestrictedDiscountAmnt = (int)$nRestrictedDiscountAmnt;
+
+2. 쿠폰 사용 내역 확인 UI 
+./schemas/svpromotion_coupon_list_used.xml 추가
+./svpromotion.admin.view.php::dispSvpromotionAdminCouponPerformance() 추가
+./svpromotion.admin.model.php::getCouponPromotionUsageLog() 추가
+./tpl/coupon_performance.html 추가
+./queries/getCouponPerformance.xml 추가
+
+./svpromotion.admin.controller.php::procSvprmotionMarkUsedCoupon()에서 아래의 코드를
+if( $nCouponSrl <= 0 )
+	return new Object( -1, 'msg_error_while_mark_used_coupon' );
+$args->coupon_srl = $nCouponSrl;
+$output = executeQuery( 'svpromotion.updateCouponUsedCountByCouponSrl', $args );
+if( !$output->toBool() )
+	return new Object(-1, 'msg_error_while_mark_used_coupon');
+return new Object();
+
+아래와 같이 변경
+$nCouponSrl = (int)$oOrderInfo->checkout_promotion_info[0]->coupon_srl;
+if( $nCouponSrl <= 0 )
+	return new Object( -1, 'msg_error_while_mark_used_coupon' );
+
+$args->coupon_srl = $nCouponSrl;
+$output = executeQuery( 'svpromotion.updateCouponUsedCountByCouponSrl', $args );
+if( !$output->toBool() )
+	return new Object(-1, 'msg_error_while_mark_used_coupon');
+
+$oSvpromotionAdminModel = &getAdminModel('svpromotion');
+$oCouponInfo = $oSvpromotionAdminModel->getCouponInfo($nCouponSrl);
+$args->promotion_srl = $oCouponInfo->promotion_srl;
+$args->member_srl = $oOrderInfo->member_srl;
+$args->order_srl = $oOrderInfo->order_srl;
+
+$output = executeQuery( 'svpromotion.insertCouponUsageLog', $args );
+if( !$output->toBool() )
+	return new Object(-1, 'msg_error_while_log_coupon_usage');
+
+return new Object();
+
+v 0.3.6
+17th, Jul 2017
+1. 관리자 -> 사이트 프로모션 -> 이메일 도메인 그룹 할인 등록 화면에서 등록/수정하면 무한 리다이렉션 오류 개선
+./svpromotion.admin.controller.php::procSvpromotionAdminUpdateEmailDomainPolicy()에서 아래의 코드를
+$this->setRedirectUrl(getNotEncodedUrl('', 'module', Context::get('module'), 'act', 'dispSvpromotionAdminSiteGroupDiscount' ));
+아래와 같이 변경
+$this->setRedirectUrl(getNotEncodedUrl('', 'module', Context::get('module'), 'act', 'dispSvpromotionAdminEmailDomainGroupInsert', 'email_domain_srl', Context::get('email_domain_srl') ));
+
+v 0.3.7
+7th, Aug 2017
+1. 쿠폰 유효기간 시작, 종료 일시 지정 기능 추가
+./tpl/coupon_promotion_insert.html에서 관련 코드 수정
+./svpromotion.admin.controller.php::procSvpromotionAdminInsertCouponPromotion()에서 아래의 코드를
+$args = Context::gets('status', 'sv_promotion_title','sv_promotion_description','sv_promotion_descount_amount','sv_promotion_descount_rate','sv_promotion_descount_type', 'coupon_max_usage' );
+아래와 같이 수정
+$args = Context::gets('status', 'sv_promotion_title','sv_promotion_description','sv_promotion_descount_amount','sv_promotion_descount_rate','sv_promotion_descount_type', 'coupon_max_usage', 'begin_date', 'end_date' );
+
+아래의 코드 추가
+if( $args->begin_date >  $args->end_date )
+	return new Object( -1, 'msg_invalid_coupon_working_period' );
+
+./queries/updateCouponPromotion.xml에 아래의 코드 추가
+<column name="begin_date" var="begin_date" />
+<column name="end_date" var="end_date" />
+
+./queries/insertCouponPromotion.xml에 아래의 코드 추가
+<column name="begin_date" var="begin_date" />
+<column name="end_date" var="end_date" />
+
+./svpromotion.model.php::getCouponInfoBySerialNumber()에 아래의 코드 추가
+$sCurDatetime = date('YmdHis');
+if( $output->data->begin_date && $output->data->begin_date > $sCurDatetime )
+	return new Object( -1, sprintf(Context::getLang('msg_error_coupon_not_began'), date( 'Y-m-d', strtotime($output->data->begin_date) ) ) );
+
+if( $output->data->end_date && $output->data->end_date < $sCurDatetime )
+	return new Object( -1, 'msg_error_coupon_expired' );
+
+v 0.3.8
+28th, Sep 2017
+1. 쿠폰 On/Off 기능 추가
+./queries/updateCouponPromotion.xml에 아래의 코드 추가
+<column name="status" var="status" />
+./svpromotion.model.php::getCouponInfoBySerialNumber()에 아래의 코드 추가
+if( $output->data->status != 1 )
+	return new Object( -1, 'msg_coupon_closed' );
+
+2. 수기로 쿠폰 등록할 때 이미 등록된 쿠폰 번호 입력 시 화면 멈춤 현상 해결
+./svpromotion.admin.controller.php::procSvpromotionAdminInsertCoupon()에서 아래의 코드를
+if(!$oRst->toBool())
+	return $output;
+아래와 같이 수정
+if(!$oRst->toBool())
+	return new Object( -1, 'msg_duplicated_coupon_serial' );
+
+3. 개별 쿠폰의 발행시간 기준 유효기간 지정 기능 추가
+./schemas/svpromotions_coupon_list.xml에 아래의 코드 추가
+<column name="regdate" type="date" />
+./queries/insertCoupon.xml에 아래의 코드 추가
+<column name="regdate" var="regdate" default="curdate()" />
+
+./svpromotion.model.php::getCouponInfoBySerialNumber()에 아래의 코드를 추가
+$sCouponRegDatetime = $output->data->regdate;
+
+./svpromotion.model.php::getCouponInfoBySerialNumber()에서 아래의 코드를
+if( $output->data->end_date && $output->data->end_date < $sCurDatetime )
+	return new Object( -1, 'msg_error_coupon_expired' );
+아래와 같이 변경
+if( $output->data->end_date )
+{
+	if( strpos($output->data->end_date, 'minutes') !== false )
+	{
+		$endTime = strtotime($output->data->end_date, strtotime($sCouponRegDatetime));
+		$sIndividualCouponExpDatatime = date('YmdHis', $endTime);
+		if( $sIndividualCouponExpDatatime < $sCurDatetime )
+			return new Object( -1, 'msg_error_coupon_expired' );
+	}
+	else
+	{
+		if( $output->data->end_date < $sCurDatetime )
+			return new Object( -1, 'msg_error_coupon_expired' );
+	}
+}
+
+v 0.3.9
+6th, Oct 2017
+1. 개별 쿠폰의 발행시간 기준 유효기간  기능 추가
+./queries/updateCouponPromotion.xml에서 아래의 코드를
+<column name="end_date" var="end_date" />
+아래와 같이 변경
+<column name="end_date" var="end_date" default=""/>
+
+2. 쿠폰 목록 화면에서 On/Off 표시
+./svpromotion.admin.model.php::getCouponPromotionList()에 아래의 코드 추가
+foreach( $output->data as $key=>$val)
+{
+	switch( $val->status )
+	{
+		case 0:
+			$output->data[$key]->status = 'OFF';
+			break;
+		case 1:
+			$output->data[$key]->status = 'ON';
+			break;
+		default:
+			$output->data[$key]->status = 'WEIRD';
+
+	}
+}
+./tpl/index.html에 아래의 코드 추가
+{$val->status}
+
+3. 쿠폰 목록 화면에서 종료기간을 고정일시 혹은 변동기한으로 표시하는 기능 
+./svpromotion.admin.model.php::getCouponPromotionList()에 아래의 코드 추가
+if( is_numeric( $val->end_date ) )
+	$output->data[$key]->end_date = zdate($output->data[$key]->end_date);
+./tpl/index.html에서 아래의 코드를
+{$val->end_date,"Y-m-d H:i:s")}
+아래와 같이 변경
+{$val->end_date}
+
+4. 프로모션 별 쿠폰목록 화면에서 쿠폰발급일 표시
+./tpl/coupon_list_by_promotion.html에 아래의 코드 추가
+<td>{zdate($val->regdate)}</td>
+
+v 0.4.0
+12th, Nov 2017
+1. 쿠폰의 할인 정책에 수량과 품목 추가
+./svpromotion.admin.view.php::_dispSvpromotionAdminInsertCouponPromotion()에 아래의 코드 추가
+unset( $output );
+$oSvitemAdminModel = &getAdminModel('svitem');
+$output = $oSvitemAdminModel->getSvitemAdminItemList();
+Context::set('total_count', $output->total_count);
+Context::set('total_page', $output->total_page);
+Context::set('page', $output->page);
+Context::set('page_navigation', $output->page_navigation);
+Context::set('item_list', $output->data );
+
+./tpl/coupon_promotion_insert.html에 아래의 코드 추가
+<section class="section">
+	<table id="boardList" class="x_table x_table-striped x_table-hover">
+		<caption>
+			<strong>Total: {number_format($total_count)}, Page: {number_format($page)}/{number_format($total_page)}</strong>
+		</caption>
+		<thead>
+			<tr>
+				<th scope="col">{$lang->select}</th>
+				<th scope="col">{$lang->display_status}</th>
+				<th scope="col">{$lang->item_title}</th>
+				<th scope="col">{$lang->regdate}</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr loop="$item_list=>$no,$val">
+				<td><input type="checkbox" name="target_items[]" value="{$val->item_srl}" CHECKED|cond="$promotion_detail->target_items[$val->item_srl]=='Y'"></td>
+				<td>{$val->display}</td>
+				<td>{$val->item_name}</td>
+				<td>{zdate($val->regdate,"Y-m-d")}</td>
+			</tr>
+			<tr cond="!$item_list">
+				<td>{$lang->no_item_instance}</td>
+			</tr>
+		</tbody>
+	</table>
+</section>
+
+./svpromotion.admin.controller.php::procSvpromotionAdminInsertCouponPromotion()에 아래의 코드 추가
+if($args->target_items)
+{
+	$aSiteBulkPromotionItem = array();
+	foreach( $args->target_items as $key=>$val )
+		$aCouponPromotionItem[$val] = 'Y';
+	$args->target_items = serialize($aCouponPromotionItem);
+}
+else
+	unset($args->target_items );
+
+./schemas/svpromotions_coupon.xml에 아래의 코드 추가
+<column name="coupon_max_qty" type="number" size="2" default="0"/>
+<column name="target_items" type="text" />
+
+./queries/insertCouponPromotion.xml에 아래의 코드 추가
+<column name="max_qty" var="max_qty" />
+<column name="target_items" var="target_items" />
+
+./queries/updateCouponPromotion.xml에 아래의 코드 추가
+<column name="coupon_max_qty" var="coupon_max_qty" />
+<column name="target_items" var="target_items" />
+
+./svpromotion.admin.model.php::getCouponPromotionSetupInfo()에 아래의 코드 추가
+$output->data[0]->target_items = unserialize($output->data[0]->target_items);
+
+./svpromotion.model.php::getCouponInfoBySerialNumber()에 아래의 코드 추가
+if( $output->data->target_items )
+	$output->data->target_items = unserialize($output->data->target_items);
+else
+	$output->data->target_items = null;
+
+./svpromotion.model.php::getCheckoutPrice()에서 아래의 코드를
+if( $sDiscountType == 'rate' && ( $discount_policy > 0 && $discount_policy < 1 ) )
+	$nTotalDiscountAmount = (int)($nInitialItemTotalPrice * $discount_policy);
+else if( $sDiscountType == 'amount' && $discount_policy > 1 )
+	$nTotalDiscountAmount = $discount_policy;
+
+아래와 같이 변경
+$nCouponDiscountQtyMax = (int)$oCouponOutput->data->max_qty;
+$aCouponAllowableItems = $oCouponOutput->data->target_items;
+if( $nCouponDiscountQtyMax || count( $aCouponAllowableItems ) )// 최대 수량 정책 혹은 품목 제한 정책 ON이면
+{
+	if( $sDiscountType == 'rate' && ( $discount_policy > 0 && $discount_policy < 1 ) )
+	{
+		$aTmpCart = array();
+		$aTmpCart = $this->_shellSortByItemPrice( $in_args->cart->item_list );
+		$nTmpCouponDiscQtyMax = $nCouponDiscountQtyMax; // 할인 수량 확인하기 위한 임시 변수
+		foreach( $aTmpCart as $key => $val ) 
+		{
+			if( $nCouponDiscountQtyMax )
+			{
+				if( $nTmpCouponDiscQtyMax >= $val->quantity )
+				{
+					$nTempQty = $val->quantity;
+					$nTmpCouponDiscQtyMax -= $val->quantity;
+				}
+				else
+				{
+					$nTempQty = $nTmpCouponDiscQtyMax;
+					$nTmpCouponDiscQtyMax = 0; 
+				}
+			}
+			if( $aCouponAllowableItems[$val->item_srl] == 'Y' )
+				$nTotalDiscountAmount += (int)($val->price * $nTempQty * $discount_policy);
+			if( !$nTmpCouponDiscQtyMax )
+				break;
+		}
+	}
+	else if( $sDiscountType == 'amount' && $discount_policy > 1 )
+		$nTotalDiscountAmount = $discount_policy;
+}
+else // 최대 수량 정책 OFF, 품목 제한 정책 OFF이면
+{
+	if( $sDiscountType == 'rate' && ( $discount_policy > 0 && $discount_policy < 1 ) )
+		$nTotalDiscountAmount = (int)($nInitialItemTotalPrice * $discount_policy);
+	else if( $sDiscountType == 'amount' && $discount_policy > 1 )
+		$nTotalDiscountAmount = $discount_policy;
+}
+
+./svpromotion.model.php::_shellDescSortByItemPrice() 추가
+
+v 0.4.1
+1st, Dec 2017
+1. 쿠폰의 할인 정책에 수량과 품목 제한 처리 방식 개선
+최고가이지만 할인 제외 품목이 장바구니에 담기면 할인하지 않고 할인 수량만 차감하는 문제 해결
+./svpromotion.model.php::getCheckoutPrice()에서 아래의 코드를
+if( $nTmpCouponDiscQtyMax >= $val->quantity )
+{
+	$nTempQty = $val->quantity;
+	$nTmpCouponDiscQtyMax -= $val->quantity;
+}
+else
+{
+	$nTempQty = $nTmpCouponDiscQtyMax;
+	$nTmpCouponDiscQtyMax = 0; 
+}
+아래와 같이 변경
+if( $nTmpCouponDiscQtyMax >= $val->quantity )
+{
+	$nTempQty = $val->quantity;
+	if( $aCouponAllowableItems )
+	{
+		if( $aCouponAllowableItems[$val->item_srl] == 'Y' )
+			$nTmpCouponDiscQtyMax -= $val->quantity;
+	}
+	else
+		$nTmpCouponDiscQtyMax -= $val->quantity;
+}
+else
+{
+	if( $aCouponAllowableItems )
+	{
+		if( $aCouponAllowableItems[$val->item_srl] == 'Y' )
+		{
+			$nTempQty = $nTmpCouponDiscQtyMax;
+			$nTmpCouponDiscQtyMax = 0; 
+		}
+	}
+	else
+	{
+		$nTempQty = $nTmpCouponDiscQtyMax;
+		$nTmpCouponDiscQtyMax = 0; 
+	}
+}
+
+v 0.4.2
+26th, Jan 2018
+1. 쿠폰을 대량으로 자동 발행하는 기능 추가
+./tpl/coupon_list_by_promotion.html에 아래의 코드 추가
+<form class="x_form-horizontal" action="./" method="post" enctype="multipart/form-data">
+	<input type="hidden" name="module" value="svpromotion" />
+	<input type="hidden" name="act" value="procSvpromotionAdminInsertCoupon" />
+	<input type="hidden" name="mode" value="bulk" />
+	<input type="hidden" name="promotion_srl" value="{$promotion_srl}" />
+	<input cond="$promotion_srl" type="hidden" name="success_return_url" value="{getRequestUriByServerEnviroment()}" />
+	<section class="section">
+		<div class="x_control-group">
+			<label class="x_control-label" for="coupon_qty">{$lang->coupon_bulk_registration}</label>
+			<div class="x_controls">
+				발행 수량 (대량일 경우 1,000개씩)<input type='text' name="coupon_qty" id="coupon_qty" >
+				<a href="#header_text_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="header_text_help" class="x_help-block" hidden>{$lang->about_coupon_registration}</p>
+			</div>
+			<div class="x_controls">
+				난수 문자열 길이<input type='text' name="coupon_length" id="coupon_length" >
+				<a href="#header_text_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="header_text_help" class="x_help-block" hidden>{$lang->about_coupon_registration}</p>
+			</div>
+		</div>
+	</section>
+	<div class="x_clearfix btnArea">
+		<input type="submit" class="x_btn x_btn-primary" value="{$lang->cmd_registration}" accesskey="s" />
+	</div>
+</form>
+
+./svpromotion.admin.controller.php::procSvpromotionAdminInsertCoupon()에서 아래의 코드를
+$nPromotionSrl = Context::get('promotion_srl' );
+if( strlen( $nPromotionSrl ) == 0 )
+	return new Object( -1, 'msg_invalid_promotion_srl' );
+
+$sCouponList = Context::get('coupon_registration' );
+if( strlen( $sCouponList ) == 0 )
+	return new Object( -1, 'msg_invalid_coupon_list' );
+
+$oRst = $this->insertCoupon($nPromotionSrl, $sCouponList);
+
+아래와 같이 변경
+$nPromotionSrl = Context::get('promotion_srl' );
+if( strlen( $nPromotionSrl ) == 0 )
+	return new Object( -1, 'msg_invalid_promotion_srl' );
+
+$sMode = Context::get('mode' );
+if( $sMode == 'bulk' )
+{
+	$nCouponQty = Context::get('coupon_qty' );
+	if( $nCouponQty == 0 )
+		return new Object( -1, 'msg_invalid_coupon_qty' );
+
+	$nCouponLength = Context::get('coupon_length' );
+	if( $nCouponLength < 4 )
+		return new Object( -1, 'msg_invalid_coupon_length' );
+
+	$oSvPromotionAdminModel = getAdminModel('svpromotion');
+
+	$output = $oSvPromotionAdminModel->getCouponPromotionSetupInfo( $nPromotionSrl );
+	if( count( $output ) != 1 )
+		return new Object( -1, 'msg_invalid_promotion_srl' );
+	
+	if( $output->data[0]->promotion_srl <= 0 || $output->data[0]->promotion_srl != $nPromotionSrl )
+		return new Object( -1, 'msg_invalid_promotion_srl' );
+	
+	$nMaxUseCnt = 1;
+	if( $output->data[0]->max_use_count > 1 )
+		$nMaxUseCnt = $output->data[0]->max_use_count;
+
+	$args->promotion_srl = $nPromotionSrl;
+	$args->max_use_count = $nMaxUseCnt;
+	
+	$oSvpromotionAdminModel = &getAdminModel('svpromotion');
+	$nSrl = $oSvpromotionAdminModel->getNextCouponSrl();
+	$nSuccessCnt = 0;
+	do 
+	{
+		$sSerial = $oSvpromotionAdminModel->getCouponSerial($nCouponLength);
+		$args->coupon_srl = $nSrl++;
+		$args->coupon_serial = utf8_encode( $sSerial );
+		$args->member_srl = 0;
+		$output = executeQuery('svpromotion.insertCoupon', $args );
+		if($output->toBool())
+			$nSuccessCnt++;
+	}
+	while( $nSuccessCnt < $nCouponQty);
+}
+else
+{
+	// 쿠폰 리스트 설정
+	$sCouponList = Context::get('coupon_registration' );
+	if( strlen( $sCouponList ) == 0 )
+		return new Object( -1, 'msg_invalid_coupon_list' );
+
+	$oRst = $this->insertCoupon($nPromotionSrl, $sCouponList);
+	if(!$oRst->toBool())
+	return new Object( -1, 'msg_duplicated_coupon_serial' );
+	$this->setRedirectUrl(getNotEncodedUrl('', 'module', Context::get('module'), 'act', 'dispSvpromotionAdminCouponInfo', 'promotion_srl', $nPromotionSrl ) );
+}
+
+./svpromotion.admin.model.php::getCouponSerial()에서 아래의 코드를
+$alpha_key = '';
+$keys = range('A', 'Z');
+
+for( $i = 0; $i < 2; $i++ )
+	$alpha_key .= $keys[array_rand($keys)];
+
+$length = $nSize - 2;
+$key = '';
+$keys = range(0, 9);
+
+for ($i = 0; $i < $length; $i++) 
+	$key .= $keys[array_rand($keys)];
+
+return $alpha_key.$key;
+
+아래와 같이 변경
+$characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+$charactersLength = strlen($characters);
+$randomString = '';
+for ($i = 0; $i < $nSize; $i++) 
+	$randomString .= $characters[rand(0, $charactersLength - 1)];
+return $randomString;
+
+2. 쿠폰 캠페인 신규 등록할 때 ON 선택해도 OFF로 처리되는 현상 수정
+./queries/insertCouponPromotion.xml에 아래의 코드 추가
+<column name="status" var="status" />
+
+v 0.4.3
+19th, Mar 2018
+1. tbl::svpromotions_coupon 를 tbl::svpromotion_coupon로 변경
+2. tbl::svpromotions_coupon_list 를 tbl::svpromotion_coupon_list로 변경
+아래의 코드에서 svpromotions_ 을 svpromotion_으로 변경
+./queries/getCouponPromotionDetail.xml
+./queries/getCouponPromotionList.xml
+./queries/insertCouponPromotion.xml
+./queries/updateCouponPromotion.xml
+./queries/getMaxCouponSrl.xml
+./queries/insertCoupon.xml
+./queries/insertCouponUsageLog.xml
+./queries/updateCouponInfoByCouponSrl.xml
+./queries/updateCouponUsedCountByCouponSrl.xml
+./queries/deleteCouponByCouponSrl.xml
+./queries/getCouponInfo.xml
+./queries/getCouponInfoBySerialNumber.xml
+./queries/getCouponList.xml
+
+./schemas/svpromotions_coupon_list.xml을 svpromotion_coupon_list.xml으로 변경
+./schemas/svpromotions_coupon.xml을 svpromotion_coupon.xml으로 변경
+
+3. tbl::svpromotions_giveaways 를 tbl::svpromotion_giveaways로 변경
+4. tbl::svpromotions_group_by_item 를 tbl::svpromotion_group_by_item로 변경
+5. tbl::svpromotions_member_discount 를 tbl::svpromotion_member_discount 로 변경
+6. tbl::svpromotions_member_email_domain_group 를 tbl::svpromotion_member_email_domain_group 로 변경
+7. tbl::svpromotions_quantity_by_item 를 tbl::svpromotion_quantity_by_item 로 변경
+8. tbl::svpromotions_site_group 를 tbl::svpromotion_site_group 로 변경
+아래의 코드에서 svpromotions_ 을 svpromotion_으로 변경
+./queries/deleteGiveawayByItemPolicy.xml
+./queries/deleteGroupByItemPolicy.xml
+./queries/deleteSiteGroupDiscount.xml
+./queries/getBulkDiscountByPage.xml
+./queries/getBulkDiscountInfo.xml
+./queries/getEmailDomainDetail.xml
+./queries/getEmailDomainGroupDiscount.xml
+./queries/getEmailDomainMaxIndex.xml
+./queries/getFbLikeCount.xml
+./queries/getGiveawayPromotionByItem.xml
+./queries/getGroupDiscountByItem.xml
+./queries/getMemberDiscountInfo.xml
+./queries/getMemberDiscountInfoByEmailDomain.xml
+./queries/getSiteGroupDiscount.xml
+./queries/insertEmailDomainGroupDiscount.xml
+./queries/insertGiveawayByItemPolicy.xml
+./queries/insertGroupByItemPolicy.xml
+./queries/insertPromotionFbLike.xml
+./queries/insertSiteGroupDiscount.xml
+./queries/updateEmailDomainGroupDiscount.xml
+
+./schemas/svpromotions_giveaways.xml을 svpromotion_giveaways.xml으로 변경
+./schemas/svpromotions_group_by_item.xml을 svpromotion_group_by_item.xml으로 변경
+./schemas/svpromotions_member_discount.xml을 svpromotion_member_discount.xml으로 변경
+./schemas/svpromotions_member_email_domain_group.xml을 svpromotion_member_email_domain_group.xml으로 변경
+./schemas/svpromotions_quantity_by_item.xml을 svpromotion_quantity_by_item.xml으로 변경
+./schemas/svpromotions_site_group.xml을 svpromotion_site_group.xml으로 변경
+
+9. 쿠폰 입력 방식을 줄바꿈으로 구분한 textarea 방식에서 회원만 지정하고 번호 자동 발행으로 변경
+./tpl/coupon_list_by_promotion.html에서 아래의 코드를
+<div class="x_control-group">
+	<label class="x_control-label" for="lang_header_text">{$lang->coupon_registration}</label>
+	<div class="x_controls">
+		<textarea name="coupon_registration" id="coupon_registration" rows="8" cols="400" placeholder="{$lang->about_coupon_registration}"></textarea>
+		<a href="#header_text_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+		<p id="header_text_help" class="x_help-block" hidden>{$lang->about_coupon_registration}</p>
+	</div>
+</div>
+
+아래와 같이 변경
+<div class="x_control-group">
+	<label class="x_control-label" for="endorsed_coupon_registration">{$lang->endorsed_coupon_member_srl}</label>
+	<div class="x_controls">
+		<input type='text' name="coupon_member_srl" id="coupon_member_srl" >
+		<a href="#coupon_member_srl_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+		<p id="coupon_member_srl_help" class="x_help-block" hidden>{$lang->about_endorsed_coupon_member_srl}</p>
+	</div>
+</div>
+<div class="x_controls">
+	<label class="x_control-label" for="coupon_length">난수 문자열 길이</label>
+	<input type='text' name="coupon_length" id="coupon_length" >
+	<a href="#coupon_length_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+	<p id="coupon_length_help" class="x_help-block" hidden>{$lang->about_coupon_length}</p>
+</div>
+
+./svpromotion.admin.controller.php::procSvpromotionAdminInsertCoupon()에서 아래의 코드를
+else
+{
+	// 쿠폰 리스트 설정
+	$sCouponList = Context::get('coupon_registration' );
+	if( strlen( $sCouponList ) == 0 )
+		return new Object( -1, 'msg_invalid_coupon_list' );
+
+	$oRst = $this->insertCoupon($nPromotionSrl, $sCouponList);
+	if(!$oRst->toBool())
+	return new Object( -1, 'msg_duplicated_coupon_serial' );
+	$this->setRedirectUrl(getNotEncodedUrl('', 'module', Context::get('module'), 'act', 'dispSvpromotionAdminCouponInfo', 'promotion_srl', $nPromotionSrl ) );
+}
+
+아래와 같이 변경
+else if( $sMode == 'endorsed_single' )
+{
+	// 쿠폰 리스트 설정
+	$nCouponMemberSrl = (int)Context::get('coupon_member_srl' );
+	if( $nCouponMemberSrl == 0 )
+		return new Object( -1, 'msg_invalid_coupon_list' );
+
+	$nCouponLength = Context::get('coupon_length' );
+	if( $nCouponLength < 4 )
+		$nCouponLength = 6;
+
+	$sSerial = $oSvpromotionAdminModel->getCouponSerial($nCouponLength);
+	$oRst = $this->insertCoupon($nPromotionSrl, $sSerial,$nCouponMemberSrl);
+	if(!$oRst->toBool())
+		return new Object( -1, 'msg_duplicated_coupon_serial' );
+	$this->setRedirectUrl(getNotEncodedUrl('', 'module', Context::get('module'), 'act', 'dispSvpromotionAdminCouponInfo', 'promotion_srl', $nPromotionSrl ) );
+}
+
+10. 사용자 UI 쿠폰함 기능 추가
+./svpromotion.mobdel.php::getPromotionInfoByMemberSrl() 추가
+./queries/getCouponListByMemberSrl.xml 추가
+
+11. tbl::svpromotion_coupon_iist.xml에 autoincrement 속성 부여
+./schemas/svpromotion_coupon_iist.xml에서 아래의 코드를 
+<column name="coupon_srl" type="number" size="11" notnull="notnull" primary_key="primary_key"/>
+아래와 같이 변경
+<column name="coupon_srl" type="number" size="11" notnull="notnull" primary_key="primary_key" auto_increment="auto_increment"/>
+
+./queries/insertCoupon.xml에서 아래의 코드를 제거
+<column name="coupon_srl" var="coupon_srl" notnull="notnull" />
+
+./svpromotion.admin.controller.php::insertCoupon()에서 아래의 코드를 제거
+$oSvpromotionAdminModel = &getAdminModel('svpromotion');
+$nSrl = $oSvpromotionAdminModel->getNextCouponSrl();
+$args->coupon_srl = $nSrl++;
+
+./svpromotion.admin.controller.php::procSvpromotionAdminInsertCoupon()에서 아래의 코드를 제거
+$nSrl = $oSvpromotionAdminModel->getNextCouponSrl();
+$args->coupon_srl = $nSrl++;
+
+./svpromotion.admin.model.php::getNextCouponSrl() 제거
+./queries/getMaxCouponSrl.xml 제거
+
+v 0.4.4
+5th, Apr 2018
+1. 100% 할인 쿠폰 가능하도록 코드 수정
+./svpromotion.model.php::getCheckoutPrice()에서 아래의 코드를
+if( $sDiscountType == 'rate' && ( $discount_policy > 0 && $discount_policy < 1 ) )
+아래와 같이 변경
+if( $sDiscountType == 'rate' && ( $discount_policy > 0 && $discount_policy <= 1 ) )
+
+2. 쿠폰 관리자 화면에서 쿠폰 발행 회원 정보 표시 변경
+./svpromotion.admin.model.php::getCouponListByCouponPromotion()에서 아래의 코드를 
+$output->data[$key]->user_id = 'quit';
+$output->data[$key]->user_id = $oMemberInfo->user_id;
+아래와 같이 변경
+$output->data[$key]->nick_name = 'quit';
+$output->data[$key]->nick_name = $oMemberInfo->nick_name;
+
+./tpl/coupon_list_by_promotion.html에서 아래의 코드를
+<a href="{getUrl('module','admin','act','dispMemberAdminInsert','member_srl',$val->member_srl)}" target='_new'>{$val->user_id}</a>
+아래와 같이 변경
+<a href="{getUrl('module','admin','act','dispMemberAdminInsert','member_srl',$val->member_srl)}" target='_new'>{$val->nick_name}</a>
+
+3. 판매없이 결제하는 프로모션 몰 기능 추가
+./svpromotion.admin.view.php::dispSvpromotionAdminConfig()에 아래의 코드 추가
+$oSvorderAdminModel = &getAdminModel('svorder');
+$aSvorderPage = $oSvorderAdminModel->getModInstList();
+Context::set('svorder_page', $aSvorderPage);
+
+./svpromotion.admin.controller.php::procSvpromotionAdminConfig()에 아래의 코드 추가
+$oSvorderAdminModel = &getAdminModel('svorder');
+$aSvorderPage = $oSvorderAdminModel->getModInstList();
+
+$aPromotionMallOrderModuleSrl = array();
+foreach($aSvorderPage as $key=>$val )
+{
+	if( Context::get($val->module_srl) == 'Y' )
+		$aPromotionMallOrderModuleSrl[$val->module_srl] = 'Y';
+}
+$oArgs->aPromotionMallOrderModuleSrl = $aPromotionMallOrderModuleSrl;
+
+4. 미사용 코드 제거
+./svpromotion.admin.view.php::dispSvpromotionAdminPagePromotion() 제거
+./svpromotion.admin.controller.php::procSvpromotionAdminSiteBulkDiscount() 제거
+./tpl/page_promotion.html 제거
+
+5. 중복 코드 압축
+./svpromotion.model.php::isClaimingReservesAcceptable()에서 아래의 코드를
+$oSvpromotionAdminModel = &getAdminModel('svpromotion');
+$oConfig = $oSvpromotionAdminModel->getModuleConfig();
+아래와 같이 변경
+$oConfig = $this->getModuleConfig();
+
+./svpromotion.model.php::getPromotionInfoForItemDetailPage()에서 아래의 코드를
+$oSvpromotionAdminModel = &getAdminModel('svpromotion');
+$oConfig = $oSvpromotionAdminModel->getModuleConfig();
+아래와 같이 변경
+$oConfig = $this->getModuleConfig();
+
+./svpromotion.model.php::getPromotionDetailForCartAddition()에서 아래의 코드를
+$oSvpromotionAdminModel = &getAdminModel('svpromotion');
+$oConfig = $oSvpromotionAdminModel->getModuleConfig();
+아래와 같이 변경
+$oConfig = $this->getModuleConfig();
+
+./svpromotion.model.php::getItemConditionalPromotionDetail()에서 아래의 코드를
+$oSvpromotionAdminModel = &getAdminModel('svpromotion');
+$oConfig = $oSvpromotionAdminModel->getModuleConfig();
+아래와 같이 변경
+$oConfig = $this->getModuleConfig();
+
+./svpromotion.model.php::_discountSpecificItem()에서 아래의 코드를
+$oSvpromotionAdminModel = &getAdminModel('svpromotion');
+$oConfig = $oSvpromotionAdminModel->getModuleConfig();
+아래와 같이 변경
+$oConfig = $this->getModuleConfig();
+
+./svpromotion.model.php::getCheckoutPrice()에 아래의 코드 추가
+$oConfig = $this->getModuleConfig();
+if( $oConfig->aPromotionMallOrderModuleSrl[$in_args->module_srl] == 'Y' )
+{
+	if( strlen( $sCouponSerial ) > 0 )
+	{
+		if( $nInitialItemTotalPrice != $nTotalDiscountAmount )
+			return new Object(-1, 'msg_error_promotion_mall_pay_not_allowed');
+	}
+	else
+	{
+		if( $in_args->cart->total_discounted_price > 0 )
+			return new Object(-1, 'msg_error_promotion_mall_pay_not_allowed');
+	}
+}
+else
+{
+	if( $nInitialItemTotalPrice * $oConfig->discount_rate_limit/100 < $nTotalDiscountAmount )
+		return new Object(-1, sprintf(Context::getLang('msg_error_over_discount_not_allowed'), $oConfig->discount_rate_limit));
+}
+
+6. 회원 포인트 변동 -> 레벨 변동 -> 그룹변동의 결과로 쿠폰 자동 발행하는 기능 추가
+./svpromotion.admin.view.php::_dispSvpromotionAdminInsertCouponPromotion()에 아래의 코드 추가
+$oMemberModel = &getModel('member');
+$group_list = $oMemberModel->getGroups();
+Context::set('group_list', $group_list);
+
+./tpl/coupon_promotion_insert.html에 아래의 코드 추가
+<section class="section">
+	<h1>
+		{$lang->title_group_coupon_policy}
+		<a href="#aboutGroupDiscount" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+	</h1>
+	<p id="aboutGroupDiscount" class="x_alert x_alert-info-block" hidden>{$lang->about_group_coupon_policy}</p>
+	<label class="x_control-label" for="board_name">{$lang->coupon_allowed_group}</label>
+	<div class="x_controls">
+		<label for="status" class="x_inline"><input type="checkbox" name="group_allow_0" id="group_allow_0" value="Y" checked="checked"|cond="$promotion_detail->allowed_grp[0] == 'Y'" /> {$lang->guest}</label>
+		<label loop="$group_list=>$key,$val" for="status" class="x_inline"><input type="checkbox" name="group_allow_{$val->group_srl}" id="group_allow_{$val->group_srl}" value="Y" checked="checked"|cond="$promotion_detail->allowed_grp[$val->group_srl] == 'Y'" /> {$val->title}</label>
+		<a href="#svpromotion_coupon_group_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+		<p id="svpromotion_coupon_group_help" class="x_help-block" hidden>{$lang->about_group_coupon_policy}</p></label>
+	</div>
+</section>
+
+./svpromotion.admin.model.php::getCouponPromotionSetupInfo()에 아래의 코드 추가
+$output->data[0]->allowed_grp = unserialize($output->data[0]->allowed_grp);
+
+./svpromotion.admin.controller.php::procSvpromotionAdminInsertCouponPromotion()에 아래의 코드 추가
+$oMemberModel = &getModel('member');
+$aMemberGroup = $oMemberModel->getGroups();
+$oGuest->group_srl = 0;
+$aMemberGroup[0] = $oGuest;
+ksort($aMemberGroup);
+$aGroupAllowPolicy = array();
+foreach( $aMemberGroup as $key=>$val )
+{
+	if( Context::get('group_allow_'.$val->group_srl) )
+		$aGroupAllowPolicy[$val->group_srl] = Context::get('group_allow_'.$val->group_srl);
+}
+$args->group_allow_policy = serialize($aGroupAllowPolicy);
+
+./schemas/svpromotion_coupon.xml에 아래의 코드 추가
+<column name="allowed_grp" type="varchar" size="255"/>
+
+./queries/insertCouponPromotion.xml에 아래의 코드 추가
+<column name="allowed_grp" var="group_allow_policy" />
+
+./queries/updateCouponPromotion.xml에 아래의 코드 추가
+<column name="allowed_grp" var="group_allow_policy" />
+
+./svpromotion.admin.controller.php::insertCoupon()에 아래의 코드 추가
+$bPrivileged = true;
+if( count($output->data[0]->allowed_grp) > 0 )
+{
+	$oMemberModel = getModel('member');
+	$oMemberInfo = $oMemberModel->getMemberInfoByMemberSrl($nMemberSrl);
+	$bPrivileged = false;
+	foreach($oMemberInfo->group_list as $key=>$val)
+	{
+		if($output->data[0]->allowed_grp[$key] == 'Y')
+		{
+			$bPrivileged = true;
+			break;
+		}
+	}
+}
+if( !$bPrivileged )
+	return new Object( -1, 'msg_not_privileged' );
+
+./svpromotion.admin.controller.php::procSvpromotionAdminInsertCoupon()에서 아래의 코드를
+$oRst = $this->insertCoupon($nPromotionSrl, $sSerial,$nCouponMemberSrl);
+if(!$oRst->toBool())
+	return new Object( -1, 'msg_duplicated_coupon_serial' );
+
+아래와 같이 변경
+$oRst = $this->insertCoupon($nPromotionSrl, $sSerial,$nCouponMemberSrl);
+if(!$oRst->toBool())
+	return $oRst;
+
+./svpromotion.class.php::checkUpdate()에 아래의 코드 추가
+$oModuleModel = &getModel('module');
+if(!$oModuleModel->getTrigger('point.setPoint', 'svpromotion', 'controller', 'triggerSetPointAfter', 'after'))
+	return true;
+
+./svpromotion.class.php::moduleUpdate()에서 아래의 코드를
+return FALSE;
+
+아래와 같이 변경
+$oModuleController = &getController('module');
+$oModuleController->insertTrigger('point.setPoint', 'svpromotion', 'controller', 'triggerSetPointAfter', 'after');
+return new Object(0, 'success_updated');
+
+./svpromotion.model.php::getCouponPromotionList() 추가
+
+./svpromotion.controller.php::triggerSetPointAfter() 추가
+
+7. 무기명 대량 발급 쿠폰은 게스트 허용 쿠폰 캠페인만 등록하도록 변경
+./svpromotion.admin.controller.php::procSvpromotionAdminInsertCoupon()에 아래의 코드 추가
+if( count($output->data[0]->allowed_grp) > 0 )
+{
+	if($output->data[0]->allowed_grp[0] != 'Y')
+		return new Object( -1, 'msg_guest_not_allowed' );
+}
+
+8. 메소드 통합
+./svpromotion.model.php::_getCouponPromotionSetupInfo() 추가
+
+./svpromotion.model.php::getCouponInfoBySerialNumber()에서 아래의 코드를
+$nCouponSrl = (int)$output->data->coupon_srl;
+$nPromotionSrl = $output->data->promotion_srl;
+unset( $output );
+unset( $args );
+$args->promotion_srl = $nPromotionSrl;
+$output = executeQuery( 'svpromotion.getCouponPromotionDetail', $args );
+
+if( $output->data->status != 1 )
+	return new Object( -1, 'msg_coupon_closed' );
+
+$sCurDatetime = date('YmdHis');
+if( $output->data->begin_date && $output->data->begin_date > $sCurDatetime )
+	return new Object( -1, sprintf(Context::getLang('msg_error_coupon_not_began'), date( 'Y-m-d', strtotime($output->data->begin_date) ) ) );
+
+if( $output->data->target_items )
+	$output->data->target_items = unserialize($output->data->target_items);
+else
+	$output->data->target_items = null;
+
+아래와 같이 변경
+$nCouponSrl = (int)$output->data->coupon_srl;
+$nPromotionSrl = $output->data->promotion_srl;
+unset( $output );
+unset( $args );
+$output = $this->_getCouponPromotionSetupInfo( $nPromotionSrl );
+// 쿠폰 캠페인 on off 상태 검사
+if( $output->data->status != 1 )
+	return new Object( -1, 'msg_coupon_closed' );
+
+$sCurDatetime = date('YmdHis');
+if( $output->data->begin_date && $output->data->begin_date > $sCurDatetime )
+	return new Object( -1, sprintf(Context::getLang('msg_error_coupon_not_began'), date( 'Y-m-d', strtotime($output->data->begin_date) ) ) );
+
+
+./svpromotion.model.php::getPromotionInfoByMemberSrl()에서 아래의 코드를
+$args->promotion_srl = $val->promotion_srl;
+$oPromotionRst = executeQuery( 'svpromotion.getCouponPromotionDetail', $args );
+$oPromotionRst->data->target_items = unserialize($oPromotionRst->data->target_items);
+
+아래와 같이 변경
+$oPromotionRst = $this->_getCouponPromotionSetupInfo( $nPromotionSrl );
+
+9. 쿠폰을 사용할 때 그룹 정책과 소유 자격 확인
+./svpromotion.model.php::getCouponInfoBySerialNumber()에 아래의 코드 추가
+$bPermitted = true;
+if( count($output->data->allowed_grp) > 0 )
+{
+	$logged_info = Context::get('logged_info');
+	if (!$logged_info) 
+		$logged_info->group_list[0] = 'guest';
+
+	$bPermitted = false;
+	foreach($logged_info->group_list as $key=>$val)
+	{
+		if($output->data->allowed_grp[$key] == 'Y')
+		{
+			$bPermitted = true;
+			break;
+		}
+	}
+}
+if( !$bPermitted )
+	return new Object( -1, 'msg_not_allowed_group_for_coupon' );
+
+10. 사용자 영역에서 쿠폰 자동 발행할 때, 동일한 쿠폰 캠페인에 대해 발급 횟수 제한 기능 추가
+./tpl/coupon_promotion_insert.html에 아래의 코드 추가
+<div class="x_control-group">
+	<label class="x_control-label" for="sv_promotion_descount_rate">{$lang->coupon_max_issue}</label>
+	<div class="x_controls">
+		<input type="text" name="coupon_max_issue" id="coupon_max_issue" value="{$promotion_detail->max_issue_count}" />
+		<a href="#coupon_max_issue_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+		<p id="coupon_max_issue_help" class="x_help-block" hidden>{$lang->about_coupon_max_issue}</p>
+	</div>
+</div>
+
+./svpromotion.admin.controller.php::procSvpromotionAdminInsertCouponPromotion()에서 아래의 코드를
+$args = Context::gets('status', 'sv_promotion_title','sv_promotion_description','sv_promotion_descount_amount','sv_promotion_descount_rate','sv_promotion_descount_type', 
+		'coupon_max_usage', 'begin_date', 'end_date', 'max_qty', 'target_items' );
+
+아래와 같이 변경
+$args = Context::gets('status', 'sv_promotion_title','sv_promotion_description','sv_promotion_descount_amount','sv_promotion_descount_rate','sv_promotion_descount_type', 
+		'coupon_max_issue', 'coupon_max_usage', 'begin_date', 'end_date', 'max_qty', 'target_items' );
+
+./schemas/svpromotion_coupon.xml에 아래의 코드 추가
+<column name="max_issue_count" type="number" size="2" default="1"/>
+
+./querire/insertCouponPromotion.xml에 아래의 코드 추가
+<column name="max_issue_count" var="coupon_max_issue" />
+
+./querire/updateCouponPromotion.xml에 아래의 코드 추가
+<column name="max_issue_count" var="coupon_max_issue" />
+
+./queries/getSimpleCouponListByMemberPromotionSrl.xml 추가
+./svpromotion.model.php::getCouponCountByMemberPromotionSrl() 추가
+
+v 0.4.5
+2th, May 2018
+1. 코드 오류 수정
+./tpl/email_domain_group_insert.html에서 아래의 코드를
+<a class="x_btn" href="{getUrl('act','dispSvpromotionAdminItemDiscountList')}">{$lang->cmd_list}</a>
+아래와 같이 변경
+<a class="x_btn" href="{getUrl('act','dispSvpromotionAdminSitePromotion')}">{$lang->cmd_list}</a>
+
+v 0.4.6
+3rd, May 2018
+1. 코드 오류 수정
+./svpromotion.model.php::getPromotionInfoByMemberSrl()에 아래의 코드 추가
+$nPromotionSrl = $output->data[1]->promotion_srl;
+
+v 0.4.7
+6th, May 2018
+1. 쿠폰 사용한 결제를 취소할 때 쿠폰 사용 횟수 roll back 기능 추가한 svorder v 0.8.15 대응
+./queries/updateCouponUsedCountByCouponSrl.xml을 increaseCouponUsedCountByCouponSrl로 변경
+
+./svpromotion.controller.php::procSvprmotionMarkUsedCoupon()에서 아래의 코드를
+$output = executeQuery( 'svpromotion.updateCouponUsedCountByCouponSrl', $args );
+
+아래와 같이 변경
+$output = executeQuery( 'svpromotion.increaseCouponUsedCountByCouponSrl', $args );
+
+./queries/decreaseCouponUsedCountByCouponSrl.xml 추가
+
+./svpromotion.controller.php::procSvprmotionRollbackUsedCoupon() 추가
+
+./schemas/svpromotion_coupon_list_used.xml에 아래의 코드 추가
+<column name="type" type="char" size="8" default="consume" notnull="notnull" />
+
+./queries/insertCouponUsageLog.xml에 아래의 코드 추가
+<column name="type" var="type" default="consume" />
+
+v 0.4.8
+8th, May 2018
+1. 쿠폰 발급 일시를 현재 시점으로 갱신하는 기능 추가
+./conf/module.xml에 아래의 코드 추가
+<action name="procSvpromotionAdminRefreshCoupon" type="controller" />
+
+./svpromotion.admin.controller.php::procSvpromotionAdminRefreshCoupon() 추가
+
+./queries/updateCouponRegdateByCouponSrl.xml 추가
+
+./tpl/coupon_update.html에 아래의 코드 추가
+<button ID='btnRefresh' NAME='btnRefresh' type="button" class="x_btn x_btn-primary" onClick="javascript:refreshButton(); return false;">{$lang->btn_refresh_coupon_regdate}</button>&nbsp;&nbsp;
+<script>
+function refreshButton()
+{
+	nCouponSrl = '{$coupon_srl}';
+	if( typeof nCouponSrl == 'undefined' )
+	{
+		alert( '잘못된 쿠폰일련번호입니다.' );
+		return;
+	}
+
+	if( nCouponSrl.length == 0 )
+	{
+		alert( '잘못된 쿠폰일련번호입니다.' );
+		return;
+	}
+
+	var sRefreshReason = prompt("쿠폰 발급 일시 갱신 사유를 입력해 주세요.", "예)고객요청에 의한 갱신");
+	if( sRefreshReason == null )
+		return;
+	else if( sRefreshReason == "예)고객요청에 의한 갱신" || sRefreshReason == '' || sRefreshReason == null )
+	{
+		alert( '갱신 사유를 입력해 주세요.' );
+		return;
+	}
+
+	var params = new Array();
+	params['coupon_srl'] = nCouponSrl;
+	params['refresh_reason'] = sRefreshReason;
+	exec_xml('svpromotion', 'procSvpromotionAdminRefreshCoupon', params, function(ret_obj){
+		alert(ret_obj['message']);
+		jQuery('#btnRefresh').attr('disabled','disabled');
+	});
+}
+</script>
+
+v 0.4.9
+1st, Aug 2018
+1. 한 사람에게 여러 종류 쿠폰 발행됬을 때 목록 표시 오류 수정
+
+./svpromotion.model.php::getPromotionInfoByMemberSrl()에서 아래의 코드를
+$nPromotionSrl = $output->data[1]->promotion_srl;
+if( count( $output->data ) > 0 )
+{
+	$oSvitemModel = &getModel('svitem');
+	unset( $args );
+	foreach( $output->data as $key=>$val )
+	{
+		if( $aPromotionInfo[$val->promotion_srl] )
+			$oPromotionRst->data = $aPromotionInfo[$val->promotion_srl];
+		else
+		{
+			//$args->promotion_srl = $val->promotion_srl;
+			//$oPromotionRst = executeQuery( 'svpromotion.getCouponPromotionDetail', $args );
+			// arrange coupon target item list
+			//$oPromotionRst->data->target_items = unserialize($oPromotionRst->data->target_items);
+			$oPromotionRst = $this->_getCouponPromotionSetupInfo( $nPromotionSrl );
+			$aItems = array();
+			foreach( $oPromotionRst->data->target_items as $svItemKey=>$svItemVal )
+			{
+				$oSvitemInfo = $oSvitemModel->getItemInfo($svItemKey);
+				$aItems[] = $oSvitemInfo->item_name;
+			}
+			$oPromotionRst->data->target_items = $aItems;
+			// arrange coupon policy
+			$sDiscType = $oPromotionRst->data->descount_type;
+			switch( $sDiscType )
+			{
+				case 'amount':
+					$fDisc = $output->data->descount_amount_policy;
+					$nCouponDiscountedPayAmnt = $nOriginalPayAmnt - $fDisc;
+					$oPromotionRst->data->discount_info = '결제액 중 '. $oPromotionRst->data->descount_amount_policy.'원 할인';
+					break;
+				case 'rate':
+					$fDisc = sprintf( "%.2f", ((int)$oPromotionRst->data->descount_rate_policy)/100 );
+					$nCouponDiscountedPayAmnt = $nOriginalPayAmnt * (1- (int)$oPromotionRst->data->descount_rate_policy/100);
+					$oPromotionRst->data->discount_info = '결제액의 '.$oPromotionRst->data->descount_rate_policy.'% 할인';
+					break;
+				default:
+					$oPromotionRst->data->discount_info = '쿠폰 할인 정보 오류! 관리자에게 문의하세요.';
+					break;
+			}
+		}
+		if( count( $oPromotionRst->data ) == 1 && $oPromotionRst->data->status == 1 )
+		{
+			$aPromotionInfo[$val->promotion_srl] = $oPromotionRst->data;
+			unset( $val->promotion_srl );
+			$val->promotion_title = $oPromotionRst->data->promotion_title;
+			$val->discount_info = $oPromotionRst->data->discount_info;
+			$val->target_items = $oPromotionRst->data->target_items;
+			unset( $val->member_srl );
+			$val->regdate = zdate( $val->regdate, 'Y-m-d H:i:s' );
+			
+			$sCouponRegDatetime = $val->regdate;
+			$val->expiration = '22001231235959';
+			$sCurDatetime = date('YmdHis');
+			if( $oPromotionRst->data->begin_date && $oPromotionRst->data->begin_date > $sCurDatetime )
+				$val->expiration = sprintf(Context::getLang('msg_error_coupon_not_began'), date( 'Y-m-d', strtotime($oPromotionRst->data->begin_date) ) );
+			
+			if( $oPromotionRst->data->end_date )
+			{
+				if( strpos($oPromotionRst->data->end_date, 'minutes') !== false )
+				{
+					if( $sCouponRegDatetime )
+					{
+						$endTime = strtotime($oPromotionRst->data->end_date, strtotime($sCouponRegDatetime));
+						$sIndividualCouponExpDatatime = date('YmdHis', $endTime);
+
+						$val->expiration = zdate( $sIndividualCouponExpDatatime, 'Y-m-d H:i:s' );
+						if( $sIndividualCouponExpDatatime < $sCurDatetime )
+							$val->expiration = Context::getLang('msg_error_coupon_expired');
+					}
+				}
+				else
+				{
+					$val->expiration = zdate( $oPromotionRst->data->end_date, 'Y-m-d H:i:s' );
+					if( $oPromotionRst->data->end_date < $sCurDatetime )
+						$val->expiration = Context::getLang('msg_error_coupon_expired');
+				}
+			}
+			$oRst->coupon_list[$nCouponIdx++] = $val;
+		}
+	}
+}
+
+아래와 같이 변경
+if( count( $output->data ) > 0 )
+{
+	$oSvitemModel = &getModel('svitem');
+	unset( $args );
+	foreach( $output->data as $key=>$val )
+	{
+		if( $aPromotionInfo[$val->promotion_srl] )
+			$oPromotionRst->data = $aPromotionInfo[$val->promotion_srl];
+		else
+		{
+			$nPromotionSrl = $val->promotion_srl;
+			$oPromotionRst = $this->_getCouponPromotionSetupInfo( $nPromotionSrl );
+			$aItems = array();
+			foreach( $oPromotionRst->data->target_items as $svItemKey=>$svItemVal )
+			{
+				$oSvitemInfo = $oSvitemModel->getItemInfo($svItemKey);
+				$aItems[] = $oSvitemInfo->item_name;
+			}
+			$oPromotionRst->data->target_items = $aItems;
+			// arrange coupon policy
+			$sDiscType = $oPromotionRst->data->descount_type;
+			switch( $sDiscType )
+			{
+				case 'amount':
+					$fDisc = $output->data->descount_amount_policy;
+					$nCouponDiscountedPayAmnt = $nOriginalPayAmnt - $fDisc;
+					$oPromotionRst->data->discount_info = '결제액 중 '. $oPromotionRst->data->descount_amount_policy.'원 할인';
+					break;
+				case 'rate':
+					$fDisc = sprintf( "%.2f", ((int)$oPromotionRst->data->descount_rate_policy)/100 );
+					$nCouponDiscountedPayAmnt = $nOriginalPayAmnt * (1- (int)$oPromotionRst->data->descount_rate_policy/100);
+					$oPromotionRst->data->discount_info = '결제액의 '.$oPromotionRst->data->descount_rate_policy.'% 할인';
+					break;
+				default:
+					$oPromotionRst->data->discount_info = '쿠폰 할인 정보 오류! 관리자에게 문의하세요.';
+					break;
+			}
+		}
+		if( count( $oPromotionRst->data ) == 1 && $oPromotionRst->data->status == 1 )
+		{
+			$aPromotionInfo[$val->promotion_srl] = $oPromotionRst->data;
+			unset( $val->promotion_srl );
+			$val->promotion_title = $oPromotionRst->data->promotion_title;
+			$val->discount_info = $oPromotionRst->data->discount_info;
+			$val->target_items = $oPromotionRst->data->target_items;
+			unset( $val->member_srl );
+			$val->regdate = zdate( $val->regdate, 'Y-m-d H:i:s' );
+			
+			$sCouponRegDatetime = $val->regdate;
+			$sCurDatetime = date('YmdHis');
+			if( $oPromotionRst->data->begin_date && $oPromotionRst->data->begin_date > $sCurDatetime )
+				$val->expiration = sprintf(Context::getLang('msg_error_coupon_not_began'), date( 'Y-m-d', strtotime($oPromotionRst->data->begin_date) ) );
+			
+			if( $oPromotionRst->data->end_date )
+			{
+				if( strpos($oPromotionRst->data->end_date, 'minutes') !== false )
+				{
+					if( $sCouponRegDatetime )
+					{
+						$endTime = strtotime($oPromotionRst->data->end_date, strtotime($sCouponRegDatetime));
+						$sIndividualCouponExpDatatime = date('YmdHis', $endTime);
+
+						$val->expiration = zdate( $sIndividualCouponExpDatatime, 'Y-m-d H:i:s' );
+						if( $sIndividualCouponExpDatatime < $sCurDatetime )
+							$val->expiration = Context::getLang('msg_error_coupon_expired');
+					}
+				}
+				else
+				{
+					$val->expiration = zdate( $oPromotionRst->data->end_date, 'Y-m-d H:i:s' );
+					if( $oPromotionRst->data->end_date < $sCurDatetime )
+						$val->expiration = Context::getLang('msg_error_coupon_expired');
+				}
+			}
+			else
+				$val->expiration = Context::getLang('msg_eternal_coupon');
+			
+			$oRst->coupon_list[$nCouponIdx++] = $val;
+		}
+	}
+}
+
+v 0.4.10
+23rd, Aug 2018
+1. svshopmaster v 0.1.3의 레이아웃 표시 방법 변경에 대응
+./svcrm.admin.view.php::init()에 아래의 코드 추가
+if(Context::get('module') == 'svshopmaster')
+{
+	$sClassPath = _XE_PATH_ . 'modules/svshopmaster/svshopmaster.class.php';
+	if(file_exists($sClassPath))
+	{
+		require_once($sClassPath);
+		svshopmaster::init($this);
+	}
+}
+
+v 0.4.11
+4th, Sep 2018
+1. 관리자에서 쿠폰 등록하면 svshopmaster 레이아웃에서 탈출하는 현상 해결
+./svcrm.admin.view.php::init()에서 아래의 코드를
+<input type="hidden" name="module" value="svpromotion" />
+
+아래와 같이 변경
+<input type="hidden" name="module" value="{$module}" />
+
+v 0.4.12
+5th, Oct 2018
+1. 관리자 UI의 상품 목록에서 상품 등록 페이지 정보가 같이 노출되도록 수정
+./tpl/coupon_promotion_insert.html에 아래의 코드 추가
+<th scope="col">{$lang->mid}</th>
+<td>{$val->mid}</td>
+
+./tpl/item_discount_list.html에 아래의 코드 추가
+<th scope="col">{$lang->mid}</th>
+<td>{$val->mid}</td>
+
+2. 관리자에서 쿠폰문자열을 직접 입력하는 기능 추가
+./svcrm.admin.controller.php::procSvpromotionAdminInsertCoupon()에서 아래의 코드를
+$nCouponLength = Context::get('coupon_length' );
+if( $nCouponLength < 4 )
+	$nCouponLength = 6;
+
+아래와 같이 변경
+$sCouponSerial = Context::get('new_coupon_serial' );
+if( strlen( $sCouponSerial ) > 0 )
+{
+	$sSerial = str_replace(' ', '', $sCouponSerial);
+	$sSerial = strip_tags($sSerial);
+}
+else
+{
+	$nCouponLength = Context::get('coupon_length' );
+	if( $nCouponLength < 4 )
+		$nCouponLength = 6;
+	$sSerial = $oSvpromotionAdminModel->getCouponSerial($nCouponLength);
+}
+
+./tpl/coupon_list_by_promotion.html에 아래의 코드 추가
+<div class="x_controls">
+	<label class="x_control-label" for="coupon_length">쿠폰 번호 직접 입력</label>
+	<input type='text' name="new_coupon_serial" id="new_coupon_serial" >
+	<a href="#coupon_length_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+	<p id="coupon_length_help" class="x_help-block" hidden>{$lang->about_coupon_length}</p>
+</div>
+
+3. 관리자에서 무기명 쿠폰문자열을 직접 입력하는 기능 추가
+./svcrm.admin.controller.php::procSvpromotionAdminInsertCoupon()에서 아래의 코드를
+if( $sMode == 'bulk' )
+{
+	$nCouponQty = Context::get('coupon_qty' );
+	if( $nCouponQty == 0 )
+		return new Object( -1, 'msg_invalid_coupon_qty' );
+
+	$nCouponLength = Context::get('coupon_length' );
+	if( $nCouponLength < 4 )
+		return new Object( -1, 'msg_invalid_coupon_length' );
+
+	$oSvPromotionAdminModel = getAdminModel('svpromotion');
+
+	$output = $oSvPromotionAdminModel->getCouponPromotionSetupInfo( $nPromotionSrl );
+	if( count( $output ) != 1 )
+		return new Object( -1, 'msg_invalid_promotion_srl' );
+	
+	if( $output->data[0]->promotion_srl <= 0 || $output->data[0]->promotion_srl != $nPromotionSrl )
+		return new Object( -1, 'msg_invalid_promotion_srl' );
+	
+	$nMaxUseCnt = 1;
+	if( $output->data[0]->max_use_count > 1 )
+		$nMaxUseCnt = $output->data[0]->max_use_count;
+
+	if( count($output->data[0]->allowed_grp) > 0 )
+	{
+		if($output->data[0]->allowed_grp[0] != 'Y') // allowed_grp[0] is always guest
+			return new Object( -1, 'msg_guest_not_allowed' );
+	}
+
+	$aCouponList = preg_split('/\n|\r\n?/', $sCouponList);
+	if( count( $aCouponList ) == 0 )
+		return new Object( -1, 'msg_invalid_coupon_list' );
+
+	$args->promotion_srl = $nPromotionSrl;
+	$args->max_use_count = $nMaxUseCnt;
+	$nSuccessCnt = 0;
+	do 
+	{
+		$sSerial = $oSvpromotionAdminModel->getCouponSerial($nCouponLength);
+		$args->coupon_serial = utf8_encode( $sSerial );
+		$args->member_srl = 0;
+		$output = executeQuery('svpromotion.insertCoupon', $args );
+		if($output->toBool())
+			$nSuccessCnt++;
+	}
+	while( $nSuccessCnt < $nCouponQty);
+}
+
+아래와 같이 변경
+if( $sMode == 'bulk' )
+{
+	$oSvPromotionAdminModel = getAdminModel('svpromotion');
+
+	$output = $oSvPromotionAdminModel->getCouponPromotionSetupInfo( $nPromotionSrl );
+	if( count( $output ) != 1 )
+		return new Object( -1, 'msg_invalid_promotion_srl' );
+	
+	if( $output->data[0]->promotion_srl <= 0 || $output->data[0]->promotion_srl != $nPromotionSrl )
+		return new Object( -1, 'msg_invalid_promotion_srl' );
+	
+	$nMaxUseCnt = 1;
+	if( $output->data[0]->max_use_count > 1 )
+		$nMaxUseCnt = $output->data[0]->max_use_count;
+
+	if( count($output->data[0]->allowed_grp) > 0 )
+	{
+		if($output->data[0]->allowed_grp[0] != 'Y') // allowed_grp[0] is always guest
+			return new Object( -1, 'msg_guest_not_allowed' );
+	}
+
+	$args->promotion_srl = $nPromotionSrl;
+	$args->max_use_count = $nMaxUseCnt;
+	
+	$sCouponList = Context::get('coupon_serial_list' );
+	if( strlen( $sCouponList ) > 0 )
+	{
+		$aCouponList = preg_split('/\n|\r\n?/', $sCouponList);
+		if( count( $aCouponList ) == 0 )
+			return new Object( -1, 'msg_invalid_coupon_list' );
+
+		foreach( $aCouponList as $key => $val )
+		{
+			$val = str_replace(' ', '', $val);
+			$args->coupon_serial = strip_tags( $val );
+			$args->member_srl = 0;
+			$output = executeQuery('svpromotion.insertCoupon', $args );
+			if(!$output->toBool())
+				return new Object( -1, 'msg_invalid_coupon_serial' );
+		}
+	}
+	else
+	{
+		$nCouponQty = Context::get('coupon_qty' );
+		if( $nCouponQty == 0 )
+			return new Object( -1, 'msg_invalid_coupon_qty' );
+
+		$nCouponLength = Context::get('coupon_length' );
+		if( $nCouponLength < 4 )
+			return new Object( -1, 'msg_invalid_coupon_length' );
+		
+		$nSuccessCnt = 0;
+		do 
+		{
+			$sSerial = $oSvpromotionAdminModel->getCouponSerial($nCouponLength);
+			$args->coupon_serial = utf8_encode( $sSerial );
+			$args->member_srl = 0;
+			$output = executeQuery('svpromotion.insertCoupon', $args );
+			if($output->toBool())
+				$nSuccessCnt++;
+		}
+		while( $nSuccessCnt < $nCouponQty);
+	}
+}
+
+./tpl/coupon_list_by_promotion.html에 아래의 코드 추가
+<form class="x_form-horizontal" action="./" method="post" enctype="multipart/form-data">
+	<input type="hidden" name="module" value="{$module}" />
+	<input type="hidden" name="act" value="procSvpromotionAdminInsertCoupon" />
+	<input type="hidden" name="mode" value="bulk" />
+	<input type="hidden" name="promotion_srl" value="{$promotion_srl}" />
+	<input cond="$promotion_srl" type="hidden" name="success_return_url" value="{getRequestUriByServerEnviroment()}" />
+	<section class="section">
+		<div class="x_control-group">
+			<label class="x_control-label" for="coupon_qty">{$lang->bearer_coupon_registration}</label>
+			<div class="x_controls">
+				<label class="x_control-label" for="coupon_qty">줄로 구분한 쿠폰문자열</label>
+				<textarea name="coupon_serial_list" id="coupon_serial_list" rows="8"></textarea>
+				<a href="#header_text_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="header_text_help" class="x_help-block" hidden>{$lang->about_coupon_registration}</p>
+			</div>
+		</div>
+	</section>
+	<div class="x_clearfix btnArea">
+		<input type="submit" class="x_btn x_btn-primary" value="{$lang->cmd_registration}" accesskey="s" />
+	</div>
+</form>
+
+v 0.4.13
+27th, Dec 2018
+1. 코드 오류 수정
+./svpromotion.admin.controller.php::procSvpromotionAdminUpdateItemDetail()에서 아래의 코드를
+if( $sDefaultGiveawayTitle && $nDefaultGiveawayItemSrl && $nDefaultGiveawayItemQty )
+{
+	$sDefaultGiveawayTitle = Context::get('default_giveaway_title');
+	$nDefaultGiveawayItemSrl = Context::get('default_item_giveaway_item_srl');
+	$nDefaultGiveawayItemQty = Context::get('default_item_giveaway_item_qty');
+	$args->giveaway_info = $sDefaultGiveawayTitle;
+	$args->giveaway_item_srl = $nDefaultGiveawayItemSrl;
+	$args->giveaway_item_qty = $nDefaultGiveawayItemQty;
+	$args->module_srl = $nModuleSrl;
+	$output = executeQuery('svpromotion.insertGiveawayByItemPolicy', $args );
+	if( !$output->toBool() )
+		return $output;
+
+	unset( $args->giveaway_info );
+	unset( $args->giveaway_item_srl );
+	unset( $args->giveaway_item_qty );
+}
+
+아래와 같이 변경
+$sDefaultGiveawayTitle = Context::get('default_giveaway_title');
+$nDefaultGiveawayItemSrl = Context::get('default_item_giveaway_item_srl');
+$nDefaultGiveawayItemQty = Context::get('default_item_giveaway_item_qty');
+
+if( $sDefaultGiveawayTitle && $nDefaultGiveawayItemSrl && $nDefaultGiveawayItemQty )
+{
+	$args->giveaway_info = $sDefaultGiveawayTitle;
+	$args->giveaway_item_srl = $nDefaultGiveawayItemSrl;
+	$args->giveaway_item_qty = $nDefaultGiveawayItemQty;
+	$args->module_srl = $nModuleSrl;
+	$output = executeQuery('svpromotion.insertGiveawayByItemPolicy', $args );
+	if( !$output->toBool() )
+		return $output;
+
+	unset( $args->giveaway_info );
+	unset( $args->giveaway_item_srl );
+	unset( $args->giveaway_item_qty );
+}
+
+v 0.4.14
+3rd, Jan 2019
+1. 미사용 코드 제거
+./svpromotion.controller.php::issueReserves()에서 아래의 코드 제거
+$logged_info = Context::get('logged_info');
+if(!$logged_info)
+	return new Object(-1, 'msg_login_required');
+
+2. 적립금 지급 내역에 관리자 회원 번호로 일괄 표시되는 문제 해결
+./svpromotion.controller.php::issueReserves()에서 아래의 코드를
+$args->member_srl = $logged_info->member_srl;
+아래와 같이 변경
+$args->member_srl = $nMemberSrl;
+
+3. 코드 효율성 개선
+./svpromotion.model.php::getModuleConfig()에서 아래의 코드를
+$oSvpromotionAdminModel = &getAdminModel('svpromotion');
+$oConfig = $oSvpromotionAdminModel->getModuleConfig();
+
+아래와 같이 변경
+$oModuleModel = &getModel('module');
+$oConfig = $oModuleModel->getModuleConfig('svpromotion');
+if( !$oConfig->fb_app_id )
+	$oConfig->fb_app_id = '';
+return $oConfig;
+
+v 0.4.15
+5th, Jan 2019
+1. 미사용 코드 제거
+private function _getGiveawayItem( &$item_info, $nBalanceToGoMax )를 아래와 같이 변경
+private function _getGiveawayItem( &$item_info )
+
+./svpromotion.model.php::getPromotionDetailForCartAddition()에서 아래의 코드를
+$oConditionalPromoResult = $this->_getGiveawayItem( $item, $nBalanceToGoMax );
+
+아래와 같이 변경
+$oConditionalPromoResult = $this->_getGiveawayItem( $item );
+
+./svpromotion.model.php::getItemConditionalPromotionDetail()에서 아래의 코드를
+$oConditionalPromoResult = $this->_getGiveawayItem( $item, $nBalanceToGoMax );
+
+아래와 같이 변경
+$oConditionalPromoResult = $this->_getGiveawayItem( $item );
+
+2. 증정 프로모션 정보 제공 기능 추가
+./svpromotion.model.php::getPromotionInfoForItemDetailPage()에서 아래의 코드를
+$oPromotionPolicy['unconditional'] = $oUnconditionalDiscountPolicy;
+
+아래와 같이 변경
+$oPromotionPolicy['unconditional_disc'] = $oUnconditionalDiscountPolicy;
+
+./svpromotion.model.php::_getGiveawayItem()에 아래의 코드 추가
+$oModuleModel = &getModel('module');
+$oShopModuleInfo = $oModuleModel->getModuleInfoByDocumentSrl( $oGiveawayItemInfo->document_srl );
+
+$result->conditional_additional_discount_giveaway_item_name = $oGiveawayItemInfo->item_name;
+$result->conditional_additional_discount_giveaway_item_price = $oGiveawayItemInfo->price;
+$result->conditional_additional_discount_giveaway_item_url = '/'.$oShopModuleInfo->mid.'/'.$oGiveawayItemInfo->document_srl;
+
+./svpromotion.model.php::getPromotionInfoForItemDetailPage()에 아래의 코드 추가
+$oGiveawayPromoResult = $this->_getGiveawayItem( $item );
+$oPromotionPolicy['giveaway'] = $oGiveawayPromoResult;
+
+v 0.4.16
+6th, Jan 2019
+1. 개별 프로모션 정보에 CSS 태그 부여
+./svpromotion.model.php::getItemPriceCart()에서 아래의 코드를
+$item_list[$key]->discount_info = $output->discount_info;
+$item_list[$key]->discount_info .= '<BR>'.$promotion_val->title;
+
+아래와 같이 변경
+$item_list[$key]->discount_info = '<p class=\'discount_info\'>'.$output->discount_info.'</p>';
+$item_list[$key]->discount_info .= '<p class=\'discount_info\'>'.$promotion_val->title.'</p>';
+
+v 0.4.17
+8th, Jan 2019
+1. 주문서 화면에서 쿠폰 입력하면 증정품 정보가 사라지는 문제 해결
+./svpromotion.model.php::getItemPriceCart()에서 아래의 코드를
+$item_list[$key]->discount_info = '<p class=\'discount_info\'>'.$output->discount_info.'</p>';
+$item_list[$key]->discount_info .= '<p class=\'discount_info\'>'.$promotion_val->title.'</p>';
+$item_list[$key]->discount_info .= '<p class=\'discount_info\'>'.$promotion_val->title.'</p>';
+
+아래와 같이 변경
+$item_list[$key]->discount_info = '<p id=\'discount_info\'>'.$output->discount_info.'</p>';
+$item_list[$key]->discount_info .= '<p id=\'fb_discount_info\'>'.$promotion_val->title.'</p>';
+$item_list[$key]->discount_info .= '<p id=\'giveaway_info\'>'.$promotion_val->title.'</p>';
+
+2. 쿠폰 예외 상품 구매 시 쿠폰 정보를 입력하면 해당없음 경고 표시
+./svpromotion.model.php::getCheckoutPrice()에 아래의 코드 추가
+else
+	return new Object(-1, 'msg_meaningless_coupon');
+
+v 0.4.18
+9th, Jan 2019
+1. 쿠폰 정보 관리 화면에서 등록 SKU가 일부만 보이는 문제 해결
+./svpromotion.admin.view.php::_dispSvpromotionAdminInsertCouponPromotion()에서 아래의 코드를
+$oSvitemAdminModel = &getAdminModel('svitem');
+$output = $oSvitemAdminModel->getSvitemAdminItemList();
+
+아래와 같이 변경
+$oSvitemAdminModel = &getAdminModel('svitem');
+$oArgs->page = Context::get('page');
+$output = $oSvitemAdminModel->getSvitemAdminItemList($oArgs);
+
+./tpl/coupon_promotion_insert.html에 아래의 코드 추가
+<div class="pagenation">
+	<form action="" class="pagination" method="post">
+		<input type="hidden" name="error_return_url" value="" />
+		<input type="hidden" name="module" value="{$module}" />
+		<input type="hidden" name="act" value="{$act}" />
+		<input type="hidden" name="module_srl" value="{$module_srl}" />
+		<input cond="$order_target" type="hidden" name="order_target" value="{$order_target}" />
+		<input cond="$order_type" type="hidden" name="order_type" value="{$order_type}" />
+		<input cond="$category_srl" type="hidden" name="category_srl" value="{$category_srl}" />
+		<input cond="$childrenList" type="hidden" name="childrenList" value="{$childrenList}" />
+		<input cond="$search_keyword" type="hidden" name="search_keyword" value="{$search_keyword}" />
+
+		<a href="{getUrl('page', '')}" class="direction">&laquo; FIRST</a>
+
+		<block cond="$page_navigation->first_page + $page_navigation->page_count > $page_navigation->last_page && $page_navigation->page_count != $page_navigation->total_page">
+			{@$isGoTo = true}
+			<a href="{getUrl('page', '')}">1</a>
+			<a href="#goTo" class="tgAnchor" title="{$lang->cmd_go_to_page}">...</a>
+		</block>
+
+		<!--@while($page_no = $page_navigation->getNextPage())-->
+			{@$last_page = $page_no}
+			<strong cond="$page_no == $page">{$page_no}</strong>
+			<a cond="$page_no != $page" href="{getUrl('page', $page_no)}">{$page_no}</a>
+		<!--@end-->
+
+		<block cond="$last_page != $page_navigation->last_page">
+			{@$isGoTo = true}
+			<a href="#goTo" class="tgAnchor" title="{$lang->cmd_go_to_page}">...</a>
+			<a href="{getUrl('page', $page_navigation->last_page)}">{$page_navigation->last_page}</a>
+		</block>
+		<a href="{getUrl('page', $page_navigation->last_page)}" class="direction">LAST &raquo;</a>
+		<span cond="$isGoTo" id="goTo" class="tgContent">
+			<input name="page" title="{$lang->cmd_go_to_page}" />
+			<button type="submit">Go</button>
+		</span>
+	</form>
+</div>
+
+./svpromotion.admin.view.php::procSvpromotionAdminInsertCouponPromotion()에서 아래의 코드를
+$args = Context::gets('status', 'sv_promotion_title','sv_promotion_description','sv_promotion_descount_amount','sv_promotion_descount_rate','sv_promotion_descount_type', 
+						'coupon_max_issue', 'coupon_max_usage', 'begin_date', 'end_date', 'max_qty', 'target_items' );
+if( strlen( $args->sv_promotion_title ) == 0 )
+	return new Object( -1, 'msg_invalid_promotion_title' );
+
+if( strlen( $args->sv_promotion_descount_amount ) == 0 && strlen( $args->sv_promotion_descount_rate ) == 0 )
+	return new Object( -1, 'msg_invalid_discount_policy1' );
+
+if( strlen( $args->sv_promotion_descount_type ) == 0 )
+	return new Object( -1, 'msg_invalid_discount_policy2' );
+
+if( $args->begin_date >  $args->end_date )
+	return new Object( -1, 'msg_invalid_coupon_working_period' );
+
+if( !$args->max_qty )
+	$args->max_qty = 0;
+
+if($args->target_items)
+{
+	$aSiteBulkPromotionItem = array();
+	foreach( $args->target_items as $key=>$val )
+		$aCouponPromotionItem[$val] = 'Y';
+	$args->target_items = serialize($aCouponPromotionItem);
+}
+else
+	$args->target_items = '';
+
+$oMemberModel = &getModel('member');
+$aMemberGroup = $oMemberModel->getGroups();
+$oGuest->group_srl = 0;
+$aMemberGroup[0] = $oGuest;
+ksort($aMemberGroup);
+$aGroupAllowPolicy = array();
+foreach( $aMemberGroup as $key=>$val )
+{
+	if( Context::get('group_allow_'.$val->group_srl) )
+		$aGroupAllowPolicy[$val->group_srl] = Context::get('group_allow_'.$val->group_srl);
+}
+$args->group_allow_policy = serialize($aGroupAllowPolicy);
+
+$nPromotionSrl = (int)Context::get('promotion_srl');
+if( $nPromotionSrl > 0 )
+{
+	$args->sv_promotion_srl = $nPromotionSrl;
+	$output = executeQuery('svpromotion.updateCouponPromotion', $args );
+}
+else
+{
+	$args->sv_promotion_srl = getNextSequence();
+	$output = executeQuery('svpromotion.insertCouponPromotion', $args );
+}
+
+if(!$output->toBool())
+	return $output;
+
+$this->setRedirectUrl(getNotEncodedUrl('', 'module', Context::get('module'), 'act', 'dispSvpromotionAdminCouponPromotionInfo', 'promotion_srl', $args->sv_promotion_srl ));
+
+아래와 같이 변경
+$args = Context::gets('status', 'sv_promotion_title','sv_promotion_description','sv_promotion_descount_amount','sv_promotion_descount_rate','sv_promotion_descount_type', 
+						'coupon_max_issue', 'coupon_max_usage', 'begin_date', 'end_date', 'max_qty', 'page' );
+
+if( strlen( $args->sv_promotion_title ) == 0 )
+	return new Object( -1, 'msg_invalid_promotion_title' );
+
+if( strlen( $args->sv_promotion_descount_amount ) == 0 && strlen( $args->sv_promotion_descount_rate ) == 0 )
+	return new Object( -1, 'msg_invalid_discount_policy1' );
+
+if( strlen( $args->sv_promotion_descount_type ) == 0 )
+	return new Object( -1, 'msg_invalid_discount_policy2' );
+
+if( $args->begin_date >  $args->end_date )
+	return new Object( -1, 'msg_invalid_coupon_working_period' );
+
+if( !$args->max_qty )
+	$args->max_qty = 0;
+
+$nPromotionSrl = $oTargetItemArgs->promotion_srl;
+$oSvpromotionAdminModel = &getAdminModel('svpromotion');
+$output = $oSvpromotionAdminModel->getCouponPromotionSetupInfo( $nPromotionSrl );
+
+foreach( $oTargetItemArgs as $sKeyName=>$sKeyValue )
+{
+	if(strpos($sKeyName, 'target_items_') !== false) 
+	{
+		$aConf = explode( '_', $sKeyValue );
+
+		if( $aConf[1] == 'Y' )
+			$output->data[0]->target_items[$aConf[0]] = 'Y';
+		elseif( $aConf[1] == 'N' && !is_null( $output->data[0]->target_items[$aConf[0]] ) )
+			unset( $output->data[0]->target_items[$aConf[0]] );
+	}
+}
+
+if( count( $output->data[0]->target_items ) > 0 )
+	$args->target_items = serialize($output->data[0]->target_items);
+else
+	$args->target_items = '';
+		
+$oMemberModel = &getModel('member');
+$aMemberGroup = $oMemberModel->getGroups();
+$oGuest->group_srl = 0;
+$aMemberGroup[0] = $oGuest;
+ksort($aMemberGroup);
+$aGroupAllowPolicy = array();
+foreach( $aMemberGroup as $key=>$val )
+{
+	if( Context::get('group_allow_'.$val->group_srl) )
+		$aGroupAllowPolicy[$val->group_srl] = Context::get('group_allow_'.$val->group_srl);
+}
+$args->group_allow_policy = serialize($aGroupAllowPolicy);
+
+$nPromotionSrl = (int)Context::get('promotion_srl');
+if( $nPromotionSrl > 0 )
+{
+	$args->sv_promotion_srl = $nPromotionSrl;
+	$output = executeQuery('svpromotion.updateCouponPromotion', $args );
+}
+else
+{
+	$args->sv_promotion_srl = getNextSequence();
+	$output = executeQuery('svpromotion.insertCouponPromotion', $args );
+}
+
+if(!$output->toBool())
+	return $output;
+
+		$this->setRedirectUrl(getNotEncodedUrl('', 'module', Context::get('module'), 'act', 'dispSvpromotionAdminCouponPromotionInfo', 'promotion_srl', $args->sv_promotion_srl, 'page', $args->page ));
+
+v 0.4.19
+24th, Feb 2019
+1. 할인 가격에 소수점이 존재하면 표시가격 계산에 1단위 오차 발생하는 현상 개선
+./svpromotion.model.php::getItemPriceCart()에서 아래의 코드를
+$ret_obj->total_price = $ret_obj->total_discounted_price;
+아래와 같이 변경
+$ret_obj->total_price = round($ret_obj->total_discounted_price);
+
+./svpromotion.model.php::getExpectedReserves() 추가
+
+./svpromotion.controller.php::issueReserves()에서 아래의 코드를
+$oConfig = $oSvpromotionModel->getModuleConfig();
+$fReservesRateNumber = $oConfig->reserves_ratio/100;
+$args->amount = round( $fReservesRatio * $nBaseAmount );
+
+아래와 같이 변경
+$args->amount = $oSvpromotionModel->getExpectedReserves( $nBaseAmount );
+
+./svpromotion.model.php::getCheckoutPrice()에서 아래의 코드를
+$nTotalDiscountAmount += (int)($val->price * $nTempQty * $discount_policy);
+
+아래와 같이 변경
+$nTotalDiscountAmount += round($val->price * $nTempQty * $discount_policy);
+
+2. 회원별 적립금 내역 추출 기능 추가
+./svpromotion.model.php::getRemainigReservesByMemberSrl() 제거
+
+./svpromotion.model.php::getReservesStatusByMemberSrl() 추가
+
+./svpromotion.model.php::isClaimingReservesAcceptable()에서 아래의 코드를
+$nRemaningReserves = $this->getRemainigReservesByMemberSrl( $logged_info->member_srl );
+
+아래와 같이 변경
+$oReservesRst = $this->getReservesStatusByMemberSrl($logged_info->member_srl);
+$nRemainingReserves = $oReservesRst->get('nRemainingReserves');
+
+./queries/getReservesLogByMemberSrl.xml에서 아래의 코드를
+<columns>
+	<column name="*" />
+</columns>
+<conditions>
+	<condition operation="equal" column="member_srl" var="member_srl" />
+</conditions>
+
+아래와 같이 변경
+<columns>
+	<column name="order_srl" />
+	<column name="mode" />
+	<column name="amount" />
+	<column name="regdate" />
+</columns>
+<conditions>
+	<condition operation="equal" column="member_srl" var="member_srl" />
+	<condition operation="equal" column="is_deleted" var="is_deleted" pipe="AND" />
+	<condition operation="equal" column="is_active" var="is_active" pipe="AND" />
+</conditions>
+
+./svpromotion.model.php::getReservesStatusByMemberSrl()에서 아래의 코드를
+if( !$nMemberSrl )
+	return new Object();
+
+$args->member_srl = (int)$nMemberSrl;
+$oRst = executeQueryArray( 'svpromotion.getReservesLogByMemberSrl', $args );
+if( !$oRst->toBool() )
+	return new Object(-1, 'msg_error_svpromtion_reserves_db_query');
+
+$nRemainingReserves = 0;
+foreach( $oRst->data as $key=>$val )
+{
+	if( $val->is_deleted == 'N' && $val->is_active == 'Y' )
+	{
+		if( $val->mode == '+' )
+			$nRemainingReserves +=  $val->amount;
+		else if( $val->mode == '-' )
+			$nRemainingReserves -=  $val->amount;
+		$val->mode = $aDictionay[$val->mode];
+
+		unset( $val->reserves_srl );
+		unset( $val->is_deleted );
+		unset( $val->is_active );
+	}
+	else
+		unset( $oRst->data[$key] );
+}
+$oRst->add( 'nRemainingReserves', $nRemainingReserves );
+return $oRst;
+
+아래와 같이 변경
+$aDictionay = array( '+' => '지급', '-' => '차감' );
+if( !$nMemberSrl )
+	return new Object();
+
+$args->member_srl = (int)$nMemberSrl;
+$args->is_deleted = 'N';
+$args->is_active = 'Y';
+$oRst = executeQueryArray( 'svpromotion.getReservesLogByMemberSrl', $args );
+if( !$oRst->toBool() )
+	return new Object(-1, 'msg_error_svpromtion_reserves_db_query');
+
+$nRemainingReserves = 0;
+foreach( $oRst->data as $key=>$val )
+{
+	if( $val->mode == '+' )
+		$nRemainingReserves +=  $val->amount;
+	else if( $val->mode == '-' )
+		$nRemainingReserves -=  $val->amount;
+	$val->mode = $aDictionay[$val->mode];
+}
+$oRst->add( 'nRemainingReserves', $nRemainingReserves );
+return $oRst;
+
+./svpromotion.model.php::getPromotionInfoByMemberSrl()을 getCouponInfoByMemberSrl()으로 변경
+
+3. 결제 취소 시 적립금 취소
+./svpromotion.controller.php::procSvprmotionRollbackUsedCoupon()을 procSvprmotionRollbackBenefit()으로 변경
+
+./svpromotion.controller.php::procSvprmotionRollbackBenefit()에 아래의 코드 추가
+
+./queries/updateReservesLog.xml에서 아래의 코드를
+<column name="is_active" var="is_active" notnull="notnull" />
+
+아래와 같이 변경
+<column name="is_active" var="is_active" />
+
+./queries/updateReservesLog.xml에 아래의 코드 추가
+<column name="is_deleted" var="is_deleted" />
+
+4. svitem.item.php 제거 준비
+./svpromotion.model.php에서 아래의 코드를
+public function getItemPriceList( &$item_list, $group_list=null )
+
+아래와 같이 변경
+public function getItemPriceList( $item_list, $group_list=null )
+
+./svpromotion.model.php::getItemPriceList()에서 아래의 코드 제거
+if(!in_array($val->module, $proc_modules))
+	$proc_modules[] = $val->module;
+$item = new svitemItem($val);
+$item->thumbnail_url = $item->getThumbnail( $width, $height );
+$item_list[$key] = $item;
+$item_list[$key]->currency_price = $item->printPrice($item_list[$key]->price);
+$item_list[$key]->currency_discounted_price = $item->printPrice($item_list[$key]->sum_discounted_price);
+$ret_obj->item_list = $item_list;
+
+./svpromotion.model.php::getItemPriceCart()에서 아래의 코드 제거
+$proc_modules = array();
+if( !in_array( $val->module, $proc_modules ) ) // 제거 검토해야 함
+	$proc_modules[] = $val->module; // 제거 검토해야 함
+$item = new svitemItem($val );
+$item->thumbnail_url = $item->getThumbnail($width, $height);
+$item_list[$key]->currency_price = $item->printPrice($item_list[$key]->price);
+$item_list[$key]->currency_discounted_price = $item->printPrice($item_list[$key]->sum_discounted_price);
+$item_list[$key] = $item;
+
+5. svitem V 3.0.0에 대응
+./svpromotion.model.php::createCartObj() 에서 아래의 코드를
+$oGiveawayItemInfo = $oSvitemModel->getItemInfo($output->data->giveaway_item_srl);
+
+아래와 같이 변경
+$oGiveawayItemInfo = $oSvitemModel->getItemInfoByItemSrl($output->data->giveaway_item_srl);
+
+./svpromotion.admin.view.php::dispSvpromotionAdminItemDiscountDetail() 에서 아래의 코드를
+$item_info = $oSvitemModel->getItemInfo($item_srl);
+
+아래와 같이 변경
+$item_info = $oSvitemModel->getItemInfoByItemSrl($item_srl);
+
+v 0.4.20
+5th, Mar 2019
+1. 지급 적립금의 최소 단위를 1원에서 100원으로 조정
+./svpromotion.admin.view.php::dispSvpromotionAdminItemDiscountDetail()에서 아래의 코드를
+return round( $fReservesRateNumber * $nBaseAmount );
+
+아래와 같이 변경
+return floor( $fReservesRateNumber * $nBaseAmount / 100) * 100;
+
+v 0.4.21
+8th, Mar 2019
+1. fb like 할인 작동 오류 해결
+./svpromotion.model.php::getItemPriceCart()에서 아래의 코드를
+$item_list[$key]->discounted_price = $item->price + $item->option_price - $promotion_val->resultant_disc_amnt;
+
+아래와 같이 변경
+$item_list[$key]->discounted_price = $val->price + $val->option_price - $promotion_val->resultant_disc_amnt;
+
+v 0.4.22
+23th, Apr 2019
+1. 제품 상세 페이지 표시위해서 쿠폰 프로모션을 conditional promotion 정보에 추가
+./svpromotion.model.php::_getCouponConditionalDiscountItem() 추가
+
+./svpromotion.model.php::getPromotionInfoForItemDetailPage()에 아래의 코드 추가
+$aCoupon = $this->_getCouponConditionalDiscountItem( $item, $nBalanceToGoMax );
+foreach( $aCoupon as $nIdx => $oVal )
+	$oConditionalPromoResult->promotion[] = $oVal;
+
+./tpl/coupon_promtion_insert.html에 아래의 코드 추가
+<div class="x_control-group">
+    <label class="x_control-label">{$lang->coupon_promotion_status_public}</label>
+    <div class="x_controls">
+	<label for="status" class="x_inline"><input type="radio" name="public" id="public" value="0" checked="checked"|cond="$promotion_detail->public == 0 || !$promotion_detail->public" /> {$lang->promotion_private}</label>
+	<label for="status" class="x_inline"><input type="radio" name="public" id="public" value="1" checked="checked"|cond="$promotion_detail->public == 1" /> {$lang->promotion_public}</label>
+    </div>
+</div>
+
+./schemas/svpromotion_coupon.xml에 아래의 코드 추가
+<column name="public" type="char" size="1" default="0"/>
+
+./queries/insertCouponPromotion.xml에 아래의 코드 추가
+<column name="public" var="public" />
+
+./queries/updateCouponPromotion.xml에 아래의 코드 추가
+<column name="public" var="public" />
+
+./svpromotion.admin.controller.php::procSvpromotionAdminInsertCouponPromotion()에서 아래의 코드를
+$args = Context::gets('status', 'sv_promotion_title','sv_promotion_description','sv_promotion_descount_amount','sv_promotion_descount_rate',
+			'sv_promotion_descount_type', 'coupon_max_issue', 'coupon_max_usage', 'begin_date', 'end_date', 'max_qty', 'page' );
+아래와 같이 변경
+$args = Context::gets('status', 'public', 'sv_promotion_title','sv_promotion_description','sv_promotion_descount_amount','sv_promotion_descount_rate',
+			'sv_promotion_descount_type', 'coupon_max_issue', 'coupon_max_usage', 'begin_date', 'end_date', 'max_qty', 'page' );
+
+
+2. 논리 오류 수정
+./svpromotion.model.php::getPromotionInfoForItemDetailPage()에서 아래의 코드를
+unset( $oFbLikeConditionalPromoResult->error );
+unset( $oFbLikeConditionalPromoResult->message );
+unset( $oFbLikeConditionalPromoResult->variables );
+unset( $oFbLikeConditionalPromoResult->httpStatusCode );
+if( $oUnconditionalDiscountPolicy->discount_amount > 0 )
+	$oFbLikeConditionalPromoResult->conditional_additional_discount_amount += $oUnconditionalDiscountPolicy->discount_amount;
+
+$oConditionalPromoResult->promotion[$key] = $oFbLikeConditionalPromoResult;
+
+아래와 같이 변경
+$oFbLikeConditionalPromoResult = $this->_getFbConditionalDiscountItem( $item, $nBalanceToGoMax, $val );
+if( $oFbLikeConditionalPromoResult->conditional_additional_discount_amount )
+{
+	unset( $oFbLikeConditionalPromoResult->error );
+	unset( $oFbLikeConditionalPromoResult->message );
+	unset( $oFbLikeConditionalPromoResult->variables );
+	unset( $oFbLikeConditionalPromoResult->httpStatusCode );
+	if( $oUnconditionalDiscountPolicy->discount_amount > 0 )
+		$oFbLikeConditionalPromoResult->conditional_additional_discount_amount += $oUnconditionalDiscountPolicy->discount_amount;
+
+	$oConditionalPromoResult->promotion[$key] = $oFbLikeConditionalPromoResult;
+}
+
+v 0.4.23
+1st, Jun 2019
+1. svshopmaster v 1.0.13에 대응
+./svorder.admin.view.php::init()에서 아래의 코드 제거
+if(Context::get('module')=='svshopmaster')
+{
+	$this->setLayoutPath('');
+	$this->setLayoutFile('common_layout');
+}
+
+v 0.4.24
+6th, Jul 2019
+1. 제품별 기본 할인 정책에 쿠폰 중복할인이 가능하도록 개선
+./tpl/item_discount_detail.html에 아래의 코드 추가
+<div class="x_control-group">
+	<label class="x_control-label" for="discount_info_default">{$lang->item_discount_allow_duplicated}</label>
+	<div class="x_controls">
+		<label for="allow_duplication"><input type="radio" name="allow_duplication" id="allow_duplication" value="deny" checked="checked"|cond="!$item_discount_info->allow_duplication || $item_discount_info->allow_duplication=='0'">{$lang->deny}</label>
+		<label for="allow_duplication"><input type="radio" name="allow_duplication" id="allow_duplication" value="allow" checked="checked"|cond="$item_discount_info->allow_duplication=='1'">{$lang->allow}</label>
+	</div>
+</div>
+
+./schemas/svpromotion_group_by_item.xml에 아래의 코드 추가
+<column name="allow_duplication" type="char" size="1" default="0" notnull="notnull" />
+
+./queries/insertGroupByItemPolicy.xml에 아래의 코드 추가
+<column name="allow_duplication" var="allow_duplication" />
+
+./svpromotion.admin.controller.php::procSvpromotionAdminUpdateItemDetail()에 아래의 코드 추가
+$sAllowDuplication = Context::get('allow_duplication'); 
+$bAllowDuplication = $sAllowDuplication == 'allow' ? 1 : 0;
+
+$args->allow_duplication = $bAllowDuplication;
+
+./svpromotion.admin.view.php::dispSvpromotionAdminItemDiscountDetail()에 아래의 코드 추가
+$item_discount_info->allow_duplication = $val->allow_duplication;
+
+./svpromotion.model.php::_getItemDiscount()에 아래의 코드 추가
+$output->allow_duplication = $oDiscountInfo->allow_duplication;
+
+./svpromotion.model.php::getCheckoutPrice()에서 아래의 코드를
+if( $nCouponDiscountQtyMax || count( $aCouponAllowableItems ) )// 최대 수량 정책 혹은 품목 제한 정책 ON이면
+{
+	if( $sDiscountType == 'rate' && ( $discount_policy > 0 && $discount_policy <= 1 ) )
+	{
+		$aTmpCart = array();
+		$aTmpCart = $this->_shellDescSortByItemPrice( $in_args->cart->item_list );
+		$nTmpCouponDiscQtyMax = $nCouponDiscountQtyMax; // 할인 수량 확인하기 위한 임시 변수
+		foreach( $aTmpCart as $key => $val ) 
+		{
+			if( $nCouponDiscountQtyMax )
+			{
+				if( $nTmpCouponDiscQtyMax >= $val->quantity )
+				{
+					$nTempQty = $val->quantity;
+					if( $aCouponAllowableItems )
+					{
+						if( $aCouponAllowableItems[$val->item_srl] == 'Y' )
+							$nTmpCouponDiscQtyMax -= $val->quantity;
+					}
+					else
+						$nTmpCouponDiscQtyMax -= $val->quantity;
+				}
+				else
+				{
+					if( $aCouponAllowableItems )
+					{
+						if( $aCouponAllowableItems[$val->item_srl] == 'Y' )
+						{
+							$nTempQty = $nTmpCouponDiscQtyMax;
+							$nTmpCouponDiscQtyMax = 0; 
+						}
+					}
+					else
+					{
+						$nTempQty = $nTmpCouponDiscQtyMax;
+						$nTmpCouponDiscQtyMax = 0; 
+					}
+				}
+			}
+			else
+				$nTempQty = $val->quantity;
+
+			if( $aCouponAllowableItems )
+			{
+				if( $aCouponAllowableItems[$val->item_srl] == 'Y' )
+					$nTotalDiscountAmount += round($val->price * $nTempQty * $discount_policy);
+			}
+			else
+				$nTotalDiscountAmount += round($val->price * $nTempQty * $discount_policy);
+			if( $nCouponDiscountQtyMax && !$nTmpCouponDiscQtyMax ) // 할인 수량 ON이며 제한에 도달하면 정지
+				break;
+		}
+	}
+	else if( $sDiscountType == 'amount' && $discount_policy > 1 )
+		$nTotalDiscountAmount = $discount_policy;
+}
+else // 최대 수량 정책 OFF, 품목 제한 정책 OFF이면
+{
+	if( $sDiscountType == 'rate' && ( $discount_policy > 0 && $discount_policy <= 1 ) )
+		$nTotalDiscountAmount = (int)($nInitialItemTotalPrice * $discount_policy);
+	else if( $sDiscountType == 'amount' && $discount_policy > 1 )
+		$nTotalDiscountAmount = $discount_policy;
+}
+if( $nTotalDiscountAmount > 0 )
+{
+	$oCheckoutPromotionInfo->promotion[0]->type = 'coupon';
+	$oCheckoutPromotionInfo->promotion[0]->coupon_srl = $oCouponOutput->data->coupon_srl;
+	$oCheckoutPromotionInfo->promotion[0]->total_disc_amnt = $nTotalDiscountAmount;
+	$oCheckoutPromotionInfo->promotion[0]->title = $oCouponOutput->data->promotion_title.' '.number_format($nTotalDiscountAmount,0).'원 할인';
+	$oRst->add('disctype', $oCouponOutput->data->descount_type);
+	$oRst->add('discpolicy', $oCouponOutput->data->discpolicy);
+	$oRst->add('promotion_title', $oCouponOutput->data->promotion_title);
+}
+
+아래와 같이 변경
+if( $nCouponDiscountQtyMax || count( $aCouponAllowableItems ) )// 최대 수량 정책 혹은 품목 제한 정책 ON이면
+{
+	if( $sDiscountType == 'rate' && ( $discount_policy > 0 && $discount_policy <= 1 ) )
+	{
+		$aTmpCart = array();
+		$aTmpCart = $this->_shellDescSortByItemPrice( $in_args->cart->item_list );
+		$nTmpCouponDiscQtyMax = $nCouponDiscountQtyMax; // 할인 수량 확인하기 위한 임시 변수
+		$bDiscountDuplicated = false;
+		foreach( $aTmpCart as $key => $val ) 
+		{
+			if( $nCouponDiscountQtyMax )
+			{
+				if( $nTmpCouponDiscQtyMax >= $val->quantity )
+				{
+					$nTempQty = $val->quantity;
+					if( $aCouponAllowableItems )
+					{
+						if( $aCouponAllowableItems[$val->item_srl] == 'Y' )
+							$nTmpCouponDiscQtyMax -= $val->quantity;
+					}
+					else
+						$nTmpCouponDiscQtyMax -= $val->quantity;
+				}
+				else
+				{
+					if( $aCouponAllowableItems )
+					{
+						if( $aCouponAllowableItems[$val->item_srl] == 'Y' )
+						{
+							$nTempQty = $nTmpCouponDiscQtyMax;
+							$nTmpCouponDiscQtyMax = 0; 
+						}
+					}
+					else
+					{
+						$nTempQty = $nTmpCouponDiscQtyMax;
+						$nTmpCouponDiscQtyMax = 0; 
+					}
+				}
+			}
+			else
+				$nTempQty = $val->quantity;
+
+			$oItemDiscountInfo = $this->_getItemDiscount($val); // check coupon promotion could be duplicated
+			if( $aCouponAllowableItems )
+			{
+				if( $aCouponAllowableItems[$val->item_srl] == 'Y' )
+				{
+					if( $oItemDiscountInfo->allow_duplication == '1' )
+					{
+						$nTotalDiscountAmount += $val->discount_amount* $nTempQty;
+						$nTotalDiscountAmount += round($val->discounted_price * $nTempQty * $discount_policy);
+						$bDiscountDuplicated = true;
+					}
+					else
+						$nTotalDiscountAmount += round($val->price * $nTempQty * $discount_policy);
+				}
+			}
+			else
+			{
+				if( $oItemDiscountInfo->allow_duplication == '1' )
+				{
+					$nTotalDiscountAmount += $val->discount_amount* $nTempQty;
+					$nTotalDiscountAmount += round($val->discounted_price * $nTempQty * $discount_policy);
+					$bDiscountDuplicated = true;
+				}
+				else
+					$nTotalDiscountAmount += round($val->price * $nTempQty * $discount_policy);
+			}
+			if( $nCouponDiscountQtyMax && !$nTmpCouponDiscQtyMax ) // 할인 수량 ON이며 제한에 도달하면 정지
+				break;
+		}
+	}
+	else if( $sDiscountType == 'amount' && $discount_policy > 1 )
+		$nTotalDiscountAmount = $discount_policy;
+}
+else // 최대 수량 정책 OFF, 품목 제한 정책 OFF이면
+{
+	if( $sDiscountType == 'rate' && ( $discount_policy > 0 && $discount_policy <= 1 ) )
+		$nTotalDiscountAmount = (int)($nInitialItemTotalPrice * $discount_policy);
+	else if( $sDiscountType == 'amount' && $discount_policy > 1 )
+		$nTotalDiscountAmount = $discount_policy;
+}
+if( $nTotalDiscountAmount > 0 )
+{
+	$oCheckoutPromotionInfo->promotion[0]->type = 'coupon';
+	$oCheckoutPromotionInfo->promotion[0]->coupon_srl = $oCouponOutput->data->coupon_srl;
+	$oCheckoutPromotionInfo->promotion[0]->total_disc_amnt = $nTotalDiscountAmount;
+	$oCheckoutPromotionInfo->promotion[0]->title = $oCouponOutput->data->promotion_title.' '.number_format($nTotalDiscountAmount,0).'원 ';
+	if( $bDiscountDuplicated )
+	{
+		$oCheckoutPromotionInfo->promotion[0]->title .= '중복 할인';
+		$oCheckoutPromotionInfo->promotion[0]->discount_duplicated = true;
+	}
+	else
+	{
+		$oCheckoutPromotionInfo->promotion[0]->title .= '할인';
+		$oCheckoutPromotionInfo->promotion[0]->discount_duplicated = false;
+	}
+	$oRst->add('disctype', $oCouponOutput->data->descount_type);
+	$oRst->add('discpolicy', $oCouponOutput->data->discpolicy);
+	$oRst->add('promotion_title', $oCouponOutput->data->promotion_title);
+}
+
+v 0.4.25
+9th, Jul 2019
+1. dispSvpromotionAdminItemDiscountList 에서 페이지 변경이 가능하도록 개선
+./svpromotion.admin.view.php::dispSvpromotionAdminItemDiscountDetail()에서 아래의 코드를
+$output = $oSvitemAdminModel->getSvitemAdminItemList();
+
+아래와 같이 변경
+$oArgs->page = Context::get('page');
+$output = $oSvitemAdminModel->getSvitemAdminItemList($oArgs);
+
+v 0.4.26
+16th, Jul 2019
+1. ./svpromotion.model.php::_discountSpecificItem()를 npay 주문에서 할인액을 추출할 수 있도록 변경
+
+./svpromotion.model.php::getItemPriceList()에서 아래의 코드를
+$output = $this->_discountSpecificItem($val, $group_list);
+
+아래와 같이 변경
+$output = $this->_discountSpecificItem($val);
+
+./svpromotion.model.php::getItemPriceDetail()에서 아래의 코드를
+$oResult = $this->_discountSpecificItem( $item, $group_list );
+
+아래와 같이 변경
+$oResult = $this->_discountSpecificItem( $item );
+
+./svpromotion.model.php::getItemPriceCart()에서 아래의 코드를
+$output = $this->_discountSpecificItem( $val, $group_list );
+
+아래와 같이 변경
+$output = $this->_discountSpecificItem( $val );
+
+./svpromotion.model.php::_discountSpecificItem()에서 아래의 코드를
+$logged_info = Context::get('logged_info');
+
+아래와 같이 변경
+if( $bIgnoreLoggedinInfo )
+	$logged_info = null;
+else
+	$logged_info = Context::get('logged_info');
+
+./svpromotion.model.php::getItemPriceDetail()에서 아래의 코드를
+$oResult = $this->_discountSpecificItem( $item );
+
+아래와 같이 변경
+if( $bIgnoreLoggedinInfo )
+	$oResult = $this->_discountSpecificItem( $item, true );
+else
+	$oResult = $this->_discountSpecificItem( $item );
+
+v 0.4.27
+19th, Jul 2019
+1. npay 용 상품별 프로모션 조회 메소드 추가.
+네이버페이 API는 개당 결제액만 제공해서 품목별 가격 검증이 불가함.
+./svpromotion.model.php::getItemDiscountInfo4npay() 추가
+
+v 0.4.28
+25th, Jul 2019
+1. 무조건 기본 할인이지만 쿠폰 제외 상품과 기본 할인이 없지만 쿠폰 적용 상품을 동시에 결제하고 쿠폰 할인 청구할 때 가격 계산 로직 개선
+./svpromotion.model.php::getCheckoutPrice()에서 아래의 코드를
+$oCouponOutput = new Object();
+$sCouponSerial = $in_args->coupon_number;
+if( strlen( $sCouponSerial ) > 0 )
+{
+	$nOriginalPayAmnt = 0;
+	$nAlreadyDiscountedPayAmnt = 0;
+	foreach( $in_args->cart->item_list as $key => $val ) // 이미 적용된 할인 혜택을 계산
+	{
+		$nOriginalPayAmnt += $val->price * $val->quantity;
+		$nAlreadyDiscountedPayAmnt += ($val->price - $val->discount_amount)*$val->quantity;
+	}
+
+	if( $nOriginalPayAmnt - $nAlreadyDiscountedPayAmnt < $nTotalDiscountAmount )
+		$nAlreadyDiscountedPayAmnt = $nInitialItemTotalPrice - $nTotalDiscountAmount;
+	$oCouponOutput = $this->getCouponInfoBySerialNumber( $sCouponSerial, $nOriginalPayAmnt, $nAlreadyDiscountedPayAmnt );
+	if( !$oCouponOutput->toBool() ) // 쿠폰 입력되었지만 쿠폰 정보에 이상이 있으면 이후 계산하지 않음
+		return $oCouponOutput;
+
+	$sDiscountType = $oCouponOutput->data->descount_type;
+	$discount_policy = $oCouponOutput->data->discpolicy;
+	
+	$nTotalDiscountAmount = 0;
+
+아래와 같이 변경
+$nTotalDiscountAmount = 0;
+// 품목별 기본 할인액을 계산함
+foreach( $in_args->cart->item_list as $nIdx => $oVal )
+{
+	if( $oVal->discount_amount )
+		$nTotalDiscountAmount = $oVal->quantity * $oVal->discount_amount;
+}
+$oCouponOutput = new Object();
+$sCouponSerial = $in_args->coupon_number;
+if( strlen( $sCouponSerial ) > 0 )
+{
+	$nOriginalPayAmnt = 0;
+	$nAlreadyDiscountedPayAmnt = 0;
+	foreach( $in_args->cart->item_list as $key => $val ) // 이미 적용된 할인 혜택을 계산
+	{
+		$nOriginalPayAmnt += $val->price * $val->quantity;
+		$nAlreadyDiscountedPayAmnt += ($val->price - $val->discount_amount)*$val->quantity;
+	}
+
+	if( $nOriginalPayAmnt - $nAlreadyDiscountedPayAmnt < $nTotalDiscountAmount )
+		$nAlreadyDiscountedPayAmnt = $nInitialItemTotalPrice - $nTotalDiscountAmount;
+	$oCouponOutput = $this->getCouponInfoBySerialNumber( $sCouponSerial, $nOriginalPayAmnt, $nAlreadyDiscountedPayAmnt );
+	if( !$oCouponOutput->toBool() ) // 쿠폰 입력되었지만 쿠폰 정보에 이상이 있으면 이후 계산하지 않음
+		return $oCouponOutput;
+
+	$sDiscountType = $oCouponOutput->data->descount_type;
+	$discount_policy = $oCouponOutput->data->discpolicy;
+	
+	//$nTotalDiscountAmount = 0;
+	$nCouponDiscountQtyMax = (int)$oCouponOutput->data->max_qty;
+	$aCouponAllowableItems = $oCouponOutput->data->target_items;
+	if( $nCouponDiscountQtyMax || count( $aCouponAllowableItems ) )// 최대 수량 정책 혹은 품목 제한 정책 ON이면
+	{
+		if( $sDiscountType == 'rate' && ( $discount_policy > 0 && $discount_policy <= 1 ) )
+		{
+			$aTmpCart = array();
+			$aTmpCart = $this->_shellDescSortByItemPrice( $in_args->cart->item_list );
+			$nTmpCouponDiscQtyMax = $nCouponDiscountQtyMax; // 할인 수량 확인하기 위한 임시 변수
+			$bDiscountDuplicated = false;
+			$nItemCouponDiscountAmnt = 0;
+			foreach( $aTmpCart as $key => $val ) 
+			{
+				if( $nCouponDiscountQtyMax )
+				{
+					if( $nTmpCouponDiscQtyMax >= $val->quantity )
+					{
+						$nTempQty = $val->quantity;
+						if( $aCouponAllowableItems )
+						{
+							if( $aCouponAllowableItems[$val->item_srl] == 'Y' )
+								$nTmpCouponDiscQtyMax -= $val->quantity;
+						}
+						else
+							$nTmpCouponDiscQtyMax -= $val->quantity;
+					}
+					else
+					{
+						if( $aCouponAllowableItems )
+						{
+							if( $aCouponAllowableItems[$val->item_srl] == 'Y' )
+							{
+								$nTempQty = $nTmpCouponDiscQtyMax;
+								$nTmpCouponDiscQtyMax = 0; 
+							}
+						}
+						else
+						{
+							$nTempQty = $nTmpCouponDiscQtyMax;
+							$nTmpCouponDiscQtyMax = 0; 
+						}
+					}
+				}
+				else
+					$nTempQty = $val->quantity;
+
+				$oItemDiscountInfo = $this->_getItemDiscount($val); // check coupon promotion could be duplicated
+				if( $aCouponAllowableItems )
+				{
+					if( $aCouponAllowableItems[$val->item_srl] == 'Y' )
+					{
+						$nItemCouponDiscountAmnt += round($val->discounted_price * $nTempQty * $discount_policy);
+						if( $oItemDiscountInfo->allow_duplication == '1' )
+						{
+							//$nItemCouponDiscountAmnt += round($val->discounted_price * $nTempQty * $discount_policy);
+							$nTotalDiscountAmount += $val->discount_amount* $nTempQty;
+							$nTotalDiscountAmount += round($val->discounted_price * $nTempQty * $discount_policy);
+							$bDiscountDuplicated = true;
+						}
+						else
+						{
+							//$nItemCouponDiscountAmnt += round($val->discounted_price * $nTempQty * $discount_policy);
+							$nTotalDiscountAmount += round($val->price * $nTempQty * $discount_policy);
+						}
+					}
+				}
+				else
+				{
+					$nItemCouponDiscountAmnt += round($val->discounted_price * $nTempQty * $discount_policy);
+					if( $oItemDiscountInfo->allow_duplication == '1' )
+					{
+						//$nItemBasicDiscountAmnt += $val->discount_amount* $nTempQty;
+						//$nItemCouponDiscountAmnt += round($val->discounted_price * $nTempQty * $discount_policy);
+						$nTotalDiscountAmount += $val->discount_amount* $nTempQty;
+						$nTotalDiscountAmount += round($val->discounted_price * $nTempQty * $discount_policy);
+						$bDiscountDuplicated = true;
+					}
+					else
+					{
+						//$nItemCouponDiscountAmnt += round($val->discounted_price * $nTempQty * $discount_policy);
+						$nTotalDiscountAmount += round($val->price * $nTempQty * $discount_policy);
+					}
+				}
+
+v 0.4.29
+1st, Aug 2019
+1. 상품 기본 할인 정책에 유효 기간 기능 추가
+./schemas/svpromotion_group_by_item.xml에 아래의 코드 추가
+<column name="item_promotion_srl" type="number" size="11" notnull="notnull" primary_key="primary_key" auto_increment="auto_increment"/>
+<column name="begindate" type="date" />
+<column name="enddate" type="date" />
+
+./queries/getGroupDiscountByItem.xml에 아래의 코드 추가
+<navigation>
+        <index var="sort_index" default="item_promotion_srl" order="desc" />
+</navigation>
+
+./svpromotion.model.php::_getItemDiscount()에서 아래의 코드를
+$args->item_srl = $item_info->item_srl;
+$output = executeQueryArray('svpromotion.getGroupDiscountByItem', $args );
+if(!$output->toBool()) 
+	return $output;
+
+$oDiscountInfo = $output->data[0];
+if( $oDiscountInfo->opt == '1' )
+{
+	$discounted_price = $item_info->price - $oDiscountInfo->price;
+	$nDiscountAmount = $oDiscountInfo->price;
+	$discount_info = $oDiscountInfo->discount_info.' '.number_format($oDiscountInfo->price,0).'원 할인';
+}
+else if( $oDiscountInfo->opt == '2' )
+{
+	$discounted_price = $item_info->price * ((100 - $oDiscountInfo->price) / 100);
+	$nDiscountAmount = $item_info->price * $oDiscountInfo->price / 100;
+	$discount_info = $oDiscountInfo->discount_info.' '.$oDiscountInfo->price.'% 할인';
+} 
+$output = new Object();
+$output->discount_amount = $nDiscountAmount;
+$output->discounted_price = $discounted_price;
+$output->allow_duplication = $oDiscountInfo->allow_duplication;
+$output->discount_info = $discount_info;
+return $output;
+
+아래와 같이 변경
+$oArgs->item_srl = $oItemInfo->item_srl;
+$output = executeQueryArray('svpromotion.getGroupDiscountByItem', $oArgs );
+if(!$output->toBool())
+	return $output;
+
+$oRst = new Object();
+$oRst->discount_amount = 0;
+$oRst->discounted_price = $oItemInfo->price;
+$oRst->allow_duplication = $oDiscountInfo->allow_duplication;
+$oRst->discount_info = 0;
+
+if( !$sOrderDate )
+{
+	reset( $output->data );
+	$nFirstIdx = key( $output->data );
+	$oDiscountInfo = $output->data[$nFirstIdx];
+	$dtBegin = strtotime($oDiscountInfo->begindate);
+	$dtEnd = strtotime($oDiscountInfo->enddate);
+	$dtNow = time();
+	
+	if( $dtBegin && $dtBegin >= $dtNow )
+		return $oRst;
+
+	if( $dtEnd && $dtEnd <= $dtNow )
+		return $oRst;
+	
+	if( $dtBegin && $dtEnd )
+	{
+		if( $dtBegin >= $dtNow || $dtEnd <= $dtNow  )
+			return $oRst;
+	}
+	if( $oDiscountInfo->opt == '1' )
+	{
+		$discounted_price = $oItemInfo->price - $oDiscountInfo->price;
+		$nDiscountAmount = $oDiscountInfo->price;
+		$discount_info = $oDiscountInfo->discount_info.' '.number_format($oDiscountInfo->price,0).'원 할인';
+	}
+	else if( $oDiscountInfo->opt == '2' )
+	{
+		$discounted_price = $oItemInfo->price * ((100 - $oDiscountInfo->price) / 100);
+		$nDiscountAmount = $oItemInfo->price * $oDiscountInfo->price / 100;
+		$discount_info = $oDiscountInfo->discount_info.' '.$oDiscountInfo->price.'% 할인';
+	}
+
+	$oRst->discount_amount = $nDiscountAmount;
+	$oRst->discounted_price = $discounted_price;
+	$oRst->allow_duplication = $oDiscountInfo->allow_duplication;
+	$oRst->discount_info = $discount_info;
+}
+else
+{
+	$output = executeQueryArray('svpromotion.getGroupDiscountByItem', $oArgs );
+	if(!$output->toBool())
+		return $output;
+
+	foreach( $output->data as $nIdx => $oData )
+	{
+		$oDiscountInfo = $oData;
+		$dtBegin = strtotime($oDiscountInfo->begindate);
+		$dtEnd = strtotime($oDiscountInfo->enddate);
+		$dtOrder = strtotime($sOrderDate);
+		
+		if( $dtBegin && $dtBegin >= $dtOrder )
+			continue;
+
+		if( $dtEnd && $dtEnd <= $dtOrder )
+			continue;
+		
+		if( $dtBegin && $dtEnd )
+		{
+			if( $dtBegin >= $dtOrder || $dtEnd <= $dtOrder  )
+				continue;
+		}
+		if( $oDiscountInfo->opt == '1' )
+		{
+			$discounted_price = $oItemInfo->price - $oDiscountInfo->price;
+			$nDiscountAmount = $oDiscountInfo->price;
+			$discount_info = $oDiscountInfo->discount_info.' '.number_format($oDiscountInfo->price,0).'원 할인';
+		}
+		else if( $oDiscountInfo->opt == '2' )
+		{
+			$discounted_price = $oItemInfo->price * ((100 - $oDiscountInfo->price) / 100);
+			$nDiscountAmount = $oItemInfo->price * $oDiscountInfo->price / 100;
+			$discount_info = $oDiscountInfo->discount_info.' '.$oDiscountInfo->price.'% 할인';
+		}
+		$oRst->discount_amount = $nDiscountAmount;
+		$oRst->discounted_price = $discounted_price;
+		$oRst->allow_duplication = $oDiscountInfo->allow_duplication;
+		$oRst->discount_info = $discount_info;
+		break;
+	}
+}
+return $oRst;
+
+./svpromotion.admin.controller.php::_validateDate() 추가
+
+v 0.4.30
+6th, Aug 2019
+1. 코드 오류 수정
+./svpromotion.model.php::getCheckoutPrice()에서 아래의 코드를
+$oCheckoutPromotionInfo = new stdClass();
+$oCheckoutPromotionInfo->version = '1.0';
+$oRst = new Object();
+// 주문서 입력 후 할인액; 주문서 입력전 할인액은 무시함
+$nInitialItemTotalPrice = $in_args->cart->sum_price;
+
+$oSiteBulkOutput = $this->getSiteLevelQuantityDiscount( $in_args );
+$nBulkQtyRange = (int)$oSiteBulkOutput->get('matched_qty_range');
+$fBulkDiscountRate = (float)$oSiteBulkOutput->get('matched_discount_rate');
+$nBulkQtyRecommendedRange = (int)$oSiteBulkOutput->get('recommeded_qty_range');
+$fBulkDiscountRecommendedRate = (float)$oSiteBulkOutput->get('recommeded_discount_rate');
+$nRemainingQty = (int)$oSiteBulkOutput->get('remaining_qty');
+$aBulkDiscountRecommendedItemList = $oSiteBulkOutput->get('recommeded_item_list');
+if( $nBulkQtyRange > 0 )
+{
+	$nTotalDiscountAmount = (int)($nInitialItemTotalPrice * $fBulkDiscountRate);
+	$oCheckoutPromotionInfo->promotion[0]->type = 'site_bulk';
+	unset($oCheckoutPromotionInfo->promotion[0]->coupon_srl); // 쿠폰 사용 무효화
+	$oCheckoutPromotionInfo->promotion[0]->total_disc_amnt = $nTotalDiscountAmount;
+	$oCheckoutPromotionInfo->promotion[0]->title = $nBulkQtyRange.'개 이상  '.number_format($nTotalDiscountAmount,0).'원 할인';
+}
+
+if( $nBulkQtyRecommendedRange )
+{
+	$oRst->add('remaining_qty', $nRemainingQty );
+	$oRst->add('recommeded_qty_range', $nBulkQtyRecommendedRange );
+	$oRst->add('recommeded_discount_rate', $fBulkDiscountRecommendedRate );
+	$oRst->add('recommeded_item_list', $aBulkDiscountRecommendedItemList );
+}
+
+$nTotalDiscountAmount = 0;
+// 품목별 기본 할인액을 계산함
+foreach( $in_args->cart->item_list as $nIdx => $oVal )
+{
+	if( $oVal->discount_amount )
+		$nTotalDiscountAmount = $oVal->quantity * $oVal->discount_amount;
+}
+
+아래와 같이 변경
+$oCheckoutPromotionInfo = new stdClass();
+$oCheckoutPromotionInfo->version = '1.0';
+$nTotalDiscountAmount = 0;
+$oRst = new Object();
+// 주문서 입력 후 할인액; 주문서 입력전 할인액은 무시함
+$nInitialItemTotalPrice = $in_args->cart->sum_price;
+
+$oSiteBulkOutput = $this->getSiteLevelQuantityDiscount( $in_args );
+$nBulkQtyRange = (int)$oSiteBulkOutput->get('matched_qty_range');
+$fBulkDiscountRate = (float)$oSiteBulkOutput->get('matched_discount_rate');
+$nBulkQtyRecommendedRange = (int)$oSiteBulkOutput->get('recommeded_qty_range');
+$fBulkDiscountRecommendedRate = (float)$oSiteBulkOutput->get('recommeded_discount_rate');
+$nRemainingQty = (int)$oSiteBulkOutput->get('remaining_qty');
+$aBulkDiscountRecommendedItemList = $oSiteBulkOutput->get('recommeded_item_list');
+if( $nBulkQtyRange > 0 )
+{
+	$nTotalDiscountAmount = (int)($nInitialItemTotalPrice * $fBulkDiscountRate);
+	$oCheckoutPromotionInfo->promotion[0]->type = 'site_bulk';
+	unset($oCheckoutPromotionInfo->promotion[0]->coupon_srl); // 쿠폰 사용 무효화
+	$oCheckoutPromotionInfo->promotion[0]->total_disc_amnt = $nTotalDiscountAmount;
+	$oCheckoutPromotionInfo->promotion[0]->title = $nBulkQtyRange.'개 이상  '.number_format($nTotalDiscountAmount,0).'원 할인';
+}
+
+if( $nBulkQtyRecommendedRange )
+{
+	$oRst->add('remaining_qty', $nRemainingQty );
+	$oRst->add('recommeded_qty_range', $nBulkQtyRecommendedRange );
+	$oRst->add('recommeded_discount_rate', $fBulkDiscountRecommendedRate );
+	$oRst->add('recommeded_item_list', $aBulkDiscountRecommendedItemList );
+}
+
+// 품목별 기본 할인액을 계산함
+foreach( $in_args->cart->item_list as $nIdx => $oVal )
+{
+	if( $oVal->discount_amount )
+		$nTotalDiscountAmount += $oVal->quantity * $oVal->discount_amount;
+}
+
+v 0.4.31
+30th, Oct 2019
+1. 코드 오류 수정
+./svpromotion.admin.controller.php::procSvpromotionAdminUpdateItemDetail()에서 아래의 코드를
+$nFbLikeDiscountAmount = Context::get('fb_like_item_discount_amount');
+$nFbLikeDiscountOpt = Context::get('fb_like_item_opt');
+$args->promotion_type = 'fblike';
+$output = executeQuery('svpromotion.deleteConditionalByItemPolicy', $args );
+if( !$output->toBool() )
+	return $output;
+
+$args->opt = $nFbLikeDiscountOpt;
+$args->price = $nFbLikeDiscountAmount;
+$output = executeQuery('svpromotion.insertConditionalByItemPolicy', $args );
+if( !$output->toBool() )
+	return $output;
+
+unset( $args->promotion_type );
+unset( $args->opt );
+unset( $args->price );
+
+아래와 같이 변경
+$nFbLikeDiscountAmount = Context::get('fb_like_item_discount_amount');
+$nFbLikeDiscountOpt = Context::get('fb_like_item_opt');
+if( $nFbLikeDiscountOpt && $nFbLikeDiscountAmount )
+{
+	$args->promotion_type = 'fblike';
+	$output = executeQuery('svpromotion.deleteConditionalByItemPolicy', $args );
+	if( !$output->toBool() )
+		return $output;
+	
+	$args->opt = $nFbLikeDiscountOpt;
+	$args->price = $nFbLikeDiscountAmount;
+	$output = executeQuery('svpromotion.insertConditionalByItemPolicy', $args );
+	if( !$output->toBool() )
+		return $output;
+	
+	unset( $args->promotion_type );
+	unset( $args->opt );
+	unset( $args->price );
+}
+
+v 0.4.32
+11th, Nov 2019
+1. 다품목 결제에서 부분 품목 취소 시 쿠폰 할인 혜택을 다시 계산하는 기능 추가
+./svpromotion.model.php::getCheckoutPrice()에서 아래의 코드를
+$oCouponOutput = $this->getCouponInfoBySerialNumber( $sCouponSerial, $nOriginalPayAmnt, $nAlreadyDiscountedPayAmnt );
+
+아래와 같이 변경
+if( $oInArgs->recheck_mode )
+	$bRecheckMode = true;
+else
+	$bRecheckMode = false;
+$oCouponOutput = $this->getCouponInfoBySerialNumber( $sCouponSerial, $nOriginalPayAmnt, $nAlreadyDiscountedPayAmnt, $bRecheckMode );
+
+./svpromotion.model.php::getCouponInfoBySerialNumber()에서 아래의 코드를
+if( $output->data->max_use_count <= $output->data->used_count )
+if( $output->data->status != 1 )
+if( $output->data->end_date )
+
+아래와 같이 변경
+if( !$sRecheckMode && $output->data->max_use_count <= $output->data->used_count )
+if( !$sRecheckMode && $output->data->status != 1 )
+if( !$sRecheckMode && $output->data->end_date )
+
+2. 다품목 결제에서 부분 품목 취소 시 적립금 내역을 다시 계산하는 기능 추가
+./schemas/svpromotion_reserves_log.xml에 아래의 코드 추가
+<column name="type" type="char" size="1" notnull="notnull" default="1" />
+
+./svpromotion.controller.php::_deleteReserves()를 deleteReserves()로 변경
+
+./svpromotion.controller.php::activateReservesLog() 제거
+./svpromotion.controller.php::deleteReserves() 제거
+./svpromotion.controller.php::toggleReservesLog() 추가
+
+./svpromotion.controller.php::procSvprmotionRollbackBenefit()에서 아래의 코드를
+if( $oOrderInfo->reserves_consume_srl )
+	$this->_deleteReserves( $oOrderInfo->reserves_consume_srl );
+if( $oOrderInfo->reserves_receive_srl )
+	$this->_deleteReserves( $oOrderInfo->reserves_receive_srl );
+
+아래와 같이 변경
+if( $oOrderInfo->reserves_consume_srl )
+	$this->toggleReservesLog( $oOrderInfo->reserves_consume_srl, 'delete' );
+if( $oOrderInfo->reserves_receive_srl )
+	$this->toggleReservesLog( $oOrderInfo->reserves_receive_srl, 'delete' );
+
+./svpromotion.class.php에 아래의 코드 추가
+const RESERVES_REASON_SETTLEMENT = '0';
+const RESERVES_REASON_FULL_CANCEL = '1';
+const RESERVES_REASON_PARTIAL_CANCEL = '2';
+
+./queries/updateReservesLog.xml에 아래의 코드 추가
+<column name="reason" var="reason" />
+
+./svpromotion.model.php::getCheckoutPrice()에 아래의 코드 추가
+if( defined('svorder::ORDER_STATE_CANCELLED') )
+	getClass('svorder');
+
+$aTempItemList = $oInArgs->cart->item_list;
+// 취소 상태인 장바구니 품목은 계산에서 제외함
+foreach( $aTempItemList as $nIdx => $oVal )
+{
+	if( $oVal->order_status == svorder::ORDER_STATE_CANCEL_REQUESTED ||
+		$oVal->order_status == svorder::ORDER_STATE_CANCELLED )
+		unset( $aTempItemList[$nIdx] );
+}
+
+./svpromotion.model.php::getItemPriceCart()에서 아래의 코드를
+public function getItemPriceCart( $item_list, $group_list=array() )
+{
+	$oSvcartModel = &getModel('svcart');
+	$config = $oSvcartModel->getModuleConfig();
+
+	$ret_obj->total_price=0;
+	$ret_obj->sum_price=0;
+	$ret_obj->total_discounted_price=0;
+	$ret_obj->total_discount_amount=0;
+	$free_delivery = 'N';
+
+	if( !$group_list )
+		$group_list = array();
+	$oSvitemModel = &getModel('svitem');
+	foreach( $item_list as $key=>$val )
+	{
+
+		// 아이템별 기본 할인 정책 가져오기
+		$output = $this->_discountSpecificItem( $val );
+		$item_list[$key]->discounted_price = $output->discounted_price;
+		$item_list[$key]->discount_amount = $output->discount_amount;
+		$item_list[$key]->discount_info = '<p id=\'discount_info\'>'.$output->discount_info.'</p>';
+		$item_list[$key]->sum_discount_amount = $output->discount_amount * $val->quantity;
+		$item_list[$key]->sum_discounted_price = $output->discounted_price * $val->quantity;
+		$item_list[$key]->sum_price = $val->price * $val->quantity;
+
+		// 아이템별 부가 할인 정책 가져오기
+		// 기존 버전과 호환성 해결
+		$oConditionalPromotion = unserialize( $val->conditional_promotion );
+		if( $oConditionalPromotion->version == '1.0' )
+		{
+			foreach( $oConditionalPromotion->promotion as $promotion_key=>$promotion_val)
+			{
+				if( $promotion_val->type == 'fblike' || $promotion_val->type == 'fbshare' )
+				{
+					$item_list[$key]->discount_info .= '<p id=\'fb_discount_info\'>'.$promotion_val->title.'</p>';
+					$item_list[$key]->discount_amount = $promotion_val->resultant_disc_amnt;
+					//$item_list[$key]->discounted_price = $item->price + $item->option_price - $promotion_val->resultant_disc_amnt;
+					$item_list[$key]->discounted_price = $val->price + $val->option_price - $promotion_val->resultant_disc_amnt;
+					$item_list[$key]->sum_discount_amount = $promotion_val->resultant_disc_amnt * $val->quantity;
+					$item_list[$key]->sum_discounted_price = $item_list[$key]->discounted_price * $val->quantity;
+				}
+				else if( $promotion_val->type == 'giveaway' )
+					$item_list[$key]->discount_info .= '<p id=\'giveaway_info\'>'.$promotion_val->title.'</p>';
+			}
+		}
+
+		// option
+		$option = FALSE;
+		if( $val->option_srl )
+		{
+			$options = $oSvitemModel->getOptions($val->item_srl);
+			if( isset($options[$val->option_srl]) )
+				$option = $options[$val->option_srl];
+		}
+		if( $option )
+		{
+			// 단가
+			$item_list[$key]->price = $val->price + ($option->price);
+			// 할인가 합계
+			$item_list[$key]->sum_discounted_price += ($option->price * $val->quantity);
+			// 판매가(원가격)
+			$item_list[$key]->sum_price += ($option->price * $val->quantity);
+		}
+
+		$ret_obj->total_discounted_price += $item_list[$key]->sum_discounted_price;
+		$ret_obj->total_discount_amount += $item_list[$key]->sum_discount_amount;
+		$ret_obj->sum_price += $item_list[$key]->sum_price;
+	}
+	$ret_obj->total_price = round($ret_obj->total_discounted_price);// + $ret_obj->delivery_fee;
+	$ret_obj->item_list = $item_list;
+	return $ret_obj;
+}
+
+아래와 같이 변경
+public function getItemPriceCart( $aItemList )
+{
+	$oRet->total_price=0;
+	$oRet->sum_price=0;
+	$oRet->total_discounted_price=0;
+	$oRet->total_discount_amount=0;
+
+	if( defined('svorder::ORDER_STATE_CANCELLED') )
+		getClass('svorder');
+	
+	$oSvitemModel = &getModel('svitem');
+	foreach( $aItemList as $nItemIdx => $oItem )
+	{
+		// 아이템별 기본 할인 정책 가져오기
+		$oDisccountRst = $this->_discountSpecificItem( $oItem );
+		$aItemList[$nItemIdx]->discounted_price = $oDisccountRst->discounted_price;
+		$aItemList[$nItemIdx]->discount_amount = $oDisccountRst->discount_amount;
+		$aItemList[$nItemIdx]->discount_info = '<p id=\'discount_info\'>'.$oDisccountRst->discount_info.'</p>';
+		$aItemList[$nItemIdx]->sum_discount_amount = $oDisccountRst->discount_amount * $oItem->quantity;
+		$aItemList[$nItemIdx]->sum_discounted_price = $oDisccountRst->discounted_price * $oItem->quantity;
+		$aItemList[$nItemIdx]->sum_price = $oItem->price * $oItem->quantity;
+
+		// 아이템별 부가 할인 정책 가져오기
+		// 기존 버전과 호환성 해결
+		$oConditionalPromotion = unserialize( $oItem->conditional_promotion );
+		if( $oConditionalPromotion->version == '1.0' )
+		{
+			foreach( $oConditionalPromotion->promotion as $promotion_key=>$promotion_val)
+			{
+				if( $promotion_val->type == 'fblike' || $promotion_val->type == 'fbshare' )
+				{
+					$aItemList[$nItemIdx]->discount_info .= '<p id=\'fb_discount_info\'>'.$promotion_val->title.'</p>';
+					$aItemList[$nItemIdx]->discount_amount = $promotion_val->resultant_disc_amnt;
+					$aItemList[$nItemIdx]->discounted_price = $oItem->price + $oItem->option_price - $promotion_val->resultant_disc_amnt;
+					$aItemList[$nItemIdx]->sum_discount_amount = $promotion_val->resultant_disc_amnt * $oItem->quantity;
+					$aItemList[$nItemIdx]->sum_discounted_price = $aItemList[$nItemIdx]->discounted_price * $oItem->quantity;
+				}
+				else if( $promotion_val->type == 'giveaway' )
+					$aItemList[$nItemIdx]->discount_info .= '<p id=\'giveaway_info\'>'.$promotion_val->title.'</p>';
+			}
+		}
+		// option
+		$oOption = FALSE;
+		if( $oItem->option_srl )
+		{
+			$aOptions = $oSvitemModel->getOptions($oItem->item_srl);
+			if( isset($aOptions[$oItem->option_srl]) )
+				$oOption = $aOptions[$oItem->option_srl];
+		}
+		if( $oOption )
+		{
+			// 단가
+			$aItemList[$nItemIdx]->price = $oItem->price + ($oOption->price);
+			// 할인가 합계
+			$aItemList[$nItemIdx]->sum_discounted_price += ($oOption->price * $oItem->quantity);
+			// 판매가(원가격)
+			$aItemList[$nItemIdx]->sum_price += ($oOption->price * $oItem->quantity);
+		}
+
+		if( $oItem->order_status == svorder::ORDER_STATE_CANCEL_REQUESTED ||
+			$oItem->order_status == svorder::ORDER_STATE_CANCELLED )
+			continue; // 취소 상태인 장바구니 품목은 계산에서 제외함
+
+		$oRet->total_discounted_price += $aItemList[$nItemIdx]->sum_discounted_price;
+		$oRet->total_discount_amount += $aItemList[$nItemIdx]->sum_discount_amount;
+		$oRet->sum_price += $aItemList[$nItemIdx]->sum_price;
+	}
+	$oRet->total_price = round($oRet->total_discounted_price);
+	$oRet->item_list = $aItemList;
+	return $oRet;
+}
+
+v 0.4.33
+26th, Dec 2019
+1. OOP 개선
+./svpromotion.model.php::getItemPriceCart()에서 아래의 코드를
+if( defined('svorder::ORDER_STATE_CANCELLED') )
+	getClass('svorder');
+
+아래와 같이 변경
+if( !defined('svorder::ORDER_STATE_ON_DEPOSIT') )
+	getClass('svorder');
+
+./svpromotion.model.php::getCheckoutPrice()에서 아래의 코드를
+if( defined('svorder::ORDER_STATE_CANCELLED') )
+	getClass('svorder');
+
+아래와 같이 변경
+if( !defined('svorder::ORDER_STATE_ON_DEPOSIT') )
+	getClass('svorder');
+
+2. 장바구니 추가 시점에서 조건부 프로모션 정보를 제외함
+./svpromotion.model.php::getPromotionDetailForCartAddition()에서 아래의 코드를
+$oConditionalPromotionInfo->version = '1.0';
+foreach( $aRequestedPromotion as $key => $sPromotionType )
+{
+	switch( $sPromotionType )
+	{
+		case 'fblike': // 아이템별 fb like 할인 정책 가져오기
+		case 'fbshare': // 아이템별 fb share 할인 정책 가져오기
+			$oConditionalPromoResult = $this->_getFbConditionalDiscountItem( $item, $nBalanceToGoMax, $sPromotionType );
+			if( !$oConditionalPromoResult->toBool() ) 
+				return $oConditionalPromoResult;
+
+			if( $oConditionalPromoResult->discount_amount > 0 )
+				$oConditionalPromoResult->conditional_additional_discount_amount += $oUnconditionalDiscountPolicy->discount_amount;
+
+			if( $oConditionalPromoResult->conditional_additional_discount_amount > 0 )
+			{
+				$oItemInfo->discount_amount = $oConditionalPromoResult->conditional_additional_discount_amount;
+				$oItemInfo->discounted_price = ($item->price - $oConditionalPromoResult->conditional_additional_discount_amount)*$oOrderInfo->quantity;
+				$oConditionalPromotionInfo->promotion[0]->type = $sPromotionType;
+				$oConditionalPromotionInfo->promotion[0]->resultant_disc_amnt = $oConditionalPromoResult->conditional_additional_discount_amount;
+				$oConditionalPromotionInfo->promotion[0]->title = $oConditionalPromoResult->conditional_additional_discount_info;
+				$oItemInfo->conditional_promotion = $oConditionalPromotionInfo;
+			}
+			break;
+		default:
+			break;
+	}
+}
+$oConditionalPromoResult = $this->_getGiveawayItem( $item );//, $nBalanceToGoMax );
+if( !$oConditionalPromoResult->toBool() ) 
+	return $oConditionalPromoResult;
+
+if( $oConditionalPromoResult->conditional_additional_discount_giveaway_item_srl > 0 )
+{
+	$oConditionalPromotionInfo->promotion[1]->type = 'giveaway';
+	$oConditionalPromotionInfo->promotion[1]->giveaway_item_srl = $oConditionalPromoResult->conditional_additional_discount_giveaway_item_srl;
+	$oConditionalPromotionInfo->promotion[1]->resultant_giveaway_qty = $oConditionalPromoResult->conditional_additional_discount_giveaway_item_qty*$oOrderInfo->quantity;
+	$oConditionalPromotionInfo->promotion[1]->title = $oConditionalPromoResult->conditional_additional_discount_info;
+	$oItemInfo->conditional_promotion = $oConditionalPromotionInfo;
+}
+
+아래와 같이 변경
+$oConditionalPromotionInfo->version = '1.0';
+$nIdx = 0;
+foreach( $aRequestedPromotion as $key => $sPromotionType )
+{
+	switch( $sPromotionType )
+	{
+		case 'fblike': // 아이템별 fb like 할인 정책 가져오기
+		case 'fbshare': // 아이템별 fb share 할인 정책 가져오기
+			$oConditionalPromoResult = $this->_getFbConditionalDiscountItem( $item, $nBalanceToGoMax, $sPromotionType );
+			if( !$oConditionalPromoResult->toBool() ) 
+				return $oConditionalPromoResult;
+
+			if( $oConditionalPromoResult->discount_amount > 0 )
+				$oConditionalPromoResult->conditional_additional_discount_amount += $oUnconditionalDiscountPolicy->discount_amount;
+
+			if( $oConditionalPromoResult->conditional_additional_discount_amount > 0 )
+			{
+				$oItemInfo->discount_amount = $oConditionalPromoResult->conditional_additional_discount_amount;
+				$oItemInfo->discounted_price = ($item->price - $oConditionalPromoResult->conditional_additional_discount_amount)*$oOrderInfo->quantity;
+				$oConditionalPromotionInfo->promotion[$nIdx]->type = $sPromotionType;
+				$oConditionalPromotionInfo->promotion[$nIdx]->resultant_disc_amnt = $oConditionalPromoResult->conditional_additional_discount_amount;
+				$oConditionalPromotionInfo->promotion[$nIdx]->title = $oConditionalPromoResult->conditional_additional_discount_info;
+				$oItemInfo->conditional_promotion = $oConditionalPromotionInfo;
+			}
+			break;
+		default:
+			break;
+	}
+}
+$oConditionalPromoResult = new Object();
+
+3. 장바구니 목록 화면에서 상품 기본 할인 정보를 svpromotion에서 불러옴
+./svpromotion.model.php::getItemPriceCart()에서 아래의 코드를
+if( $oConditionalPromotion->version == '1.0' )
+{
+	foreach( $oConditionalPromotion->promotion as $promotion_key=>$promotion_val)
+	{
+		if( $promotion_val->type == 'fblike' || $promotion_val->type == 'fbshare' )
+		{
+			$aItemList[$nItemIdx]->discount_info .= '<p id=\'fb_discount_info\'>'.$promotion_val->title.'</p>';
+			$aItemList[$nItemIdx]->discount_amount = $promotion_val->resultant_disc_amnt;
+			$aItemList[$nItemIdx]->discounted_price = $oItem->price + $oItem->option_price - $promotion_val->resultant_disc_amnt;
+			$aItemList[$nItemIdx]->sum_discount_amount = $promotion_val->resultant_disc_amnt * $oItem->quantity;
+			$aItemList[$nItemIdx]->sum_discounted_price = $aItemList[$nItemIdx]->discounted_price * $oItem->quantity;
+		}
+		else if( $promotion_val->type == 'giveaway' )
+			$aItemList[$nItemIdx]->discount_info .= '<p id=\'giveaway_info\'>'.$promotion_val->title.'</p>';
+	}
+}
+
+아래와 같이 변경
+if( $oConditionalPromotion->version == '1.0' )
+{
+	foreach( $oConditionalPromotion->promotion as $promotion_key=>$promotion_val)
+	{
+		if( $promotion_val->type == 'fblike' || $promotion_val->type == 'fbshare' )
+		{
+			$aItemList[$nItemIdx]->discount_info .= '<p id=\'fb_discount_info\'>'.$promotion_val->title.'</p>';
+			$aItemList[$nItemIdx]->discount_amount += $promotion_val->resultant_disc_amnt;
+			$aItemList[$nItemIdx]->discounted_price = $aItemList[$nItemIdx]->discounted_price + $oItem->option_price - $promotion_val->resultant_disc_amnt;
+			$aItemList[$nItemIdx]->sum_discount_amount += $promotion_val->resultant_disc_amnt * $oItem->quantity;
+			$aItemList[$nItemIdx]->sum_discounted_price = $aItemList[$nItemIdx]->discounted_price * $oItem->quantity;
+		}
+	}
+}
+$oGiveawayPromoResult = $this->_getGiveawayItem( $oItem );
+if( !$oGiveawayPromoResult->toBool() ) 
+	return $oGiveawayPromoResult;
+if( $oGiveawayPromoResult->conditional_additional_discount_giveaway_item_srl > 0 )
+{
+	$aItemList[$nItemIdx]->discount_info .= '<p id=\'giveaway_info\'>'.$oGiveawayPromoResult->conditional_additional_discount_info.'</p>';
+	//$oConditionalPromotionInfo->promotion[1]->resultant_giveaway_qty = $oConditionalPromoResult->conditional_additional_discount_giveaway_item_qty*$oOrderInfo->quantity;
+}
+
+./svpromotion.model.php::_getMemberDiscount()에서 promotion_type 명시
+./svpromotion.model.php::_getItemLevelQuantityDiscount()에서 promotion_type 명시
+./svpromotion.model.php::_getItemDiscount()에서 promotion_type 명시
+./svpromotion.model.php::_getGroupDiscount()에서 promotion_type 명시
+./svpromotion.model.php::_getSiteGroupDiscount()에서 promotion_type 명시
+
+4.
+결제창에서 주문서 생성 시 promotion 정보 기록하도록 변경
+./svpromotion.model.php::getItemPriceCart()에 아래의 코드 추가
+if( $oDiscountRst->discount_amount ) // 상품별 기본 할인 정책 원본 구조체 기록 for svorder.order.php::_setSvCartList()
+{
+	$aItemList[$nItemIdx]->oItemDiscountPromotion[0]->promotion_type = $oDiscountRst->promotion_type;
+	$aItemList[$nItemIdx]->oItemDiscountPromotion[0]->discount_amount = $oDiscountRst->discount_amount;
+	$aItemList[$nItemIdx]->oItemDiscountPromotion[0]->discounted_price = $oDiscountRst->discounted_price;
+	$aItemList[$nItemIdx]->oItemDiscountPromotion[0]->discount_info = $oDiscountRst->discount_info;
+}
+
+$aItemList[$nItemIdx]->oConditionalPromotion = $oConditionalPromotion->promotion; // 상품별 조건부 할인 정책 원본 구조체 기록 for svorder.order.php::_setSvCartList()
+
+$aItemList[$nItemIdx]->oGiveawayPromotion[0]->conditional_additional_discount_type = $oGiveawayPromoResult->conditional_additional_discount_type;
+$aItemList[$nItemIdx]->oGiveawayPromotion[0]->conditional_additional_discount_info = $oGiveawayPromoResult->conditional_additional_discount_info;
+$aItemList[$nItemIdx]->oGiveawayPromotion[0]->conditional_additional_discount_giveaway_item_srl = $oGiveawayPromoResult->conditional_additional_discount_giveaway_item_srl;
+$aItemList[$nItemIdx]->oGiveawayPromotion[0]->conditional_additional_discount_giveaway_item_name = $oGiveawayPromoResult->conditional_additional_discount_giveaway_item_name;
+$aItemList[$nItemIdx]->oGiveawayPromotion[0]->conditional_additional_discount_giveaway_item_price = $oGiveawayPromoResult->conditional_additional_discount_giveaway_item_price;
+$aItemList[$nItemIdx]->oGiveawayPromotion[0]->conditional_additional_discount_giveaway_item_qty = $oGiveawayPromoResult->conditional_additional_discount_giveaway_item_qty;
+$aItemList[$nItemIdx]->oGiveawayPromotion[0]->conditional_additional_discount_giveaway_item_url = $oGiveawayPromoResult->conditional_additional_discount_giveaway_item_url;
+
+5. 미사용 메소드 제거
+./svpromotion.model.php::getItemDiscountInfo4npay() 제거
+
+6. 완료 결제의 프로모션 정보를 관리하는 기능 추가
+./schemas/svpromotion_order.xml 추가
+./schemas/svpromotion_cart.xml 추가
+./quereis/getOrderPromoInfo.xml 추가
+./quereis/getCartPromoInfo.xml 추가
+./quereis/insertOrderPromoInfo.xml 추가
+./quereis/insertCartPromoInfo.xml 추가
+
+./svpromotion.class.php에 아래의 코드 추가
+const PROMO_INFO_VERS = '1.1';
+
+./svpromotion.model.php::getOrderLevelPromotionInfo() 추가
+./svpromotion.model.php::getCartLevelPromotionInfo() 추가
+./svpromotion.model.php::buildOrderLevelPromotionInfo() 추가
+./svpromotion.model.php::buildCartLevelPromotionInfo() 추가
+./svpromotion.controller.php::insertOrderLevelPromotionInfo() 추가
+./svpromotion.controller.php::insertCartLevelPromotionInfo() 추가
+
+7. 여러 프로모션이 경합하는 상황에 대응하여 개별 프로모션의 적용 여부 표시 기능 추가
+./svpromotion.model.php::getPromotionDetailForCartAddition()에 아래의 코드 추가
+$oConditionalPromotionInfo->promotion[$nIdx]->is_applied = true;
+
+./svpromotion.model.php::getItemPriceCart()에 아래의 코드 추가
+$aItemList[$nItemIdx]->oItemDiscountPromotion[0]->allow_duplication = $oDiscountRst->allow_duplication;
+$aItemList[$nItemIdx]->oItemDiscountPromotion[0]->is_applied = true;
+
+./svpromotion.unit.php::add()에 아래의 코드 추가
+$oTmpPrmotion->allow_duplication = $oPromotion->allow_duplication;
+
+./svpromotion.model.php::getCheckoutPrice()에서 아래의 코드를
+foreach( $aTempItemList as $nIdx => $oVal )
+{
+	if( $oVal->discount_amount )
+		$nTotalDiscountAmount += $oVal->quantity * $oVal->discount_amount;
+}
+
+$oCouponOutput = new Object();
+$sCouponSerial = $oInArgs->coupon_number;
+if( strlen( $sCouponSerial ) > 0 )
+{
+	$nOriginalPayAmnt = 0;
+	$nAlreadyDiscountedPayAmnt = 0;
+	foreach( $aTempItemList as $key => $val ) // 이미 적용된 할인 혜택을 계산
+	{
+		$nOriginalPayAmnt += $val->price * $val->quantity;
+		$nAlreadyDiscountedPayAmnt += ($val->price - $val->discount_amount)*$val->quantity;
+	}
+	if( $nOriginalPayAmnt - $nAlreadyDiscountedPayAmnt < $nTotalDiscountAmount )
+		$nAlreadyDiscountedPayAmnt = $nInitialItemTotalPrice - $nTotalDiscountAmount;
+///////////////////////////////
+	if( $oInArgs->recheck_mode )
+		$bRecheckMode = true;
+	else
+		$bRecheckMode = false;
+	$oCouponOutput = $this->getCouponInfoBySerialNumber( $sCouponSerial, $nOriginalPayAmnt, $nAlreadyDiscountedPayAmnt, $bRecheckMode );
+//////////////////////////////
+	if( !$oCouponOutput->toBool() ) // 쿠폰 입력되었지만 쿠폰 정보에 이상이 있으면 이후 계산하지 않음
+		return $oCouponOutput;
+
+	$sDiscountType = $oCouponOutput->data->descount_type;
+	$discount_policy = $oCouponOutput->data->discpolicy;
+	$nCouponDiscountQtyMax = (int)$oCouponOutput->data->max_qty;
+	$aCouponAllowableItems = $oCouponOutput->data->target_items;
+	if( $nCouponDiscountQtyMax || count( $aCouponAllowableItems ) )// 최대 수량 정책 혹은 품목 제한 정책 ON이면
+	{
+		if( $sDiscountType == 'rate' && ( $discount_policy > 0 && $discount_policy <= 1 ) )
+		{
+			$aTmpCart = array();
+			$aTmpCart = $this->_shellDescSortByItemPrice( $aTempItemList );
+			$nTmpCouponDiscQtyMax = $nCouponDiscountQtyMax; // 할인 수량 확인하기 위한 임시 변수
+			$bDiscountDuplicated = false;
+			$nItemCouponDiscountAmnt = 0;
+			foreach( $aTmpCart as $key => $val ) 
+			{
+				if( $nCouponDiscountQtyMax )
+				{
+					if( $nTmpCouponDiscQtyMax >= $val->quantity )
+					{
+						$nTempQty = $val->quantity;
+						if( $aCouponAllowableItems )
+						{
+							if( $aCouponAllowableItems[$val->item_srl] == 'Y' )
+								$nTmpCouponDiscQtyMax -= $val->quantity;
+						}
+						else
+							$nTmpCouponDiscQtyMax -= $val->quantity;
+					}
+					else
+					{
+						if( $aCouponAllowableItems )
+						{
+							if( $aCouponAllowableItems[$val->item_srl] == 'Y' )
+							{
+								$nTempQty = $nTmpCouponDiscQtyMax;
+								$nTmpCouponDiscQtyMax = 0; 
+							}
+						}
+						else
+						{
+							$nTempQty = $nTmpCouponDiscQtyMax;
+							$nTmpCouponDiscQtyMax = 0; 
+						}
+					}
+				}
+				else
+					$nTempQty = $val->quantity;
+
+				$oItemDiscountInfo = $this->_getItemDiscount($val); // check coupon promotion could be duplicated
+				if( $aCouponAllowableItems )
+				{
+					if( $aCouponAllowableItems[$val->item_srl] == 'Y' )
+					{
+						$nItemCouponDiscountAmnt += round($val->discounted_price * $nTempQty * $discount_policy);
+						if( $oItemDiscountInfo->allow_duplication == '1' )
+						{
+							$nTotalDiscountAmount += $val->discount_amount* $nTempQty;
+							$nTotalDiscountAmount += round($val->discounted_price * $nTempQty * $discount_policy);
+							$bDiscountDuplicated = true;
+						}
+						else
+							$nTotalDiscountAmount += round($val->price * $nTempQty * $discount_policy);
+					}
+				}
+				else
+				{
+					$nItemCouponDiscountAmnt += round($val->discounted_price * $nTempQty * $discount_policy);
+					if( $oItemDiscountInfo->allow_duplication == '1' )
+					{
+						$nTotalDiscountAmount += $val->discount_amount* $nTempQty;
+						$nTotalDiscountAmount += round($val->discounted_price * $nTempQty * $discount_policy);
+						$bDiscountDuplicated = true;
+					}
+					else
+						$nTotalDiscountAmount += round($val->price * $nTempQty * $discount_policy);
+				}
+				if( $nCouponDiscountQtyMax && !$nTmpCouponDiscQtyMax ) // 할인 수량 ON이며 제한에 도달하면 정지
+					break;
+			}
+		}
+		else if( $sDiscountType == 'amount' && $discount_policy > 1 )
+			$nTotalDiscountAmount = $discount_policy;
+	}
+	else // 최대 수량 정책 OFF, 품목 제한 정책 OFF이면
+	{
+		if( $sDiscountType == 'rate' && ( $discount_policy > 0 && $discount_policy <= 1 ) )
+			$nTotalDiscountAmount = (int)($nInitialItemTotalPrice * $discount_policy);
+		else if( $sDiscountType == 'amount' && $discount_policy > 1 )
+			$nTotalDiscountAmount = $discount_policy;
+	}
+	if( $nTotalDiscountAmount > 0 )
+	{
+		$oCheckoutPromotionInfo->promotion[0]->type = 'coupon';
+		$oCheckoutPromotionInfo->promotion[0]->coupon_srl = $oCouponOutput->data->coupon_srl;
+		$oCheckoutPromotionInfo->promotion[0]->total_disc_amnt = $nTotalDiscountAmount;
+		if( $bDiscountDuplicated )
+		{
+			$oCheckoutPromotionInfo->promotion[0]->title = $oCouponOutput->data->promotion_title.' '.number_format($nItemCouponDiscountAmnt,0).'원 추가 할인';
+			$oCheckoutPromotionInfo->promotion[0]->discount_duplicated = true;
+		}
+		else
+		{
+			$oCheckoutPromotionInfo->promotion[0]->title = $oCouponOutput->data->promotion_title.' '.number_format($nItemCouponDiscountAmnt,0).'원 할인';
+			$oCheckoutPromotionInfo->promotion[0]->discount_duplicated = false;
+		}
+		$oRst->add('disctype', $oCouponOutput->data->descount_type);
+		$oRst->add('discpolicy', $oCouponOutput->data->discpolicy);
+		$oRst->add('promotion_title', $oCouponOutput->data->promotion_title);
+	}
+	else
+		return new Object(-1, 'msg_meaningless_coupon');
+}
+
+아래와 같이 변경
+$nOriginalDiscountAmnt = 0;
+foreach( $aTempItemList as $nIdx => $oCartVal )
+{
+	if( $oCartVal->conditional_promotion )
+	{
+		$oCartVal->conditional_promotion = unserialize( $oCartVal->conditional_promotion );
+		$oCartVal->discount_amount = $oCartVal->conditional_promotion->promotion[0]->resultant_disc_amnt;
+	}
+	if( $oCartVal->oItemDiscountPromotion )
+		$oCartVal->discount_amount += $oCartVal->oItemDiscountPromotion[0]->unit_disc_amnt;
+	if( $oCartVal->discount_amount ) // $oCartVal->discount_amount 을 쿠폰 할인 정책을 무시한 품목별 원래 단위 할인액으로 설정함
+		$nOriginalDiscountAmnt += $oCartVal->quantity * $oCartVal->discount_amount;
+}
+
+$oCouponOutput = new Object();
+$sCouponSerial = $oInArgs->coupon_number;
+if( strlen( $sCouponSerial ) > 0 )
+{
+	$nOriginalPayAmnt = 0;
+	$nAlreadyDiscountedPayAmnt = 0;
+	foreach( $aTempItemList as $key => $val ) // 이미 적용된 할인 혜택을 계산
+	{
+		$nOriginalPayAmnt += $val->price * $val->quantity;
+		$nAlreadyDiscountedPayAmnt += ($val->price - $val->discount_amount)*$val->quantity;
+	}
+	if( $nOriginalPayAmnt - $nAlreadyDiscountedPayAmnt < $nTotalDiscountAmount )
+		$nAlreadyDiscountedPayAmnt = $nInitialItemTotalPrice - $nTotalDiscountAmount;
+
+	if( $oInArgs->recheck_mode )
+		$bRecheckMode = true;
+	else
+		$bRecheckMode = false;
+	$oCouponOutput = $this->getCouponInfoBySerialNumber( $sCouponSerial, $nOriginalPayAmnt, $nAlreadyDiscountedPayAmnt, $bRecheckMode );
+
+	if( !$oCouponOutput->toBool() ) // 쿠폰 입력되었지만 쿠폰 정보에 이상이 있으면 이후 계산하지 않음
+		return $oCouponOutput;
+
+	$sDiscountType = $oCouponOutput->data->descount_type;
+	$discount_policy = $oCouponOutput->data->discpolicy;
+	$nCouponDiscountQtyMax = (int)$oCouponOutput->data->max_qty;
+	$aCouponAllowableItems = $oCouponOutput->data->target_items;
+	if( $nCouponDiscountQtyMax || count( $aCouponAllowableItems ) )// 최대 수량 정책 혹은 품목 제한 정책 ON이면
+	{
+		if( $sDiscountType == 'rate' && ( $discount_policy > 0 && $discount_policy <= 1 ) )
+		{
+			$aTmpCart = array();
+			$aTmpCart = $this->_shellDescSortByItemPrice( $aTempItemList );
+			$nTmpCouponDiscQtyMax = $nCouponDiscountQtyMax; // 할인 수량 확인하기 위한 임시 변수
+			$bDiscountDuplicated = false;
+			foreach( $aTmpCart as $key => $val ) 
+			{
+				if( $nCouponDiscountQtyMax )
+				{
+					if( $nTmpCouponDiscQtyMax >= $val->quantity )
+					{
+						$nTempQty = $val->quantity;
+						if( $aCouponAllowableItems )
+						{
+							if( $aCouponAllowableItems[$val->item_srl] == 'Y' )
+								$nTmpCouponDiscQtyMax -= $val->quantity;
+						}
+						else
+							$nTmpCouponDiscQtyMax -= $val->quantity;
+					}
+					else
+					{
+						if( $aCouponAllowableItems )
+						{
+							if( $aCouponAllowableItems[$val->item_srl] == 'Y' )
+							{
+								$nTempQty = $nTmpCouponDiscQtyMax;
+								$nTmpCouponDiscQtyMax = 0; 
+							}
+						}
+						else
+						{
+							$nTempQty = $nTmpCouponDiscQtyMax;
+							$nTmpCouponDiscQtyMax = 0; 
+						}
+					}
+				}
+				else
+					$nTempQty = $val->quantity;
+				
+				if( $aCouponAllowableItems )
+				{
+					if( $aCouponAllowableItems[$val->item_srl] == 'Y' ) // 쿠폰 할인할 수 있는 품목이면 쿠폰 할인을 적용함
+					{
+						// 품목별 프로모션의 설정에 페북 좋아요 할인도 종속되므로 한번에 처리함
+						if( isset( $val->oItemDiscountPromotion[0] ) )
+							$val->oItemDiscountPromotion[0]->is_applied = 'no'; // 검출된 품목 프로모션을 비활성화
+						if( isset( $val->conditional_promotion->promotion[0] ) )
+							$val->conditional_promotion->promotion[0]->is_applied = 'no'; // 검출된 품목 SNS 좋아요 프로모션을 비활성화
+
+						if( $val->oItemDiscountPromotion[0]->allow_duplication == '1' ) // 품목 프로모션을 다른 프모로션과 중복 사용할 수 있다면
+						{
+							$nTotalDiscountAmount += $val->discount_amount * $val->quantity; // 품목별 프로모션의 설정에 페북 좋아요 할인도 종속되므로 한번에 처리함
+							$bDiscountDuplicated = true;
+						}
+						else
+							$nTotalDiscountAmount += round($val->price * $nTempQty * $discount_policy);
+					}
+					else // 쿠폰 할인할 수 없는 품목이면 기존 품목 할인을 유지함
+						$nTotalDiscountAmount += $val->discount_amount * $val->quantity;
+				}
+				else // 쿠폰 적용 대상이 설정되지 않으면 모든 장바구니 품목을 점검
+				{
+					// 품목별 프로모션의 설정에 페북 좋아요 할인도 종속되므로 한번에 처리함
+					if( $val->oItemDiscountPromotion[0]->allow_duplication == '1' )
+					{
+						$nTotalDiscountAmount += $val->discount_amount * $val->quantity; // 품목 기본 할인 정책을 적용한 후
+						$nTotalDiscountAmount += round($val->price * $nTempQty * $discount_policy); // 쿠폰에 해당하는 할인 정책을 추가함
+						$bDiscountDuplicated = true;
+					}
+					else
+					{
+						$nTotalDiscountAmount += round($val->price * $nTempQty * $discount_policy);
+						if( isset( $val->oItemDiscountPromotion[0] ) )
+							$val->oItemDiscountPromotion[0]->is_applied = 'no'; // 검출된 품목 프로모션을 비활성화
+						if( isset( $val->conditional_promotion->promotion[0] ) )
+							$val->conditional_promotion->promotion[0]->is_applied = 'no'; // 검출된 품목 SNS 좋아요 프로모션을 비활성화
+					}
+				}
+				if( $nCouponDiscountQtyMax && !$nTmpCouponDiscQtyMax ) // 할인 수량 ON이며 제한에 도달하면 정지
+					break;
+			}
+		}
+		else if( $sDiscountType == 'amount' && $discount_policy > 1 )
+			$nTotalDiscountAmount = $discount_policy;
+	}
+	else // 최대 수량 정책 OFF, 품목 제한 정책 OFF이면
+	{
+		if( $sDiscountType == 'rate' && ( $discount_policy > 0 && $discount_policy <= 1 ) )
+			$nTotalDiscountAmount = (int)($nInitialItemTotalPrice * $discount_policy);
+		else if( $sDiscountType == 'amount' && $discount_policy > 1 )
+			$nTotalDiscountAmount = $discount_policy;
+	}
+
+	if( $nTotalDiscountAmount > 0 )
+	{
+		$oCheckoutPromotionInfo->promotion[0]->type = 'coupon';
+		$oCheckoutPromotionInfo->promotion[0]->coupon_srl = $oCouponOutput->data->coupon_srl;
+		$oCheckoutPromotionInfo->promotion[0]->total_disc_amnt = $nTotalDiscountAmount;
+		$nAdditionalDiscount = $nTotalDiscountAmount - $nOriginalDiscountAmnt;
+		if( $bDiscountDuplicated && $nAdditionalDiscount > 0 )
+			$oCheckoutPromotionInfo->promotion[0]->title = $oCouponOutput->data->promotion_title.' '.number_format($nAdditionalDiscount,0).'원 추가 할인';
+		else
+			$oCheckoutPromotionInfo->promotion[0]->title = $oCouponOutput->data->promotion_title.' '.number_format($nTotalDiscountAmount,0).'원 할인';
+
+		$oRst->add('disctype', $oCouponOutput->data->descount_type);
+		$oRst->add('discpolicy', $oCouponOutput->data->discpolicy);
+		$oRst->add('promotion_title', $oCouponOutput->data->promotion_title);
+	}
+	else
+		return new Object(-1, 'msg_meaningless_coupon');
+}
+
+./svpromotion.model.php::getItemPriceCart()에 아래의 코드를
+$aItemList[$nItemIdx]->discount_info = '<p id=\'discount_info\'>'.$oDiscountRst->discount_info.'</p>';
+$aItemList[$nItemIdx]->discount_info .= '<p id=\'fb_discount_info\'>'.$promotion_val->title.'</p>';
+$aItemList[$nItemIdx]->discount_info .= '<p id=\'giveaway_info\'>'.$oGiveawayPromoResult->conditional_additional_discount_info.'</p>';
+
+아래와 같이 변경
+$aItemList[$nItemIdx]->discount_info = '<p id=\'discount_info\' class=\''.$oItem->item_srl.'\'>'.$oDiscountRst->discount_info.'</p>';
+$aItemList[$nItemIdx]->discount_info .= '<p id=\'fb_discount_info\' class=\''.$oItem->item_srl.'\'>'.$promotion_val->title.'</p>';
+$aItemList[$nItemIdx]->discount_info .= '<p id=\'giveaway_info\' class=\''.$oItem->item_srl.'\'>'.$oGiveawayPromoResult->conditional_additional_discount_info.'</p>';
+
+v 0.4.34
+7th, Jan 2020
+1. svorder v 3.0.0에 대응
+./svpromotion.model.php::getCouponInfoByCouponSrl() 추가
+
+v 0.5.0
+15th, Mar 2020
+1. npay 주문 정보 초기화를 위해 svpromotion_cart 정보 삭제 기능 추가
+./svpromotion.admin.controller.php::deletePromotionInfo() 추가
+./queries/deletePromotionCartByCartSrl.xml 추가
+
+2. npay 주문 정보 초기화를 위해 svpromotion_order 정보 삭제 기능 추가
+./queries/deletePromotionOrderByOrderSrl.xml 추가
+
+v 1.0.0
+16th, Apr 2020
+1. 품목별 프로모션 관리자 UI 개선
+./tpl/item_list_discount.html에서 아래의 코드를
+<thead>
+	<tr>
+		<th scope="col">{$lang->no}</th>
+		<th scope="col">{$lang->mid}</th>
+		<th scope="col">{$lang->display_status}</th>
+		<th scope="col">{$lang->item_title}</th>
+		<th scope="col">{$lang->regdate}</th>
+	</tr>
+</thead>
+<tbody>
+	<tr loop="$item_list => $no,$val">
+		<td>{$no}</td>
+		<td>{$val->mid}</td>
+		<td>{$val->display}</td>
+		<td><a href="{getUrl('act','dispSvpromotionAdminItemDiscountDetail','item_srl',$val->item_srl)}">{$val->item_name}</a></td>
+		<td>{zdate($val->regdate,"Y-m-d")}</td>
+	</tr>
+	<tr cond="!$item_list">
+		<td>{$lang->no_item_instance}</td>
+	</tr>
+</tbody>
+
+아래와 같이 변경
+<thead>
+	<tr>
+		<th scope="col">{$lang->no}</th>
+		<th scope="col">{$lang->mid}</th>
+		<th scope="col">{$lang->display_status}</th>
+		<th scope="col">{$lang->item_thumbnail}</th>
+		<th scope="col">{$lang->item_title}</th>
+		<th scope="col">{$lang->regdate}</th>
+	</tr>
+</thead>
+<tbody>
+	<tr loop="$item_list => $no,$val">
+		<td>{$no}</td>
+		<td>{$val->mid}</td>
+		<td>{$val->display}</td>
+		<td><img src="{svitemView::_dispThumbnailUrl($val->thumb_file_srl,80)}" /></td>
+		<td><a href="{getUrl('act','dispSvpromotionAdminItemDiscountDetail','item_srl',$val->item_srl)}">{$val->item_name}</a></td>
+		<td>{zdate($val->regdate,"Y-m-d")}</td>
+	</tr>
+	<tr cond="!$item_list">
+		<td>{$lang->no_item_instance}</td>
+	</tr>
+</tbody>
+
+./svpromotion.admin.view.php::dispSvpromotionAdminItemDiscountDetail()에 아래의 코드 추가
+Context::set('thumb_file_srl', $item_info->thumb_file_srl );
+
+./tpl/item_list_discount.html에 아래의 코드 추가
+<div class="x_control-group">
+	<label class="x_control-label" for="discount_info_default">{$lang->item_thumbnail}</label>
+	<div class="x_controls">
+		<img src="{svitemView::_dispThumbnailUrl($thumb_file_srl,120)}" />
+	</div>
+</div>
+
+./tpl/item_list_discount.html에 아래의 코드 추가
+<div class="x_control-group">
+	<label class="x_control-label" for="discount_info_default">{$lang->item_thumbnail}</label>
+	<div class="x_controls">
+		<img src="{svitemView::_dispThumbnailUrl($thumb_file_srl,120)}" />
+	</div>
+</div>
+
+./tpl/item_detail_discount.html에서 아래의 코드를
+<input type="text" name="default_item_giveaway_item_srl" id="default_item_giveaway_item_srl" value="{$item_giveaway_info->giveaway_item_srl}" />
+
+아래와 같이 변경
+<input type="text" name="default_item_giveaway_item_srl" id="default_item_giveaway_item_srl" value="{$item_giveaway_info->giveaway_item_srl}" READONLY />
+
+./tpl/item_detail_discount.html에 아래의 코드 추가
+<script>
+jQuery('#default_item_giveaway_item_srl').focus(function(){
+	var w = window.open("/index.php?module=svshopmaster&act=dispSvpromotionAdminItemListPopup", "popupWindow", "width=800, height=400, scrollbars=yes");
+});
+</script>
+
+./svpromotion.admin.view.php::dispSvpromotionAdminItemListPopup() 추가
+./tpl/item_list_popup.html 추가
+
+2. 쿠폰 관리자 메뉴 UI 변경
+./tpl/_header.html에서 아래의 코드를 
+<p class="x_alert x_alert-info" id="aboutModule" hidden>{$lang->about_board}</p>
+<ul class="x_nav x_nav-tabs" cond="$module_info">
+	<li class="x_active"|cond="$act=='dispSvpromotionAdminIndex'"><a href="{getUrl('act','dispSvpromotionAdminIndex','promotion_srl','')}">{$lang->cmd_coupon_promotion_list}</a></li>
+	<li cond="$promotion_srl" class="x_active"|cond="$act=='dispSvpromotionAdminCouponPromotionInfo'"><a href="{getUrl('act','dispSvpromotionAdminCouponPromotionInfo' )}">{$lang->cmd_coupon_promotion_info}</a></li>
+	<li class="x_active"|cond="$act=='dispSvpromotionAdminItemDiscountList'"><a href="{getUrl('act','dispSvpromotionAdminItemDiscountList')}">{$lang->cmd_item_promotion}</a></li>
+	<li class="x_active"|cond="$act=='dispSvpromotionAdminSitePromotion'"><a href="{getUrl('act','dispSvpromotionAdminSitePromotion')}">{$lang->cmd_site_discount_policy}</a></li>
+	<li class="x_active"|cond="$act=='dispSvpromotionAdminReserves'"><a href="{getUrl('act','dispSvpromotionAdminReserves')}">{$lang->cmd_reserves_mgmt}</a></li>
+	<li class="x_active"|cond="$act=='dispSvpromotionAdminConfig'"><a href="{getUrl('act','dispSvpromotionAdminConfig')}">{$lang->cmd_basic_setting}</a></li>
+</ul>
+<ul class="x_nav x_nav-tabs" cond="$module_info">
+	<li cond="$promotion_srl" class="x_active"|cond="$act=='dispSvpromotionAdminCouponInfo'"><a href="{getUrl('act','dispSvpromotionAdminCouponInfo' )}">{$lang->cmd_manage_coupon}</a></li>
+</ul>
+
+아래와 같이 변경
+<p class="x_alert x_alert-info" id="aboutModule" hidden>{$lang->about_board}</p>
+<ul class="x_nav x_nav-tabs" cond="$module_info">
+	<li class="x_active"|cond="$act=='dispSvpromotionAdminIndex'"><a href="{getUrl('act','dispSvpromotionAdminIndex','promotion_srl','')}">{$lang->cmd_coupon_promotion_list}</a></li>
+	<li class="x_active"|cond="$act=='dispSvpromotionAdminItemDiscountList'"><a href="{getUrl('act','dispSvpromotionAdminItemDiscountList')}">{$lang->cmd_item_promotion}</a></li>
+	<li class="x_active"|cond="$act=='dispSvpromotionAdminSitePromotion'"><a href="{getUrl('act','dispSvpromotionAdminSitePromotion')}">{$lang->cmd_site_discount_policy}</a></li>
+	<li class="x_active"|cond="$act=='dispSvpromotionAdminReserves'"><a href="{getUrl('act','dispSvpromotionAdminReserves')}">{$lang->cmd_reserves_mgmt}</a></li>
+	<li class="x_active"|cond="$act=='dispSvpromotionAdminConfig'"><a href="{getUrl('act','dispSvpromotionAdminConfig')}">{$lang->cmd_basic_setting}</a></li>
+</ul>
+<ul class="x_nav x_nav-tabs" cond="$module_info">
+	<li cond="$promotion_srl" class="x_active"|cond="$act=='dispSvpromotionAdminCouponInfo'"><a href="{getUrl('act','dispSvpromotionAdminCouponInfo' )}">{$lang->cmd_manage_coupon}</a></li>
+	<li cond="$promotion_srl" class="x_active"|cond="$act=='dispSvpromotionAdminCouponPromotionInfo'"><a href="{getUrl('act','dispSvpromotionAdminCouponPromotionInfo' )}">{$lang->cmd_coupon_promotion_info}</a></li>
+</ul>
+
+3. 품목별 프로모션 화면에서 쿠폰 적용 상황 표시
+./svpromotion.admin.model.php::getCouponPromotionList() 제거
+
+./svpromotion.model.php::getCouponPromotionList()에서 아래의 코드를
+return $output->data;
+
+아래와 같이 변경
+return $output;
+
+./svpromotion.controller.php::triggerSetPointAfter()에서 아래의 코드를
+foreach( $oCouponPromotionList as $key=>$val )
+
+아래와 같이 변경
+foreach( $oCouponPromotionList->data as $key=>$val )
+
+./svpromotion.admin.view.php::dispSvpromotionAdminIndex()에서 아래의 코드를
+$oSvpromotionAdminModel = &getAdminModel('svpromotion');
+$output = $oSvpromotionAdminModel->getCouponPromotionList();
+
+아래와 같이 변경
+$oSvpromotionModel = &getModel('svpromotion');
+$output = $oSvpromotionModel->getCouponPromotionList();
+
+./svpromotion.admin.view.php::dispSvpromotionAdminItemDiscountDetail()에 아래의 코드 추가
+$oSvpromotionModel = &getModel('svpromotion');
+$oCouponRst = $oSvpromotionModel->getCouponPromotionList();
+$aEffectiveCouponList = [];
+foreach( $oCouponRst->data as $nIdx => $oVal )
+{
+	if($oVal->target_items[$item_srl] == 'Y')
+	{
+		if($oVal->descount_type == 'rate')
+			$aEffectiveCouponList[$oVal->promotion_srl]->sPolicy = $oVal->descount_rate_policy.'% 할인';
+		elseif($oVal->descount_type == 'amount')
+			$aEffectiveCouponList[$oVal->promotion_srl]->sPolicy = $oVal->descount_amount_policy.'원 할인';
+		$aEffectiveCouponList[$oVal->promotion_srl]->sTitle = $oVal->promotion_title;
+	}
+}
+Context::set('aEffectiveCouponList', $aEffectiveCouponList);
+
+./tpl/item_detail_discouont.html에 아래의 코드 추가
+	<section class="section">
+		<h1>{$lang->cmd_coupon_promotion_info} - {$item_name}</h1>
+<block cond="$aEffectiveCouponList">
+		<block loop="$aEffectiveCouponList=>$nIdx,$oPromotionVal">
+			<div class="x_control-group">
+				<div class="x_control-label" for="group_discount_{$key}">{$oPromotionVal->sTitle} 쿠폰</div>
+				<div class="x_controls">
+					<label for="group_opt_1_{$key}">{$oPromotionVal->sPolicy}</label>
+				</div>
+			</div>
+		</block>
+</block>
+<block cond="!$aEffectiveCouponList">
+			<div class="x_control-group">
+				<div class="x_control-label" for="group_discount_{$key}">쿠폰</div>
+				<div class="x_controls">
+					<label for="group_opt_1_{$key}">적용 쿠폰이 없습니다.</label>
+				</div>
+			</div>
+</block>
+	</section>
+
+v 1.0.1
+25th, Apr 2020
+1. 품목별 프로모션 관리 UI 개선
+./svpromotion.admin.view.php::dispSvpromotionAdminItemDiscountDetail()에 아래의 코드 추가
+$oGiveawayItemInfo = $oSvitemModel->getItemInfoByItemSrl($val->giveaway_item_srl);
+$item_giveaway_info->giveaway_item_title = $oGiveawayItemInfo->item_name;
+
+./tpl/item_detail_discouont.html에서 아래의 코드를
+<input type="hidden" name="default_item_giveaway_item_srl" id="default_item_giveaway_item_srl" value="{$item_giveaway_info->giveaway_item_srl}" READONLY />
+
+jQuery('#default_item_giveaway_item_srl').focus(function(){
+	var w = window.open("/index.php?module=svshopmaster&act=dispSvpromotionAdminItemListPopup", "popupWindow", "width=800, height=400, scrollbars=yes");
+});
+
+아래와 같이 변경
+<input type="text" name="default_item_giveaway_item_title" id="default_item_giveaway_item_title" value="{$item_giveaway_info->giveaway_item_title}" READONLY />
+<input type="hidden" name="default_item_giveaway_item_srl" id="default_item_giveaway_item_srl" value="{$item_giveaway_info->giveaway_item_srl}" />
+
+jQuery('#default_item_giveaway_item_title').focus(function(){
+	var w = window.open("/index.php?module=svshopmaster&act=dispSvpromotionAdminItemListPopup", "popupWindow", "width=800, height=400, scrollbars=yes");
+});
+
+./tpl/item_list_popup.html에서 아래의 코드를
+<button onClick="_insertGiveawayItemSrl({$val->item_srl});">{$val->item_name}</button>
+
+<script>
+function _insertGiveawayItemSrl(nItemSrl)
+{
+	window.opener.document.getElementById('default_item_giveaway_item_srl').value = nItemSrl;
+	window.opener.document.getElementById('default_item_giveaway_item_qty').focus(); // parent window의 onfocus()와 연동되어 무한루프 발생을 회피
+	window.close();
+}
+</script>
+
+아래와 같이 변경
+<button onClick="_insertGiveawayItemSrl({$val->item_srl}, '{$val->item_name}');">{$val->item_name}</button>
+
+<script>
+function _insertGiveawayItemSrl(nItemSrl, sItemTitle)
+{
+	window.opener.document.getElementById('default_item_giveaway_item_srl').value = nItemSrl;
+	window.opener.document.getElementById('default_item_giveaway_item_title').value = sItemTitle;
+	window.opener.document.getElementById('default_item_giveaway_item_qty').focus(); // parent window의 onfocus()와 연동되어 무한루프 발생을 회피
+	window.close();
+}
+</script>
+
+v 1.0.2
+27th, Apr 2020
+1. 품목별 프로모션 관리 UI 개선
+./tpl/item_detail_discouont.html에서 아래의 코드를
+<input type="text" name="default_item_giveaway_item_title" id="default_item_giveaway_item_title" value="{$item_giveaway_info->giveaway_item_title}" READONLY />
+
+아래와 같이 변경
+<input type="text" name="default_item_giveaway_item_title" id="default_item_giveaway_item_title" value="{$item_giveaway_info->giveaway_item_title}" READONLY />
+&nbsp;<button name="btn_remove_giveaway" id="btn_remove_giveaway" />{$lang->giveaway_item_srl_remove}</button>
+
+./tpl/item_detail_discouont.html에 아래의 코드 추가
+<script>
+jQuery('#btn_remove_giveaway').click(function(){
+	event.preventDefault();
+	jQuery('#default_giveaway_title').val('');
+	jQuery('#default_item_giveaway_item_title').val('');
+	jQuery('#default_item_giveaway_item_qty').val('');
+});
+</script>
+
+v 1.0.3
+27th, Apr 2020
+1. svorder v3.0.18에 대응
+./queries/getGiveawayPromotionByItem.xml에서 아래의 코드를
+<condition operation="equal" column="module_srl" var="module_srl" notnull="notnull" pipe="and" />
+
+아래와 같이 변경
+<condition operation="equal" column="module_srl" var="module_srl" pipe="and" />
+
+v 1.0.4
+4th, May 2020
+1. 쿠폰 성과 로그 관리자 화면 UI 개선
+./tpl/coupon_performance.html에서 아래의 코드를
+<thead>
+	<tr>
+		<th scope="col">{$lang->no}</th>
+		<th scope="col">{$lang->member}</th>
+		<th scope="col">{$lang->order_amount}</th>
+		<th scope="col">{$lang->discount_amount}</th>
+		<th scope="col">{$lang->payment_amount}</th>
+		<th scope="col">{$lang->product_name}</th>
+		<th scope="col">{$lang->regdate}</th>
+	</tr>
+</thead>
+<tbody>
+	<tr loop="$performance_list => $no,$val">
+		<td>{$no}</td>
+		<td class="nowr">
+			<a href="#popup_menu_area" class="member_{$val->member_srl}" title="Info">{$val->nick_name}</a>
+		</td>
+		<td>{number_format($val->sum_price)}</td>
+		<td>{number_format($val->total_discount_amount)}</td>
+		<td>{number_format($val->total_discounted_price)}</td>
+		<td><a href="{getUrl('act','dispSvorderAdminOrderDetail','order_srl',$val->order_srl)}">{$val->title}</a></td>
+		<td>{zdate($val->regdate,"Y-m-d")}</td>
+	</tr>
+</tbody>
+
+아래와 같이 변경
+<thead>
+	<tr>
+		<th scope="col">{$lang->no}</th>
+		<th scope="col">{$lang->member}</th>
+		<th scope="col">{$lang->coupon_log_type}</th>
+		<th scope="col">{$lang->order_amount}</th>
+		<th scope="col">{$lang->discount_amount}</th>
+		<th scope="col">{$lang->payment_amount}</th>
+		<th scope="col">{$lang->product_name}</th>
+		<th scope="col">{$lang->regdate}</th>
+	</tr>
+</thead>
+<tbody>
+	<tr loop="$performance_list => $no,$val">
+		<td>{$no}</td>
+		<td class="nowr">
+			<a href="#popup_menu_area" class="member_{$val->member_srl}" title="Info">{$val->nick_name}</a>
+		</td>
+		<td>{$val->type}</td>
+		<td>{number_format($val->sum_price)}</td>
+		<td>{number_format($val->total_discount_amount)}</td>
+		<td>{number_format($val->total_discounted_price)}</td>
+		<td><a href="{getUrl('act','dispSvorderAdminOrderDetail','order_srl',$val->order_srl)}">{$val->title}</a></td>
+		<td>{zdate($val->regdate,"Y-m-d")}</td>
+	</tr>
+</tbody>
+
+v 1.0.5
+13th, Sep 2020
+1. 사이트 프로모션 -> 사이트 그룹할인 기능 오류 수정
+./svpromotion.admin.controller.php::procSvpromotionAdminSiteGroupDiscount()에서 아래의 코드를
+$module_srl = Context::get('module_srl');
+// update group discount
+$args->module_srl = $module_srl;
+$output = executeQuery('svpromotion.deleteSiteGroupDiscount', $args);
+if (!$output->toBool()) 
+	return $output;
+unset($args);
+
+$oMemberModel = &getModel('member');
+$group_list = $oMemberModel->getGroups();
+foreach( $group_list as $key=>$val )
+{
+	if (Context::get('group_discount_'.$val->group_srl))
+	{
+		$opt = Context::get('group_opt_'.$val->group_srl);
+		if( !$opt ) 
+			$opt = '1';
+
+		$args->module_srl = $module_srl;
+		$args->group_srl = $val->group_srl;
+		$args->opt = $opt;
+		$args->price = Context::get('group_discount_'.$val->group_srl);
+		$output = executeQuery('svpromotion.insertSiteGroupDiscount', $args);
+
+		if( !$output->toBool() )
+			return $output;
+
+		unset($args);
+	}
+}
+$this->setMessage( 'success_updated' );
+$returnUrl = getNotEncodedUrl('', 'module', Context::get('module'), 'act', 'dispSvpromotionAdminSiteGroupDiscount','module_srl',$module_srl);
+$this->setRedirectUrl($returnUrl);
+
+아래와 같이 변경
+$oRst = executeQuery('svpromotion.deleteSiteGroupDiscount');
+if (!$oRst->toBool()) 
+	return $oRst;
+unset($oRst);
+$oMemberModel = &getModel('member');
+$aGroupList = $oMemberModel->getGroups();
+unset($oMemberModel);
+foreach( $aGroupList as $nIdx=>$oGroup )
+{
+	if (Context::get('group_discount_'.$oGroup->group_srl))
+	{
+		$opt = Context::get('group_opt_'.$oGroup->group_srl);
+		if( !$opt ) 
+			$opt = '1';
+		$oArgs->group_srl = $oGroup->group_srl;
+		$oArgs->opt = $opt;
+		$oArgs->price = Context::get('group_discount_'.$oGroup->group_srl);
+		$oRst = executeQuery('svpromotion.insertSiteGroupDiscount', $oArgs);
+		if( !$oRst->toBool() )
+			return $oRst;
+		unset($oRst);
+		unset($oArgs);
+	}
+}
+unset($aGroupList);
+$this->setMessage( 'success_updated' );
+$sReturnUrl = getNotEncodedUrl('', 'module', Context::get('module'), 'act', 'dispSvpromotionAdminSitePromotion');
+$this->setRedirectUrl($sReturnUrl);
+
+v 1.1.0
+20th, Dec 2020
+1. php v7.4.13에 대응
+모든 new Object()를 new BaseObject()로 변경
+
+------------- todo -----------------------
+svcrm에서 사용하는 coupon issue method와 point에서 사용하는 coupon issue method 통합
+./svpromotion.admin.controller.php::insertCoupon()과 ./svpromotion.admin.controller.php::procSvpromotionAdminInsertCoupon() 리팩토링
+./svpromotion.admin.controller.php::getPromotionInfoByMemberSrl()에서 쿠폰 만료 기한 공통 메소드 생성
+
+쿠폰 등록 시 요청자에 관한 로그 기록
+
+./svpromotion.admin.controller.php::procSvitemAdminMemberDiscount() 기능 적용
+./svpromotion.admin.controller.php::procSvitemAdminQuantityDiscount() 기능 적용
+./svpromotion.admin.controller.php::procSvitemAdminDeleteMemberDiscount() 기능 적용
+./svpromotion.admin.controller.php::procSvitemAdminDeleteQuantityDiscount() 기능 적용
+./tpl/_quantitydiscount.html 기능 적용
+./tpl/_memberdiscount.html 기능 적용
+
+상품별 그룹 할인 기능 추가해야 함
+
+상품별 회원별할인기능 추가
+글로벌 레퍼럴 할인 기능 추가
+상품벌 레퍼럴 할인 기능 추가
+
+./queries/getBulkDiscountByPage.xml 제거 검토
+
+1의 자리까지 발생하는 상품 가격에서 라이크 할인액과 할인액 표시가 일치하지 않음

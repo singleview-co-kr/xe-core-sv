@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<skin version="0.2">
+	<title xml:lang="ko">스크롤 깊이 측정 스킨 - 반응형</title>
+	<description xml:lang="ko">
+		 스크롤 깊이 측정 반응 스킨 - hidden 사용자 정의 변수 추가해야 합니다.
+	</description>
+	<version>0.1</version>
+	<date>2017-10-07</date>
+	<author email_address="root@singleview.co.kr" link="http://singleview.co.kr/">
+		<name xml:lang="ko">singleview.co.kr</name>
+	</author>
+	<extra_vars>
+		<group>
+			<title xml:lang="ko">PC MOB 공통 설정</title>
+			<var name="btn_color" type="text">
+				<title xml:lang="ko">버튼 배경 색상</title>
+				<description xml:lang="ko">버튼 배경 색상 예)#ffffff</description>
+			</var>
+			<var name="is_like_mandatory" type="radio">
+				<title xml:lang="ko">페이스북 라이크 필수</title>
+				<description xml:lang="ko">이벤트 응모를 허용하는 페이스북 라이크 조건, 공란이면 검사하지 않습니다.</description>
+				<options value="">
+					<title xml:lang="ko">선택</title>
+				</options>
+				<options value="Y">
+					<title xml:lang="ko">필수</title>
+				</options>
+			</var>
+			<var name="complete_title" type="text">
+				<title xml:lang="ko">완료화면 제목</title>
+				<description xml:lang="ko">완료화면 제목을 적습니다. HTML허용</description>
+			</var>
+			<var name="complete_description" type="textarea">
+				<title xml:lang="ko">완료화면 설명</title>
+				<description xml:lang="ko">완료화면 설명을 적습니다. HTML허용</description>
+			</var>
+		</group>
+		<group>
+			<title xml:lang="ko">PC 설정</title>
+			<var name="header_img_pc" type="image">
+				<title xml:lang="ko">PC 헤더에 표시할 이미지</title>
+				<description xml:lang="ko">PC 페이지 헤더에 표시할 이미지, 입력하지 않으면 영역이 표시되지 않습니다.</description>
+			</var>
+			<var name="header_html_pc" type="textarea">
+				<title xml:lang="ko">PC 헤더에 표시할 HTML</title>
+				<description xml:lang="ko">PC 페이지 헤더에 표시할 HTML, 공란이면 영역이 표시되지 않습니다.</description>
+			</var>
+			<var name="info_img_pc" type="image">
+				<title xml:lang="ko">PC 정보에 표시할 이미지</title>
+				<description xml:lang="ko">PC 페이지 정보에 표시할 이미지, 입력하지 않으면 영역이 표시되지 않습니다.</description>
+			</var>
+			<var name="info_html_pc" type="textarea">
+				<title xml:lang="ko">PC 정보에 표시할 HTML</title>
+				<description xml:lang="ko">PC 페이지 정보에 표시할 HTML, 공란이면 영역이 표시되지 않습니다.</description>
+			</var>
+			<var name="info_bgcolor_pc" type="text">
+				<title xml:lang="ko">PC 정보 영역의 배경색</title>
+				<description xml:lang="ko">PC 페이지 정보 영역의 배경색 예)#ffffff</description>
+			</var>
+			<var name="caution_img_pc" type="image">
+				<title xml:lang="ko">PC 주의사항에 표시할 이미지</title>
+				<description xml:lang="ko">PC 페이지 주의사항에 표시할 이미지, 입력하지 않으면 영역이 표시되지 않습니다.</description>
+			</var>
+			<var name="caution_html_pc" type="textarea">
+				<title xml:lang="ko">PC 주의사항에 표시할 HTML</title>
+				<description xml:lang="ko">PC 페이지 주의사항에 표시할 HTML, 공란이면 영역이 표시되지 않습니다.</description>
+			</var>
+			<var name="caution_bgcolor_pc" type="text">
+				<title xml:lang="ko">PC 주의사항 영역의 배경색</title>
+				<description xml:lang="ko">PC 페이지 주의사항 영역의 배경색 예)#ffffff</description>
+			</var>
+			<var name="displaying_img_urls_pc" type="textarea">
+				<title xml:lang="ko">표시할 이미지 주소</title>
+				<description xml:lang="ko">표시할 이미지 URL을 엔터로 구분하여 적습니다. 예) http://server.com/img.png</description>
+			</var>
+			<var name="submit_btn_text_pc" type="text">
+				<title xml:lang="ko">PC 응모버튼 문구</title>
+				<description xml:lang="ko">PC 응모 버튼에 표시할 문구를 입력하세요. 빈칸이면 "응모하기"를 표시합니다.</description>
+			</var>
+			<var name="more_btn_text_pc" type="text">
+				<title xml:lang="ko">PC 더보기 버튼 문구</title>
+				<description xml:lang="ko">PC 더보기 버튼에 표시할 문구, 공란이면 버튼이 표시되지 않습니다. HTML 금지</description>
+			</var>
+			<var name="more_btn_link_pc" type="text">
+				<title xml:lang="ko">PC 더보기 버튼 링크</title>
+				<description xml:lang="ko">PC 더보기 버튼을 누르면 연결된 링크</description>
+			</var>
+		</group>
+		<group>
+			<title xml:lang="ko">MOB 설정</title>
+			<var name="header_img_mob" type="image">
+				<title xml:lang="ko">MOB 헤더에 표시할 이미지</title>
+				<description xml:lang="ko">MOB 페이지 헤더에 표시할 이미지, 입력하지 않으면 영역이 표시되지 않습니다.</description>
+			</var>
+			<var name="header_html_mob" type="textarea">
+				<title xml:lang="ko">MOB 헤더에 표시할 HTML</title>
+				<description xml:lang="ko">MOB 페이지 헤더에 표시할 HTML, 공란이면 영역이 표시되지 않습니다.</description>
+			</var>
+			<var name="info_img_mob" type="image">
+				<title xml:lang="ko">MOB 정보에 표시할 이미지</title>
+				<description xml:lang="ko">MOB 페이지 정보에 표시할 이미지, 입력하지 않으면 영역이 표시되지 않습니다.</description>
+			</var>
+			<var name="info_html_mob" type="textarea">
+				<title xml:lang="ko">MOB 정보에 표시할 HTML</title>
+				<description xml:lang="ko">MOB 페이지 정보에 표시할 HTML, 공란이면 영역이 표시되지 않습니다.</description>
+			</var>
+			<var name="caution_img_mob" type="image">
+				<title xml:lang="ko">MOB 주의사항에 표시할 이미지</title>
+				<description xml:lang="ko">MOB 페이지 주의사항에 표시할 이미지, 입력하지 않으면 영역이 표시되지 않습니다.</description>
+			</var>
+			<var name="caution_html_mob" type="textarea">
+				<title xml:lang="ko">MOB 주의사항에 표시할 HTML</title>
+				<description xml:lang="ko">MOB 페이지 주의사항에 표시할 HTML, 공란이면 영역이 표시되지 않습니다.</description>
+			</var>
+			<var name="displaying_img_urls_mob" type="textarea">
+				<title xml:lang="ko">표시할 이미지 주소</title>
+				<description xml:lang="ko">표시할 이미지 URL을 엔터로 구분하여 적습니다. 예) http://server.com/img.png</description>
+			</var>
+			<var name="submit_btn_text_mob" type="text">
+				<title xml:lang="ko">MOB 응모버튼 문구</title>
+				<description xml:lang="ko">MOB 응모 버튼에 표시할 문구를 입력하세요. 빈칸이면 "응모하기"를 표시합니다.</description>
+			</var>
+			<var name="footer_img_mob" type="image">
+				<title xml:lang="ko">MOB 푸터에 표시할 이미지</title>
+				<description xml:lang="ko">MOB 페이지 푸터에 표시할 이미지, 입력하지 않으면 영역이 표시되지 않습니다.</description>
+			</var>
+			<var name="footer_html_mob" type="textarea">
+				<title xml:lang="ko">MOB 푸터에 표시할 HTML</title>
+				<description xml:lang="ko">MOB 페이지 푸터에 표시할 HTML, 공란이면 영역이 표시되지 않습니다.</description>
+			</var>
+			<var name="more_btn_text_mob" type="text">
+				<title xml:lang="ko">MOB 더보기 버튼 문구</title>
+				<description xml:lang="ko">MOB 더보기 버튼에 표시할 문구, 공란이면 버튼이 표시되지 않습니다. HTML 금지</description>
+			</var>
+			<var name="more_btn_link_mob" type="text">
+				<title xml:lang="ko">MOB 더보기 버튼 링크</title>
+				<description xml:lang="ko">MOB 더보기 버튼을 누르면 연결된 링크</description>
+			</var>
+		</group>
+	</extra_vars>
+</skin>

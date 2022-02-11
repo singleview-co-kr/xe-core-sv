@@ -1,0 +1,12 @@
+<table name="svpromotion_reserves_log">
+	<column name="reserves_srl" type="number" size="11" notnull="notnull" primary_key="primary_key" />
+	<column name="member_srl" type="number" size="11" notnull="notnull" index="idx_member_srl" />
+	<column name="order_srl" type="number" size="11" default="0" />
+	<!-- +: 입금 , -: 출금 -->
+	<column name="mode" type="char" size="1" notnull="notnull" default="+" />
+	<column name="amount" type="number" size="11" notnull="notnull" default="0" />
+	<column name="reason" type="char" size="1" notnull="notnull" default="0" />
+	<column name="is_active" type="char" size="1" notnull="notnull" default="N" />
+	<column name="is_deleted" type="char" size="1" notnull="notnull" default="N" />
+	<column name="regdate" type="date" notnull="notnull" />
+</table>

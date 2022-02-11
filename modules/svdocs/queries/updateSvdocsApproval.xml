@@ -1,0 +1,12 @@
+<query id="updateSvdocsApproval" action="update" priority="LOW">
+    <tables>
+        <table name="svdocs" />
+    </tables>
+    <columns>
+        <column name="is_accepted" var="is_accepted" />
+    </columns>
+    <conditions>
+        <condition operation="equal" column="module_srl" var="module_srl" filter="number" notnull="notnull" />
+		<condition operation="equal" column="doc_srl" var="doc_srl" filter="number" pipe="and" />
+    </conditions>
+</query>

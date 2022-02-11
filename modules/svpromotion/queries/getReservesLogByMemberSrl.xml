@@ -1,0 +1,16 @@
+<query id="getReservesLogByMemberSrl" action="select">
+	<tables>
+		<table name="svpromotion_reserves_log" />
+	</tables>
+	<columns>
+		<column name="order_srl" />
+		<column name="mode" />
+		<column name="amount" />
+		<column name="regdate" />
+	</columns>
+	<conditions>
+		<condition operation="equal" column="member_srl" var="member_srl" />
+		<condition operation="equal" column="is_deleted" var="is_deleted" pipe="AND" />
+		<condition operation="equal" column="is_active" var="is_active" pipe="AND" />
+	</conditions>
+</query>

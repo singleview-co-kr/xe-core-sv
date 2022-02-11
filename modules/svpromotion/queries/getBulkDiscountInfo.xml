@@ -1,0 +1,14 @@
+<query id="getBulkDiscountInfo" action="select">
+    <tables>
+        <table name="svpromotion_quantity_by_item" />
+    </tables>
+    <columns>
+		<column name="min_quantity" />
+		<column name="opt" />
+		<column name="price" />
+    </columns>
+	 <conditions>
+        <condition operation="equal" column="module_srl" var="module_srl" notnull="notnull" />
+		<condition operation="equal" column="item_srl" var="item_srl" notnull="notnull" pipe="and" />
+    </conditions>
+</query>

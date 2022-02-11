@@ -1,0 +1,11 @@
+<query id="getOrderPromoInfo" action="select">
+	<tables>
+		<table name="svpromotion_order" />
+	</tables>
+	<columns>
+		<column name="promotion_info" />
+	</columns>
+	<conditions>
+		<condition operation="equal" column="order_srl" var="order_srl" />
+	</conditions>
+</query>

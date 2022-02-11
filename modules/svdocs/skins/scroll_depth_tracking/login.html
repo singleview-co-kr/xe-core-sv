@@ -1,0 +1,44 @@
+<load target="css/login.css" />
+<section class="xm">
+	<div class="signin">
+		<div class="login-header">
+			<h1><i class="icon-user"></i> 로그인</h1>
+		</div>
+		<div cond="$XE_VALIDATOR_MESSAGE" class="message {$XE_VALIDATOR_MESSAGE_TYPE}">
+			<p>{$XE_VALIDATOR_MESSAGE}</p>
+		</div>
+		<div class="login-body">
+			<form action="./" method="post" id="fo_member_login">
+				<input type="hidden" name="mid" id="mid" value="{$mid}">
+				<input type="hidden" name="module_srl" id="module_srl" value="{$module_srl}">
+				<input type="hidden" name="error_return_url" value="/{$mid}/?act=dispSvdocsUpdate">
+				<input type="hidden" name="act" value="dispSvdocsGuestDetail" />
+				<fieldset>
+					<div class="control-group">
+						<input type="text" name="applicant_name" id="applicant_name" required="" placeholder="{$lang->applicant_name}" title="{$lang->applicant_name}">
+						<input type="text" name="applicant_phone_number" id="applicant_phone_number" required="" placeholder="{$lang->applicant_phone}" title="{$lang->applicant_phone}">
+					</div>
+					<div class="control-group">
+						<BR><input type="submit" value="내 응모 확인하기" class="submit btn btn-inverse">
+					</div>
+				</fieldset>
+			</form>
+		</div>
+		<div class="login-footer">
+			<a href="/index.php?act=dispMemberFindAccount&amp;mid=youhanrox_main">ID/PW 찾기</a> | <a href="/index.php?act=dispMemberSignUpForm&amp;mid=youhanrox_main">회원가입</a>
+		</div>
+	</div>
+</section>
+<script>
+jQuery(function($){
+	var keep_msg = $('#warning');
+	keep_msg.hide();
+	$('#keepid_opt').change(function(){
+		if($(this).is(':checked')){
+			keep_msg.slideDown(200);
+		} else {
+			keep_msg.slideUp(200);
+		}
+	});
+});
+</script>

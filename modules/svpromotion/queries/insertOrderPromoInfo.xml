@@ -1,0 +1,9 @@
+<query id="insertOrderPromoInfo" action="insert">
+	<tables>
+		<table name="svpromotion_order" />
+	</tables>
+	<columns>
+		<column name="order_srl" var="order_srl" filter="number" notnull="notnull" />
+		<column name="promotion_info" var="oCheckoutPromotionInfo_srz" notnull="notnull" />
+	</columns>
+</query>

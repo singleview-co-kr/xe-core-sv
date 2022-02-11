@@ -1,0 +1,12 @@
+<query id="getCompiledByMonth" action="select">
+    <tables>
+        <table name="svestudio_compiled_monthly" />
+    </tables>
+    <columns>
+        <column name="tot_monthly_session" />
+		<column name="last_update_date" />
+    </columns>
+	<conditions>
+        <condition operation="equal" column="logdate" var="logdate" />
+    </conditions>
+</query>

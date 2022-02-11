@@ -1,0 +1,105 @@
+<include target="_header.html" />
+
+<div cond="$XE_VALIDATOR_MESSAGE" class="message {$XE_VALIDATOR_MESSAGE_TYPE}">
+        <p>{$XE_VALIDATOR_MESSAGE}</p>
+</div>
+
+<form class="x_form-horizontal" action="./" method="post" enctype="multipart/form-data">
+	<input type="hidden" name="module" value="{$module}" />
+	<input type="hidden" name="act" value="procSvshortenerAdminInsert" />
+	<section class="section">
+		<h1>{$lang->shorten_url_setting}</h1>
+		<!---div class="x_control-group">
+			<label class="x_control-label" for="shorten_uri_value">{$lang->shorten_uri_value}</label>
+			<div class="x_controls">
+				<input type="text" name="shorten_uri_value" id="shorten_uri_value" value="" />
+				<a href="#shorten_uri_value_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="shorten_uri_value_help" class="x_help-block" hidden>{$lang->about_shorten_uri_value}</p>
+			</div>
+		</div--->
+		<div class="x_control-group">
+			<label class="x_control-label" for="utm_source_name">{$lang->utm_source_name}</label>
+			<div class="x_controls">
+				<select name="utm_source_name">
+					<option value="naver">naver</option>
+					<option value="facebook">facebook</option>
+					<option value="daumkakao">daumkakao</option>
+					<option value="google">google</option>
+					<option value="instagram">instagram</option>
+				</select>
+				<a href="#utm_source_name_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="utm_source_name_help" class="x_help-block" hidden>{$lang->about_utm_source_name}</p>
+			</div>
+		</div>
+		<div class="x_control-group">
+			<label class="x_control-label" for="utm_medium_name">{$lang->utm_medium_name}</label>
+			<div class="x_controls">
+				<select name="utm_medium_name">
+					<option value="organic">organic</option>
+					<option value="sns">sns</option>
+				</select>
+				<a href="#utm_medium_name_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="utm_medium_name_help" class="x_help-block" hidden>{$lang->about_utm_medium_name}</p>
+			</div>
+		</div>
+		<div class="x_control-group">
+			<label class="x_control-label" for="utm_service_name">{$lang->utm_service_name}</label>
+			<div class="x_controls">
+				<select name="utm_service_name">
+					<option value="blog">blog</option>
+					<option value="cafe">cafe</option>
+					<option value="rel">related_keyword</option>
+					<option value="kin">kin</option>
+					<option value="post">post</option>
+				</select>
+				<a href="#utm_service_name_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="utm_service_name_help" class="x_help-block" hidden>{$lang->about_utm_service_name}</p>
+			</div>
+		</div>
+		<div class="x_control-group">
+			<label class="x_control-label" for="blogger_type">{$lang->blogger_type}</label>
+			<div class="x_controls">
+				<select name="blogger_type" id="blogger_type">
+					<option loop="$blogger_type => $key, $type" value="{$key}">{$type}</option>
+				</select>
+				<a href="#blogger_type_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="blogger_type_help" class="x_help-block" hidden>{$lang->about_blogger_type}</p>
+			</div>
+		</div>
+		<div class="x_control-group">
+			<label class="x_control-label" for="">{$lang->term_and_blogger_id}</label>
+			<div class="x_controls">
+				<textarea name="term_and_blogger_id" id="term_and_blogger_id" rows="2" cols="42"></textarea>
+				<a href="#term_and_blogger_id_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="term_and_blogger_id_help" class="x_help-block" hidden>{$lang->about_term_and_blogger_id}</p>
+			</div>
+		</div>
+		<div class="x_control-group">
+			<label class="x_control-label" for="fixed_cost">{$lang->fixed_cost_incl_vat}</label>
+			<div class="x_controls">
+				<input type="text" name="fixed_cost_incl_vat" value="" class="inputTypeText w400" id="fixed_cost_incl_vat" />
+				<a href="#fixed_cost_incl_vat_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="fixed_cost_incl_vat_help" class="x_help-block" hidden>{$lang->about_fixed_cost_incl_vat}</p>
+			</div>
+		</div>
+		<div class="x_control-group">
+			<label class="x_control-label" for="fixed_cost">{$lang->allocation_start_date}</label>
+			<div class="x_controls">
+				<input type="text" name="start_date" value="+2w" class="inputTypeText w400" id="start_date"/>
+				<a href="#allocation_start_date_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="allocation_start_date_help" class="x_help-block" hidden>{$lang->about_allocation_start_date}</p>
+			</div>
+		</div>
+		<div class="x_control-group">
+			<label class="x_control-label" for="fixed_cost">{$lang->allocation_end_date}</label>
+			<div class="x_controls">
+				<input type="text" name="end_date" value="+4w" class="inputTypeText w400" id="end_date"/>
+				<a href="#allocation_end_date_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="allocation_end_date_help" class="x_help-block" hidden>{$lang->about_allocation_end_date}</p>
+			</div>
+		</div>
+	</section>
+	<div class="x_clearfix btnArea">
+		<button class="x_btn x_btn-primary" type="submit">{$lang->cmd_registration}</button>
+	</div>
+</form>

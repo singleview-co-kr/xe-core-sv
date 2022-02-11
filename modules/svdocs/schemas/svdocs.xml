@@ -1,0 +1,23 @@
+<table name="svdocs">
+	<column name="doc_srl" type="number" size="11" notnull="notnull" primary_key="primary_key" auto_increment="auto_increment"/>
+	<column name="module_srl" type="number" size="11" default="0" notnull="notnull" index="idx_module_srl_deleted" />
+	<column name="member_srl" type="number" size="11" default="0" notnull="notnull" index="idx_member_srl" />
+	<column name="applicant_name" type="varchar" size="20" />
+	<column name="applicant_phone" type="varchar" size="13" index="idx_applicant_phone" />
+	<column name="ipaddress" type="varchar" size="128" notnull="notnull" index="idx_ipaddress" />
+	<column name="privacy_collection" type="char" size="1" />
+	<column name="privacy_sharing" type="char" size="1" />
+	<column name="user_agent" type="varchar" size="250" />
+	<column name="datetimestamp_entry" type="char" size="20" />
+	<column name="datetimestamp_final" type="char" size="20" />
+	<column name="init_referral" type="varchar" size="255" />
+	<column name="utm_source" type="varchar" size="255" />
+	<column name="utm_medium" type="varchar" size="255" />
+	<column name="utm_campaign" type="varchar" size="255" />
+	<column name="utm_term" type="varchar" size="255" />
+	<column name="is_mobile" type="char" size="1" default="0"/>
+	<column name="certify_id" type="varchar" size="30" default="0"/>
+	<column name="is_accepted" type="char" size="1" />
+	<column name="is_deleted_doc" type="char" size="1" default="0" notnull="notnull" index="idx_module_srl_deleted"/>
+	<column name="regdate" type="date" />
+</table>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module version="0.2">
+    <title xml:lang="ko">싱글뷰 상점 관리</title>
+	<title xml:lang="en">Singleview Shop Master</title>
+    <description xml:lang="ko">싱글뷰 상점 관리자 모듈입니다.</description>
+    <description xml:lang="en">Singleview Shop Master module</description>
+    <version>1.1.2</version>
+    <date>2021-03-23</date>
+    <category>system</category>
+    <author email_address="w9721066@gmail.com" link="http://singleview.co.kr">
+        <name xml:lang="ko">Singleview.co.kr</name>
+    </author>
+</module>

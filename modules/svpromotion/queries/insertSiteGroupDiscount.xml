@@ -1,0 +1,11 @@
+<query id="insertSiteGroupDiscount" action="insert">
+	<tables>
+		<table name="svpromotion_site_group" />
+	</tables>
+	<columns>
+		<column name="group_srl" var="group_srl" notnull="notnull" />
+		<column name="opt" var="opt" notnull="notnull" />
+		<column name="price" var="price" notnull="notnull" />
+		<column name="regdate" var="regdate" default="curdate()" />
+	</columns>
+</query>

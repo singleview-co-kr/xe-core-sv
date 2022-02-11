@@ -1,0 +1,86 @@
+<include target="_header.html" />
+<form class="x_form-horizontal" action="./" method="post" enctype="multipart/form-data">
+<input type="hidden" name="module" value="svpromotion" />
+<input type="hidden" name="act" value="procSvpromotionAdminUpdateCoupon" />
+<input type="hidden" name="promotion_srl" value="{$promotion_srl}" />
+<input type="hidden" name="coupon_srl" value="{$coupon_srl}" />
+<input type="hidden" name="success_return_url" value="{getUrl('act','dispSvpromotionAdminUpdateCoupon', 'promotion_srl', $promotion_srl, 'coupon_srl', $coupon_srl )}" />
+	<section class="section">
+		<div class="x_control-group">
+			<label class="x_control-label" for="board_name">{$lang->coupon_no}</label>
+			<div class="x_controls">
+				<input type="text" value="{$coupon_serial}" READONLY/>
+				<a href="#module_name_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="module_name_help" class="x_help-block" hidden>{$lang->about_promotion_title}</p>
+			</div>
+		</div>
+		<div class="x_control-group">
+            <label class="x_control-label">{$lang->coupon_use_count}</label>
+            <div class="x_controls">
+				<input type="text" value="{$used_count}" READONLY/>
+				<a href="#module_name_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="module_name_help" class="x_help-block" hidden>{$lang->about_promotion_title}</p>
+			</div>
+        </div>
+		<div class="x_control-group">
+            <label class="x_control-label">{$lang->coupon_belonged_member_srl}</label>
+            <div class="x_controls">
+<block cond="$member_srl==0">
+				<input type="text" name="coupon_belonged_member_srl" id="coupon_belonged_member_srl" value=""/>
+</block>
+<block cond="$member_srl!=0">
+				<input type="text" value="{$member_srl}" READONLY/>
+</block>
+				<a href="#module_name_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="module_name_help" class="x_help-block" hidden>{$lang->about_promotion_title}</p>
+			</div>
+        </div>
+		<div class="x_control-group">
+            <label class="x_control-label">{$lang->coupon_max_usage}</label>
+            <div class="x_controls">
+				<input type="text" name="coupon_max_usage" id="coupon_max_usage" value="{$max_use_count}"/>
+				<a href="#module_name_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="module_name_help" class="x_help-block" hidden>{$lang->about_promotion_title}</p>
+			</div>
+        </div>
+	</section>
+	<div class="x_clearfix btnArea">
+		<button ID='btnRefresh' NAME='btnRefresh' type="button" class="x_btn x_btn-primary" onClick="javascript:refreshButton(); return false;">{$lang->btn_refresh_coupon_regdate}</button>&nbsp;&nbsp;
+		<input type="submit" class="x_btn x_btn-primary" value="{$lang->cmd_registration}" accesskey="s" />
+	</div>
+</form>
+
+<script>
+function refreshButton()
+{
+	nCouponSrl = '{$coupon_srl}';
+	if( typeof nCouponSrl == 'undefined' )
+	{
+		alert( '잘못된 쿠폰일련번호입니다.' );
+		return;
+	}
+
+	if( nCouponSrl.length == 0 )
+	{
+		alert( '잘못된 쿠폰일련번호입니다.' );
+		return;
+	}
+
+	var sRefreshReason = prompt("쿠폰 발급 일시 갱신 사유를 입력해 주세요.", "예)고객요청에 의한 갱신");
+	if( sRefreshReason == null )
+		return;
+	else if( sRefreshReason == "예)고객요청에 의한 갱신" || sRefreshReason == '' || sRefreshReason == null )
+	{
+		alert( '갱신 사유를 입력해 주세요.' );
+		return;
+	}
+
+	var params = new Array();
+	params['coupon_srl'] = nCouponSrl;
+	params['refresh_reason'] = sRefreshReason;
+	exec_xml('svpromotion', 'procSvpromotionAdminRefreshCoupon', params, function(ret_obj){
+		alert(ret_obj['message']);
+		jQuery('#btnRefresh').attr('disabled','disabled');
+	});
+}
+</script>

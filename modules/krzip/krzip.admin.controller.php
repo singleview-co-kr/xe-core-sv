@@ -1,43 +1,48 @@
 <?php
-/* Copyright (C) XEHub <https://www.xehub.io> */
-/**
- * @class  krzipAdminController
- * @author XEHub (developers@xpressengine.com)
- * @brief  Krzip module admin controller class.
- */
 
 class krzipAdminController extends krzip
 {
-	function procKrzipAdminInsertConfig()
-	{
-		$module_config = Context::getRequestVars();
-		getDestroyXeVars($module_config);
-		unset($module_config->module);
-		unset($module_config->act);
-		unset($module_config->mid);
-		unset($module_config->vid);
+    public function init()
+    {
+        // no-op
+    }
 
-		$oKrzipController = getController('krzip');
-		$output = $oKrzipController->updateConfig($module_config);
-		if(!$output->toBool())
-		{
-			return $output;
-		}
-
-		$success_return_url = Context::get('success_return_url');
-		if($success_return_url)
-		{
-			$return_url = $success_return_url;
-		}
-		else
-		{
-			$return_url = getNotEncodedUrl('', 'module', 'krzip', 'act', 'dispKrzipAdminConfig');
-		}
-
-		$this->setMessage('success_registed');
-		$this->setRedirectUrl($return_url);
-	}
+    public function procKrzipAdminInsertConfig()
+    {
+        $args = Context::gets(
+            'krzip_server_url',
+            'krzip_map_provider',
+            'krzip_address_format',
+            'krzip_display_postcode',
+            'krzip_display_address',
+            'krzip_display_details',
+            'krzip_display_extra_info',
+            'krzip_display_jibeon_address',
+            'krzip_postcode_format',
+            'krzip_server_request_format',
+            'krzip_require_exact_query',
+            'krzip_use_full_jibeon'
+        );
+        
+        if (!$args->krzip_display_postcode) $args->krzip_display_postcode = 'N';
+        if (!$args->krzip_display_address) $args->krzip_display_address = 'N';
+        if (!$args->krzip_display_details) $args->krzip_display_details = 'N';
+        if (!$args->krzip_display_extra_info) $args->krzip_display_extra_info = 'N';
+        if (!$args->krzip_display_jibeon_address) $args->krzip_display_jibeon_address = 'N';
+        
+        $oModuleController = getController('module');
+        $output = $oModuleController->insertModuleConfig('krzip', $args);
+        if (!$output->toBool()) return $output;
+        
+        $this->setMessage('success_registed');
+        
+        if (Context::get('success_return_url'))
+        {
+            $this->setRedirectUrl(Context::get('success_return_url'));
+        }
+        else
+        {
+            $this->setRedirectUrl(getNotEncodedUrl('', 'module', 'krzip', 'act', 'dispKrzipAdminConfig'));
+        }
+    }
 }
-
-/* End of file krzip.admin.controller.php */
-/* Location: ./modules/krzip/krzip.admin.controller.php */

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<skin version="0.2">
+	<title xml:lang="ko">default Skin</title>
+	<description xml:lang="ko">
+		 default 스킨입니다.
+	</description>
+	<version>0.1</version>
+	<date>2016-01-02</date>
+	<author email_address="root@singleview.co.kr" link="http://singleview.co.kr/">
+		<name xml:lang="ko">singleview</name>
+		<name xml:lang="jp">singleview</name>
+		<name xml:lang="zh-CN">singleview</name>
+		<name xml:lang="en">singleview</name>
+		<name xml:lang="vi">singleview</name>
+		<name xml:lang="es">singleview</name>
+		<name xml:lang="zh-TW">singleview</name>
+		<name xml:lang="tr">singleview</name>
+	</author>
+	<extra_vars>
+		<var name="meta_og_url" type="text">
+			<title xml:lang="ko">meta태그 og:url</title>
+			<description xml:lang="ko">facebook에 전송할 페이지 URL</description>
+		</var>
+		<var name="meta_og_title" type="text">
+			<title xml:lang="ko">meta태그 og:title</title>
+			<description xml:lang="ko">facebook에 전송할 페이지 제목</description>
+		</var>
+		<var name="meta_og_description" type="text">
+			<title xml:lang="ko">meta태그 og:description</title>
+			<description xml:lang="ko">facebook에 전송할 페이지 설명</description>
+		</var>
+		<var name="meta_og_image" type="text">
+			<title xml:lang="ko">meta태그 og:image</title>
+			<description xml:lang="ko">facebook에 전송할 페이지 썸네일</description>
+		</var>
+	</extra_vars>
+</skin>

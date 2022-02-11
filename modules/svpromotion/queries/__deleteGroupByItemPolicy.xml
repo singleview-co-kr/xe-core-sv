@@ -1,0 +1,8 @@
+<query id="deleteGroupByItemPolicy" action="delete">
+	<tables>
+		<table name="svpromotion_group_by_item" />
+	</tables>
+	<conditions>
+		<condition operation="equal" column="item_srl" var="item_srl" filter="number" notnull="notnull" />
+	</conditions>
+</query>

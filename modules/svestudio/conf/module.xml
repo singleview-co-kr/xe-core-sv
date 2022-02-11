@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module>
+	<grants>
+		<grant name="shop_staff" default="member">
+			<title xml:lang="ko">쇼핑몰 스탭</title>
+		</grant>
+	</grants>
+	<permissions>
+    </permissions>
+	<actions>
+		<action name="dispSvestudioAdminModInstList" type="view" admin_index="true" menu_name="Svestudio" menu_index="true" />
+		<action name="dispSvestudioAdminInsertModInst" type="view" />
+		<action name="dispSvestudioAdminCacheInit" type="view" />
+		<action name="dispSvestudioAdminConfig" type="view" />
+		<action name="dispSvestudioAdminReportItem" type="view" />
+		<action name="dispSvestudioAdminReportMediaCost" type="view" />
+		<action name="dispSvestudioAdminInviteInfo" type="view" />
+		<action name="dispSvestudioAdminGrantInfo" type="view" />
+		<action name="dispSvestudioAdminActGrantByMid" type="view" />
+		<action name="dispSvestudioAdminDownloadRawData" type="view" />
+		
+		<action name="procSvestudioAdminConfig" type="controller" />
+		<action name="procSvestudioAdminInvitedMemberGrp" type="controller" />
+		<action name="procSvestudioAdminGrantByModule" type="controller" />
+		<action name="procSvestudioAdminInsertModInst" type="controller" />
+		<action name="procSvestudioAdminGrantActByMid" type="controller" />
+		<action name="procSvestudioAdminCSVDownload" type="controller" />
+		<action name="procSvestudioAdminRemoveCache" type="controller" />
+
+		<action name="dispSvestudioIndex" type="view" index="true" />
+		<action name="dispSvestudioOrderManagement" type="view" />
+
+		<action name="procSvestudioCSVDownloadByOrderStatus" type="controller" />
+		<action name="procSvestudioCSVDownloadOrderPrepareShipping" type="controller" />
+		<action name="procSvestudioRegisterShippingInvoice" type="controller" />
+		<action name="procSvestudioUpdateDeliveryInfo" type="controller" />
+		<action name="procSvestudioUpdateOrderStatus" type="controller" />
+		
+		<action name="getSvestudioRegisterShippingInvoice" type="model" />
+	</actions>
+	<menus>
+	</menus>
+</module>

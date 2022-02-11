@@ -1,0 +1,9 @@
+<table name="svestudio_crontab_log">
+	<column name="log_srl" type="number" size="11" notnull="notnull" primary_key="primary_key" auto_increment="auto_increment" />
+	<column name="task" type="varchar" size="50" notnull="notnull"/>
+	<column name="param" type="varchar" size="500" />
+	<column name="result" type="text" />
+	<column name="remote_addr" type="char" size="15" notnull="notnull" />
+	<column name="http_user_agent" type="varchar" size="250" />
+	<column name="regdate" type="date" notnull="notnull" />
+</table>

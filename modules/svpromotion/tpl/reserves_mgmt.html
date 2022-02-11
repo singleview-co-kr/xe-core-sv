@@ -1,0 +1,41 @@
+<include target="_header.html" />
+<form class="x_form-horizontal" action="./" method="post" enctype="multipart/form-data">
+<input type="hidden" name="module" value="{$module}" />
+<input type="hidden" name="act" value="procSvpromotionAdminReservesMgmt" />
+	<section class="section">
+		<div class="x_control-group">
+			<label class="x_control-label" for="allow_reserves_consumption">{$lang->allow_reserves_consumption}</label>
+			<div class="x_controls">
+				<label class="x_inline x_pull-center" for="discount_type_new">
+					<input type="radio" name="allow_reserves_consumption" id="allow_reserves_consumption" value="Y" checked="checked"|cond="$config->allow_reserves_consumption=='Y'"/>
+					{$lang->yes}
+				</label>
+				<label class="x_inline x_pull-center" for="discount_type_new">
+					<input type="radio" name="allow_reserves_consumption" id="allow_reserves_consumption" value="N" checked="checked"|cond="$config->allow_reserves_consumption=='N'"/>
+					{$lang->not}
+				</label>
+				<a href="#allow_reserves_consumption_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="allow_reserves_consumption_help" class="x_help-block" hidden>{$lang->about_allow_reserves_consumption}</p>
+			</div>
+		</div>
+		<div class="x_control-group">
+			<label class="x_control-label" for="reserves_ratio">{$lang->reserves_ratio}</label>
+			<div class="x_controls">
+				<input type="text" name="reserves_ratio" value="{$config->reserves_ratio}"  class="inputTypeText w400" />
+				<a href="#reserves_ratio_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="reserves_ratio_help" class="x_help-block" hidden>{$lang->about_reserves_ratio}</p>
+			</div>
+		</div>
+		<div class="x_control-group">
+			<label class="x_control-label" for="minimum_reserves_available">{$lang->minimum_reserves_available}</label>
+			<div class="x_controls">
+				<input type="text" name="minimum_reserves_available" value="{$config->minimum_reserves_available}"  class="inputTypeText w400" />
+				<a href="#minimum_reserves_available_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="minimum_reserves_available_help" class="x_help-block" hidden>{$lang->about_minimum_reserves_available}</p>
+			</div>
+		</div>
+	</section>
+	<div class="x_clearfix btnArea">
+		<input type="submit" class="x_btn x_btn-primary" value="{$lang->cmd_registration}" accesskey="s" />
+	</div>
+</form>

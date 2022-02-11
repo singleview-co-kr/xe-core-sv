@@ -1,0 +1,19 @@
+<query id="insertSvshortenerTrackingUrl" action="insert">
+	<tables>
+		<table name="svshortener" />
+	</tables>
+	<columns>
+		<column name="shorten_uri_value" var="shorten_uri_value" notnull="notnull" />
+		<column name="utm_source_name" var="utm_source_name" notnull="notnull" />
+		<column name="utm_medium_name" var="utm_medium_name" notnull="notnull" />
+		<column name="utm_service_name" var="utm_service_name" notnull="notnull" />
+		<column name="utm_term" var="utm_term" notnull="notnull" />
+		<column name="blogger_type" var="blogger_type" />
+		<column name="blogger_id" var="blogger_id" />
+		<column name="fixed_cost_incl_vat" var="fixed_cost_incl_vat" />
+		<column name="svshortener_memo" var="svshortener_memo"/>
+		<column name="start_date" var="start_date"/>
+		<column name="end_date" var="end_date"/>
+		<column name="regdate" var="regdate" default="curdate()" />
+	</columns>
+</query>

@@ -1,0 +1,44 @@
+<include target="_add_pc.html" cond="!Mobile::isMobileCheckByAgent()"/>
+<include target="_add_mob.html" cond="Mobile::isMobileCheckByAgent()"/>
+
+<script>
+<block cond="$teaser_open=='Y'">
+initializeClock('clockdiv', '{$module_info->open_datetime}', {$remaining_applicants});
+</block>
+<block cond="$teaser_open!='Y'">
+initializeClock('clockdiv', '{$module_info->due_datetime}', {$remaining_applicants});
+</block>
+<block cond="!Mobile::isMobileCheckByAgent()">
+var _g_sVirtualConversionPrefix = 'thankyou_{$module_info->module_srl}_pc';
+</block>
+<block cond="Mobile::isMobileCheckByAgent()">
+var _g_sVirtualConversionPrefix = 'thankyou_{$module_info->module_srl}_mob';
+</block>
+
+function _doPreRegistration()
+{
+<block cond="$config->nvad_conv_id">
+	var _nasa={};
+	_nasa["cnv"] = wcs.cnv("4","500"); // 전환유형, 전환가치 설정해야함. 설치매뉴얼 참고
+</block>
+<block cond="$config->facebook_pixel_id">
+	fbq('track', 'CompleteRegistration');
+</block>
+	//var aUri = getUrlVars();
+	//if(aUri['test'] == 'a' )
+	//	jQuery('input[id="page_type"]').val('disinfection');
+	doRegistration( _g_sVirtualConversionPrefix );
+}
+
+function _doPreCertified()
+{
+<block cond="$config->nvad_conv_id">
+	var _nasa={};
+	_nasa["cnv"] = wcs.cnv("4","500"); // 전환유형, 전환가치 설정해야함. 설치매뉴얼 참고
+</block>
+<block cond="$config->facebook_pixel_id">
+	fbq('track', 'CompleteRegistration');
+</block>
+	doCertified( _g_sVirtualConversionPrefix );
+}
+</script>

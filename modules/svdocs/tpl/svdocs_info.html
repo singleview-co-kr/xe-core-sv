@@ -1,0 +1,170 @@
+<!--#include("header.html")-->
+<load target="../../editor/tpl/js/editor_module_config.js" usecdn="true" />
+
+<div cond="$XE_VALIDATOR_MESSAGE" class="message {$XE_VALIDATOR_MESSAGE_TYPE}">
+	<p>{$XE_VALIDATOR_MESSAGE}</p>
+</div>
+<form ruleset="updatePage" action="./" method="post" enctype="multipart/form-data" class="x_form-horizontal">
+<section class="section">
+	<input type="hidden" name="module" value="svdocs" />
+	<input type="hidden" name="act" value="procSvdocsAdminUpdate" />
+	<input type="hidden" name="page" value="{$page}" />
+	<input type="hidden" name="module_srl" value="{$module_srl}" />
+
+	<div class="x_control-group">
+		<label class="x_control-label" for="page_name">{$lang->mid}</label>
+		<div class="x_controls">
+			<input type="text" name="page_name" id="page_name" value="{$module_info->mid}" />
+			<a href="#aboutMid" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+			<p class="x_help-block" id="aboutMid" hidden>{$lang->about_mid}</p>
+		</div>
+	</div>
+	<div class="x_control-group">
+		<label class="x_control-label" for="module_category_srl">{$lang->module_category}</label>
+		<div class="x_controls">
+			<select name="module_category_srl" id="module_category_srl">
+				<option value="0">{$lang->notuse}</option>
+				<option loop="$module_category => $key, $val" value="{$key}" selected="selected"|cond="$module_info->module_category_srl==$key">{$val->title}</option>
+			</select>
+			<a href="#aboutCategory" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+			<p class="x_help-block" id="aboutCategory" hidden>{$lang->about_module_category}</p>
+		</div>
+	</div>
+	<div class="x_control-group">
+		<label class="x_control-label" for="lang_browser_title">{$lang->browser_title}</label>
+		<div class="x_controls">
+			<input type="text" name="browser_title" id="browser_title" value="<!--@if(strpos($module_info->browser_title, '$user_lang->') === false)-->{$module_info->browser_title}<!--@else-->{htmlspecialchars($module_info->browser_title, ENT_COMPAT | ENT_HTML401, 'UTF-8', false)}<!--@end-->" class="lang_code" />
+		</div>
+	</div>
+</section>
+<section class="section">
+	<h1>svdocs 설정</h1>
+	<div class="x_control-group">
+		<label class="x_control-label">{$lang->svauth_plugin_srl}</label>
+		<div class="x_controls">
+			<select name="svauth_plugin_srl">
+				<option value="0">{$lang->cmd_select}</option>
+				<option loop="$svauth_plugins=>$key,$val" value="{$val->plugin_srl}" selected="selected"|cond="$val->plugin_srl==$module_info->svauth_plugin_srl">{$val->title}</option>
+			</select>
+			<a href="#svauth_plugin_srl_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+			<p id="svauth_plugin_srl_help" class="x_help-block" hidden>{$lang->about_svauth_plugin_srl}</p>
+		</div>
+	</div>
+	<div class="x_control-group">
+		<label class="x_control-label" for="lang_max_applicants">{$lang->max_applicants}</label>
+		<div class="x_controls">
+			<input type="text" name="max_applicants" id="max_applicants" value="{$module_info->max_applicants}"/>
+			<a href="#aboutMaxApplicants" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+		<p class="x_help-block" id="aboutMaxApplicants" hidden>{$lang->about_max_applicants}</p>
+		</div>
+	</div>	
+	<div class="x_control-group">
+		<label class="x_control-label" for="open_datetime">{$lang->open_datetime}</label>
+		<div class="x_controls">
+			<input type="text" name="open_datetime" id="open_datetime" value="{$module_info->open_datetime}" />
+			<input type="checkbox" name="use_teaser_mode" id="use_teaser_mode" value="Y" checked="checked"|cond="$module_info->use_teaser_mode == 'Y'" />{$lang->cmd_use_teaser_mode}
+			<a href="#aboutOpenDatetime" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+			<p class="x_help-block" id="aboutOpenDatetime" hidden>{$lang->about_open_datetime}</p>
+		</div>
+	</div>
+	<div class="x_control-group">
+		<label class="x_control-label" for="due_datetime">{$lang->due_datetime}</label>
+		<div class="x_controls">
+			<input type="text" name="due_datetime" id="due_datetime" value="{$module_info->due_datetime}" />
+			<a href="#aboutDueDatetime" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+			<p class="x_help-block" id="aboutDueDatetime" hidden>{$lang->about_due_datetime}</p>
+		</div>
+	</div>
+	<div class="x_control-group">
+		<label class="x_control-label" for="duplicate_restriction_sec">{$lang->duplicate_restriction_sec}</label>
+		<div class="x_controls">
+			<input type="text" name="duplicate_restriction_sec" id="duplicate_restriction_sec" value="{$module_info->duplicate_restriction_sec}" />
+			<a href="#aboutDuplicateRestrictionSec" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+			<p class="x_help-block" id="aboutDuplicateRestrictionSec" hidden>{$lang->about_duplicate_restriction_sec}</p>
+		</div>
+	</div>
+	<div class="x_control-group">
+		<label class="x_control-label">{$lang->is_closed_application}</label>
+		<div class="x_controls">
+			<label class="x_inline" for="is_allow_update"><input type="checkbox" name="is_allow_closed" id="is_allow_closed" value="Y" checked="checked"|cond="$module_info->is_allow_closed=='Y'" /> {$lang->allow}</label>
+			<a href="#aboutApplicationType" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+			<p class="x_help-block" id="aboutApplicationType" hidden>{$lang->about_is_allow_closed}</p>
+		</div>
+	</div>
+	<div class="x_control-group">
+		<label class="x_control-label">{$lang->is_allow_update}</label>
+		<div class="x_controls">
+			<label class="x_inline" for="is_allow_update"><input type="checkbox" name="is_allow_update" id="is_allow_update" value="Y" checked="checked"|cond="$module_info->is_allow_update=='Y'" /> {$lang->allow}</label>
+			<a href="#aboutAllowUpdate" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+			<p class="x_help-block" id="aboutAllowUpdate" hidden>{$lang->about_is_allow_update}</p>
+		</div>
+	</div>
+	<div class="x_control-group">
+		<label class="x_control-label" for="duplicate_restriction_field">{$lang->duplicate_restriction_field}</label>
+		<div class="x_controls">
+<block loop="$extra_keys=>$key,$val">
+			<label class="x_inline" for="unique_{$val->eid}"><input type="checkbox" name="svdocs_unique_field[]" id="svdocs_unique_field[]" value="{$val->eid}" checked="checked"|cond="$module_info->svdocs_unique_field[$val->eid]=='on'" /> {$val->name}</label>
+</block>
+			<a href="#aboutDuplicateRestrictionField" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+			<p class="x_help-block" id="aboutDuplicateRestrictionField" hidden>{$lang->about_duplicate_restriction_field}</p>
+		</div>
+	</div>
+	<div class="x_control-group">
+		<label class="x_control-label" for="layout_srl">{$lang->layout}</label>
+		<div class="x_controls">
+			<select name="layout_srl" id="layout_srl" style="width:auto">
+				<option value="0">{$lang->notuse}</option>
+				<option loop="$layout_list => $key, $val" value="{$val->layout_srl}" selected="selected"|cond="$module_info->layout_srl==$val->layout_srl">{$val->title}({$val->layout})</option>
+			</select>
+			<a href="#aboutLayout" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+			<p class="x_help-block" id="aboutLayout" hidden>{$lang->about_layout}</p>
+		</div>
+	</div>
+	<div class="x_control-group">
+		<label class="x_control-label">{$lang->mobile_view}</label>
+		<div class="x_controls">
+			<label for="use_mobile">
+				<input type="checkbox" name="use_mobile" id="use_mobile" value="Y" checked="checked"|cond="$module_info->use_mobile == 'Y'" />
+				{$lang->about_mobile_view}
+			</label>
+		</div>
+	</div>
+	<div class="x_control-group">
+		<label class="x_control-label" for="mlayout_srl">{$lang->mobile_layout}</label>
+		<div class="x_controls">
+			<select name="mlayout_srl" id="mlayout_srl">
+				<option value="0">{$lang->notuse}</option>
+				<option loop="$mlayout_list => $key, $val" value="{$val->layout_srl}" selected="selected"|cond="$module_info->mlayout_srl==$val->layout_srl">{$val->title}({$val->layout})</option>
+			</select>
+			<a href="#aboutMobileLayout" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+			<p class="x_help-block" id="aboutMobileLayout" hidden>{$lang->about_layout}</p>
+		</div>
+	</div>
+
+	<div class="x_control-group">
+		<label class="x_control-label" for="skin">{$lang->skin}</label>
+		<div class="x_controls">
+			<select name="skin" id="skin">
+				<option loop="$skin_list => $key,$val" value="{$key}" selected="selected"|cond="$module_info->skin==$key ||(!$module_info->skin && $key=='default')">{$val->title}</option>
+			</select>
+			<a href="#aboutSkin" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+			<p class="x_help-block" id="aboutSkin" hidden>{$lang->about_skin}</p>
+		</div>
+	</div>
+	<div class="x_control-group optionnalData articleType">
+		<label class="x_control-label" for="mskin">{$lang->mobile_skin}</label>
+		<div class="x_controls">
+			<select name="mskin">
+				<option loop="$mskin_list => $key,$val" value="{$key}" selected="selected"|cond="$module_info->mskin==$key ||(!$module_info->mskin && $key=='default')">{$val->title}</option>
+			</select>
+			<a href="#aboutMobileSkin" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+			<p class="x_help-block" id="aboutMobileSkin" hidden>{$lang->about_skin}</p>
+		</div>
+	</div>
+	<div class="x_clearfix btnArea">
+		<div class="x_pull-right">
+			<button type="submit" class="x_btn x_btn-primary">{$lang->cmd_save}</button>
+		</div>
+	</div>
+</form>
+</section>

@@ -1,0 +1,11 @@
+<query id="getReservesLogByOrderSrl" action="select">
+    <tables>
+        <table name="svpromotion_reserves_log" />
+    </tables>
+    <columns>
+        <column name="*" />
+    </columns>
+	 <conditions>
+        <condition operation="equal" column="order_srl" var="order_srl" notnull="notnull" />
+    </conditions>
+</query>

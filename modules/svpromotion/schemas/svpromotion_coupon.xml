@@ -1,0 +1,18 @@
+<table name="svpromotion_coupon">
+	<column name="promotion_srl" type="number" size="11" notnull="notnull" primary_key="primary_key" />
+	<column name="status" type="char" size="1" default="0"/>
+	<column name="public" type="char" size="1" default="0" notnull="notnull" />
+	<column name="promotion_title" type="varchar" size="50" />
+	<column name="promotion_description" type="varchar" size="250" />
+	<column name="descount_amount_policy" type="varchar" size="255"/>
+	<column name="descount_rate_policy" type="varchar" size="255" />
+	<column name="descount_type" type="char" size="10" />
+	<column name="max_issue_count" type="number" size="2" default="1"/>
+	<column name="max_use_count" type="number" size="2" default="1"/>
+	<column name="max_qty" type="number" size="2" default="0"/>
+	<column name="allowed_grp" type="varchar" size="255"/>
+	<column name="target_items" type="text" />
+	<column name="begin_date" type="date"/>
+	<column name="end_date" type="date"/>
+	<column name="regdate" type="date" />
+</table>

@@ -1,0 +1,129 @@
+<include target="_header.html" />
+<!--TODO-->
+<form method="post" class="x_form-horizontal" enctype="multipart/form-data">
+<input type="hidden" name="module" value="{$module}" />
+<input type="hidden" name="act" value="procSvpromotionAdminUpdateItemDetail" />
+<input type="hidden" name="module_srl" value="{$module_srl}" />
+<input name="item_srl" type="hidden" value="{$item_srl}" />
+	<section class="section">
+		<h1>{$lang->title_item_discount} - {$item_name}</h1>
+		<div class="x_control-group">
+			<label class="x_control-label" for="disp_module_srl">{$lang->display_page}</label>
+			<div class="x_controls">
+				<label for="disp_module_srl">{$module_info->browser_title}({$module_info->mid})</label>
+			</div>
+		</div>
+		<div class="x_control-group">
+			<label class="x_control-label" for="discount_info_default">{$lang->item_thumbnail}</label>
+			<div class="x_controls">
+				<img src="{svitemView::_dispThumbnailUrl($thumb_file_srl,120)}" />
+			</div>
+		</div>
+		<div class="x_control-group">
+			<label class="x_control-label" for="discount_info_default">{$lang->item_discount_allow_duplicated}</label>
+			<div class="x_controls">
+				<label for="allow_duplication"><input type="radio" name="allow_duplication" id="allow_duplication" value="deny" checked="checked"|cond="!$item_discount_info->allow_duplication || $item_discount_info->allow_duplication=='0'">{$lang->deny}</label>
+				<label for="allow_duplication"><input type="radio" name="allow_duplication" id="allow_duplication" value="allow" checked="checked"|cond="$item_discount_info->allow_duplication=='1'">{$lang->allow}</label>
+			</div>
+		</div>
+		<div class="x_control-group">
+			<label class="x_control-label" for="discount_info_default">{$lang->item_discount_amount_default}</label>
+			<div class="x_controls">
+				<label for="default_discount_title">{$lang->item_discount_title}&nbsp;<input type="text" name="default_discount_title" id="default_discount_title" value="{$item_discount_info->discount_title}" /></label>
+				<label for="default_item_opt_1"><input type="radio" name="default_item_opt" id="default_item_opt" value="1" checked="checked"|cond="$item_discount_info->opt=='1'">{$lang->price}</label>
+				<label for="default_item_opt_1"><input type="radio" name="default_item_opt" id="default_item_opt" value="2" checked="checked"|cond="$item_discount_info->opt=='2'">{$lang->ratio}&nbsp;<input type="text" name="default_item_discount_amount" id="default_item_discount_amount" value="{$item_discount_info->price}" /></label>
+				<label for="default_item_begindate_title">{$lang->item_begindate_title}&nbsp;<input type="text" name="begin_date" id="begin_date" value="{$item_discount_info->begindate}" /></label><a href="#default_item_begindate_title_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="default_item_begindate_title_help" class="x_help-block" hidden>{$lang->about_default_item_begindate_title}</p>
+				<label for="default_item_enddate_title">{$lang->item_enddate_title}&nbsp;<input type="text" name="end_date" id="end_date" value="{$item_discount_info->enddate}" /></label>
+				<a href="#default_item_enddate_title_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="default_item_enddate_title_help" class="x_help-block" hidden>{$lang->about_default_item_enddate_title}</p>
+			</div>
+		</div>
+		<div class="x_control-group">
+			<label class="x_control-label" for="discount_info_default">{$lang->item_giveaway_default}</label>
+			<div class="x_controls">
+				<label for="default_discount_title">{$lang->item_giveaway_title}&nbsp;<input type="text" name="default_giveaway_title" id="default_giveaway_title" value="{$item_giveaway_info->giveaway_title}" /></label>
+				<label for="default_item_opt_1">{$lang->giveaway_item_srl}&nbsp;<input type="text" name="default_item_giveaway_item_title" id="default_item_giveaway_item_title" value="{$item_giveaway_info->giveaway_item_title}" READONLY />&nbsp;<button name="btn_remove_giveaway" id="btn_remove_giveaway" />{$lang->giveaway_item_srl_remove}</button>
+				<input type="hidden" name="default_item_giveaway_item_srl" id="default_item_giveaway_item_srl" value="{$item_giveaway_info->giveaway_item_srl}" /></label>
+				<label for="default_item_opt_1">{$lang->giveaway_item_qty}&nbsp;<input type="text" name="default_item_giveaway_item_qty" id="default_item_giveaway_item_qty" value="{$item_giveaway_info->giveaway_item_qty}" /></label>
+			</div>
+		</div>
+		<div class="x_control-group">
+			<label class="x_control-label" for="discount_info_default">{$lang->item_discount_amount_fb_share}</label>
+			<div class="x_controls">
+				<label for="fb_share_item_opt_1"><input type="radio" name="fb_share_item_opt" id="fb_share_item_opt" value="1" checked="checked"|cond="$item_fb_share_discount_info->opt=='1'">{$lang->price}</label>
+				<label for="fb_share_item_opt_1"><input type="radio" name="fb_share_item_opt" id="fb_share_item_opt" value="2" checked="checked"|cond="$item_fb_share_discount_info->opt=='2'">{$lang->ratio}&nbsp;<input type="text" name="fb_share_item_discount_amount" id="fb_share_item_discount_amount" value="{$item_fb_share_discount_info->price}" /></label>
+			</div>
+		</div>
+		<div class="x_control-group">
+			<label class="x_control-label" for="discount_info_default">{$lang->item_discount_amount_fb_like}</label>
+			<div class="x_controls">
+				<label for="fb_like_item_opt_1"><input type="radio" name="fb_like_item_opt" id="fb_like_item_opt" value="1" checked="checked"|cond="$item_fb_like_discount_info->opt=='1'">{$lang->price}</label>
+				<label for="fb_like_item_opt_1"><input type="radio" name="fb_like_item_opt" id="fb_like_item_opt" value="2" checked="checked"|cond="$item_fb_like_discount_info->opt=='2'">{$lang->ratio}&nbsp;<input type="text" name="fb_like_item_discount_amount" id="fb_like_item_discount_amount" value="{$item_fb_like_discount_info->price}" /></label>
+			</div>
+		</div>
+	</section>
+	<section class="section">
+		<h1>{$lang->cmd_coupon_promotion_info} - {$item_name}</h1>
+<block cond="$aEffectiveCouponList">
+		<block loop="$aEffectiveCouponList=>$nIdx,$oPromotionVal">
+			<div class="x_control-group">
+				<div class="x_control-label" for="group_discount_{$key}">{$oPromotionVal->sTitle} 쿠폰</div>
+				<div class="x_controls">
+					<label for="group_opt_1_{$key}">{$oPromotionVal->sPolicy}</label>
+				</div>
+			</div>
+		</block>
+</block>
+<block cond="!$aEffectiveCouponList">
+			<div class="x_control-group">
+				<div class="x_control-label" for="group_discount_{$key}">쿠폰</div>
+				<div class="x_controls">
+					<label for="group_opt_1_{$key}">적용 쿠폰이 없습니다.</label>
+				</div>
+			</div>
+</block>
+	</section>
+	<section class="section collapsed">
+		<h1>{$lang->title_item_group_discount} - {$item_name}</h1>
+		<block loop="$group_list=>$key,$val">
+			<div class="x_control-group">
+				<div class="x_control-label" for="group_discount_{$key}">{$val->title}</div>
+				<div class="x_controls">
+					<label for="group_opt_1_{$key}"><input type="radio" name="group_opt_{$key}" id="group_opt_1_{$key}" value="1" checked="checked"|cond="$group_discount[$key]->opt=='1'">{$lang->price}</label>
+					<label for="group_opt_2_{$key}"><input type="radio" name="group_opt_{$key}" id="group_opt_2_{$key}" value="2" checked="checked"|cond="$group_discount[$key]->opt=='2'">{$lang->ratio}&nbsp;<input type="text" name="group_discount_{$key}" id="group_discount_{$key}" value="{$group_discount[$key]->price}" /></label>
+				</div>
+			</div>
+		</block>
+		<div class="x_control-group">
+			<div class="x_control-label" for="">{$lang->addgroup_after_purchase}</div>
+			<div class="x_controls">
+				<block loop="$group_list=>$key,$val">
+					<label for="group_srl_{$key}"><input type="checkbox" name="group_srl_list[]" id="group_srl_{$key}" value="{$key}" checked="checked"|cond="in_array($val->group_srl,$item_info->group_srl_list)" />{$val->title}</label>
+				</block>
+			</div>
+		</div>
+	</section>
+	<section class="section collapsed">
+		<h1>{$lang->title_item_bulk_discount} - {$item_name}</h1>
+		<div class="x_control-group">
+			<div class="x_control-label" for="">ㅁㄴㅇㄴㅇㅀ</div>
+		</div>
+	</section>
+	<div class="btnArea">
+		<button type="submit" class="x_btn x_btn-primary">{$lang->cmd_save}</button>
+		<a class="x_btn" href="{getUrl('act','dispSvpromotionAdminItemDiscountList')}">{$lang->cmd_list}</a>
+	</div>
+</form>
+<script>
+jQuery('#btn_remove_giveaway').click(function(){
+	event.preventDefault();
+	jQuery('#default_giveaway_title').val('');
+	jQuery('#default_item_giveaway_item_title').val('');
+	jQuery('#default_item_giveaway_item_qty').val('');
+});
+
+jQuery('#default_item_giveaway_item_title').focus(function(){
+	var w = window.open("/index.php?module=svshopmaster&act=dispSvpromotionAdminItemListPopup", "popupWindow", "width=800, height=400, scrollbars=yes");
+});
+</script>

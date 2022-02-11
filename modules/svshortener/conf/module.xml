@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module>
+	<grants>
+	</grants>
+	<permissions>
+    </permissions>
+	<actions>
+		<action name="dispSvshortenerAdminIndex" type="view" admin_index="true" menu_name="svshortener" menu_index="true" />
+		<action name="dispSvshortenerAdminInsert" type="view" />
+
+		<action name="procSvshortenerAdminInsert" type="controller" />
+	</actions>
+	<menus>
+	</menus>
+</module>

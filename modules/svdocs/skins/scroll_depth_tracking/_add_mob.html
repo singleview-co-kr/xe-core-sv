@@ -1,0 +1,218 @@
+{@
+$module_info->displaying_img_urls_mob = explode("\n", $module_info->displaying_img_urls_mob);
+}
+<script src="//developers.kakao.com/sdk/js/kakao.min.js"></script>
+<!--- section for the floating application layer begins ------>
+<script type="text/javascript">
+	function layer_open(el){
+	var temp = jQuery('#' + el);		//레이어의 id를 temp변수에 저장
+
+	var bg = temp.prev().hasClass('bg');	//dimmed 레이어를 감지하기 위한 boolean 변수
+
+	if(bg){
+		jQuery('.layer').fadeIn();
+	}else{
+		temp.fadeIn();	//bg 클래스가 없으면 일반레이어로 실행한다.
+	}
+
+	// 화면의 중앙에 레이어를 띄운다.
+	//if (temp.outerHeight() < jQuery(document).height() ) temp.css('margin-top', '-'+temp.outerHeight()/2+'px');
+	//else temp.css('top', '0px');
+	temp.css('top', '1700px');
+	//temp.css('top', '100px');
+	if (temp.outerWidth() < jQuery(document).width() ) temp.css('margin-left', '-'+temp.outerWidth()/2+'px');
+	else temp.css('left', '0px');
+
+	temp.find('a.cbtn').click(function(e){
+		if(bg){
+			jQuery('.layer').fadeOut();
+		}else{
+			temp.fadeOut();		//'닫기'버튼을 클릭하면 레이어가 사라진다.
+		}
+		e.preventDefault();
+	});
+
+	jQuery('.layer .bg').click(function(e){
+		jQuery('.layer').fadeOut();
+		e.preventDefault();
+	});
+}				
+</script>
+<style type="text/css">
+.pop-layer {display:none; position: absolute; top: 50%; left: 50%; width: 100%; height:auto;  background-color:#fff; border: 5px solid #3571B5; z-index: 10000;}	
+.pop-layer .pop-container {padding: 8px 8px;}
+.pop-layer p.ctxt {color: #666; line-height: 25px;}
+.pop-layer .btn-r {width: 100%; margin:10px 0 20px; padding-top: 10px; border-top: 1px solid #DDD; text-align:right;}
+a.cbtn {display:inline-block; height:25px; padding:0 14px 0; border:1px solid #304a8a; background-color:#3f5a9d; font-size:13px; color:#fff; line-height:25px;}	
+a.cbtn:hover {border: 1px solid #091940; background-color:#1f326a; color:#fff;}
+
+.text {font-size:15px; width: 160px; height: 35px;}
+.input_button {font-size:15px; width: 160px; height: 40px;}
+.check {height: 20px; width:20px;}
+</style>
+<div width='100%'>
+	<div id="layer1" class="pop-layer">
+		<div class="pop-container">
+			<div class="pop-conts">
+				<!--content //-->
+				<input type="hidden" name="module_srl" id="module_srl" value="{$module_srl}">
+<block cond="count($extra_keys)">
+	<block loop="$extra_keys=>$key,$val">
+		<block cond="$val->type=='hidden'">
+			{$val->getFormHTML()}
+		</block>
+	</block>
+</block>
+				<div style="width: 100%; margin: 10px 0 20px; border-bottom: 1px solid #DDD; text-align: right;>"><a href="#" class="cbtn">Close</a></div>
+				<TABLE WIDTH='100%'>
+<block cond="$svauth_on=='Y'">
+					<TR>
+						<TD WIDTH='35%'><label class='' for='applicant_name' style='font-size:15px;'>이름</label></TD>
+						<TD><input type='text' class='text' id='applicant_name' name='applicant_name' placeholder='경품받을 이름'></TD>
+					</TR>
+					<TR>
+						<TD><label class='' for='applicant_phone_number' style='font-size:15px;'>핸드폰</label></TD>
+						<TD><input type='text' class='text' id='applicant_phone_number' name='applicant_phone_number' placeholder='인증받을 핸드폰'><input type='button' class='input_button'  id='get_authcode' name='get_authcode' value='인증번호 받기' onClick="getAuthCode();"></TD>
+					</TR>
+					<TR>
+						<TD><label class='' for='applicant_name' style='font-size:15px;'>인증번호</label></TD>
+						<TD><input type='text' class='text' id='authcode' name='authcode' placeholder='인증번호'></TD>
+					</TR>
+					<TR>
+						<TD colspan='2'>
+							<BR><strong>휴대폰 인증서비스 개인정보 동의</strong>
+							<div class="box">
+								<div id="textarea">{$sms_auth_agreement}</div>
+								<p style='font-size:15px; line-height: 130%;'><input type="checkbox" name="sms_auth_agreement" id="sms_auth_agreement" value="Y" class="check"/> 위 개인정보 수집 및 이용에 대한 동의문을 모두 읽었으며, 동의합니다. </p>
+							</div>
+						</TD>
+					</TR>
+</block>
+				</TABLE>
+<block cond="count($extra_keys)">
+				<div id='exForm'>
+					<TABLE WIDTH='100%'>
+	<block loop="$extra_keys=>$key,$val">
+		<block cond="$val->type!='hidden'">
+						<TR>
+							<TD WIDTH='35%'><label class='' for='applicant_name' style='font-size:15px;'><em cond="$val->is_required=='Y'">(필수)</em> {$val->name}</label></TD>
+							<TD>{$val->getFormHTML()}</TD>
+						</TR>
+		</block>
+		<block cond="$val->type=='hidden'">
+			{$val->getFormHTML()}
+		</block>
+	</block>
+					</table>
+				</div>
+</block>
+				<BR>
+				<h5><strong>개인정보 수집 및 이용에 대한 동의</strong></h5>
+				<div class="box">
+					<div id="textarea">{$module_info->privacy_usage_term}</div>
+					<TABLE WIDTH='100%'>
+						<TR STYLE='height:30px;'>
+							<TD WIDTH='10%'><input type="checkbox" name="privacy_collection" id="privacy_collection" value="Y" class="check"/></TD>
+							<TD style='font-size:15px; line-height: 130%;'>위 개인정보 수집 및 이용에 대한 동의문을 모두 읽었으며, 동의합니다.</TD>
+						</TR>
+					</TABLE>
+				</div>
+				<BR>
+				<h5><strong>개인정보 제3자 제공 동의(필수)</strong></h5>
+				<div class="box">
+					<div id="textarea">{$module_info->privacy_shr_term}</div>
+					<TABLE WIDTH='100%'>
+						<TR STYLE='height:30px;'>
+							<TD WIDTH='10%'><input type="checkbox"  name="privacy_sharing" id="privacy_sharing" value="Y" class="check"/></TD>
+							<TD style='font-size:15px; line-height: 130%;'>위 개인정보 제3자 제공 동의 조항을 모두 읽었으며, 이에 동의합니다.</TD>
+						</TR>
+					</TABLE>
+				</div>
+				<div class="btn-r">
+					<button type="button" id='btnSubmit' name='btnSubmit' onClick="_doPreRegistration();" STYLE='display: inline-block; height: 25px; padding: 0 14px 0; border: 1px solid #ed1c24; background-color: #ed1c24; font-size: 13px; color: #fff; line-height: 25px;'>응모하기</button >
+				</div>
+				<!--// content-->
+			</div>
+		</div>
+	</div>
+<!--- section for the floating application layer ends ------>
+<div id="layer_thankyou" class="pop-layer">
+	<div class="pop-container">
+		<div class="pop-conts">
+			<!--content //-->
+			<div style="width: 100%; margin: 10px 0 20px; border-bottom: 1px solid #DDD; font-size:14px;text-align: left; font-weight:bold;text-align:center;>">{$module_info->complete_title}</div>
+			<div id='' style="font-size:14px;text-align: left; font-weight:bold;text-align:center;>">{$module_info->complete_description}</div>
+		</div>
+	</div>
+</div>
+<!-- Save for Web Slices (oneshot_mob_800.psd) -->
+	<table id="__01" width="100%" border="0" cellpadding="0" cellspacing="0">
+<!---- event header secion begins ------->
+		<tr cond="$module_info->header_img_mob">
+			<td><img src="{$module_info->header_img_mob}" width="100%" alt=""></td>
+		</tr>
+		<tr cond="$module_info->header_html_mob">
+			<td><div id=''>{$module_info->header_html_mob}</div></td>
+		</tr>
+		<tr>
+			<td><img src="images/line_dotted_mob.jpg" width="100%" alt=""></td>
+		</tr>
+		<tr cond="$module_info->info_img_mob">
+			<td><img src="{$module_info->info_img_mob}" width="100%" alt=""></td>
+		</tr>
+		<tr cond="$module_info->info_html_mob">
+			<td><div id=''>{$module_info->info_html_mob}</div></td>
+		</tr>
+		<tr>
+			<td><img src="images/line_dotted_mob.jpg" width="100%" alt=""></td>
+		</tr>
+		<tr cond="$module_info->caution_img_mob">
+			<td><img src="{$module_info->caution_img_mob}" width="100%" alt=""></td>
+		</tr>
+		<tr cond="$module_info->caution_html_mob">
+			<td><div id=''>{$module_info->caution_html_mob}</div></td>
+		</tr>
+<!---- event header secion ends ------->
+		<tr>
+			<td>
+<block loop="$module_info->displaying_img_urls_mob=>$key,$val">
+			<div id='svdocs_{$module_info->module_srl}_mob_{$key}' STYLE='margin:0; padding:0; border:none;'><img src="{$val}" width='100%'/></div>
+</block>
+			</td>
+		</tr>
+<!---- application secion begins ------->
+		<tr>
+			<td>
+				<div class="try_to_apply" id="try_to_apply" style='display:visible';>
+					<input cond="$module_info->is_allow_update=='Y'" type='button' value='내 응모 수정하기' STYLE='width:100%; background-color: #d4d0c8; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; border-radius:10px;' onclick="askUpdate();">
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td><BR></td>
+		</tr>
+<!---- application secion ends ------->
+		<tr cond="$module_info->more_btn_text_mob">
+			<td>
+				<div>
+					<BR>
+					<input type='button' value='{$module_info->more_btn_text_mob}' STYLE='width:100%; background-color: {$sBtnBgColor}; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; border-radius:10px;' onclick="window.location.href='{$sMobSubmitBtnLink}';sendClickEventGaectk( 'button', 'mob_dance_2_qna_20170807', '#' );">
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td><img src="images/dotted_gray.png" width="100%" alt=""></td>
+		</tr>
+		<!---TR><tD><div id="log">initial content</div></TD></TR--->
+	</table>
+	<a href="#" class="open_application">{$sMobSubmitBtnText}</a>
+<div>
+<!-- End Save for Web Slices -->
+<script type='text/javascript'>
+jQuery(window).scroll(function()
+{
+	<block loop="$module_info->displaying_img_urls_mob=>$key,$val">
+		checkVisibilityGaectk( jQuery('#svdocs_{$module_info->module_srl}_mob_{$key}') );
+	</block>
+});
+</script>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon version="0.2">
+    <title xml:lang="ko">KCB 본인인증 애드온</title>
+    <description xml:lang="ko">
+        svauth module과 함께 작동합니다.
+    </description>
+    <version>0.2.2</version>
+    <date>2017-03-12</date>
+    <author email_address="root@singleview.co.kr" link="http://singleview.co.kr/">
+        <name xml:lang="ko">Singleview.co.kr</name>
+    </author>
+</addon>

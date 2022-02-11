@@ -1,78 +1,119 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <lang>
-	<item name="krzip">
-		<value xml:lang="ko"><![CDATA[한국 우편번호]]></value>
-	</item>
-	<item name="cmd_krzip_api_type">
-		<value xml:lang="ko"><![CDATA[API 선택]]></value>
-	</item>
-	<item name="cmd_krzip_daumapi">
-		<value xml:lang="ko"><![CDATA[다음 우편번호]]></value>
-	</item>
-	<item name="cmd_krzip_epostapi">
-		<value xml:lang="ko"><![CDATA[우체국 우편번호]]></value>
-	</item>
-	<item name="cmd_krzip_postcode_format">
-		<value xml:lang="ko"><![CDATA[우편번호 입력 형식]]></value>
-	</item>
-	<item name="cmd_krzip_postcode_format_6">
-		<value xml:lang="ko"><![CDATA[기존 우편번호 (6자리)]]></value>
-	</item>
-	<item name="cmd_krzip_postcode_format_5">
-		<value xml:lang="ko"><![CDATA[새 우편번호 (5자리)]]></value>
-	</item>
-	<item name="cmd_krzip_regkey">
-		<value xml:lang="ko"><![CDATA[등록키]]></value>
-	</item>
-	<item name="cmd_krzip_show_box">
-		<value xml:lang="ko"><![CDATA[보여질 주소 박스]]></value>
-	</item>
-	<item name="cmd_krzip_show_box_1">
-		<value xml:lang="ko"><![CDATA[도로명 주소 + 지번 주소]]></value>
-	</item>
-	<item name="cmd_krzip_show_box_2">
-		<value xml:lang="ko"><![CDATA[도로명 주소만]]></value>
-	</item>
-	<item name="cmd_krzip_postcode">
-		<value xml:lang="ko"><![CDATA[우편번호]]></value>
-	</item>
-	<item name="cmd_krzip_address">
-		<value xml:lang="ko"><![CDATA[주소]]></value>
-	</item>
-	<item name="cmd_krzip_detail_address">
-		<value xml:lang="ko"><![CDATA[상세 주소]]></value>
-	</item>
-	<item name="about_krzip">
-		<value xml:lang="ko"><![CDATA[공개 API를 이용해 우편번호 검색 서비스를 이용합니다.]]></value>
-	</item>
-	<item name="about_krzip_api_handler">
-		<value xml:lang="ko"><![CDATA[우편번호 검색을 어떤 API를 통해 할 것인지 결정합니다.]]></value>
-	</item>
-	<item name="about_krzip_epostapi_regkey">
-		<value xml:lang="ko"><![CDATA[우체국 우편번호 API를 이용하기 위해 인터넷 우체국에서 발급 받은 등록키를 입력합니다.]]></value>
-	</item>
-	<item name="about_krzip_show_box">
-		<value xml:lang="ko"><![CDATA[사용자 화면에서 보여질 우편번호 박스를 선택합니다.]]></value>
-	</item>
-	<item name="msg_krzip_road_address_expectation">
-		<value xml:lang="ko"><![CDATA[예상 도로명 주소: %s]]></value>
-	</item>
-	<item name="msg_krzip_jibun_address_expectation">
-		<value xml:lang="ko"><![CDATA[예상 지번 주소: %s]]></value>
-	</item>
-	<item name="msg_krzip_no_query">
-		<value xml:lang="ko"><![CDATA[검색할 주소가 없습니다.]]></value>
-	</item>
-	<item name="msg_krzip_is_maintenance">
-		<value xml:lang="ko"><![CDATA[점검 중입니다.]]></value>
-	</item>
-	<item name="msg_krzip_wrong_regkey">
-		<value xml:lang="ko"><![CDATA[잘못된 등록키입니다.]]></value>
-	</item>
-	<item name="msg_krzip_no_result">
-		<value xml:lang="ko"><![CDATA[검색된 주소가 없습니다.]]></value>
-	</item>
-	<item name="msg_krzip_riddling_wrong">
-		<value xml:lang="ko"><![CDATA[알 수 없는 오류입니다.]]></value>
-	</item>
+    <item name="krzip">
+        <value xml:lang="ko"><![CDATA[Postcodify 우편번호 검색]]></value>
+        <value xml:lang="en"><![CDATA[Postcodify Korean Postal Code Search]]></value>
+    </item>
+    <item name="krzip_postal_code">
+        <value xml:lang="ko"><![CDATA[우편번호]]></value>
+        <value xml:lang="en"><![CDATA[Postal code]]></value>
+    </item>
+    <item name="krzip_road_address">
+        <value xml:lang="ko"><![CDATA[도로명주소]]></value>
+        <value xml:lang="en"><![CDATA[Street address]]></value>
+    </item>
+    <item name="krzip_jibeon_address">
+        <value xml:lang="ko"><![CDATA[지번주소]]></value>
+        <value xml:lang="en"><![CDATA[Old address]]></value>
+    </item>
+    <item name="krzip_details">
+        <value xml:lang="ko"><![CDATA[상세주소]]></value>
+        <value xml:lang="en"><![CDATA[Detailed address]]></value>
+    </item>
+    <item name="krzip_extra_info">
+        <value xml:lang="ko"><![CDATA[참고항목]]></value>
+        <value xml:lang="en"><![CDATA[Extra address]]></value>
+    </item>
+    <item name="krzip_server_url">
+        <value xml:lang="ko"><![CDATA[검색 서버 주소]]></value>
+        <value xml:lang="en"><![CDATA[Search server URL]]></value>
+    </item>
+    <item name="krzip_map_provider">
+        <value xml:lang="ko"><![CDATA[지도 링크 제공]]></value>
+        <value xml:lang="en"><![CDATA[Map link provider]]></value>
+    </item>
+    <item name="krzip_map_provider_none">
+        <value xml:lang="ko"><![CDATA[사용하지 않음]]></value>
+        <value xml:lang="en"><![CDATA[N/A]]></value>
+    </item>
+    <item name="krzip_map_provider_daum">
+        <value xml:lang="ko"><![CDATA[다음]]></value>
+        <value xml:lang="en"><![CDATA[Daum]]></value>
+    </item>
+    <item name="krzip_map_provider_naver">
+        <value xml:lang="ko"><![CDATA[네이버]]></value>
+        <value xml:lang="en"><![CDATA[Naver]]></value>
+    </item>
+    <item name="krzip_map_provider_google">
+        <value xml:lang="ko"><![CDATA[구글]]></value>
+        <value xml:lang="en"><![CDATA[Google]]></value>
+    </item>
+    <item name="krzip_server_request_format">
+        <value xml:lang="ko"><![CDATA[검색 서버 통신 방식]]></value>
+        <value xml:lang="en"><![CDATA[Server request format]]></value>
+    </item>
+    <item name="krzip_server_request_format_cors">
+        <value xml:lang="ko"><![CDATA[CORS (권장)]]></value>
+        <value xml:lang="en"><![CDATA[CORS (recommended)]]></value>
+    </item>
+    <item name="krzip_server_request_format_jsonp">
+        <value xml:lang="ko"><![CDATA[JSONP]]></value>
+        <value xml:lang="en"><![CDATA[JSONP]]></value>
+    </item>
+    <item name="krzip_address_format">
+        <value xml:lang="ko"><![CDATA[주소 입력 형식]]></value>
+        <value xml:lang="en"><![CDATA[Address format]]></value>
+    </item>
+    <item name="krzip_address_format_postcodify">
+        <value xml:lang="ko"><![CDATA[Postcodify 모듈 기본 형식]]></value>
+        <value xml:lang="en"><![CDATA[Postcodify module default]]></value>
+    </item>
+    <item name="krzip_address_format_newkrzip">
+        <value xml:lang="ko"><![CDATA[새 krzip 모듈 형식]]></value>
+        <value xml:lang="en"><![CDATA[New krzip module]]></value>
+    </item>
+    <item name="krzip_address_format_oldkrzip3">
+        <value xml:lang="ko"><![CDATA[구 krzip 모듈 형식 (입력란 3개)]]></value>
+        <value xml:lang="en"><![CDATA[Old krzip module (3 boxes)]]></value>
+    </item>
+    <item name="krzip_address_format_oldkrzip2">
+        <value xml:lang="ko"><![CDATA[구 krzip 모듈 형식 (입력란 2개)]]></value>
+        <value xml:lang="en"><![CDATA[Old krzip module (2 boxes)]]></value>
+    </item>
+    <item name="krzip_postcode_format">
+        <value xml:lang="ko"><![CDATA[우편번호 입력 형식]]></value>
+        <value xml:lang="en"><![CDATA[Postal code format]]></value>
+    </item>
+    <item name="krzip_postcode_format_6">
+        <value xml:lang="ko"><![CDATA[기존 우편번호 (6자리)]]></value>
+        <value xml:lang="en"><![CDATA[Old code (6 digits)]]></value>
+    </item>
+    <item name="krzip_postcode_format_5">
+        <value xml:lang="ko"><![CDATA[새 우편번호 (5자리)]]></value>
+        <value xml:lang="en"><![CDATA[New code (5 digits)]]></value>
+    </item>
+    <item name="krzip_require_exact_query">
+        <value xml:lang="ko"><![CDATA[정확한 번호 입력 요구]]></value>
+        <value xml:lang="en"><![CDATA[Require exact number]]></value>
+    </item>
+    <item name="krzip_use_full_jibeon">
+        <value xml:lang="ko"><![CDATA[참고항목에 지번 포함]]></value>
+        <value xml:lang="en"><![CDATA[Include number in extra information]]></value>
+    </item>
+    <item name="krzip_form_preview">
+        <value xml:lang="ko"><![CDATA[미리보기]]></value>
+        <value xml:lang="en"><![CDATA[Preview]]></value>
+    </item>
+    <item name="krzip_form_preview_needs_refresh">
+        <value xml:lang="ko"><![CDATA[위의 설정을 변경하신 후에는 '등록'을 클릭해야 미리보기에 적용됩니다.]]></value>
+        <value xml:lang="en"><![CDATA[Any changes made above will not apply to the preview until you save them.]]></value>
+    </item>
+    <item name="krzip_postcodify_not_loaded_yet">
+        <value xml:lang="ko"><![CDATA[우편번호 검색 모듈이 아직 완전히 로딩되지 않았습니다. 잠시만 기다려 주십시오.]]></value>
+        <value xml:lang="en"><![CDATA[The postal code search module has not finished loading yet. Please wait a few moments.]]></value>
+    </item>
+    <item name="krzip_incompatible_version">
+        <value xml:lang="ko"><![CDATA[Postcodify 우편번호 검색 모듈은 XE 1.7.4 이상 버전에서만 사용할 수 있습니다.]]></value>
+        <value xml:lang="en"><![CDATA[The postal code search module is only compatible with XE 1.7.4 and above.]]></value>
+    </item>
 </lang>

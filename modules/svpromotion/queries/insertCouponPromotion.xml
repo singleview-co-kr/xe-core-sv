@@ -1,0 +1,23 @@
+<query id="insertCouponPromotion" action="insert">
+	<tables>
+		<table name="svpromotion_coupon" />
+	</tables>
+	<columns>
+		<column name="promotion_srl" var="sv_promotion_srl" filter="number" notnull="notnull" />
+		<column name="promotion_title" var="sv_promotion_title" notnull="notnull" />
+		<column name="status" var="status" />
+		<column name="public" var="public" />
+		<column name="promotion_description" var="sv_promotion_description" />
+		<column name="descount_amount_policy" var="sv_promotion_descount_amount" />
+		<column name="descount_rate_policy" var="sv_promotion_descount_rate" />
+		<column name="descount_type" var="sv_promotion_descount_type" />
+		<column name="max_issue_count" var="coupon_max_issue" />
+		<column name="max_use_count" var="coupon_max_usage" />
+		<column name="max_qty" var="max_qty" />
+		<column name="allowed_grp" var="group_allow_policy" />
+		<column name="target_items" var="target_items" />
+		<column name="begin_date" var="begin_date" />
+		<column name="end_date" var="end_date" />
+		<column name="regdate" var="regdate" default="curdate()" />
+	</columns>
+</query>

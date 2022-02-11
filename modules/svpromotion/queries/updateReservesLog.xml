@@ -1,0 +1,13 @@
+<query id="updateReservesLog" action="update">
+	<tables>
+		<table name="svpromotion_reserves_log" />
+	</tables>
+	<columns>
+		<column name="is_active" var="is_active" />
+		<column name="is_deleted" var="is_deleted" />
+		<column name="reason" var="reason" />
+	</columns>
+	<conditions>
+		<condition operation="equal" column="reserves_srl" var="reserves_srl" filter="number" notnull="notnull" />
+    </conditions>
+</query>

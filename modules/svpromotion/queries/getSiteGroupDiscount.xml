@@ -1,0 +1,8 @@
+<query id="getSiteGroupDiscount" action="select">
+	<tables>
+        <table name="svpromotion_site_group" />
+	</tables>
+	<columns>
+		<column name="*" />
+	</columns>
+</query>

@@ -1,0 +1,10 @@
+<query id="deleteExtraVar" action="delete" priority="LOW">
+    <tables>
+        <table name="svdocs_extra_vars" />
+    </tables>
+    <conditions>
+        <condition operation="equal" column="module_srl" var="module_srl" filter="number" notnull="notnull" />
+		<condition operation="equal" column="doc_srl" var="doc_srl" filter="number" notnull="notnull" pipe="and" />
+		<condition operation="equal" column="eid" var="eid" notnull="notnull" pipe="and" />
+    </conditions>
+</query>

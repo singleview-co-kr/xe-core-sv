@@ -1,0 +1,38 @@
+v 0.2.1
+2nd, Feb 2017
+1. svauth 제작
+
+v 0.2.2
+12th, Mar 2017
+1. 테스트를 위한 작동 IP 제한 방식 변경: 모바일 접속 아이피 대응
+svtracker.addon.php에 아래의 코드를
+if($_SERVER[REMOTE_ADDR]!='124.49.181.29')
+	return;
+아래와 같이 변경
+if($_SERVER[REMOTE_ADDR]=='124.49.181.29' || $_SERVER[HTTP_FORWARDED]=='for=124.49.181.29') 
+{
+	require_once(_XE_PATH_.'addons/svauth/class/svauthaddon.class.php');
+	$oSvAuthAddon = new svAuthAddon( $called_position);
+	$oSvAuthAddon->doAuthAddonProc();
+}
+
+2. login 화면 결정 변수를 전역 변수로 변경
+./class/svAuthAddon.classs.php::svAuthAddon에서
+var $_g_sLoginAct = ''; 추가
+
+./class/svAuthAddon.classs.php::_checkNonMemberAuth()의 아래 코드를
+$this->_g_sLoginAct = ($this->_g_oConfig->use_nm == 'Y') ? 'dispSvauthLoginForm' : "dispMemberLoginForm";
+doAuthAddonProc()으로 이동
+
+./class/svAuthAddon.classs.php::_checkNonMemberAuth()에서 아래의 코드를
+$loginAct
+아래와 같이 변경
+$this->_g_sLoginAct;
+
+./class/svAuthAddon.classs.php::_checkMeberRegistration()에서 아래의 코드를
+$loginAct
+아래와 같이 변경
+$this->_g_sLoginAct;
+
+3. $_SESSION을 사용하지 않도록 개선
+모바일 브라우저에서는 popup 윈도우에서 생성한 $_SESSION은 부모 윈도우로 이동하지 않음

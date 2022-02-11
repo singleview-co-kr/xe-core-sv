@@ -68,7 +68,14 @@
 				<input type="text" name="page_count" id="page_count" value="{$module_info->page_count?$module_info->page_count:10}" style="width:30px" />
 				<p class="x_help-inline">{$lang->about_page_count}</p>
 			</div>
-		</div>		
+		</div>	
+		<div class="x_control-group">
+			<label class="x_control-label" for="subject_len_count">{$lang->subject_len_count}</label>
+			<div class="x_controls">
+				<input type="text" name="subject_len_count" id="subject_len_count" value="{$module_info->subject_len_count?$module_info->subject_len_count:20}" style="width:30px" />
+				<p class="x_help-inline">{$lang->about_subject_len_count}</p>
+			</div>
+		</div>
 		<div class="x_control-group">
 			<label class="x_control-label" for="lang_header_text">{$lang->header_text}</label>
 			<div class="x_controls">
@@ -249,6 +256,12 @@
 				<textarea name="description" id="description" rows="4" cols="42" placeholder="{$lang->about_description}" style="vertical-align:top">{htmlspecialchars($module_info->description)}</textarea>
 				<a href="#description_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
 				<p id="description_help" class="x_help-block" hidden>{$lang->about_description}</p>
+			</div>
+		</div>
+		<div class="x_control-group">
+			<label class="x_control-label">{$lang->allow_session_value_skin}</label>
+			<div class="x_controls">
+				<label class="x_inline" for="allow_session_value_skin"><input type="checkbox" name="allow_session_value_skin" id="allow_session_value_skin" value="Y" checked="checked"|cond="$module_info->allow_session_value_skin == 'Y'" /> {$lang->about_allow_session_value_skin}</label>
 			</div>
 		</div>
 	</section>

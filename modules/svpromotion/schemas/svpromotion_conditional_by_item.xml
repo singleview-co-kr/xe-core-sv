@@ -1,0 +1,10 @@
+<table name="svpromotion_conditional_by_item">
+	<column name="item_srl" type="number" size="11" notnull="notnull" index="idx_item_srl" />
+	<column name="module_srl" type="number" size="11" default="0" notnull="notnull" index="idx_module_srl" />
+	<column name="promotion_type" type="varchar" size="50" notnull="notnull" />
+	<!-- 1: price , 2: percentage -->
+	<column name="opt" type="char" size="1" default="1" notnull="notnull" />
+	<column name="price" type="number" size="11" default="0" notnull="notnull" />
+	<column name="description" type="varchar" size="255" notnull="notnull" />
+	<column name="regdate" type="date" notnull="notnull" />
+</table>

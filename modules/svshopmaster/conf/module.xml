@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module>
+	<grants />
+	<permissions />
+	<actions>
+		<action name="dispSvshopmasterAdminIndex" type="view" standalone="true" index="true" admin_index="true" />
+	</actions>
+</module>

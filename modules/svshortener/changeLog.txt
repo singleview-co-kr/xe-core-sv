@@ -1,0 +1,560 @@
+v 0.0.1
+10th, Feb 2016
+1. svshortener 생성
+
+v 0.0.2
+6th, Apr 2016
+1. svtracker addon 설치 확인 루틴 추가
+./svshortener.admin.view.php::dispSvshortenerAdminIndex()에 아래의 코드 추가
+$oAddonAdminModel = getAdminModel('addon');
+$svtrackerAddonList = $oAddonAdminModel->getAddonInfoXml('svtracker');
+if( $svtrackerAddonList == NULL )
+	return new Object( -1, 'msg_error_svtracker_addon_not_installed');
+
+2. 단축 URL 자동 생성
+foreach( $svtrackerAddonList->extra_vars as $key => $val )
+{
+	if( $val->name == 'shortner_query_name' )
+		Context::set('shortner_query_name', $val->value );
+}
+
+./tpl/index.html에서 아래의 코드를
+{$val->shorten_uri_value}
+아래와 같이 변경
+<span cond="!$shortner_query_name">{$val->shorten_uri_value}</span>
+<span cond="$shortner_query_name"><a href='{$default_url}?{$shortner_query_name}={$val->shorten_uri_value}' target='_new'>{$val->shorten_uri_value}</a></span>
+
+3. 추적코드 별 카운터 작동
+./svshortener.controller.php::increaseCounter() 추가
+./queries/updateHitCount.xml 추가
+
+v 0.0.3
+14th, Jun 2018
+1. sv campaign code 개편에 따른 변경
+./svshortener.model.php에서 아래의 코드를
+var $_g_aSourceAbbreviation = array( 'naver' => 'NV', 'daumkakao' => 'DM', 'google' => 'GO', 'facebook' => 'FB', 'instagram' => 'IN' );
+var $_g_aMediumAbbreviation = array( 'organic' => 'NS', 'sns' => 'SNS', 'display' => 'PS', 'cpc' => 'PS' );
+
+아래와 같이 변경
+var $_g_aSourceAbbreviation = array( 'naver' => 'NV', 'daumkakao' => 'DAUM', 'google' => 'GG', 'facebook' => 'FB', 'instagram' => 'IN' );
+var $_g_aMediumAbbreviation = array( 'organic' => 'PNS', 'sns' => 'SNS', 'display' => 'PS', 'cpc' => 'PS' );
+
+./svshortener.model.php::getShortenerInfo()에서 아래의 코드를
+$this->_g_aSourceAbbreviation[$output->data->utm_source_name].'_'.$this->_g_aMediumAbbreviation[$output->data->utm_medium_name].'_'.$this->_g_aServiceAbbreviation[$output->data->utm_service_name].'_'.$sRegdate;
+아래와 같이 변경
+$this->_g_aSourceAbbreviation[$output->data->utm_source_name].'_'.$this->_g_aMediumAbbreviation[$output->data->utm_medium_name].'_REF_'.$this->_g_aServiceAbbreviation[$output->data->utm_service_name].'_'.$sRegdate;
+
+2. 단축 URL 추가 UI 변경
+./schemas/svshortener.xml에서 아래의 코드를 
+<column name="svshortener_srl" type="number" size="11" notnull="notnull" primary_key="primary_key" />
+아래와 같이 변경
+<column name="svshortener_srl" type="number" size="11" notnull="notnull" primary_key="primary_key" auto_increment="auto_increment" />
+
+./svshortener.admin.controller.php::procSvshortenerAdminInsert()에서 아래의 코드를 
+$args->shorten_uri_value = trim( preg_replace('/\s+/', '', $args->shorten_uri_value) );
+if( strlen( $args->shorten_uri_value ) == 0 )
+	return new Object(-1, 'msg_error_no_shorten_uri_value');
+
+$oSvshortenerAdminModel = getAdminModel('svshortener');
+if( $oSvshortenerAdminModel->isExistingUriValue( $args->shorten_uri_value ) )
+	return new Object(-1, 'msg_error_existing_shorten_uri_value');
+
+$args->utm_source_name = trim( preg_replace('/\s+/', '', $args->utm_source_name) );
+$args->utm_medium_name = trim( preg_replace('/\s+/', '', $args->utm_medium_name) );
+$args->utm_service_name = trim( preg_replace('/\s+/', '', $args->utm_service_name) );
+$args->utm_term_name = trim( preg_replace('/\s+/', '', $args->utm_term_name) );
+
+if( strlen( $args->utm_source_name ) == 0 )
+	return new Object(-1, 'msg_error_no_utm_source_name');
+if( strlen( $args->utm_medium_name ) == 0 )
+	return new Object(-1, 'msg_error_no_utm_medium_name');
+if( strlen( $args->utm_service_name ) == 0 )
+	return new Object(-1, 'msg_error_no_utm_service_name');
+if( strlen( $args->utm_term_name ) == 0 )
+	return new Object(-1, 'msg_error_no_utm_term_name');
+// validate variables ends
+
+$nIdx = $oSvshortenerAdminModel->getMaxIndex();
+$args->svshortener_srl = ++$nIdx;
+$output = executeQuery('svshortener.insertSvshortenerTrackingUrl', $args );
+
+아래와 같이 변경
+$args->utm_source_name = trim( preg_replace('/\s+/', '', $args->utm_source_name) );
+$args->utm_medium_name = trim( preg_replace('/\s+/', '', $args->utm_medium_name) );
+$args->utm_service_name = trim( preg_replace('/\s+/', '', $args->utm_service_name) );
+$args->utm_term_name = trim( preg_replace('/\s+/', '', $args->utm_term_name) );
+
+if( strlen( $args->utm_source_name ) == 0 )
+	return new Object(-1, 'msg_error_no_utm_source_name');
+if( strlen( $args->utm_medium_name ) == 0 )
+	return new Object(-1, 'msg_error_no_utm_medium_name');
+if( strlen( $args->utm_service_name ) == 0 )
+	return new Object(-1, 'msg_error_no_utm_service_name');
+if( strlen( $args->utm_term_name ) == 0 )
+	return new Object(-1, 'msg_error_no_utm_term_name');
+// validate variables ends
+
+switch( $args->utm_service_name )
+{
+	case 'blog':
+		$sServiceType = 'b';
+		break;
+	case 'cafe':
+		$sServiceType = 'c';
+		break;
+	case 'kin':
+		$sServiceType = 'k';
+		break;
+	case 'post':
+		$sServiceType = 'p';
+		break;
+	default:
+		return new Object(-1, 'msg_error_invalid_utm_service_name');
+}
+
+$oSvshortenerAdminModel = getAdminModel('svshortener');
+$nIdx = $oSvshortenerAdminModel->getMaxIndex();
+$args->shorten_uri_value = $sServiceType.++$nIdx;
+
+if( $oSvshortenerAdminModel->isExistingUriValue( $args->shorten_uri_value ) )
+	return new Object(-1, 'msg_error_existing_shorten_uri_value');
+
+$output = executeQuery('svshortener.insertSvshortenerTrackingUrl', $args );
+
+v 0.0.4
+23rd, Jan 2019
+1. sv bot 연계를 위해 term 구조화
+./tpl/svshotner_insert.html에 아래의 코드 추가
+<div class="x_control-group">
+	<label class="x_control-label" for="utm_term_name">{$lang->blogger_type}</label>
+	<div class="x_controls">
+		<input type="text" name="blogger_type" value="" class="inputTypeText w400" id="blogger_type" />
+		<a href="#blogger_type_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+		<p id="blogger_type_help" class="x_help-block" hidden>{$lang->about_blogger_type}</p>
+	</div>
+</div>
+<div class="x_control-group">
+	<label class="x_control-label" for="utm_term_name">{$lang->blogger_id}</label>
+	<div class="x_controls">
+		<input type="text" name="blogger_id" value="" class="inputTypeText w400" id="blogger_id" />
+		<a href="#blogger_id_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+		<p id="blogger_id_help" class="x_help-block" hidden>{$lang->about_blogger_id}</p>
+	</div>
+</div>
+
+./blogger_type.php 추가
+
+./schemas/insertSvshortenerTrackingUrl.xml에 아래의 코드 추가
+<column name="blogger_type" type="char" size="1"/>
+<column name="blogger_id" type="varchar" size="50" default="no_id"/>
+<column name="fixed_cost" type="number" size="11">
+
+./queries/insertSvshortenerTrackingUrl.xml에 아래의 코드 추가
+<column name="blogger_type" var="blogger_type" notnull="notnull" />
+<column name="blogger_id" var="blogger_id" notnull="notnull" />
+<column name="fixed_cost" var="fixed_cost" notnull="notnull" />
+
+./queries/getSvshortenersUriInfo.xml에 아래의 코드 추가
+<column name="blogger_type" />
+<column name="blogger_id" />
+
+2. 코드 표기 오류 수정
+./schemas/insertSvshortenerTrackingUrl.xml에서 아래의 코드를
+<column name="utm_term_name" var="utm_term_name" notnull="notnull" />
+아래와 같이 변경
+<column name="utm_term" type="varchar" size="50" default="no_term"/>
+
+./queries/insertSvshortenerTrackingUrl.xml에서 아래의 코드를
+<column name="utm_term_name" var="utm_term_name" notnull="notnull" />
+아래와 같이 변경
+<column name="utm_term" var="utm_term" notnull="notnull" />
+
+./queries/getSvshortenersUriInfo.xml에서 아래의 코드를
+<column name="utm_term_name" />
+아래와 같이 변경
+<column name="utm_term" />
+
+./tpl/svshotner_insert.html에서 아래의 코드를
+<div class="x_control-group">
+	<label class="x_control-label" for="utm_term_name">{$lang->utm_term_name}</label>
+	<div class="x_controls">
+		<input type="text" name="utm_term_name" value="" class="inputTypeText w400" id="utm_term_name" />
+		<a href="#utm_term_name_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+		<p id="utm_term_name_help" class="x_help-block" hidden>{$lang->about_utm_term_name}</p>
+	</div>
+</div>
+
+아래와 같이 변경
+<div class="x_control-group">
+	<label class="x_control-label" for="utm_term">{$lang->utm_term}</label>
+	<div class="x_controls">
+		<input type="text" name="utm_term" value="" class="inputTypeText w400" id="utm_term" />
+		<a href="#utm_term_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+		<p id="utm_term_help" class="x_help-block" hidden>{$lang->about_utm_term}</p>
+	</div>
+</div>
+
+./svshortener.model.php::getShortenerInfo()에서 아래의 코드를
+$aTemp[4] = $output->data->utm_term_name.'_'.$output->data->utm_service_name.'_'.$sRegdate;
+
+아래와 같이 변경
+$aTemp[4] = $output->data->utm_term.'_'.$sRegdate;
+
+./svshortener.admin.controller.php::procSvshortenerAdminInsert()에서 아래의 코드를
+if( strlen( $args->utm_term_name ) == 0 )
+아래와 같이 변경
+if( strlen( $args->utm_term ) == 0 )
+
+3. hit log tble 추가
+./schemas/svshortener_log.xml 추가
+
+./queries/insertHitLog.xml 추가
+
+./svshortener.controller.php::increaseCounter()에 아래의 코드 추가
+$oArgs->is_mobile_access = $_COOKIE['mobile'] == 'false' ? 'N' : 'Y';
+$oArgs->user_agent = trim( $_SERVER['HTTP_USER_AGENT'] );
+$output = executeQuery('svshortener.insertHitLog', $oArgs );
+if( !$output->toBool() )
+	return new Object(-1, 'msg_error_svshortener_db_query');
+
+v 0.0.5
+26th, Jan 2019
+1. 고정 비용이 VAT포함임을 명시함
+./schemas/svshortener.xml에서 아래의 코드를
+<column name="fixed_cost" type="number" size="11" default="0" />
+아래와 같이 변경
+<column name="fixed_cost_incl_vat" type="number" size="11" default="0" />
+
+./queries/insertSvshortenerTrackingUrl.xml에서 아래의 코드를
+<column name="fixed_cost" var="fixed_cost" />
+아래와 같이 변경
+<column name="fixed_cost_incl_vat" var="fixed_cost_incl_vat" />
+
+./tpl/index.html에서 해당 코드 변경
+
+v 0.0.6
+31st, Jan 2019
+1. 관리자 화면에서 [GA인식 매체] 열 삭제
+./tpl/index.html에서 아래의 코드 제거
+<th scope="col">{$lang->utm_medium_name}</th>
+<td>{$val->utm_medium_name}</td>
+
+2. 관리자 입력 화면에서 [서비스명]의 display, cpc 항목 삭제
+./tpl/svshortener_insert.html에서 아래의 코드 제거
+<option value="display">display</option>
+<option value="cpc">cpc</option>
+
+./svshortener.model.php::getShortenerInfo()에서 아래의 코드를
+var $_g_aMediumAbbreviation = array( 'organic' => 'PNS', 'sns' => 'SNS', 'display' => 'PS', 'cpc' => 'PS' );
+
+아래와 같이 변경
+
+3. 관리자 입력 화면에서 [서비스명]에 연관검색어 추가
+./tpl/svshortener_insert.html에 아래의 코드 추가
+<option value="rel">related_keyword</option>
+
+./svshortener.admin.controller.php::procSvshortenerAdminInsert()에 아래의 코드 추가
+case 'rel':
+	$sServiceType = 'r';
+	break;
+
+./queries/insertSvshortenerTrackingUrl.xml에서 아래의 코드를
+<column name="blogger_type" var="blogger_type" notnull="notnull" />
+<column name="blogger_id" var="blogger_id" notnull="notnull" />
+
+아래와 같이 변경
+<column name="blogger_type" var="blogger_type" />
+<column name="blogger_id" var="blogger_id" />
+
+./tpl/index.html에서 아래의 코드를
+<span cond="!$shortner_query_name">{$val->shorten_uri_value}</span>
+<span cond="$shortner_query_name"><a href='{$default_url}?{$shortner_query_name}={$val->shorten_uri_value}' target='_new'>{$val->shorten_uri_value}</a></span>
+
+아래와 같이 변경
+<span cond="!$shortner_query_name || $val->utm_service_name=='rel'">{$val->shorten_uri_value}</span>
+<span cond="$shortner_query_name && $val->utm_service_name!='rel'"><a href='{$default_url}?{$shortner_query_name}={$val->shorten_uri_value}' target='_new'>{$val->shorten_uri_value}</a></span>
+
+./svshortener.model.php::getShortenerInfo()에 아래의 코드 추가
+elseif( $output->data->utm_service_name == 'rel' )
+	return false;
+
+v 0.0.7
+20th, Mar 2019
+1. 복수의 키워드와 아이디 일괄 입력 기능 추가
+
+./svshortener.admin.controller.php::procSvshortenerAdminInsert()에서 아래의 코드를
+// Create model/controller object of the module module
+$oModuleController = getController('module');
+$oModuleModel = getModel('module');
+// Set board module
+$args = Context::getRequestVars();
+
+// validate variables begins
+//$args->shorten_uri_value = trim( preg_replace('/\s+/', '', $args->shorten_uri_value) );
+//if( strlen( $args->shorten_uri_value ) == 0 )
+//	return new Object(-1, 'msg_error_no_shorten_uri_value');
+
+$args->utm_source_name = trim( preg_replace('/\s+/', '', $args->utm_source_name) );
+$args->utm_medium_name = trim( preg_replace('/\s+/', '', $args->utm_medium_name) );
+$args->utm_service_name = trim( preg_replace('/\s+/', '', $args->utm_service_name) );
+$args->utm_term = trim( preg_replace('/\s+/', '', $args->utm_term) );
+
+if( strlen( $args->utm_source_name ) == 0 )
+	return new Object(-1, 'msg_error_no_utm_source_name');
+if( strlen( $args->utm_medium_name ) == 0 )
+	return new Object(-1, 'msg_error_no_utm_medium_name');
+if( strlen( $args->utm_service_name ) == 0 )
+	return new Object(-1, 'msg_error_no_utm_service_name');
+if( strlen( $args->utm_term ) == 0 )
+	return new Object(-1, 'msg_error_no_utm_term');
+// validate variables ends
+
+switch( $args->utm_service_name )
+{
+	case 'blog':
+		$sServiceType = 'b';
+		break;
+	case 'cafe':
+		$sServiceType = 'c';
+		break;
+	case 'kin':
+		$sServiceType = 'k';
+		break;
+	case 'post':
+		$sServiceType = 'p';
+		break;
+	case 'rel':
+		$sServiceType = 'r';
+		break;
+	default:
+		return new Object(-1, 'msg_error_invalid_utm_service_name');
+}
+
+$oSvshortenerAdminModel = getAdminModel('svshortener');
+$nIdx = $oSvshortenerAdminModel->getMaxIndex();
+$args->shorten_uri_value = $sServiceType.++$nIdx;
+
+if( $oSvshortenerAdminModel->isExistingUriValue( $args->shorten_uri_value ) )
+	return new Object(-1, 'msg_error_existing_shorten_uri_value');
+
+$output = executeQuery('svshortener.insertSvshortenerTrackingUrl', $args );
+if( !$output->toBool() )
+	return new Object(-1, 'msg_error_svshortener_db_query');
+
+$this->add("page", Context::get('page'));
+$this->setMessage($msg_code);
+
+$returnUrl = getNotEncodedUrl('', 'module', 'admin', 'act', 'dispSvshortenerAdminIndex');
+$this->setRedirectUrl($returnUrl);
+
+아래와 같이 변경
+$args = Context::getRequestVars();
+$args->utm_source_name = trim( preg_replace('/\s+/', '', $args->utm_source_name) );
+$args->utm_medium_name = trim( preg_replace('/\s+/', '', $args->utm_medium_name) );
+$args->utm_service_name = trim( preg_replace('/\s+/', '', $args->utm_service_name) );
+
+if( strlen( $args->utm_source_name ) == 0 )
+	return new Object(-1, 'msg_error_no_utm_source_name');
+if( strlen( $args->utm_medium_name ) == 0 )
+	return new Object(-1, 'msg_error_no_utm_medium_name');
+if( strlen( $args->utm_service_name ) == 0 )
+	return new Object(-1, 'msg_error_no_utm_service_name');
+
+switch( $args->utm_service_name )
+{
+	case 'blog':
+		$sServiceType = 'b';
+		break;
+	case 'cafe':
+		$sServiceType = 'c';
+		break;
+	case 'kin':
+		$sServiceType = 'k';
+		break;
+	case 'post':
+		$sServiceType = 'p';
+		break;
+	case 'rel':
+		$sServiceType = 'r';
+		break;
+	default:
+		return new Object(-1, 'msg_error_invalid_utm_service_name');
+}
+
+$oSvshortenerAdminModel = getAdminModel('svshortener');
+$aLine = explode("\n", str_replace("\r", "", $args->term_and_blogger_id));
+foreach( $aLine as $nIdx => $sVal )
+{
+	$sVal = str_replace("\t", ";", $sVal);
+	$aVal = explode(';', $sVal );
+	$args->utm_term =  str_replace(' ', '', $aVal[0]);
+	$args->utm_term = trim( preg_replace('/\s+/', '', $args->utm_term) );
+	$args->blogger_id =  str_replace(' ', '', $aVal[1]);
+	$args->blogger_id = trim( preg_replace('/\s+/', '', $args->blogger_id) );
+	
+	if( strlen( $args->utm_term ) == 0 )
+		return new Object(-1, 'msg_error_no_utm_term');
+	
+	$nIdx = $oSvshortenerAdminModel->getMaxIndex();
+	$args->shorten_uri_value = $sServiceType.++$nIdx;
+
+	if( $oSvshortenerAdminModel->isExistingUriValue( $args->shorten_uri_value ) )
+		return new Object(-1, 'msg_error_existing_shorten_uri_value');
+
+	$output = executeQuery('svshortener.insertSvshortenerTrackingUrl', $args );
+	if( !$output->toBool() )
+		return new Object(-1, 'msg_error_svshortener_db_query');
+}
+
+$this->add("page", Context::get('page'));
+$this->setMessage($msg_code);
+$returnUrl = getNotEncodedUrl('', 'module', 'admin', 'act', 'dispSvshortenerAdminIndex');
+$this->setRedirectUrl($returnUrl);
+
+./tpl/svshortner_insert.html에서 아래의 코드 제거
+<div class="x_control-group">
+	<label class="x_control-label" for="utm_term">{$lang->utm_term}</label>
+	<div class="x_controls">
+		<input type="text" name="utm_term" value="" class="inputTypeText w400" id="utm_term" />
+		<a href="#utm_term_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+		<p id="utm_term_help" class="x_help-block" hidden>{$lang->about_utm_term}</p>
+	</div>
+</div>
+<div class="x_control-group">
+	<label class="x_control-label" for="blogger_id">{$lang->blogger_id}</label>
+	<div class="x_controls">
+		<input type="text" name="blogger_id" value="" class="inputTypeText w400" id="blogger_id" />
+		<a href="#blogger_id_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+		<p id="blogger_id_help" class="x_help-block" hidden>{$lang->about_blogger_id}</p>
+	</div>
+</div>
+<div class="x_control-group">
+	<label class="x_control-label" for="">{$lang->svshortener_memo}</label>
+	<div class="x_controls">
+		<textarea name="svshortener_memo" id="svshortener_memo" rows="2" cols="42"></textarea>
+		<a href="#svshortener_memo_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+		<p id="svshortener_memo_help" class="x_help-block" hidden>{$lang->about_svshortener_memo}</p>
+	</div>
+</div>
+
+./tpl/svshortner_insert.html에 아래의 코드 추가
+<div class="x_control-group">
+	<label class="x_control-label" for="">{$lang->term_and_blogger_id}</label>
+	<div class="x_controls">
+		<textarea name="term_and_blogger_id" id="term_and_blogger_id" rows="2" cols="42"></textarea>
+		<a href="#term_and_blogger_id_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+		<p id="term_and_blogger_id_help" class="x_help-block" hidden>{$lang->about_term_and_blogger_id}</p>
+	</div>
+</div>
+
+v 0.1.0
+20th, Dec 2020
+1. php v7.4.13에 대응
+모든 new Object()를 new BaseObject()로 변경
+
+v 0.1.1
+28th, Dec 2020
+1. PNS 비용 일분할 기간 입력 UI 추가
+./queries/insertSvshortenerTrackingUrl.xml에 아래의 코드 추가
+<column name="start_date" var="start_date"/>
+<column name="end_date" var="end_date"/>
+
+./tpl/svshortener_insert.html에 아래의 코드 추가
+<div class="x_control-group">
+	<label class="x_control-label" for="fixed_cost">{$lang->allocation_start_date}</label>
+	<div class="x_controls">
+		<input type="text" name="start_date" value="+2w" class="inputTypeText w400" id="start_date"/>
+		<a href="#allocation_start_date_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+		<p id="allocation_start_date_help" class="x_help-block" hidden>{$lang->about_allocation_start_date}</p>
+	</div>
+</div>
+<div class="x_control-group">
+	<label class="x_control-label" for="fixed_cost">{$lang->allocation_end_date}</label>
+	<div class="x_controls">
+		<input type="text" name="end_date" value="+4w" class="inputTypeText w400" id="end_date"/>
+		<a href="#allocation_end_date_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+		<p id="allocation_end_date_help" class="x_help-block" hidden>{$lang->about_allocation_end_date}</p>
+	</div>
+</div>
+
+./svshortener.admin.controller.php::_getExpenseAllocationDateType() 추가
+./svshortener.admin.controller.php::_validateDateActual() 추가
+
+./svshortener.admin.controller.php::procSvshortenerAdminInsert()에 아래의 코드 추가
+$aAllocationDateInfo = ['start_date'=>'start_date', 'end_date'=>'end_date'];
+foreach( $aAllocationDateInfo as $sInargTitle => $sSqlVarTitle )
+{
+	$oRst = $this->_cleanupExpenseAllocationDate($oArgs->{$sInargTitle});
+	if(!$oRst->toBool())
+		return $oRst;
+	
+	$sFormatType = $oRst->get('sFormatType');
+	if( $sFormatType == 'yyyymmdd' )
+		$bValid = $this->_validateDateActual($oArgs->{$sInargTitle});
+	elseif( $sFormatType == 'increment' )
+	{
+		$oArgs->{$sInargTitle} = str_replace ("d", " days", $oArgs->{$sInargTitle});
+		$oArgs->{$sInargTitle} = str_replace ("w", " week", $oArgs->{$sInargTitle});
+
+		if( $sInargTitle == 'start_date' )
+			$timestamp = strtotime($oArgs->{$sInargTitle});
+		elseif( $sInargTitle == 'end_date' )
+			$timestamp = strtotime($oArgs->start_date.' '.$oArgs->{$sInargTitle});
+
+		$oTempArg->{$sInargTitle} = date("Ymd", $timestamp);
+		$bValid = $this->_validateDateActual($oTempArg->{$sInargTitle});
+		if(!$bValid)
+			return new BaseObject(-1, 'msg_error_invalid_date_info');
+		else
+			$oArgs->{$sInargTitle} = $oTempArg->{$sInargTitle};
+	}
+}
+
+//$sCurDate = date("Ymd");
+if( (int)date("Ymd") > (int)$oArgs->start_date )
+	return new BaseObject(-1, 'msg_error_invalid_date_info');
+if( (int)$oArgs->start_date > (int)$oArgs->end_date )
+	return new BaseObject(-1, 'msg_error_invalid_date_info');
+
+2. php v7.4.13에 대응
+./blogger_type.php에서 아래의 코드를
+<?
+
+아래와 같이 변경
+<?php
+
+3. slim 3 framework 추가를 위한 준비 작업
+./schemas/svshortener.xml에서 아래의 코드를
+<column name="svshortener_srl" type="number" size="11" notnull="notnull" primary_key="primary_key" auto_increment="auto_increment" />
+
+아래와 같이 변경
+<column name="shortener_srl" type="number" size="11" notnull="notnull" primary_key="primary_key" auto_increment="auto_increment" />
+
+./queries/getAdminSvshortenerUrls.xml에서 아래의 코드를
+<index var="sort_index" default="svshortener_srl" order="desc" />
+
+아래와 같이 변경
+<index var="sort_index" default="shortener_srl" order="desc" />
+
+./queries/getSvShortenersMaxIndex.xml에서 아래의 코드를
+<column name="svshortener_srl" />
+<index var="sort_index" default="svshortener_srl" order="desc" />
+
+아래와 같이 변경
+<column name="shortener_srl" />
+<index var="sort_index" default="shortener_srl" order="desc" />
+
+./svshortener.admin.model.php::getMaxIndex()서 아래의 코드를
+return $val->svshortener_srl;
+
+아래와 같이 변경
+return $val->shortener_srl;
+
+./tpl/index.html에서 아래의 코드를
+<th scope="col">&nbsp;</th>
+<td><a href="#">{$lang->cmd_detail}</a></td>
+
+아래와 같이 변경
+<th scope="col">{$lang->cost_period}</th>
+<td>{zdate($val->start_date,"Y.m.d")}~{zdate($val->end_date,"Y.m.d")}</td>
+------------ todo -------------------

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module version="0.2">
+	<title xml:lang="ko">싱글뷰 Docs 관리</title>
+	<title xml:lang="en">Docs management</title>
+	<description xml:lang="ko">간단한 응모를 관리합니다.</description>
+	<description xml:lang="en">You can register and manage registration here.</description>
+	<version>0.5.2</version>
+	<date>2021-08-26</date>
+	<category>service</category>
+	<author email_address="root@singleview.co.kr" link="http://singleview.co.kr">
+        <name xml:lang="ko">Singleview.co.kr</name>
+    </author>
+</module>

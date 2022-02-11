@@ -1,0 +1,2297 @@
+v 0.0.1
+29th, Jan 2016
+1. svdocs 생성
+
+v 0.0.2
+13th, Feb 2016
+1. svdocs에 svtracker가 기록한 utm 세션값을 기록
+./svdocs.controller.php::_getSessionValue() 추가
+./svdocs.controller.php::procSvdocsRegistration에서 _getSessionValue() 호출 루틴 추가
+./queries/insertSvdocs.xml에 아래의 코드 추가
+	<column name="utm_source" var="utm_source" />
+	<column name="utm_medium" var="utm_medium" />
+	<column name="utm_campaign" var="utm_campaign" />
+	<column name="utm_term" var="utm_term" />
+
+v 0.0.3
+14th, Feb 2016
+1. 선택된 고객에게만 정보 완성 기능 추가
+./svdocs.view.php::dispSvdocsAdminApplicantsBoardConfidential() 추가
+./svdocs.controller.php::procSvdocsRegistrationConfidential() 추가
+./svdocs.model.php::getSvdocsValidateConfidential() 추가
+./svdocs.admin.view.php::dispSvdocsAdminApplicantsBoardConfidentialInsert() 추가
+./svdocs.admin.view.php::dispSvdocsAdminApplicantsBoardConfidential() 추가
+./svdocs.admin.controller.php::procSvdocsAdminInsertConfidentialApplicant() 추가
+./svdocs.admin.model.php::getSvdocsAdminConfidentialMaxIndex() 추가
+
+v 0.0.4
+17th, Feb 2016
+1. ExtraVars, isMobile 필드 추가
+./schemas/svdocs.xml에 아래의 코드 추가
+<column name="extra_vars" type="text" />
+<column name="is_mobile" type="char" size="1" default="0"/>
+
+./schemas/svdocs_confidential.xml에 아래의 코드 추가
+<column name="extra_vars" type="text" />
+<column name="is_mobile" type="char" size="1" default="0"/>
+
+./tpl/skin.js/registration.js::doRegistration()에 아래의 코드 추가
+oExtraVars 파라미터 추가
+if( typeof oExtraVars === 'undefined' )
+	oExtraVars = null;
+params['extra_vars'] = oExtraVars;
+
+./svdocs.controller.php::procSvdocsRegistration()에 아래의 코드 추가
+$sExtraVars = serialize( Context::get('extra_vars') );
+$args->extra_vars = $sExtraVars;
+$args->is_mobile = Mobile::isFromMobilePhone() ? 1 : 0;
+
+./queries/insertSvdocs.xml에 아래의 코드 추가
+<column name="applicant_postcode" var="applicant_postcode" notnull="notnull" />
+<column name="applicant_addr" var="applicant_addr" notnull="notnull" />
+<column name="is_mobile" var="is_mobile" />
+<column name="extra_vars" var="extra_vars" />
+
+./tpl/skin.js/registration.js::_thankyou_facebook_user()에 아래의 코드 추가
+var nModuleSrl = jQuery('#module_srl').val();
+var sGatkThankyouPageName = jQuery('#gatk_thankyou_page_name').val();
+if( sGatkThankyouPageName.length == 0 )
+	checkNonEcConversionGatk( '/mod_'+ nModuleSrl + '_thankyou.html', 'mod_' + nModuleSrl + '_thankyou_page' );
+else
+	checkNonEcConversionGatk( sGatkThankyouPageName + '.html', sGatkThankyouPageName );
+
+v 0.0.5
+19th, Feb 2016
+1. 폐쇄 응모자 정보 다운로드 기능 추가
+./svdocs.admin.controller.php::procSvdocsAdminConfidentialCSVDownloadByModule() 추가
+./queries/getAdminSvdocsConfidentialByModule.xml 추가
+
+v 0.0.6
+26th, Feb 2016
+1. 폐쇄 응모자 정보 다운로드 기능 추가
+2. 응모자리스트 삭제하면 원래 페이지로 돌아오기
+./svdocs.admin.controller.php::procSvdocsAdminDeleteDoc()에서 아래의 코드 추가
+$returnUrl = Context::get('success_return_url') ? Context::get('success_return_url') : getNotEncodedUrl('', 'module', 'admin', 'act', 'dispSvdocsAdminApplicantsBoard', 'module_srl', $module_srl, 'page',Context::get('page'));
+./tpl/applicant_list.html에서 아래의 코드 추가
+<div class="x_modal" id="deleteDoc">
+	<form action="./" class="fg form" method="post">
+		<input type="hidden" name="act" value="procSvdocsAdminDeleteDoc" />
+		<input type="hidden" name="module_srl" value="{$module_srl}" />
+		<input type="hidden" name="page" value="{$page}" />
+		<div id="deleteDocForm">
+		</div>
+	</form>
+</div>
+
+3. 전화번호 입력란에 - 제거
+./svdocs.admin.php::procSvdocsRegistrationConfidential()에 아래의 코드 추가
+$sApplicantPhoneNumber = str_replace( '-', '', strip_tags( trim( Context::get('applicant_phone_number') ) ) );
+
+./svdocs.admin.php::procSvdocsRegistration()에 아래의 코드 추가
+$sApplicantPhoneNumber = str_replace( '-', '', strip_tags( trim( Context::get('applicant_phone_number') ) ) );
+
+v 0.0.7
+27th, Feb 2016
+1. 응모자 리스트의 다운로드 기능에서 extra_vars 구분 추가
+./svdocs.admin.controller.php::procSvdocsAdminCSVDownloadByModule()에서 아래의 코드 블록추가
+if( $key2 == 'extra_vars' )
+{
+	$oExtraVars = unserialize( $val2 );
+	$sTemp = '';
+	foreach( $oExtraVars as $key3 => $val3 )
+		$sTemp .= $val3.'/';
+
+	echo "\"'".$sTemp."\",";
+	continue;
+}
+
+v 0.0.8
+4th, Mar 2016
+1. 개별 application의 init_referral 기록
+./schemas/svdocs_confidential.xml에 아래의 코드 추가
+<column name="init_referral" type="varchar" size="255" />
+<column name="utm_source" type="varchar" size="255" />
+<column name="utm_medium" type="varchar" size="255" />
+<column name="utm_campaign" type="varchar" size="255" />
+<column name="utm_term" type="varchar" size="255" />
+
+./schemas/svdocs.xml에 아래의 코드 추가
+<column name="init_referral" type="varchar" size="255" />
+
+./svdocs.controller.php::procSvdocsRegistration()에 아래의 코드 블록추가
+$sValue = $this->_getSessionValue('HTTP_INIT_REFERER' );
+if( !is_null( $sValue ) )
+	$args->init_referral = $sValue;
+
+./queries/insertSvdocs.xml에 아래의 코드 추가
+<column name="init_referral" var="init_referral" />
+
+v 0.0.9
+24th, Mar 2016
+1. 핸드폰 SMS 인증 기능 추가
+http://www.coolsms.co.kr/ Text Messages 모듈 사용
+./svdocs.controller.php::procSvdocsSetAuthCode() 추가
+./svdocs.controller.php::getRandNumber() 추가
+./tpl/svdocs_info.html에서 svdocs_application_type에 sms_auth 항목 추가
+./tpl/skin.js/registration.js::getAuthCode() 추가
+./conf/module.xml에서 아래의 코드 추가
+<action name="procSvdocsSetAuthCode" type="controller" />
+
+./svdocs.admin.view.php::dispSvdocsAdminInfo()에서 사용자약관 편집기 코드 블럭 추가
+./svdocs.admin.model.php::getModuleConfig() 추가
+./svdocs.admin.view.php::dispSvdocsAdminInfo()에서 $module_info를 ./svdocs.admin.model.php::getModuleConfig()를 통해 적재함
+./svdocs.admin.model.php::getAgreement() 추가
+./svdocs.model.php::getErrorMessage() 추가
+
+./svdocs.controller.php::_verifyAuthCode() 추가
+./tpl/skin.js/registration.js::doRegistration() 에서 인증코드 전송 코드 추가
+
+./svdocs.admin.controller.php::procSvdocsAdminInsert()에 아래의 코드 추가
+if(!trim(strip_tags($args->agreement)))
+{
+	$agreement_file = _XE_PATH_.'files/svdocs/agreement_' . Context::get('lang_type') . '.txt';
+	FileHandler::removeFile($agreement_file);
+	$args->agreement = NULL;
+}
+
+// check agreement value exist
+if($args->agreement)
+{
+	$agreement_file = _XE_PATH_.'files/svdocs/agreement_' . Context::get('lang_type') . '.txt';
+	$output = FileHandler::writeFile($agreement_file, $args->agreement);
+	unset($args->agreement);
+}
+
+./queries/updateAuthentication.xml 추가
+
+v 0.1.0
+20th, Apr 2016
+1. 번호 중복 인증 허용/비허용 추가
+./tpl/svdocs_info.html에서 아래의 코드를
+$config->number_overlap
+아래와 같이 변경
+$module_info->number_overlap
+
+v 0.1.1
+28th, Apr 2016
+1. SMS 인증 과정에서 핸드폰번호로 인증 신청만 하고 인증 완료하지 않은 경우
+수신자가 인증 메세지를 분실하면 사용자 입장에서 deadlock 상황 발생
+./svdocs.controller.php::procSvdocsSetAuthCode() 에서 번호가 등록되어 있지만 인증을 완료하지 않고, 하루가 지나면 인증 신청 허용으로 변경
+아래의 코드를
+$output = executeQuery('svdocs.getAuthenticationCountByClue', $args);
+if(!$output->toBool()) 
+	return $output;
+
+if($output->data->count > 0)
+{
+	//return new Object(-1, '이미 인증받은 휴대폰 번호입니다.');
+	$this->add('success', -1);
+	$this->setMessage('이미 인증받은 휴대폰 번호입니다.');
+	return;
+}
+
+아래와 같이 변경
+$output = executeQueryArray('svdocs.getAuthenticationCountByClue', $args);
+if(!$output->toBool()) 
+	return $output;
+
+$nAuth=count($output->data)-1;
+if($nAuth > 0)
+{
+	if($output->data[$nAuth]->passed=='N')
+	{
+		$dateAuth = strtotime($output->data[0]->regdate);
+		$dateNow = strtotime('now');
+		if( floor(($dateNow-$dateAuth)/3600/24) < 1 )
+		{
+			//return new Object(-1, '이미 인증받은 휴대폰 번호입니다.');
+			$this->add('success', -1);
+			$this->setMessage('이미 인증받은 휴대폰 번호입니다.');
+			return;
+		}
+	}				
+}
+
+./queries/getAuthenticationCountByClue.xml에서 아래의 코드를
+<column name="COUNT(*)" alias="count" />
+아래와 같이 변경
+<column name="passed" alias="passed" />
+<column name="regdate" alias="regdate" />
+
+v 0.1.2
+6th, May 2016
+1. 고객이 SMS 인증에 문제가 발생하면, 인증 시도를 취소해서 고객이 재인증 가능하게 함
+./svdocs.admin.view.php::dispSvdocsAdminSmsAuthList() 추가
+./tpl/sms_auth_list.html 추가
+./tpl/_page_navigation.html 추가
+./queries/getAuthenticationList.xml 추가
+./svdocs.admin.contoller.php::procSvdocsAdminInvalidateSmsAuth() 추가
+
+./schemas/svdocs_authentication.xml에 아래의 코드 추가
+<column name="is_valid" type="char" size="1" default="Y" />
+
+./queries/updateSvdocsAdminSmsAuthInvalidate.xml 추가
+
+./queries/getAuthenticationCountByClue.xml에 아래의 코드 추가
+<condition operation="equal" column="is_valid" var="is_valid" notnull="notnull" default="Y" pipe="and" />
+
+2. 캠페인 기한이 만료되면 SMS 인증도 거부
+./svdocs.controller.php::procSvdocsSetAuthCode()에 아래의 코드 추가
+$oSvdocsModel = &getModel('svdocs');
+$oDocInfo = $oSvdocsModel->getDocInfo( $nModuleSrl );
+if( $oDocInfo->nRemainingApplicants == 0 )
+	return new Object(-1, 'msg_application_closed');
+
+3. 응모자 정보 다운로드할 때 전화번호에 - 추가
+./svdocs.admin.controller.php::procSvdocsAdminCSVDownloadByModule()에서 아래의 코드를 
+if( $key2 == 'applicant_phone_number' )
+{
+	echo "\"'".$val2."\",";
+	continue;
+}
+아래와 같이 변경
+if( $key2 == 'applicant_phone_number' )
+{
+	if( strlen( $val2 )==11) // 010-1222-3333 형태
+		echo "\"'".$val2[0].$val2[1].$val2[2].'-'.$val2[3].$val2[4].$val2[5].$val2[6].'-'.$val2[7].$val2[8].$val2[9].$val2[10]."\",";
+	else if( strlen( $val2 )==10) // 010-222-3333 형태
+		echo "\"'".$val2[0].$val2[1].$val2[2].'-'.$val2[3].$val2[4].$val2[5].'-'.$val2[6].$val2[7].$val2[8].$val2[9]."\",";
+	else
+		echo "\"'".$val2."\",";
+	continue;
+}
+
+v 0.1.3
+24th, May 2016
+1. 응모자 정보 다운로드에서 init_referral 필드명 추가
+./svdocs.admin.controller.php::procSvdocsAdminCSVDownloadByModule()에서 아래의 코드를
+$oDataConfig = Array( 'doc_srl', 'module_srl', 'applicant_name', 'applicant_postcode','applicant_addr', 'applicant_phone_number', 'applicant_description', 'user_agent', 'video_elapsed_time_after_x_seconds', 'video_elapsed_time_when_paused', 'video_full_played_cnt', 'ipaddress', 'privacy_collection', 'privacy_sharing', 'is_facebook_liked', 'datetimestamp_entry', 'datetimestamp_final', 'duration_sec', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'extra_vars','is_mobile', 'regdate' );
+아래와 같이 변경
+$oDataConfig = Array( 'doc_srl', 'module_srl', 'applicant_name', 'applicant_postcode','applicant_addr', 'applicant_phone_number', 'applicant_description', 'user_agent', 'video_elapsed_time_after_x_seconds', 'video_elapsed_time_when_paused', 'video_full_played_cnt', 'ipaddress', 'privacy_collection', 'privacy_sharing', 'is_facebook_liked', 'datetimestamp_entry', 'datetimestamp_final', 'duration_sec', 'init_referral', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'extra_vars','is_mobile', 'regdate' );
+
+2. SMS 인증 정보 검색 기능 추가
+./svdocs.admin.view.php::dispSvdocsAdminSmsAuthList에서 아래의 코드 추가
+$args->clue = Context::get('rcpt_no');
+
+./queries/getAuthenticationList.xml에 아래의 코드 추가
+<conditions>
+	<condition operation="equal" column="clue" var="clue" />
+</conditions>
+
+v 0.1.4
+1st, Jun 2016
+1. SMS 인증 번호 검색에셔 UI 혼란 제거
+./tpl/sms_auth_list.html에서 아래의 코드 제거
+<form method="post" id="mobilemessage_fo" class="form" onsubmit="refresh()">
+
+v 0.1.5
+2st, Jun 2016
+1. SMS 인증 번호 무효처리 후 반환 URL 개선
+./svdocs.admin.controller.php::procSvdocsAdminInvalidateSmsAuth()에서 아래의 코드를
+$this->setRedirectUrl(getNotEncodedUrl('', 'module', Context::get('module'), 'act', 'dispSvdocsAdminSmsAuthList' ) );
+아래와 같이 변경
+$this->setRedirectUrl(getNotEncodedUrl('', 'module', Context::get('module'), 'act', 'dispSvdocsAdminSmsAuthList', 'module_srl', Context::get('module_srl'), 'rcpt_no', Context::get('rcpt_no') ) );
+
+v 0.1.6
+30th, Jul 2017
+1. 유튜브 영상 아이디 지정 함수 추가
+./tpl/skin.js/youtube.js::setPlayerDimension()를 initPlayer()로 변경하고 playlist 인수 추가
+
+./tpl/svdocs_info.html에 아래의 코드 추가
+<div class="x_control-group">
+	<label class="x_control-label" for="youtube_playlist">{$lang->youtube_playlist}</label>
+	<div class="x_controls">
+		<input type="text" name="youtube_playlist" id="youtube_playlist" value="{$module_info->youtube_playlist}"/>
+		<a href="#aboutYoutubePlaylist" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+	<p class="x_help-block" id="aboutYoutubePlaylist" hidden>{$lang->about_youtube_playlist}</p>
+	</div>
+</div>
+
+./svdocs.model.php::getDocInfo()에 아래의 코드 추가
+if( $module_info->youtube_playlist )
+{
+	$aPlaylist = explode( ',', $module_info->youtube_playlist );
+	$oDocInfo->youtube_playlist = $aPlaylist;
+}
+
+./svdocs.view.php::dispSvdocsIndex()에 아래의 코드 추가
+Context::set('youtube_playlist', $oDocInfo->youtube_playlist );
+
+2. 미사용 코드 블록 제거
+./svdocs.view.php에서 아래의 전역 변수 제거
+var $list_count = 20;
+var $page_count = 10;
+var $cache_file;
+var $interval;
+var $path;
+
+v 0.1.7
+7th, Aug 2017
+1. SMS 인증 기능을 svauth로 이전하고 제거
+./svdocs.view.php::dispSvdocsIndex()에서 아래의 코드를 
+if($this->module_srl) 
+	Context::set('module_srl', $this->module_srl);
+
+if( $this->module_info->skin )
+	$templatePath = (sprintf($this->module_path.'skins/%s', $this->module_info->skin));
+else
+	$templatePath = ($this->module_path.'skins/default');
+
+$oSvdocsModel = &getModel('svdocs');
+$oDocInfo = $oSvdocsModel->getDocInfo( $this->module_srl );
+$sSmsAgreement = $oSvdocsModel->getAgreement();
+
+Context::set('youtube_playlist', $oDocInfo->youtube_playlist );
+Context::set('remaining_applicantion', $oDocInfo->nRemainingApplicants );
+$this->module_info->sms_agreement = $sSmsAgreement;
+Context::set('module_info', $this->module_info);
+$this->setTemplateFile('content');
+
+아래와 같이 변경
+
+
+./svdocs.controller.php::procSvdocsSetAuthCode()에 아래의 코드를 추가
+if( !$nModuleSrl )
+	return new Object(-1, 'msg_invalid_module_srl');
+
+./tpl/svdocs_info.html에 아래의 코드 추가
+<div class="x_control-group">
+	<label class="x_control-label">{$lang->svauth_plugin_srl}</label>
+	<div class="x_controls">
+		<select name="svauth_plugin_srl">
+			<option value="">{$lang->cmd_select}</option>
+			<option loop="$plugins=>$key,$val" value="{$val->plugin_srl}" selected="selected"|cond="$val->plugin_srl==$config->plugin_srl">{$val->title}</option>
+		</select>
+		<a href="#svauth_plugin_srl_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+		<p id="svauth_plugin_srl_help" class="x_help-block" hidden>{$lang->about_svauth_plugin_srl}</p>
+	</div>
+</div>
+
+./svdocs.admin.view.php::dispSvdocsAdminInfo()에 아래의 코드 추가
+$oSvauthAdminModel = &getAdminModel('svauth');
+$oSvauthPlugin = $oSvauthAdminModel->getPluginList();
+Context::set('svauth_plugins', $oSvauthPlugin);
+
+./svdocs.admin.controller.php::procSvdocsAdminInsert()에 아래의 코드 제거
+if( $args->svdocs_application_type == 'sms_auth' )
+{
+	if( !getClass('textmessage'))
+	{
+		$this->setError(-1);
+		$this->setMessage('msg_error_textmessage_module_not_installed');
+		$returnUrl = Context::get('success_return_url') ? Context::get('success_return_url') : getNotEncodedUrl('', 'module', 'admin', 'module_srl', $output->get('module_srl'), 'act', 'dispSvdocsAdminInfo');
+		$this->setRedirectUrl($returnUrl);
+		return;
+	}
+}
+
+./svdocs.model.php::getDocInfo()에서 아래의 코드를
+$oDocInfo->svdocs_application_type = $module_info->svdocs_application_type;
+아래와 같이 변경 
+$oDocInfo->svauth_plugin_srl = $module_info->svauth_plugin_srl;
+
+./svdocs.cookie.php 제거
+./svdocs.controller.php::procSvdocsRegistration()에서 아래의 코드 제거
+$oCookie = new svdocsCookie( $nModuleSrl );
+if( (int)$module_info->duplicate_restriction_sec )
+{
+	if( $oCookie->isRestricted() )
+	{
+		$oCookie->setRestricted( (int)$module_info->duplicate_restriction_sec );
+		return new Object(-1, 'msg_already_registered');
+	}
+}
+
+if( $oDocInfo->svdocs_application_type == 'sms_auth' )
+{
+	$output = $this->_verifyAuthCode();
+	if(!$output->toBool()) 
+		return $output;
+}
+
+if( (int)$module_info->duplicate_restriction_sec )
+	$oCookie->setRestricted( (int)$module_info->duplicate_restriction_sec );
+
+./svdocs.controller.php::procSvdocsRegistration()에 아래의 코드 추가
+$nSvauthPluginSrl = (int)$module_info->svauth_plugin_srl;
+if( $nSvauthPluginSrl )
+{
+	Context::set('plugin_srl', $nSvauthPluginSrl);
+	Context::set('phone_number', $sApplicantPhoneNumber);
+	$oSvauthController = &getController('svauth');
+	$output = $oSvauthController->procSvauthValidateAuthCode();
+	if(!$output->toBool()) 
+		return new Object(-1, $output->message);
+
+	$this->setMessage($output->message );
+}
+
+./svdocs.controller.php::_verifyAuthCode() 제거
+./schemas/svdocs_authentication.xml 제거
+
+v 0.1.8
+11th, Aug 2017
+1. svauth module이 존재하지 않아도 관리자 화면이 작동하도록 수정
+./svdocs.admin.view.php::dispSvdocsAdminInfo()에서 아래의 코드를 
+$oSvauthAdminModel = &getAdminModel('svauth');
+$oSvauthPlugin = $oSvauthAdminModel->getPluginList();
+Context::set('svauth_plugins', $oSvauthPlugin);
+
+아래와 같이 변경
+if( getClass('svauth') )
+{
+	$oSvauthAdminModel = &getAdminModel('svauth');
+	$oSvauthPlugin = $oSvauthAdminModel->getPluginList();
+	Context::set('svauth_plugins', $oSvauthPlugin);
+}
+
+v 0.1.9
+12th, Aug 2017
+1. 불필요 항목 제거
+./tpl/svdocs_info.html에서 아래의 코드 제거
+<block cond="$module_info->svdocs_application_type == 'sms_auth'">
+<section class="section">
+	<h1>SMS인증 기본설정</h1>
+	<div class="x_control-group">
+		<label class="x_control-label">국가설정</label>
+		<div class="x_controls">
+			<select name="country_code">
+				<option value="">선택</option>
+					{@asort($lang->country_codes)}
+					<option loop="$lang->country_codes=>$key,$val" value="{$key}" selected="selected"|cond="$key == $config->country_code">{$val}</option>
+			</select>
+			<a href="#country_code_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+	<p id="country_code_help" hidden>문자가 기본 국가로 설정된 나라로 문자를 발송하게 합니다.<br />기본은 82 대한민국입니다.</p>
+		</div>
+	</div>
+	<div class="x_control-group">
+		<label class="x_control-label">중복가입</label>
+		<div class="x_controls"> 
+			<select name="number_overlap">
+				<option value="Y" selected="selected"|cond="$module_info->number_overlap=='Y'">허용</option>
+				<option value="N" selected="selected"|cond="$module_info->number_overlap=='N'">허용하지않음</option>
+			</select>
+			<a href="#number_overlap_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+			<p id="number_overlap_help" hidden>중복을 허용하지 않을 시 가입하신 휴대폰 번호로 재가입이 불가합니다.</p>
+		</div>
+	</div>
+	<div class="x_control-group">
+		<label class="x_control-label">발신번호</label>
+		<div class="x_controls">
+			<input type="text" size="5" name="sender_no" value="{$module_info->sender_no}" />
+			<a href="#sender_no_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+			<p id="sender_no_help" class="x_help-block" hidden>{$lang->about_sender_no}</p>
+		</div>
+	</div>
+	<div class="x_control-group">
+		<label class="x_control-label">인증번호 자릿수</label>
+		<div class="x_controls">
+			<input type="text" size="5" maxlength="2" name="digit_number" value="{$module_info->digit_number}" />
+			<a href="#digit_number_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+	<p id="digit_number_help" class="x_help-block" hidden>5로 설정하면 다섯자리의 숫자값이 인증코드로 발송됩니다.</p>
+		</div>
+	</div>
+	<div class="x_control-group">
+		<label class="x_control-label">인증번호 횟수 제한</label>
+		<div class="x_controls">
+			<input type="text" size="5" maxlength="2" name="day_try_limit" value="{$module_info->day_try_limit}" />
+			<a href="#day_try_limit_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+	<p id="day_try_limit_help" class="x_help-block" hidden>같은번호로 일정 횟수 이상 인증번호 요청시 해당 번호를 하루동안 금지합니다.</p>
+		</div>
+	</div>
+	<div class="x_control-group">
+		<label class="x_control-label">인증번호 재전송 제한</label>
+		<div class="x_controls">
+			<input type="text" size="5" maxlength="2" name="authcode_time_limit" value="{$module_info->authcode_time_limit}" />
+			<a href="#authcode_time_limit_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+	<p id="authcode_time_limit_help" class="x_help-block" hidden>연이어 인증번호를 여러번 전송받을 수 없도록 합니다. 예) 20으로 설정하면 인증번호를 전송받은 후 20초 후에 재전송이 가능하게 설정됩니다.</p>
+		</div>
+	</div>
+	<div class="x_control-group">
+		<label class="x_control-label">인증번호 치환</label>
+		<div class="x_controls">
+			<textarea name="message_content" rows="5" cols="40">{htmlspecialchars($module_info->message_content)}</textarea>
+			<a href="#message_content_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+	<p id="message_content_help" class="x_help-block" hidden>%authcode%에 인증번호가 치환되어 들어갑니다. 적절한 문구로 수정가능합니다. 예) [핸드폰인증] %authcode% ☜ 인증번호를 정확히 입력해 주세요.</p>
+		</div>
+	</div>
+	<div class="x_control-group">
+		<label class="x_control-label" for="agreement">약관내용</label>
+		<div class="x_controls">{$editor}</div>
+			<style scoped>
+				#smart_content,
+				#smart_content>.tool{clear:none !important}
+			</style>
+	</div>
+</block>
+
+2. 개인정보 수집 이용 약관 설정 추가
+./tpl/svdocs_info.html에 아래의 코드 추가
+<div class="x_control-group">
+	<label class="x_control-label" for="privacy_usage_term">개인정보 수집,이용 약관</label>
+	<div class="x_controls">{$editor}</div>
+	<style scoped>
+		#smart_content,
+		#smart_content>.tool{clear:none !important}
+	</style>
+</div>
+
+./svdocs.admin.controller.php::procSvdocsAdminInsert()에서 아래의 코드를
+if(!trim(strip_tags($args->agreement)))
+{
+	$agreement_file = _XE_PATH_.'files/svdocs/agreement_' . Context::get('lang_type') . '.txt';
+	FileHandler::removeFile($agreement_file);
+	$args->agreement = NULL;
+}
+// check agreement value exist
+if($args->agreement)
+{
+	$agreement_file = _XE_PATH_.'files/svdocs/agreement_' . Context::get('lang_type') . '.txt';
+	$output = FileHandler::writeFile($agreement_file, $args->agreement);
+	unset($args->agreement);
+}
+아래와 같이 변경
+if(!trim(strip_tags($args->agreement)))
+{
+	$agreement_file = _XE_PATH_.'files/svdocs/privacy_usage_term_' . Context::get('lang_type') . '.txt';
+	FileHandler::removeFile($agreement_file);
+	$args->agreement = NULL;
+}
+
+// check agreement value exist
+if($args->agreement)
+{
+	$agreement_file = _XE_PATH_.'files/svdocs/privacy_usage_term_' . Context::get('lang_type') . '.txt';
+	$output = FileHandler::writeFile($agreement_file, $args->agreement);
+	unset($args->agreement);
+}
+
+./svdocs.admin.model.php::getAgreement()를 getPrivacyTerm()로 변경
+./svdocs.admin.model.php::getPrivacyTerm()에서 아래의 코드를
+$agreement_file = _XE_PATH_.'files/svdocs/agreement_' . Context::get('lang_type') . '.txt';
+if(is_readable($agreement_file))
+{
+	return FileHandler::readFile($agreement_file);
+}
+
+$db_info = Context::getDBInfo();
+$agreement_file = _XE_PATH_.'files/svdocs/agreement_' . $db_info->lang_type . '.txt';
+if(is_readable($agreement_file))
+{
+	return FileHandler::readFile($agreement_file);
+}
+
+$lang_selected = Context::loadLangSelected();
+foreach($lang_selected as $key => $val)
+{
+	$agreement_file = _XE_PATH_.'files/svdocs/agreement_' . $key . '.txt';
+	if(is_readable($agreement_file))
+	{
+		return FileHandler::readFile($agreement_file);
+	}
+}
+$agreement_file = _XE_PATH_.'modules/svdocs/tpl/agreement_template.txt';
+if(is_readable($agreement_file))
+	return FileHandler::readFile($agreement_file);
+
+return null;
+
+아래와 같이 변경
+$agreement_file = _XE_PATH_.'files/svdocs/privacy_usage_term_' . Context::get('lang_type') . '.txt';
+if(is_readable($agreement_file))
+	return FileHandler::readFile($agreement_file);
+
+$db_info = Context::getDBInfo();
+$agreement_file = _XE_PATH_.'files/svdocs/privacy_usage_term_' . $db_info->lang_type . '.txt';
+if(is_readable($agreement_file))
+	return FileHandler::readFile($agreement_file);
+
+$lang_selected = Context::loadLangSelected();
+foreach($lang_selected as $key => $val)
+{
+	$agreement_file = _XE_PATH_.'files/svdocs/privacy_usage_term_' . $key . '.txt';
+	if(is_readable($agreement_file))
+		return FileHandler::readFile($agreement_file);
+}
+$agreement_file = _XE_PATH_.'modules/svdocs/tpl/agreement_template.txt';
+if(is_readable($agreement_file))
+	return FileHandler::readFile($agreement_file);
+return null;
+
+./svdocs.model.php::getAgreement()을 getPrivacyTerm()로 변경
+./svdocs.view.php::dispSvdocsIndex()에 아래의 코드를
+$sSmsAgreement = $oSvdocsModel->getAgreement();
+아래와 같이 변경
+$sPrivacyUsageTerm = $oSvdocsModel->getPrivacyTerm('privacy_usage_term');
+$sPrivacyShrTerm = $oSvdocsModel->getPrivacyTerm('privacy_shr_term');
+
+./svdocs.admin.view.php::dispSvdocsAdminSmsAuthList() 제거
+./tpl/header.html에서 아래의 코드 제거
+<block cond="$module_info->svdocs_application_type=='sms_auth'">			
+	<li class="x_active"|cond="$act=='dispSvdocsAdminSmsAuthList'"><a href="{getUrl('act','dispSvdocsAdminSmsAuthList','page','', 'rcpt_no','')}">{$lang->cmd_sms_auth_list}</a></li>
+</block>
+
+./svdocs.admin.view.php::dispSvdocsAdminTermsPrivacyUsage() 추가
+./svdocs.admin.view.php::dispSvdocsAdminTermsPrivacyShr() 추가
+./svdocs.admin.controller.php::procSvdocsAdminTermPrivacyUsageUpdate() 추가
+./svdocs.admin.controller.php::procSvdocsAdminTermPrivacyShrUpdate() 추가
+./svdocs.admin.view.php::dispSvdocsAdminGrantInfo() 추가
+./tpl/grant_list.html 추가
+
+3. auto_increment field 속성 적용
+./schemas/svdocs.xml에서 아래의 코드를
+<column name="doc_srl" type="number" size="11" notnull="notnull" primary_key="primary_key"/>
+아래와 같이 변경
+<column name="doc_srl" type="number" size="11" notnull="notnull" primary_key="primary_key" auto_increment="auto_increment"/>
+
+./svdocs.model.php::getMaxIndex() 제거
+./queries/insertSvdocs.xml에서 아래의 코드 제거
+<column name="doc_srl" var="doc_srl" filter="sequence()" notnull="notnull" />
+
+4. 사용자 정의 변수 기능 추가
+./svdocs.admin.view.php::dispSvdocsAdminExtraVars() 추가
+./svdocs.view.php::dispSvdocsIndex()에 아래의 코드 추가
+$oDocumentModel = getModel('document');
+$extra_keys = $oDocumentModel->getExtraKeys($this->module_srl);
+Context::set('extra_keys', $extra_keys);
+
+./svdocs.model.php::getExtraKeys() 추가
+
+./schemas/svdocs_extra_vars.xml 추가
+./queries/insertExtraVar.xml 추가
+./svdocs.controller.php::procSvdocsRegistration()에 아래의 코드 추가
+if(!$output->toBool())
+{
+	$oDB->rollback();
+	return $output;
+}
+
+// Insert extra variables if the document successfully inserted.
+$oSvdocsModel = getModel('svdocs');
+$extra_keys = $oSvdocsModel->getExtraKeys($args->module_srl);
+if(count($extra_keys))
+{
+	$oDB = DB::getInstance();
+	$nSvdocSrl = $oDB->db_insert_id();
+	foreach($extra_keys as $idx => $extra_item)
+	{
+		$value = NULL;
+		if(isset($obj->{'extra_vars'.$idx}))
+		{
+			$tmp = $obj->{'extra_vars'.$idx};
+			if(is_array($tmp))
+				$value = implode('|@|', $tmp);
+			else
+				$value = trim($tmp);
+		}
+		else if(isset($obj->{$extra_item->name})) $value = trim($obj->{$extra_item->name});
+		if($value == NULL) continue;
+
+		$this->_insertExtraVar($args->module_srl, $nSvdocSrl, $idx, $value, $extra_item->eid);
+	}
+}
+
+./schemas/svdocs.xml에서 아래의 코드 제거
+<column name="extra_vars" type="text" />
+<column name="applicant_phone_number" type="varchar" size="20" />
+<column name="applicant_postcode" type="varchar" size="10"/>
+<column name="applicant_addr" type="text" />
+<column name="applicant_description" type="varchar" size="255" />
+<column name="video_elapsed_time_after_x_seconds" type="varchar" size="8" />
+<column name="video_elapsed_time_when_paused" type="varchar" size="8" />
+<column name="video_full_played_cnt" type="number" size="1" default="0" />
+<column name="is_facebook_liked" type="char" size="1" />
+
+./queries/insertSvdocs.xml에서 아래의 코드 제거
+<column name="is_facebook_liked" var="is_facebook_liked" />
+<column name="applicant_postcode" var="applicant_postcode" />
+<column name="applicant_addr" var="applicant_addr" />
+<column name="applicant_description" var="applicant_description" />
+<column name="video_elapsed_time_after_x_seconds" var="video_elapsed_time_after_x_seconds" default="" />
+<column name="video_elapsed_time_when_paused" var="video_elapsed_time_when_paused" />
+<column name="video_full_played_cnt" var="video_full_played_cnt" />
+
+v 0.2.0
+14th, Aug 2017
+1. 사용자 정의 변수의 보안
+./svdocs.controller.php::procSvdocsRegistration()에 아래의 코드 추가
+if( $extra_item->type == 'text' || $extra_item->type == 'textarea' )
+	$value = strip_tags($value);
+
+2. module 별 사용자 약관 지정
+./svdocs.admin.view.php::dispSvdocsAdminTermsPrivacyUsage()에서 아래의 코드를
+Context::set('privacy_usage_term', $oSvdocsAdminModel->getPrivacyTerm('privacy_usage_term'));
+아래와 같이 변경
+Context::set('privacy_usage_term', $oSvdocsAdminModel->getPrivacyTerm($nModuleSrl, 'privacy_usage_term'));
+
+./svdocs.admin.view.php::dispSvdocsAdminTermsPrivacyShr()에서 아래의 코드를
+Context::set('privacy_shr_term', $oSvdocsAdminModel->getPrivacyTerm('privacy_shr_term'));
+아래와 같이 변경
+Context::set('privacy_shr_term', $oSvdocsAdminModel->getPrivacyTerm($nModuleSrl, 'privacy_shr_term'));
+
+./svdocs.admin.model.php::getPrivacyTerm()에서 아래의 코드를
+$agreement_file = _XE_PATH_.'files/svdocs/'.'_'.$sTermType.'_'.Context::get('lang_type').'.txt';
+if(is_readable($agreement_file))
+	return FileHandler::readFile($agreement_file);
+
+$db_info = Context::getDBInfo();
+$agreement_file = _XE_PATH_.'files/svdocs/'.'_'.$sTermType.'_'.$db_info->lang_type.'.txt';
+if(is_readable($agreement_file))
+	return FileHandler::readFile($agreement_file);
+
+$lang_selected = Context::loadLangSelected();
+foreach($lang_selected as $key => $val)
+{
+	$agreement_file = _XE_PATH_.'files/svdocs/'.'_'.$sTermType.'_'.$key.'.txt';
+	if(is_readable($agreement_file))
+		return FileHandler::readFile($agreement_file);
+}
+아래와 같이 변경
+$agreement_file = _XE_PATH_.'files/svdocs/'.$nModuleSrl.'_'.$sTermType.'_'.Context::get('lang_type').'.txt';
+if(is_readable($agreement_file))
+	return FileHandler::readFile($agreement_file);
+
+$db_info = Context::getDBInfo();
+$agreement_file = _XE_PATH_.'files/svdocs/'.$nModuleSrl.'_'.$sTermType.'_'.$db_info->lang_type.'.txt';
+if(is_readable($agreement_file))
+	return FileHandler::readFile($agreement_file);
+
+$lang_selected = Context::loadLangSelected();
+foreach($lang_selected as $key => $val)
+{
+	$agreement_file = _XE_PATH_.'files/svdocs/'.$nModuleSrl.'_'.$sTermType.'_'.$key.'.txt';
+	if(is_readable($agreement_file))
+		return FileHandler::readFile($agreement_file);
+}
+
+./svdocs.admin.controller.php::procSvdocsAdminTermPrivacyUsageUpdate()에서 아래의 코드를
+$agreement_file = _XE_PATH_.'files/svdocs/privacy_usage_term_' . Context::get('lang_type') . '.txt';
+아래와 같이 변경
+$nModuleSrl = Context::get('module_srl');
+if( !$nModuleSrl )
+	return new Object(-1, 'msg_invalid_module_srl');
+$agreement_file = _XE_PATH_.'files/svdocs/'.$nModuleSrl.'_privacy_usage_term_' . Context::get('lang_type') . '.txt';
+
+./svdocs.admin.controller.php::procSvdocsAdminTermPrivacyShrUpdate()에서 아래의 코드를
+$agreement_file = _XE_PATH_.'files/svdocs/privacy_shr_term_' . Context::get('lang_type') . '.txt';
+아래와 같이 변경
+$nModuleSrl = Context::get('module_srl');
+if( !$nModuleSrl )
+	return new Object(-1, 'msg_invalid_module_srl');
+$agreement_file = _XE_PATH_.'files/svdocs/'.$nModuleSrl.'_privacy_shr_term_' . Context::get('lang_type') . '.txt';
+
+./svdocs.model.php::getPrivacyTerm()에서 아래의 코드를
+$agreement_file = _XE_PATH_.'files/svdocs/'.'_'.$sTermType.'_'.Context::get('lang_type').'.txt';
+if(is_readable($agreement_file))
+	return FileHandler::readFile($agreement_file);
+
+$db_info = Context::getDBInfo();
+$agreement_file = _XE_PATH_.'files/svdocs/'.'_'.$sTermType.'_'.$db_info->lang_type.'.txt';
+if(is_readable($agreement_file))
+	return FileHandler::readFile($agreement_file);
+
+$lang_selected = Context::loadLangSelected();
+foreach($lang_selected as $key => $val)
+{
+	$agreement_file = _XE_PATH_.'files/svdocs/'.'_'.$sTermType.'_'.$key.'.txt';
+	if(is_readable($agreement_file))
+		return FileHandler::readFile($agreement_file);
+}
+아래와 같이 변경
+$agreement_file = _XE_PATH_.'files/svdocs/'.$nModuleSrl.'_'.$sTermType.'_'.Context::get('lang_type').'.txt';
+if(is_readable($agreement_file))
+	return FileHandler::readFile($agreement_file);
+
+$db_info = Context::getDBInfo();
+$agreement_file = _XE_PATH_.'files/svdocs/'.$nModuleSrl.'_'.$sTermType.'_'.$db_info->lang_type.'.txt';
+if(is_readable($agreement_file))
+	return FileHandler::readFile($agreement_file);
+
+$lang_selected = Context::loadLangSelected();
+foreach($lang_selected as $key => $val)
+{
+	$agreement_file = _XE_PATH_.'files/svdocs/'.$nModuleSrl.'_'.$sTermType.'_'.$key.'.txt';
+	if(is_readable($agreement_file))
+		return FileHandler::readFile($agreement_file);
+}
+
+3. 신청자 목록 화면 수정
+./svdocs.admin.view.php::dispSvdocsAdminApplicantsBoard()를 dispSvdocsAdminApplicantsList로 변경
+./svdocs.admin.view.php::dispSvdocsAdminApplicantsList()에 아래의 코드 추가
+$oMemberModel = &getModel('member');
+$columnList = array('member_srl', 'user_id', 'email_address', 'user_name', 'nick_name', 'regdate');
+$member_info = $oMemberModel->getMemberInfoByMemberSrl($val->member_srl, 0, $columnList);
+$output->data[$key]->member_srl = $member_info->member_srl;
+$output->data[$key]->user_id = $member_info->user_id;
+
+v 0.2.1
+18th, Aug 2017
+1. 관리자에서 docs detail 열람 기능 추가
+./svdocs.admin.view.php::dispSvdocsAdminDocDetail() 추가
+./svdocs.admin.model.php::getDocExtraVars() 추가
+
+2. hidden 사용자 정의 변수 추가
+./svdocs.view.php::dispSvdocsIndex()에 아래의 코드 추가
+foreach($extra_keys as $key => $val)
+{
+	if( preg_match("/^hidden_/i", $val->eid, $matches) )
+		unset( $extra_keys[$key] );
+}
+./svdocs.controller.php::procSvdocsRegistration()에 아래의 코드 추가
+if( preg_match("/^hidden_/i", $extra_item->eid, $matches) )
+	$oExtraVars->{'extra_vars'.$idx} = $oExtraVars->{$extra_item->eid};
+
+3. 입력 필드 고유값 점검 기능 추가
+./queries/getDocByMemberSrl.xml 추가
+./queries/getDocByExtraVarEid.xml 추가
+./svdocs.controller.php::procSvdocsRegistration()에 아래의 코드 추가
+if( $oDocInfo->svdocs_unique_field[$extra_item->eid] ) // 사용자 정의 변수 중복 방지
+{
+	$oExtArgs->module_srl = $nModuleSrl;
+	$oExtArgs->eid = $extra_item->eid;
+	$oExtArgs->value = $oExtraVars->{'extra_vars'.$idx};
+	$output = executeQueryArray('svdocs.getDocByExtraVarEid', $oExtArgs);
+	if(!$output->toBool() )
+		return $output;
+	if( count($output->data) > 0 )
+		return new Object(-1, sprintf(Context::getLang('msg_value_must_be_unique'), $extra_item->name));
+}
+
+4. $module_info->youtube_playlis 를 스킨으로 이동
+./tpl/svdocs_info.html에서 아래의 코드 제거
+<div class="x_control-group">
+	<label class="x_control-label" for="youtube_playlist">{$lang->youtube_playlist}</label>
+	<div class="x_controls">
+		<input type="text" name="youtube_playlist" id="youtube_playlist" value="{$module_info->youtube_playlist}"/>
+		<a href="#aboutYoutubePlaylist" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+	<p class="x_help-block" id="aboutYoutubePlaylist" hidden>{$lang->about_youtube_playlist}</p>
+	</div>
+</div>
+./svdocs.model.php::getDocInfo()에서 아래의 코드 제거
+if( $module_info->youtube_playlist )
+{
+	$aPlaylist = explode( ',', $module_info->youtube_playlist );
+	$oDocInfo->youtube_playlist = $aPlaylist;
+}
+
+./svdocs.view.php::dispSvdocsIndex()에서 아래의 코드 제거
+Context::set('youtube_playlist', $oDocInfo->youtube_playlist );
+
+v 0.2.2
+21st, Aug 2017
+1. 접수 시작 일시와 teaser 모드 설정 기능 추가
+./tpl/svdocs_info.html에 아래의 코드 추가
+<div class="x_control-group">
+	<label class="x_control-label" for="open_datetime">{$lang->open_datetime}</label>
+	<div class="x_controls">
+		<input type="text" name="open_datetime" id="open_datetime" value="{$module_info->open_datetime}" />
+		<input type="checkbox" name="use_teaser_mode" id="use_teaser_mode" value="Y" checked="checked"|cond="$module_info->use_teaser_mode == 'Y'" />{$lang->cmd_use_teaser_mode}
+		<a href="#aboutOpenDatetime" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+		<p class="x_help-block" id="aboutOpenDatetime" hidden>{$lang->about_open_datetime}</p>
+	</div>
+</div>
+
+./svdocs.view.php::dispSvdocsIndex()에 아래의 코드 추가
+$nOpenTimestamp = strtotime( $this->module_info->open_datetime);
+if( $this->module_info->use_teaser_mode != 'Y' && time() < $nOpenTimestamp )
+	return new Object(1, sprintf(Context::getLang('msg_svodcs_not_opened_yet'), date('Y-m-d h:i:s', $nOpenTimestamp) )); 
+
+./svdocs.admin.controller.php::procSvdocsAdminInsert()에 아래의 코드 추가
+if($args->use_teaser_mode != 'Y') 
+	$args->use_teaser_mode = '';
+
+./svdocs.controller.php::procSvdocsRegistration()에 아래의 코드 추가
+$nOpenTimestamp = strtotime( $oDocInfo->timeOpendatetime);
+if( time() < $nOpenTimestamp )
+	return new Object(1, sprintf(Context::getLang('msg_svodcs_not_opened_yet'), date('Y-m-d h:i:s', $nOpenTimestamp) )); 
+
+2. SMS 인증 기능 설정 추가
+./schemas/svdocs.xml에 아래의 코드 추가
+<column name="applicant_phone" type="varchar" size="13" index="idx_applicant_phone" />
+
+3. SMS 인증 선택시 핸드폰 번호 수집 약관 출력 기능 추가
+./svdocs.view.php::dispSvdocsIndex()에 아래의 코드 추가
+$oSvauthModel = &getModel('svauth');
+$oPluginInfo = $oSvauthModel->getPlugin($nSvauthPluginSrl);
+Context::set('svauth_on', 'Y');
+Context::set('sms_auth_agreement', nl2br($oPluginInfo->_g_oPluginInfo->sms_auth_agreement) );
+
+4. hidden_extar_vars 기능 추가
+./svdocs.view.php::dispSvdocsIndex()에서 아래의 코드를 제거
+foreach($extra_keys as $key => $val)
+{
+	if( preg_match("/^hidden_/i", $val->eid, $matches) )
+	{
+		unset( $extra_keys[$key] );
+	}
+}
+
+./svdocs.mobile.php::dispSvdocsIndex()에서 아래의 코드를 제거
+foreach($extra_keys as $key => $val)
+{
+	if( preg_match("/^hidden_/i", $val->eid, $matches) )
+	{
+		unset( $extra_keys[$key] );
+	}
+}
+
+./svdocs.model.php::getExtraVarsHTML() 추가
+./tpl/extra_vars.html 추가
+
+./svdocsextravar.class.php::getFormHTML()에 아래의 코드 추가
+case "hidden" :
+	$buff[] =' <input type="hidden" name="' . $column_name . '" id="'.$eid.'"'. ' value="' . ($value ? $value : $default) . '" />';
+	break;
+
+5. svauth v 0.3.7에 대응하여 호출 방법 변경
+./svdocs.controller.php::procSvdocsSetAuthCode()에 아래의 코드를
+$output = $oSvauthController->procSvauthSetAuthCode();
+아래와 같이 변경
+$output = $oSvauthController->procSvauthSetAuthCode($nModuleSrl);
+
+v 0.2.3
+26th, Aug 2017
+1. facebook App Id를 모듈 기본 설정 기능으로 변경
+./svdocs.admin.view.php::dispSvdocsAdminConfig() 추가
+./tpl/default_setting.html 추가
+
+./svdocs.admin.model.php::getModuleConfig()에서 아래의 코드를
+if (!$GLOBALS['__svdocs_authentication_config__'])
+{
+	$oModuleModel = &getModel('module');
+	//$config = $oModuleModel->getModuleConfig('svdocs');
+	$config = $oModuleModel->getModuleInfoByModuleSrl($nModuleSrl);
+	//$config = Context::get('module_info');
+
+	if(!$config->digit_number) $config->digit_number = 5;
+	if(!$config->country_code) $config->country_code = 82;
+	if(!$config->resend_interval) $config->resend_interval = 20;
+	if(!$config->day_try_limit) $config->day_try_limit = 10;
+	if(!$config->message_content) $config->message_content = '[핸드폰인증] %authcode% ☜  인증번호를 정확히 입력해 주세요';
+	if(!$config->number_overlap) $config->number_overlap = 'Y';
+
+	$GLOBALS['__svdocs_authentication_config__'] = $config;
+}
+return $GLOBALS['__svdocs_authentication_config__'];
+아래와 같이 변경
+$oModuleModel = &getModel('module');
+if( $nModuleSrl )
+{
+	if (!$GLOBALS['__svdocs_module_config__'])
+	{
+		$config = $oModuleModel->getModuleInfoByModuleSrl($nModuleSrl);
+		$GLOBALS['__svdocs_module_config__'] = $config;
+	}
+	return $GLOBALS['__svdocs_module_config__'];
+}
+else
+	return $oModuleModel->getModuleConfig('svdocs');
+
+./svdocs.admin.controller.php::procSvdocsAdminInsertConfig() 추가
+./svdocs.admin.controller.php::_saveModuleConfig() 추가
+./svdocs.model.php::getModuleConfig() 추가
+
+./svdocs.view.php::dispSvdocsIndex()에 아래의 코드 추가
+$oDefaultConfig = $oSvdocsModel->getModuleConfig();
+Context::set('config', $oDefaultConfig);
+
+./svdocs.mobile.php::dispSvdocsIndex()에 아래의 코드 추가
+$oDefaultConfig = $oSvdocsModel->getModuleConfig();
+Context::set('config', $oDefaultConfig);
+
+2. 모듈별 응모자 리스트 표시 코드 추가
+./queries/getApplicantList.xml에서 아래의 코드 제거
+<column name="applicant_description" />
+
+./svdocs.view.php::dispSvdocsIndex()에 아래의 코드 추가
+$output = $oSvdocsModel->getDocList($this->module_srl);
+Context::set('applicant_list', $output->data);
+
+./svdocs.mobile.php::dispSvdocsIndex()에 아래의 코드 추가
+$output = $oSvdocsModel->getDocList($this->module_srl);
+Context::set('applicant_list', $output->data);
+
+v 0.2.4
+27th, Aug 2017
+1. extra_vars 캐쉬 기능을 document 모듈에서 흡수
+./svdocs.admin.controller.php::procSvdocsAdminInsertExtraVar() 추가
+./svdocs.controller.php::insertSvdocsExtraKey() 추가
+
+2. youtube 시청 행태 변수 변경
+./tpl/skin.js/youtube.js에서 아래의 코드를
+var g_nViewFinishCnt = 0;
+g_nViewFinishCnt = _g_nPlayCnt++;
+var g_fElapsedTimeWhenPaused = 0;
+g_fElapsedTimeWhenPaused = player.getCurrentTime();
+아래와 같이 변경
+var g_nPlayingFinishCnt = 0;
+g_nPlayingFinishCnt = _g_nPlayCnt++;
+var g_fElapsedSecondWhenPaused = 0;
+g_fElapsedSecondWhenPaused = player.getCurrentTime();
+
+3. user agent 확인 코드 개선
+./svdocs.controller.php::insertSvdocsExtraKey()에서 아래의 코드를
+$args->is_mobile = $_COOKIE['mobile'] == 'false' ? 'N' : 'Y';
+아래와 같이 변경
+$args->is_mobile = Mobile::isMobileCheckByAgent() ? 'Y' : 'N';
+
+v 0.2.5
+28th, Aug 2017
+1. 응모자 상세 정보 보기 화면에서 핸드폰 번호 표시 추가
+./tpl/applicant_detail.html 에서 아래의 코드 추가
+<tr cond="$svdocs_detail->applicant_phone">
+	<th scope="row">{$lang->applicant_phone}</th>
+	<td class="text">{$svdocs_detail->applicant_phone}</td>
+</tr>
+
+2. 응모 성공하면 응모하기 버튼 비활성화
+./tpl/skin.js/registration.js에서 아래의 코드를
+exec_xml('svdocs', 'procSvdocsRegistration', params, function(ret_obj) {
+	if( ret_obj['message'] == 'success' )
+	{
+		if( jQuery('#layer1').length ) // for pc
+		{
+			jQuery('#layer1').fadeOut(); // 신청양식 숨기기
+			setTimeout("layer_open('layer_thankyou')", 500); // 3000ms(3초)가 경과하면 ozit_timer_test() 함수를 실행합니다.
+		}
+		else // for mobile
+		{
+			alert('신청해 주셔서 감사드립니다.');
+			_disableBtn( '#btnSubmit' );
+		}
+	}
+	//var sDisctype = ret_obj['cleee'];
+},respons);
+아래와 같이 변경
+exec_xml('svdocs', 'procSvdocsRegistration', params, function(ret_obj) {
+	if( ret_obj['message'] == 'success' )
+	{
+		_disableBtn( '#btnSubmit' );
+		if( jQuery('#layer1').length ) // for pc
+		{
+			jQuery('#layer1').fadeOut(); // 신청양식 숨기기
+			setTimeout("layer_open('layer_thankyou')", 500); // 3000ms(3초)가 경과하면 ozit_timer_test() 함수를 실행합니다.
+		}
+		else // for mobile
+			alert('신청해 주셔서 감사드립니다.');	
+	}
+	//var sDisctype = ret_obj['cleee'];
+},respons);
+
+v 0.2.6
+29th, Aug 2017
+1. 동영상 공유 스킨 재생 초수 제한 기능 오류 수정
+./skins/open_application_youtube/content.html 에서 아래의 코드를
+if( nMinPlayedSec > g_ElapsedSecond )
+{
+	alert('조금 더 시청해 주세요~');
+	return;
+}
+아래와 같이 변경
+if( nMinPlayedSec > g_nElapsedSecond )
+{
+	var nRemainingSeconds = nMinPlayedSec - g_nElapsedSecond;
+	alert( nRemainingSeconds + '초만 더 시청해 주세요~');
+	return;
+}
+
+v 0.2.7
+1st, Sep 2017
+1. 관리자 CSV 다운로드에서 applicant_phone 추가
+./svdocs.admin.controller.php::procSvdocsAdminCSVDownloadByModule()에서 아래의 코드를
+$oDataConfig = Array( 'doc_srl','module_srl','member_srl','applicant_name','ipaddress','privacy_collection','privacy_sharing','user_agent','datetimestamp_entry','datetimestamp_final','duration_sec','init_referral','utm_source', 'utm_medium', 'utm_campaign', 'utm_term','is_mobile','regdate','member_id' );
+아래와 같이 변경
+$oDataConfig = Array( 'doc_srl','module_srl','member_srl','applicant_name','applicant_phone','ipaddress','privacy_collection','privacy_sharing','user_agent','datetimestamp_entry','datetimestamp_final','duration_sec','init_referral','utm_source', 'utm_medium', 'utm_campaign', 'utm_term','is_mobile','regdate','member_id' );
+
+v 0.2.8
+2nd, Sep 2017
+1. 응모 완료 문구를 응모 종료로 변경
+./tpl/skin.js/countdown_timer.js에서 아래의 코드를
+clock.innerHTML = "<img src='/modules/svdocs/tpl/skin.images/event_closed_357x38.jpg'>";
+아래와 같이 변경
+clock.innerHTML = "<img src='/modules/svdocs/tpl/skin.images/event_closed_357x36.jpg'>";
+
+2. 스킨 변수명 변경
+./svdocs.view.php::dispSvdocsIndex()에서 아래의 코드를
+Context::set('remaining_applicantion', $oDocInfo->nRemainingApplicants );
+아래와 같이 변경
+Context::set('remaining_applicants', $oDocInfo->nRemainingApplicants );
+
+./skins/open_application_youtube/content.html에서 아래의 코드를
+initializeClock('clockdiv', '{$module_info->open_datetime}', {$remaining_applicantion});
+initializeCounter('#remainingQtydiv', {$remaining_applicantion} );
+아래와 같이 변경
+initializeClock('clockdiv', '{$module_info->due_datetime}', {$remaining_applicants});
+initializeCounter('#remainingQtydiv', {$remaining_applicants} );
+
+./skins/education_slider/content.html에서 아래의 코드를
+initializeClock('clockdiv', '{$module_info->open_datetime}', {$remaining_applicantion});
+아래와 같이 변경
+initializeClock('clockdiv', '{$module_info->due_datetime}', {$remaining_applicants});
+
+./m.skins/education_slider_mob/mobile.html에서 아래의 코드를
+initializeClock('clockdiv', '{$module_info->open_datetime}', {$remaining_applicantion});
+아래와 같이 변경
+initializeClock('clockdiv', '{$module_info->due_datetime}', {$remaining_applicants});
+
+3. 오류 수정
+./svdocs.admin.controller.php::procSvdocsAdminDeleteDoc()에서 아래의 코드를
+$returnUrl = Context::get('success_return_url') ? Context::get('success_return_url') : getNotEncodedUrl('', 'module', 'admin', 'act', 'dispSvdocsAdminApplicantsBoard', 'module_srl', 
+아래와 같이 변경
+$returnUrl = Context::get('success_return_url') ? Context::get('success_return_url') : getNotEncodedUrl('', 'module', 'admin', 'act', 'dispSvdocsAdminApplicantsList', 'module_srl', $module_srl, 
+
+4. 등록된 응모 정보 수정 기능
+./svdocs.admin.view.php::dispSvdocsAdminApplicantsBoardConfidential() 제거
+./svdocs.admin.view.php::dispSvdocsAdminApplicantsBoardConfidentialInsert() 제거
+./svdocs.admin.controller.php::procSvdocsAdminConfidentialCSVDownloadByModule() 제거
+./svdocs.admin.controller.php::procSvdocsRegistrationConfidential() 제거
+./queries/getAdminSvdocsConfidentialByModule.xml 제거
+./queries/getConfidentialApplicantPhonenumber.xml 제거
+./queries/updateSvdocsConfidential.xml 제거
+./tpl/skin.js/registratin.js::registerConfidential() 제거
+./tpl/skin.js/registratin.js::validateConfidential() 제거
+./schemas/svdocs_confidential.xml 제거
+
+./tpl/skin.js/registratin.js::validateUpdateRequest() 추가
+./svdocs.admin.controller.php::procSvdocsAdminInsert()에 아래의 코드 추가
+if($args->is_allow_update != 'Y') 
+	$args->is_allow_update = '';
+
+./tpl/skin.js/registratin.js::askUpdate() 추가
+./svdocs.model.php::getSvdocsUpdatePermission() 추가
+./svdocs.view.php::dispSvdocsUpdate() 추가
+./queries/getDocByModuleMember.xml 추가
+./svdocs.view.php::dispSvdocsGuestLogin() 추가
+./svdocs.view.php::dispSvdocsGuestDetail() 추가
+./svdocs.view.php::_setModificationForm() 추가
+./svdocs.model.php::getSvdocsValidateConfidential() 제거
+./svdocs.controller.php::procSvdocsUpdate() 추가
+./svdocs.controller.php::_updateExtraVar() 추가
+./queries/updateExtraVar.xml 제거
+
+5. 미사용 코드 제거
+./svdocs.controller.php::getRandNumber() 제거
+
+./svdocs.view.php::dispSvdocsIndex()에서 아래의 코드 제거
+if( $this->module_info->skin )
+	$templatePath = sprintf($this->module_path.'skins/%s', $this->module_info->skin);
+else
+	$templatePath = $this->module_path.'skins/default';
+
+./svdocs.mobile.php::dispSvdocsIndex()에서 아래의 코드 제거
+if( $this->module_info->skin )
+	$templatePath = sprintf($this->module_path.'skins/%s', $this->module_info->skin);
+else
+	$templatePath = $this->module_path.'skins/default';
+
+
+6. 사용자 정의 변수 제거 기능 추가
+./svdocs.admin.controller.php::procSvdocsAdminDeleteExtraVar() 추가
+./svdocs.controller.php::deleteSvdocsExtraKeys() 추가
+
+7. 사용자 정의 변수 순서 변경 기능 추가
+./svdocs.admin.controller.php::procSvdocsAdminMoveExtraVar() 추가
+
+8. 주소 형식의 사용자 정의 변수 필수 입력 기능 활성화
+./svdocs.controller.php::procSvdocsRegistration()에서 아래의 코드를
+if(!isset($oExtraVars->{'extra_vars'.$idx}))
+	return new Object(-1, sprintf(Context::getLang('msg_value_must_be_filled'), $extra_item->name));
+아래와 같이 변경
+if( $extra_item->type == 'kr_zip' )
+{
+	foreach( $oExtraVars->{'extra_vars'.$idx} as $key=>$val)
+	{
+		if( strlen( strip_tags( trim($val) ) ) == 0 )
+			return new Object(-1, sprintf(Context::getLang('msg_value_must_be_filled'), $extra_item->name));
+	}
+}
+else
+{
+	if(!isset($oExtraVars->{'extra_vars'.$idx}))
+		return new Object(-1, sprintf(Context::getLang('msg_value_must_be_filled'), $extra_item->name));
+}
+
+v 0.2.9
+5th, Sep 2017
+1. 중복 응모자가 응모 정보 수정할 때 정확한 에러 메세지 표시
+./svdocs.view.php::dispSvdocsGuestDetail()에서 아래의 코드를
+if( count( $output->data ) != 1 ) 
+{
+	$returnUrl = Context::get('error_return_url') ? Context::get('error_return_url') : getNotEncodedUrl('', 'mid', Context::get('mid'), 'act', 'dispSvdocsUpdate');
+	$this->setRedirectUrl($returnUrl);
+	return new Object(-1, 'msg_unregistered_phone_number');
+}
+아래와 같이 변경
+$nRecCnt = count( $output->data );
+if( $nRecCnt == 0 ) 
+{
+	$returnUrl = Context::get('error_return_url') ? Context::get('error_return_url') : getNotEncodedUrl('', 'mid', Context::get('mid'), 'act', 'dispSvdocsUpdate');
+	$this->setRedirectUrl($returnUrl);
+	return new Object(-1, 'msg_error_unregistered_phone_number');
+}
+else if( $nRecCnt > 1 ) 
+{
+	$returnUrl = Context::get('error_return_url') ? Context::get('error_return_url') : getNotEncodedUrl('', 'mid', Context::get('mid'), 'act', 'dispSvdocsUpdate');
+	$this->setRedirectUrl($returnUrl);
+	return new Object(-1, 'msg_error_weird_phone_number');
+}
+
+2. sms auth plugin 연결하면 중복금지 필드에 핸드폰번호 노출시킴
+./svdocs.admin.view.php::dispSvdocsAdminInfo()에 아래의 코드 추가
+if( $module_info->svauth_plugin_srl )
+{
+	$aEextraKey[$nIdx]->name = '핸드폰번호';
+	$aEextraKey[$nIdx++]->eid = 'applicant_phone';
+}
+
+./svdocs.controller.php::procSvdocsRegistration()에 아래의 코드 추가
+if( $oDocInfo->svdocs_unique_field[applicant_phone] == 'on' )
+{
+	$args->applicant_phone = $sApplicantPhoneNumber;
+	$args->module_srl = $nModuleSrl;
+	$output = executeQueryArray('svdocs.getDocByApplicantPhone', $args);
+	if(!$output->toBool() )
+		return $output;
+	
+	if( count($output->data) > 0 )
+		return new Object( -1, 'msg_already_registered');
+}
+
+./queries/getDocByApplicantPhone.xml 추가
+
+2. 데이터 다운로드 format 개선
+./svdocs.admin.controller.php::procSvdocsAdminCSVDownloadByModule() 코드 개선
+
+v 0.3.0
+12th, Sep 2017
+1. 응모자 정보 삭제 기능 오류 수정
+./tpl/apllicant_list.html에서 아래의 코드를
+<td><input type="checkbox" name="cart" value="{$val->doc_srl}" data-appli-name="{$val->applicant_name}" class="selectedModule" data-mid="{$val->mid}" data-browser_title="{$val->browser_title}" /></td>
+아래와 같이 변경
+<td><input type="checkbox" name="cart" value="{$val->doc_srl}" data-appli-name="{$val->applicant_name}" data-appli-phone="{$val->applicant_phone}" /></td>
+
+2. ./skins/open_application_youtube 스킨에 GA goal prefix 정의 기능 추가
+./skins/open_application_youtube/add.html::_doPreRegistration()에 아래의 코드 추가
+<block cond="!Mobile::isMobileCheckByAgent()">
+	var sVirtualConversionTitle = 'thankyou_{$module_info->module_srl}_pc';
+</block>
+<block cond="Mobile::isMobileCheckByAgent()">
+	var sVirtualConversionTitle = 'thankyou_{$module_info->module_srl}_mob';
+</block>
+
+./skins/open_application_youtube/add.html::showApplicationForm()에 아래의 코드 추가
+if( typeof sendClickEventGatk === 'function' )
+	sendClickEventGatk( 'button', 'open_form_' + _g_sVirtualConversionPrefix, '#' );
+
+./tpl/skin.js/registration.js::doRegistration()에서 아래의 코드 추가
+if( typeof checkNonEcConversionGatk === 'function' )
+	checkNonEcConversionGatk( '/'+sVirtualConversionPrefix+'.html', sVirtualConversionPrefix+' page' );
+
+v 0.3.1
+14th, Sep 2017
+1. ./skins/education_slider 스킨의 input text 표시 필드폭 증가
+./skins/education_slider/_form.html에 아래의 코드 추가
+#exForm input[type=text]
+{
+	width: 400px;
+}
+
+2. ./skins/open_application_youtube 스킨에서 카카오톡 공유하기 버튼 추가
+./svdocs.view.php::dispSvdocsIndex()에 아래의 코드 추가
+Context::set('kakao_link', "http://".$_SERVER[HTTP_HOST].$_SERVER[REQUEST_URI]);
+
+./skins/open_application_youtube/_add_mob.html에 아래의 코드 추가
+<script src="//developers.kakao.com/sdk/js/kakao.min.js"></script>
+
+<script type='text/javascript'>
+//<![CDATA[
+Kakao.init('{$config->kakao_app_js_key}');
+Kakao.Link.createScrapButton({
+  container: '#kakao-link-btn',
+  requestUrl: '{$kakao_link}'
+});
+//]]>
+</script>
+
+./tpl/default_setting.html에 아래의 코드 추가
+<div class="x_control-group">
+	<label class="x_control-label">kakao app JavaScript 키</label>
+	<div class="x_controls">
+		<input type="text" name="kakao_app_js_key" value="{$config->kakao_app_js_key}" />
+		<a href="#facebook_app_id_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+		<p id="kakao_app_js_key_help" class="x_help-block" hidden>{$lang->about_kakao_app_js_key}</p>
+	</div>
+</div>
+
+./svdocs.admin.controller.php::procSvdocsAdminInsertConfig()에 아래의 코드 추가
+$sKakaoAppJsKey = Context::get('kakao_app_js_key');
+if( strlen( $sKakaoAppJsKey ) )
+	$oArgs->kakao_app_js_key = $sKakaoAppJsKey;
+
+v 0.3.2
+19th, Sep 2017
+1. config by mid 저장 기능 개선
+./svdocs.admin.controller.php::_saveConfigByMid() 추가
+
+./svdocs.admin.controller.php::procSvdocsAdminInsert()에서 아래의 코드를
+if($args->module_srl)
+{
+	$oModuleModel = getModel('module');
+	$columnList = array('module_srl');
+	$module_info = $oModuleModel->getModuleInfoByModuleSrl($args->module_srl, $columnList);
+	if($module_info->module_srl != $args->module_srl)
+		unset($args->module_srl);
+	else
+	{
+		foreach($args as $key=>$val)
+			$module_info->{$key} = $val;
+		$args = $module_info;
+	}
+}
+$oModuleController = getController('module');
+// Insert/update depending on module_srl
+if(!$args->module_srl)
+{
+	$output = $oModuleController->insertModule($args);
+	$msg_code = 'success_registed';
+}
+else
+{
+	$output = $oModuleController->updateModule($args);
+	$msg_code = 'success_updated';
+}
+아래와 같이 변경
+$output = $this->_saveConfigByMid($args);
+if(!$output->toBool()) 
+	return $output;
+
+2. 개인정보 3자제공 약관 표시 여부 선택 기능 추가
+./svdocs.admin.controller.php::procSvdocsAdminTermPrivacyShrUpdate()에 아래의 코드 추가
+$bShowTerm = Context::get('is_hide_privacy_shr_term');
+$args->module = 'svdocs';
+$args->mid = Context::get('mid');
+$args->module_srl = $nModuleSrl;
+$args->is_hide_privacy_shr_term = $bShowTerm;
+$output = $this->_saveConfigByMid($args);
+if(!$output->toBool()) 
+	return $output;
+
+v 0.3.3
+20th, Sep 2017
+1. 사용자 정의 변수에서 다중선택(checkbox)에 자동으로 (복수선택) postfix 추가
+./svdocs.view.php::dispSvdocsIndex()에 아래의 코드 추가
+foreach($extra_keys as $key=>$val)
+{
+	if( $val->type == 'checkbox' )
+		$val->name .= Context::getLang('title_multiple_choice');
+}
+./svdocs.mobile.php::dispSvdocsIndex()에 아래의 코드 추가
+foreach($extra_keys as $key=>$val)
+{
+	if( $val->type == 'checkbox' )
+		$val->name .= Context::getLang('title_multiple_choice');
+}
+
+2. /skins/education_slider/에서 hidden 변수 처리 추가
+./skins/education_slider/_form.html에서 아래의 코드를
+<em cond="$val->is_required=='Y'">(필수)</em> {$val->name}<strong>:</strong>	{$val->getFormHTML()}<BR>
+아래와 같이 변경
+<block cond="$val->type!='hidden'">
+		<em cond="$val->is_required=='Y'">(필수)</em> {$val->name}<strong>:</strong>	{$val->getFormHTML()}<BR>
+</block>
+<block cond="$val->type=='hidden'">
+	{$val->getFormHTML()}
+</block>
+
+./m.skins/education_slider_mob/_form.html에서 아래의 코드를
+<em cond="$val->is_required=='Y'">(필수)</em> {$val->name}<strong>:</strong>	{$val->getFormHTML()}<BR>
+아래와 같이 변경
+<block cond="$val->type!='hidden'">
+	<em cond="$val->is_required=='Y'">(필수)</em> {$val->name}<strong>:</strong>	{$val->getFormHTML()}<BR>
+</block>
+<block cond="$val->type=='hidden'">
+	{$val->getFormHTML()}
+</block>
+
+v 0.3.4
+21st, Sep 2017
+1. youtube api 재생정지 메소드 개선
+./tpl/skin.js/youtube.js에서 player.pauseVideo()가 정의되지 않으면 player.pauseVideo(); 호출하지 않음
+
+2. 카카오톡 공유하기 버튼 클릭 감지 추가
+./m.skins/open_application_youtube/_add_mob.html에 아래의 코드 추가
+function _sendKakaoTalkShrEvent()
+{
+	sendClickEventGatk( 'button', '{$module_info->module_srl}_mob_kakaotalk_shr', '#' );
+}
+
+v 0.3.5
+22nd, Sep 2017
+1. 티저 기간에 등록 form 열리지 않도록 변경함
+./svdocs.model.php::getSvdocsExpiration()에 아래의 코드 추가
+if( strtotime($oDocInfo->timeOpendatetime) - time() >= 0 )
+{
+	$bRestricted = 1;
+	$sMsg = '이벤트 시작을 기다려주세요.';
+}
+
+2. 코드 변경
+./svdocs.model.php::getSvdocsExpiration()에서 아래의 코드를
+$sMsg = '이미 응모하셨습니다.'; 
+$sMsg = '이벤트 시작을 기다려주세요.';
+$sMsg = '이벤트가 종료되었습니다.';
+아래와 같이 변경
+$sMsg = Context::getLang('msg_already_registered');
+$sMsg = Context::getLang('msg_application_not_started');
+$sMsg =  Context::getLang('msg_application_closed');
+
+3. ./skin/open_application_youtube/_add_mob.html 입력폼의 가로폭 넓힘
+./skin/open_application_youtube/_add_mob.html의 CSS 변경
+
+v 0.3.6
+6th, Oct 2017
+1. 사용자정의-다중선택 에서 [기타] 자율기술 기능 추가
+./svdocsextravar.class.php::getFormHTML()에서 아래의 코드를
+if($value && in_array(trim($v), $value))
+	$checked = ' checked="checked"';
+// Temporary ID for labeling
+$tmp_id = $column_name . '-' . $id_num++;
+$buff[] ='<input type="checkbox" name="' . $column_name . '[]" id="' . $tmp_id . '" value="' . htmlspecialchars($v, ENT_COMPAT | ENT_HTML401, 'UTF-8', false) . '" ' . $checked . ' /><label for="' . $tmp_id . '">' . $v . '</label>';
+
+아래와 같이 변경
+$tmp_id = $column_name . '-' . $id_num++;
+if( $v == '기타' )
+{
+	$buff[] ='<input type="text" class="txt_free_answer" name="' . $column_name . '[]" id="' . $tmp_id . '" value="' . htmlspecialchars($value, ENT_COMPAT | ENT_HTML401, 'UTF-8', false) . '" ' . ' /><label for="' . $tmp_id . '">자유입력</label>';
+}
+else
+{
+	if($value && in_array(trim($v), $value))
+		$checked = ' checked="checked"';
+	$buff[] ='<input type="checkbox" name="' . $column_name . '[]" id="' . $tmp_id . '" value="' . htmlspecialchars($v, ENT_COMPAT | ENT_HTML401, 'UTF-8', false) . '" ' . $checked . ' /><label for="' . $tmp_id . '">' . $v . '</label>';
+}
+
+2. CSV 다운로드시 주소 필드의 우편번호 열 분리
+./svdocs.admin.model.php::getDocExtraVars()에서 아래의 코드를 제거
+else if( $aExtraVarInfo[$val->eid]->type == 'kr_zip' )
+	$output->data[$key]->value = str_replace("|@|", " ", $output->data[$key]->value);
+
+3. CSV 다운로드시 다중선택 열 분리
+./svdocs.admin.model.php::getDocExtraVars()에서 아래의 코드를 제거
+if( $aExtraVarInfo[$val->eid]->type == 'checkbox' )
+	$output->data[$key]->value = str_replace("|@|", ";", $output->data[$key]->value);
+
+./svdocs.admin.controller.php::procSvdocsAdminCSVDownloadByModule()에 아래의 코드 추가
+case 'checkbox':
+	$aMultipleAnswer = explode( ',', $val->default);
+	foreach( $aMultipleAnswer as $key1=>$val1)
+		echo "\"".$val->name.'_'.$val1."\",";
+
+	$aCheckBoxAnswers[$val->eid] = $aMultipleAnswer;
+	$aCheckBoxEid[] = $val->eid;
+
+else if (in_array($val->eid, $aCheckBoxEid)) 
+{
+	$sMultipleChoices = null;
+	$aTempCbValue = explode( "|@|", $val->value );
+	foreach( $aCheckBoxAnswers[$val->eid] as $key1 => $val1 )
+	{
+		if (in_array($val1, $aTempCbValue))
+			$sMultipleChoices .= "1,";
+		else
+			$sMultipleChoices .= "0,";
+	}
+	echo $sMultipleChoices;
+}
+
+4. slider 스킨 용 변수처리 코드를 스킨으로 이동
+./svdocs.view.php::dispSvdocsIndex()에서 아래의 코드 제거
+$this->module_info->slide_img_urls = explode("\n", $this->module_info->slide_img_urls);
+./skins/education_slider/add.html에 아래의 코드 추가
+{@
+$module_info->slide_img_urls = explode("\n", $module_info->slide_img_urls);
+}
+
+./svdocs.mobile.php::dispSvdocsIndex()에서 아래의 코드 제거
+$this->module_info->slide_img_urls = explode("\n", $this->module_info->slide_img_urls);
+./m.skins/education_slider_mob/mobile_add.html에 아래의 코드 추가
+{@
+$module_info->slide_img_urls_mob = explode("\n", $module_info->slide_img_urls_mob);
+}
+
+5. 로그인 상태에서 응모정보 수정 기능 개선
+./svdocs.view.php::dispSvdocsUpdate()에 아래의 코드 추가
+Context::set('module_srl', $this->module_info->module_srl);
+Context::set('svdocs_srl', (int)$output->data[0]->doc_srl);
+
+./queries/getExtraVar.xml 추가
+./queries/deleteExtraVar.xml 추가
+
+./svdocs.controller.php::procSvdocsUpdate()에 아래의 코드 추가
+$args = new stdClass();
+$args->module_srl = $nModuleSrl;
+$args->doc_srl = $nSvdocsSrl;
+$args->eid = $extra_item->eid;
+
+if($value == NULL) 
+{
+	if( $extra_item->type != 'hidden' )
+		$output = executeQueryArray('svdocs.deleteExtraVar', $args);
+}
+else
+{
+	$output = executeQueryArray('svdocs.getExtraVar', $args);
+	if( $output->data[0]->count ) 
+		$this->_updateExtraVar($nModuleSrl, $nSvdocsSrl, $idx, $value, $extra_item->eid);
+	else
+		$this->_insertExtraVar($nModuleSrl, $nSvdocsSrl, $idx, $value, $extra_item->eid);
+}
+
+6. 페이지 스크롤 깊이 추적 스킨 추가
+./skins/scroll_depth_tracking 추가
+
+v 0.3.7
+20th, Oct 2017
+1. 사용자 정의 변수 -> 다중선택 항목 -> 다운로드 시 -> [기타]자율기술 항목 처리 개선
+./svdocs.admin.controller.php::procSvdocsAdminCSVDownloadByModule()에서 아래의 코드를
+if (in_array($val1, $aTempCbValue))
+	$sMultipleChoices .= "1,";
+else
+	$sMultipleChoices .= "0,";
+
+아래와 같이 변경
+if (in_array($val1, $aTempCbValue))
+	$sMultipleChoices .= "1,";
+else
+{
+	$sLastElem = $aTempCbValue[$naTempCbValue -1];
+	if( $val1 == '기타' && strlen($sLastElem) && !in_array($sLastElem, $aCheckBoxAnswers[$val->eid]) )
+		$sMultipleChoices .= $sLastElem.",";
+	else
+		$sMultipleChoices .= "0,";
+}
+
+v 0.3.8
+27th, Oct 2017
+1. 실명인증 회원이면 실명인증 정보 추출하여 다운로드
+./svdocs.admin.controller.php::procSvdocsAdminCSVDownloadByModule()에서 아래의 코드를
+$oDataConfig = Array( 'doc_srl','module_srl','member_srl','applicant_name','applicant_phone','ipaddress','privacy_collection','privacy_sharing','user_agent','datetimestamp_entry','datetimestamp_final','duration_sec','init_referral','utm_source', 'utm_medium', 'utm_campaign', 'utm_term','is_mobile','regdate','member_id' );
+아래와 같이 변경
+$oDataConfig = Array( 'doc_srl','module_srl','member_srl','applicant_name','applicant_phone_input','ipaddress','privacy_collection','privacy_sharing','user_agent','datetimestamp_entry','datetimestamp_final','duration_sec','init_referral','utm_source', 'utm_medium', 'utm_campaign', 'utm_term','is_mobile','regdate','member_id' );
+
+./svdocs.admin.controller.php::procSvdocsAdminCSVDownloadByModule()에 아래의 코드 추가
+if( getClass('svauth') )
+{
+	$oSvauthAdminModel = getAdminModel('svauth');
+	$oSvauthDataConfig = Array( '인증일시', '인증실명','인증생일','인증성별','인증국적','인증통신사','인증핸드폰' );
+	if( getClass('svcrm') )
+	{
+		$oSvcrmAdminModel = &getAdminModel('svcrm');
+		$oSvcrmConfig = $oSvcrmAdminModel->getModuleConfig();
+		$aPrivacyAccessPolicy = $oSvcrmConfig->privacy_access_policy;
+		unset($oSvcrmConfig);
+	}
+}
+
+foreach( $oSvauthDataConfig as $key => $val )
+	echo "\"".$val."\",";
+
+if( $oSvauthAdminModel )
+{
+	$oSvauthData = $oSvauthAdminModel->getMemberAuthInfo($nMemberSrl,$aPrivacyAccessPolicy);
+	foreach( $oSvauthDataConfig as $authkey=>$authval)
+	{
+		if( $authval == '인증일시' )
+		{
+			$dtTemp = strtotime($oSvauthData->{$authval});
+			echo "\"". date("Y-m-d H:i:s",$dtTemp)."\",";
+		}
+		else if( $authval == '인증생일' )
+		{
+			if( $oSvauthData->{$authval} == '열람권한없음' )
+				echo "\"".$oSvauthData->{$authval}."\",";
+			else
+			{
+				$dtTemp = strtotime($oSvauthData->{$authval});
+				echo "\"". date("Y-m-d",$dtTemp)."\",";
+			}
+		}
+		else if(  $authval == '인증핸드폰' )
+		{
+			$sAuthPhoneNumber = $oSvauthData->{$authval};
+			$nPhoneNumberLegnth = strlen( $sAuthPhoneNumber );
+			switch( $nPhoneNumberLegnth )
+			{
+				case 10:
+					echo "\"".substr($sAuthPhoneNumber, 0, 3).'-'.substr($sAuthPhoneNumber, 3, 3).'-'.substr($sAuthPhoneNumber, 6, 4)."\",";
+					break;
+				case 11:
+					echo "\"".substr($sAuthPhoneNumber, 0, 3).'-'.substr($sAuthPhoneNumber, 3, 4).'-'.substr($sAuthPhoneNumber, 7, 4)."\",";
+					break;
+				default:
+					echo "\"".$sAuthPhoneNumber."\",";
+			}
+		}
+		else
+			echo "\"".$oSvauthData->{$authval}."\",";
+	}
+}
+
+v 0.3.9
+30th, Oct 2017
+1. uri 변수 가져오는 함수 추가
+./tpl/skin.js/registration.js::getUrlVars() 추가
+
+v 0.4.0
+1st, Nov 2017
+1. 반응형 교육 슬라이더 스킨 헤더 색상 지정 기능
+./skins/education_slider_responsive/skin.xml에 아래의 코드 추가
+<var name="header_bg_color_init_mob" type="text">
+	<title xml:lang="ko">헤더 배경색 시작</title>
+	<description xml:lang="ko">헤더의 그라데이션 시작 배경색을 입력하세요. 비우면 #d4e8b4</description>
+</var>
+<var name="header_bg_color_final_mob" type="text">
+	<title xml:lang="ko">헤더 배경색 끝</title>
+	<description xml:lang="ko">헤더의 그라데이션 종료 배경색을 입력하세요. 비우면 #7fbc43</description>
+</var>
+
+./skins/education_slider_responsive/_add_mob.html에 아래의 코드 추가
+if( !$module_info->header_bg_color_init_mob )
+	$module_info->header_bg_color_init_mob = '#7fbc43';
+
+if( !$module_info->header_bg_color_final_mob )
+	$module_info->header_bg_color_final_mob = '#d4e8b4';
+
+./skins/education_slider_responsive/_add_mob.html에서 아래의 코드를
+header:before{position:absolute;left:0;top:0;width:100%;height:100%;content:'';background:radial-gradient(circle at 70% 30%,#d4e8b4 0%,#7fbc43 50%);z-index:0;}
+아래와 같이 변경
+header:before{position:absolute;left:0;top:0;width:100%;height:100%;content:'';background:radial-gradient(circle at 70% 30%,{$module_info->header_bg_color_init_mob} 0%,{$module_info->header_bg_color_final_mob} 50%);z-index:0;}
+
+2. MOB 교육 슬라이더 스킨 헤더 색상 지정 기능
+./m.skins/education_slider_mob/skin.xml에 아래의 코드 추가
+<var name="header_bg_color_init_mob" type="text">
+	<title xml:lang="ko">헤더 배경색 시작</title>
+	<description xml:lang="ko">헤더의 그라데이션 시작 배경색을 입력하세요. 비우면 #d4e8b4</description>
+</var>
+<var name="header_bg_color_final_mob" type="text">
+	<title xml:lang="ko">헤더 배경색 끝</title>
+	<description xml:lang="ko">헤더의 그라데이션 종료 배경색을 입력하세요. 비우면 #7fbc43</description>
+</var>
+
+./skins/education_slider_mob/mobile_add.html에 아래의 코드 추가
+if( !$module_info->header_bg_color_init_mob )
+	$module_info->header_bg_color_init_mob = '#7fbc43';
+
+if( !$module_info->header_bg_color_final_mob )
+	$module_info->header_bg_color_final_mob = '#d4e8b4';
+
+./skins/education_slider_mob/mobile_add.html에서 아래의 코드를
+header:before{position:absolute;left:0;top:0;width:100%;height:100%;content:'';background:radial-gradient(circle at 70% 30%,#d4e8b4 0%,#7fbc43 50%);z-index:0;}
+아래와 같이 변경
+header:before{position:absolute;left:0;top:0;width:100%;height:100%;content:'';background:radial-gradient(circle at 70% 30%,{$module_info->header_bg_color_init_mob} 0%,{$module_info->header_bg_color_final_mob} 50%);z-index:0;}
+
+v 0.4.1
+3rd, Nov 2017
+1. 다운로드시 실명인증 내역이 없으면 [인증일시], [인증생일]에 값 표시하지 않도록 수정
+./svdocs.admin.controller.php::procSvdocsAdminCSVDownloadByModule()에서 아래의 코드를
+if( $authval == '인증일시' )
+{
+	$dtTemp = strtotime($oSvauthData->{$authval});
+	echo "\"". date("Y-m-d H:i:s",$dtTemp)."\",";
+
+}
+
+if( $authval == '인증생일' )
+{
+	if( $oSvauthData->{$authval} == '열람권한없음' )
+		echo "\"".$oSvauthData->{$authval}."\",";
+	else
+	{
+		$dtTemp = strtotime($oSvauthData->{$authval});
+		echo "\"". date("Y-m-d",$dtTemp)."\",";
+	}
+}
+아래와 같이 변경
+if( $authval == '인증일시' )
+{
+	if( $oSvauthData->{$authval} == NULL )
+		echo "\"\",";
+	else
+	{
+		$dtTemp = strtotime($oSvauthData->{$authval});
+		echo "\"". date("Y-m-d H:i:s",$dtTemp)."\",";
+	}
+}
+
+if( $authval == '인증생일' )
+{
+	if( $oSvauthData->{$authval} == NULL )
+		echo "\"\",";
+	else if( $oSvauthData->{$authval} == '열람권한없음' )
+		echo "\"".$oSvauthData->{$authval}."\",";
+	else
+	{
+		$dtTemp = strtotime($oSvauthData->{$authval});
+		echo "\"". date("Y-m-d",$dtTemp)."\",";
+	}
+}
+
+v 0.4.2
+16th, Nov 2017
+1. 다운로드시 값이 없는 사용자 정의 필드가 CSV 정렬을 손상하지 않도록 변경
+./svdocs.controller.php::procSvdocsRegistration()에서 아래의 코드 제거
+if($value == NULL) 
+	continue;
+
+2. 사용자 정의 필드를 일시적으로 hidden 형식으로 숨길 때, 값이 입력되지 않아도 다운로드시 값이 없는 사용자 정의 필드가 CSV 정렬을 손상하지 않도록 변경
+./svdocs.controller.php::procSvdocsRegistration()에서 아래의 코드 추가
+else 
+	$value = '';
+
+v 0.4.3
+19th, Nov 2017
+1. 다운로드시 신청자성명, 연락처 보안 마스킹된 필드 추가
+./svdocs.admin.controller.php::_maskMbString() 추가
+./svdocs.admin.controller.php::procSvdocsAdminCSVDownloadByModule()에서 아래의 코드를
+$oDataConfig = Array( 'doc_srl','module_srl','member_srl','applicant_name','applicant_phone_input','ipaddress','privacy_collection','privacy_sharing','user_agent','datetimestamp_entry','datetimestamp_final','duration_sec','init_referral','utm_source', 'utm_medium', 'utm_campaign', 'utm_term','is_mobile','regdate','member_id' );
+
+if( $key2 == 'applicant_phone' )
+{
+	$nPhoneNumberLegnth = strlen( $val2 );
+	switch( $nPhoneNumberLegnth )
+	{
+		case 10:
+			echo "\"".substr($val2, 0, 3).'-'.substr($val2, 3, 3).'-'.substr($val2, 6, 4)."\",";
+			break;
+		case 11:
+			echo "\"".substr($val2, 0, 3).'-'.substr($val2, 3, 4).'-'.substr($val2, 7, 4)."\",";
+			break;
+		default:
+			echo "\"".$val2."\",";
+	}
+}
+
+아래와 같이 변경
+$oDataConfig = Array( 'doc_srl','module_srl','member_srl','applicant_name','applicant_name_secured','applicant_phone','applicant_phone_secured','ipaddress','privacy_collection','privacy_sharing','user_agent','datetimestamp_entry','datetimestamp_final','duration_sec','init_referral','utm_source', 'utm_medium', 'utm_campaign', 'utm_term','is_mobile','regdate','member_id' );
+
+if( $key2 == 'applicant_name' )
+	echo "\"".$val2."\",\"".$this->_maskMbString($val2,1,1)."\",";
+else if( $key2 == 'applicant_phone' )
+{
+	$nPhoneNumberLegnth = strlen( $val2 );
+	switch( $nPhoneNumberLegnth )
+	{
+		case 10:
+			echo "\"".substr($val2, 0, 3).'-'.substr($val2, 3, 3).'-'.substr($val2, 6, 4)."\","; // original number
+			echo "\"".$this->_maskMbString(substr($val2, 0, 3),2,0).'-'.$this->_maskMbString(substr($val2, 3, 3),0,0).'-'.substr($val2, 6, 4)."\","; // masked number
+			break;
+		case 11:
+			echo "\"".substr($val2, 0, 3).'-'.substr($val2, 3, 4).'-'.substr($val2, 7, 4)."\","; // original number
+			echo "\"".$this->_maskMbString(substr($val2, 0, 3),2,0).'-'.$this->_maskMbString(substr($val2, 3, 4),0,0).'-'.substr($val2, 7, 4)."\","; // masked number
+			break;
+		default:
+			echo "\"".$val2."\","; // original number
+			echo "\"".$this->_maskMbString($val2,2,4)."\","; // masked number
+	}
+}
+
+v 0.4.4
+23rd, Dec 2017
+1. 응모자 1명 남았을 때 남은 응모수 표시되지 않는 오류 수정
+./tpl/skin.js/countdown_timer.js::initializeCounter()에서 에서 아래의 코드를
+if( nTotalQty > 1 )
+아래와 같이 변경
+if( nTotalQty > 0 )
+
+v 0.4.5
+14th, Feb 2018
+1. GA ID와 FB PIXEL ID를 기본설정으로 이동
+./tpl/default_setting.html에 아래의 코드 추가
+<div class="x_control-group">
+	<label class="x_control-label">google analytics ID</label>
+	<div class="x_controls">
+		<input type="text" name="ga_tracking_id" value="{$config->ga_tracking_id}" />
+		<a href="#ga_tracking_id_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+		<p id="ga_tracking_id_help" class="x_help-block" hidden>{$lang->about_ga_tracking_id}</p>
+	</div>
+</div>
+<div class="x_control-group">
+	<label class="x_control-label">Facebook Pixel ID</label>
+	<div class="x_controls">
+		<input type="text" name="facebook_pixel_id" value="{$config->facebook_pixel_id}" />
+		<a href="#facebook_pixel_id_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+		<p id="facebook_pixel_id_help" class="x_help-block" hidden>{$lang->about_facebook_pixel_id}</p>
+	</div>
+</div>
+
+./svdocs.admin.controller.php::procSvdocsAdminInsertConfig()에서 아래 코드 추가
+$sGaTrackingId = Context::get('ga_tracking_id');
+if( strlen( $sGaTrackingId ) )
+	$oArgs->ga_tracking_id = $sGaTrackingId;
+
+$sFbPixelId = Context::get('facebook_pixel_id');
+if( strlen( $sFbPixelId ) )
+	$oArgs->facebook_pixel_id = $sFbPixelId;
+
+2. 기본설정 항목값 해제 불능 개선
+./svdocs.admin.controller.php::_saveModuleConfig()에서 아래의 코드 제거
+$oConfig = $oSvdocsAdminModel->getModuleConfig();
+foreach( $oArgs as $key=>$val)
+	$oConfig->{$key} = $val;
+
+3. 스킨에 페이스북 전환 픽셀 코드 추가
+./skins/education_slider_responsive/add.html에 아래의 코드 추가
+<block cond="$config->facebook_pixel_id">
+<!-- Facebook Pixel Code Begin (20170801) singleview.co.kr -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '{$config->facebook_pixel_id}', {
+em: 'insert_email_variable,'
+});
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id={$config->facebook_pixel_id}&ev=PageView&noscript=1"
+/></noscript>
+<!-- DO NOT MODIFY -->
+<!-- End Facebook Pixel Code End (20170801) singleview.co.kr -->
+</block>
+
+<block cond="$config->facebook_pixel_id">
+	fbq('track', 'CompleteRegistration');
+</block>
+
+v 0.4.6
+19th, Feb 2018
+1. 기본설정에 네이버 WCS ID 입력 UI 추가
+./tpl/default_setting.html에 아래의 코드 추가
+<div class="x_control-group">
+	<label class="x_control-label">네이버 wcs ID</label>
+	<div class="x_controls">
+		<input type="text" name="nvad_conv_id" value="{$config->nvad_conv_id}" />
+		<a href="#nvad_conv_id_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+		<p id="nvad_conv_id_help" class="x_help-block" hidden>{$lang->about_nvad_conv_id}</p>
+	</div>
+</div>
+
+./svdocs.admin.controller.php::procSvdocsAdminInsertConfig()에서 아래 코드 추가
+$sNvadConvId = Context::get('nvad_conv_id');
+if( strlen( $sNvadConvId ) )
+	$oArgs->nvad_conv_id = $sNvadConvId;
+
+2. 스킨에 네이버 광고 전환 코드 추가
+./skins/education_slider_responsive/add.html에 아래의 코드 추가
+<block cond="$config->nvad_conv_id">
+<!-- naver conversion code -->
+<script type="text/javascript" src="//wcs.naver.net/wcslog.js"></script> 
+</block>
+
+<block cond="$config->nvad_conv_id">
+	var _nasa={};
+	_nasa["cnv"] = wcs.cnv("4","500"); // 전환유형, 전환가치 설정해야함. 설치매뉴얼 참고
+</block>
+
+v 0.4.7
+22nd, Feb 2018
+1. 응모자 수정 버튼 눌렀을 때 응모자 정보 없음 에러 메세지 개선
+./lang/lang.xml에 아래의 코드 추가
+msg_error_no_docs_registered
+
+2. 폐쇄 응모 방식 추가
+./svdocs.view.php::dispSvdocsUpdate()에서 아래의 코드를
+return;
+아래와 같이 변경
+return new Object();
+
+./svdocs.view.php::dispSvdocsIndex()에서 아래의 코드 추가
+if( $this->module_info->is_allow_closed == 'Y' )
+{
+	$oRst = $this->dispSvdocsUpdate();
+	return $oRst;
+}
+
+./svdocs.admin.controller.php::procSvdocsAdminInsert()에서 아래 코드 추가
+if($args->is_allow_closed != 'Y') 
+	$args->is_allow_closed = '';
+
+./tpl/svdocs_info.html에 아래의 코드 추가
+<div class="x_control-group">
+	<label class="x_control-label">{$lang->is_closed_application}</label>
+	<div class="x_controls">
+		<label class="x_inline" for="is_allow_update"><input type="checkbox" name="is_allow_closed" id="is_allow_closed" value="Y" checked="checked"|cond="$module_info->is_allow_closed=='Y'" /> {$lang->allow}</label>
+		<a href="#aboutApplicationType" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+		<p class="x_help-block" id="aboutApplicationType" hidden>{$lang->about_is_allow_closed}</p>
+	</div>
+</div>
+
+./svdocs.admin.view.php::dispSvdocsAdminApplicantInsert() 추가
+./svdocs.admin.controller.php::procSvdocsAdminInsertApplicant() 추가
+
+./tpl/applicant_insert.html 추가
+
+3. 응모자 별 채택/거부 표시 기능 추가
+./schemas/svdocs.xml에 아래의 코드 추가
+<column name="is_accepted" type="char" size="1" />
+
+./svdocs.admin.controller.php::procSvdocsAdminApproveApplicant() 추가
+./queries/updateSvdocsApproval.xml 추가
+
+./tpl/applicant_list.html에 아래의 코드 추가
+<th scope="col">{$lang->acceptance_status}</th>
+<td>{$val->is_accepted}</td>
+
+./queries/getAdminSvdocsByModule.xml에 아래의 코드 추가
+<condition operation="equal" column="is_accepted" var="is_accepted" pipe="and" />
+
+./svdocs.admin.controller.php::procSvdocsAdminCSVDownloadByModule()에 아래의 코드 추가
+$args->is_accepted = 'Y';
+
+./svdocs.admin.controller.php::procSvdocsAdminCSVDownloadByModule()에서 아래의 코드를
+$oDataConfig = Array( 'doc_srl','module_srl','member_srl','applicant_name','applicant_name_secured','applicant_phone','applicant_phone_secured','ipaddress','privacy_collection','privacy_sharing','user_agent','datetimestamp_entry','datetimestamp_final','duration_sec','init_referral','utm_source', 'utm_medium', 'utm_campaign', 'utm_term','is_mobile','regdate','member_id' );
+아래와 같이 변경
+$oDataConfig = Array( 'doc_srl','module_srl','member_srl','applicant_name','applicant_name_secured','applicant_phone','applicant_phone_secured','ipaddress','privacy_collection','privacy_sharing','user_agent','datetimestamp_entry','datetimestamp_final','duration_sec','init_referral','utm_source', 'utm_medium', 'utm_campaign', 'utm_term','is_mobile','is_accepted','regdate','member_id' );
+
+v 0.4.8
+27th, Apr 2018
+1. ./tpl/skin.js/youtube.js에 재생목록 셔플 재생 설정 기능 추가
+./tpl/skin.js/youtube.js에 아래의 코드 추가
+_g_bShuffle
+./tpl/skin.js/youtube.js::initPlayer()에 아래의 코드 추가
+_g_bShuffle = bShuffle;
+
+./tpl/skin.js/youtube.js::onPlayerReady()에 아래의 코드 추가
+if( _g_bShuffle )
+	event.target.setShuffle(true);
+
+2. 폐쇄 응모 방식 추가
+
+v 0.4.9
+9th, May 2018
+1. open_apllication_youtube 스킨의 설문 문항 세로 간격 확대
+./skins/open_apllication_youtube/_add_mob.html에서 아래의 코드를
+<TD>{$val->getFormHTML()}</TD>
+아래와 같이 변경
+<TR>
+	<TD><label class='' for='applicant_name' style='font-size:15px;'> → <em cond="$val->is_required=='Y'">(필수)</em> <B><U>{$val->name}</U></B></label></TD>
+</TR>
+<TR>
+	<TD>{$val->getFormHTML()}<BR><BR></TD>
+</TR>
+
+./m.skins/open_apllication_youtube/_add_pc.html에서 아래의 코드를
+<em cond="$val->is_required=='Y'">(필수)</em> {$val->name}<strong>:</strong> {$val->getFormHTML()}<BR>
+아래와 같이 변경
+→ <em cond="$val->is_required=='Y'">(필수)</em> <B><U>{$val->name}</U></B><strong>:</strong><BR> {$val->getFormHTML()}<BR><BR>
+
+v 0.4.10
+17th, Jun 2018
+1. 코드 오류 수정
+./svdocs.admin.controller.php::procSvdocsAdminTermPrivacyUsageUpdate()에서 아래의 코드를
+$sTerm = Context::get('privacy_usage_term');
+if(!trim(strip_tags($sTerm)))
+{
+	$agreement_file = _XE_PATH_.'files/svdocs/'.$nModuleSrl.'_privacy_usage_term_' . Context::get('lang_type') . '.txt';
+	FileHandler::removeFile($agreement_file);
+}
+
+// check agreement value exist
+if($sTerm)
+{
+	$agreement_file = _XE_PATH_.'files/svdocs/'.$nModuleSrl.'_privacy_usage_term_' . Context::get('lang_type') . '.txt';
+	$output = FileHandler::writeFile($agreement_file, $sTerm);
+}
+
+아래와 같이 변경
+$sTerm = trim(strip_tags(Context::get('privacy_usage_term')));
+if(!$sTerm)
+	FileHandler::removeFile($agreement_file);
+
+// check agreement value exist
+if($sTerm)
+	$output = FileHandler::writeFile($agreement_file, $sTerm);
+
+./svdocs.admin.controller.php::procSvdocsAdminTermPrivacyShrUpdate()에서 아래의 코드를
+$sTerm = Context::get('privacy_shr_term');
+if(!$sTerm)
+{
+	$agreement_file = _XE_PATH_.'files/svdocs/'.$nModuleSrl.'_privacy_shr_term_' . Context::get('lang_type') . '.txt';
+	FileHandler::removeFile($agreement_file);
+}
+
+// check agreement value exist
+if($sTerm)
+{
+	$agreement_file = _XE_PATH_.'files/svdocs/'.$nModuleSrl.'_privacy_shr_term_' . Context::get('lang_type') . '.txt';
+	$output = FileHandler::writeFile($agreement_file, $sTerm);
+}
+
+아래와 같이 변경
+$sTerm = trim(strip_tags(Context::get('privacy_shr_term')));
+if(!$sTerm)
+	FileHandler::removeFile($agreement_file);
+
+// check agreement value exist
+if($sTerm)
+	$output = FileHandler::writeFile($agreement_file, $sTerm);
+
+v 0.4.11
+12th, Sep 2018
+1. 메세지 오류 수정
+./tpl/skin.js/registration.js::doRegistration()에서 아래의 코드를
+alert('인증받은 전화번호를 입력해 주세요.');
+아래와 같이 변경
+alert('인증번호를 입력해 주세요.');
+
+v 0.4.12
+13th, Sep 2018
+1. 관리자 화면에서 [개인정보 수집,이용 약관], [개인정보 3자 제공 약관]을 수정하면 줄바꿈 사라져서 표시되는 문제 해결
+./svdocs.admin.controller.php::procSvdocsAdminTermPrivacyUsageUpdate()에서 아래의 코드를
+return FileHandler::readFile($agreement_file);
+
+아래와 같이 변경
+return nl2br(FileHandler::readFile($agreement_file));
+
+v 0.4.13
+19th, Sep 2018
+1. 동영상 셔플 기능 추가
+./skins/open_application_youtube/skin.xml에 아래의 코드 추가
+<var name="is_shuffle_playlist" type="radio">
+	<title xml:lang="ko">동영상 재생 순서</title>
+	<description xml:lang="ko">복수 동영상 재생 시 화면 호출마다 순서를 섞습니다.</description>
+	<options value="">
+		<title xml:lang="ko">순서대로</title>
+	</options>
+	<options value="Y">
+		<title xml:lang="ko">무작위 섞기</title>
+	</options>
+</var>
+
+./skins/open_application_youtube/add.html에서 아래의 코드를
+<block cond="!Mobile::isMobileCheckByAgent()">
+initPlayer( aPlaylist, '732', '482' );
+</block>
+<block cond="Mobile::isMobileCheckByAgent()">
+initPlayer( aPlaylist, '95%','' );
+</block>
+
+아래와 같이 변경
+<block cond="!Mobile::isMobileCheckByAgent()">
+initPlayer( aPlaylist, '732', '482', '{$module_info->is_shuffle_playlist}' );
+</block>
+<block cond="Mobile::isMobileCheckByAgent()">
+initPlayer( aPlaylist, '95%','', '{$module_info->is_shuffle_playlist}' );
+</block>
+
+./skins/open_application_youtube/update.html에서 아래의 코드를
+<block cond="!Mobile::isMobileCheckByAgent()">
+initPlayer( aPlaylist, '732', '482' );
+</block>
+<block cond="Mobile::isMobileCheckByAgent()">
+initPlayer( aPlaylist, '95%','' );
+</block>
+
+아래와 같이 변경
+<block cond="!Mobile::isMobileCheckByAgent()">
+initPlayer( aPlaylist, '732', '482', '{$module_info->is_shuffle_playlist}' );
+</block>
+<block cond="Mobile::isMobileCheckByAgent()">
+initPlayer( aPlaylist, '95%','', '{$module_info->is_shuffle_playlist}' );
+</block>
+
+v 0.4.14
+29th, Mar 2019
+1. youtube.js player 설정 메소드 추가
+./tpl/skin.js/youtube.js에 아래의 코드 추가
+var _g_nVolume = 5;
+var _g_bLoop = false;
+var _g_bAutostart = false;
+
+./tpl/skin.js/youtube.js에서 아래의 코드를
+function initPlayer( aId, width, height, bShuffle ) 
+{
+	if( jQuery.isArray(aId) === true )
+	{
+		_g_aPlaylist = aId;
+		_g_sWidth = width;
+		_g_sHeight = height;
+		_g_bShuffle = bShuffle;
+	}
+	else
+		alert('youtube playlist is not array');
+}
+
+아래와 같이 변경
+function initPlayer( aId, width, height ) 
+{
+	if( jQuery.isArray(aId) === true )
+	{
+		_g_aPlaylist = aId;
+		_g_sWidth = width;
+		_g_sHeight = height;
+	}
+	else
+		alert('youtube playlist is not array');
+}
+
+./tpl/skin.js/youtube.js::setAutostart() 추가
+./tpl/skin.js/youtube.js::setVolume() 추가
+./tpl/skin.js/youtube.js::setShuffle() 추가
+./tpl/skin.js/youtube.js::setLoop() 추가
+
+./tpl/skin.js/youtube.js::onPlayerReady()에서 아래의 코드를
+event.target.setVolume(5);
+event.target.playVideo();
+event.target.loadPlaylist(_g_aPlaylist);
+event.target.setLoop(true);
+
+아래와 같이 변경
+event.target.setVolume(_g_nVolume);
+if( _g_bAutostart )
+	event.target.loadPlaylist(_g_aPlaylist);
+else
+	event.target.cuePlaylist(_g_aPlaylist);
+
+if( _g_bLoop )
+	event.target.setLoop(true);
+
+./skins/open_application_youtube/add.html에서 아래의 코드를
+<block cond="!Mobile::isMobileCheckByAgent()">
+initPlayer( aPlaylist, '732', '482', '{$module_info->is_shuffle_playlist}' );
+</block>
+<block cond="Mobile::isMobileCheckByAgent()">
+initPlayer( aPlaylist, '95%','', '{$module_info->is_shuffle_playlist}' );
+</block>
+
+아래와 같이 변경
+setAutostart();
+setVolume(5);
+setLoop();
+
+<block cond="$module_info->is_shuffle_playlist == 'Y'">
+setShuffle();
+</block>
+
+<block cond="!Mobile::isMobileCheckByAgent()">
+initPlayer( aPlaylist, '732', '482' );
+</block>
+<block cond="Mobile::isMobileCheckByAgent()">
+initPlayer( aPlaylist, '95%','' );
+</block>
+
+v 0.4.15
+08th, Oct 2020
+1. ./skins/education_slider_responsive 스킨에 게시판 응모 임시 허용 기능 추가
+./skins/education_slider_responsive/skin.xml에 아래의 코드 추가
+<var name="auth_session_var_name" type="text">
+	<title xml:lang="ko">열람 완료 확인 세션 변수명</title>
+	<description xml:lang="ko">다른 모듈에서 입력한 세션 변수명이 true임을 확인합니다. 빈칸이면 svdocs_passed</description>
+</var>
+
+./svdocs.controller.php::procSvdocsCertified() 추가
+./tpl/skin.js/registration.js::doCertified() 추가
+
+2. 한번 기본 스킨을 선택하면 다른 스킨을 선택할 수 없는 오류 개선
+./svdocs.adnin.controller.php::_saveConfigByMid()에 아래의 코드 추가
+unset($module_info->is_skin_fix);
+unset($module_info->is_mskin_fix);
+
+v 0.4.16
+07th, Nov 2020
+1. 슬라이드 교육 이수 증명 세션값을 true/false에서 고유문자열로 개선
+./svdocs.controller.php::_generateSerialNumber() 추가
+
+v 0.4.17
+10th, Nov 2020
+1. 관리자 페이지->응모자 정보 화면에서 응모자아이디 혹은 응모자명 없으면 응모자 IP 표시
+./tpl/applicant_list.html에 아래의 코드 추가
+<th scope="col">{$lang->ipaddress}</th>
+<td>{$val->ipaddress}</td>
+
+v 0.4.18
+18th, Nov 2020
+1. 관리자 페이지->응모자 정보 화면에서 최대 응모자수 무제한 기능 추가
+./svdocs.model.php::getDocInfo()에서 아래의 코드를
+$nMaxApplicants = (int)$module_info->max_applicants;
+$oDocInfo = new stdClass();
+$oDocInfo->nRemainingApplicants = $nMaxApplicants - $nCnt;
+
+아래와 같이 변경
+$oDocInfo = new stdClass();
+if( $module_info->max_applicants == 'unlimit' )
+	$oDocInfo->nRemainingApplicants = 100;
+else
+	$oDocInfo->nRemainingApplicants = (int)$module_info->max_applicants - $nCnt;
+
+v 0.5.1
+20th, Dec 2020
+1. php v7.4.13에 대응
+모든 new Object()를 new BaseObject()로 변경
+
+v 0.5.2
+26th, Aug 2021
+1. 404 resource 제거
+
+2. gaectk 대응
+
+3. dispSvdocsAdminConfig 코드 오류 해결
+./svdocs.admin.view.php::dispSvdocsAdminConfig()에서 아래의 코드를
+$oSvdocAdminModel = &getAdminModel('svdocs');
+$config = $oSvdocAdminModel->getModuleConfig();
+Context::set('config',$config);
+$this->setTemplateFile('default_setting');
+
+아래와 같이 변경
+$nModuleSrl = Context::get('module_srl');
+$oSvdocsAdminModel = &getAdminModel('svdocs');
+$oModuleInfo = $oSvdocsAdminModel->getModuleConfig($nModuleSrl);
+Context::set('config', $oModuleInfo);
+$this->setTemplateFile('default_setting');
+
+./tpl/default_setting.html에서 아래의 코드를
+<div class="x_control-group">
+	<label class="x_control-label">google analytics ID</label>
+	<div class="x_controls">
+		<input type="text" name="ga_tracking_id" value="{$config->ga_tracking_id}" />
+		<a href="#ga_tracking_id_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+		<p id="ga_tracking_id_help" class="x_help-block" hidden>{$lang->about_ga_tracking_id}</p>
+	</div>
+</div>
+
+아래와 같이 변경 
+<div class="x_control-group">
+	<label class="x_control-label">google analytics v3 ID</label>
+	<div class="x_controls">
+		<input type="text" name="ga_v3_tracking_id" value="{$config->ga_v3_tracking_id}" />
+		<a href="#ga_v3_tracking_id_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+		<p id="ga_v3_tracking_id_help" class="x_help-block" hidden>{$lang->about_ga_v3_tracking_id}</p>
+	</div>
+</div>
+<div class="x_control-group">
+	<label class="x_control-label">google analytics v4 ID</label>
+	<div class="x_controls">
+		<input type="text" name="ga_v4_tracking_id" value="{$config->ga_v4_tracking_id}" />
+		<a href="#ga_v4_tracking_id_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+		<p id="ga_v4_tracking_id_help" class="x_help-block" hidden>{$lang->about_ga_v4_tracking_id}</p>
+	</div>
+</div>
+
+./svdocs.admin.controller.php::procSvdocsAdminInsertConfig()에서 아래의 코드를
+$sGaTrackingId = Context::get('ga_tracking_id');
+if( strlen( $sGaTrackingId ) )
+	$oArgs->ga_tracking_id = $sGaTrackingId;
+
+아래와 같이 변경
+$sGaV3TrackingId = Context::get('ga_v3_tracking_id');
+if( strlen( $sGaV3TrackingId ) )
+	$oArgs->ga_v3_tracking_id = $sGaV3TrackingId;
+
+$sGaV4TrackingId = Context::get('ga_v4_tracking_id');
+if( strlen( $sGaV4TrackingId ) )
+	$oArgs->ga_v4_tracking_id = $sGaV4TrackingId;
+---------------- ToDo -----------------------------
+폐쇄응모 기능 개선 > 응모대상자 핸드폰 번호 입력하면 SMS 자동 발송
+이미 응모한 회원이 재접속하면 기존 내용 표시
+응모하기 버튼 누르면 버튼 비활성화 시키고, 응모 에러시에만 버튼 재활성화

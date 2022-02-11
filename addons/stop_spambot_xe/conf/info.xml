@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon version="0.2">
+    <title xml:lang="ko">Stop_spambot_xe</title>
+	<description>
+		Spambot 방지 애드온 - 회원가입, 글쓰기, 댓글작성에 적용.
+    </description>
+    <version>2.8</version>
+    <date>2019-08-10</date>
+    <author email_address="" link="http://chungfamily.woweb.net/">
+        <name xml:lang="ko">KSChung</name>
+    </author>
+	<extra_vars>
+		<group>
+			<title xml:lang="ko">스팸봇 옵션</title>
+			<var name="mgr_id" type="text">
+				<title xml:lang="ko">관리자 ID</title>
+				<description xml:lang="ko">스팸이 검출되면 관리자 ID로 쪽지를 발송 합니다.(비어있으면 발송 않음)</description>
+			</var>
+			<var name="mask_text" type="text">
+				<title xml:lang="ko">검증 문자</title>
+				<description xml:lang="ko">검증에 사용될 임의 문자를 입력합니다.(생략 가능)</description>
+			</var>
+			<var name="delay" type="text">
+				<title xml:lang="ko">화면 출력지연 오차 시간(초)</title>
+				<description xml:lang="ko">화면 출력지연 오차 허용시간을 초단위로 입력합니다(기본값 120초).</description>
+			</var>
+			<var name="message_text" type="text">
+				<title xml:lang="ko">출력될 메시지</title>
+				<description xml:lang="ko">스팸으로 판정시 출력될 메시지를 입력합니다.(비어있으면 기본 메시지 출력)</description>
+			</var>
+			<var name="redirect" type="text">
+				<title xml:lang="ko">다른곳으로 보낼 웹주소</title>
+				<description xml:lang="ko">스팸봇이 회원가입을 시도할 때 돌려보낼 웹주소 입력.(비어있으면 구글 스팸이미지로 보냄)</description>
+			</var>
+		</group>
+		<group>
+			<title xml:lang="ko">문서: CSS코드/스팸필터/한글조건/애니메이션 옵션</title>
+			<var name="max_click" type="text">
+				<title xml:lang="ko">동일위치 클릭 허용횟수</title>
+				<description xml:lang="ko">동일위치 클릭 허용횟수(기본4회)를 초과할 경우, 브라우저를 다시 시작해야 글 등록이 가능합니다.</description>
+			</var>
+			<var name="animation" type="select">
+				<title xml:lang="ko">버튼 애니메이션 적용</title>
+				<description xml:lang="ko">등록단추에 애니메이션 적용여부 선택</description>
+				<options value="Y">
+					<title xml:lang="ko">글쓰기/댓글/회원가입 화면 모두 적용</title>
+				</options>
+				<options value="B">
+					<title xml:lang="ko">글쓰기/댓글 화면만 적용</title>
+				</options>
+				<options value="M">
+					<title xml:lang="ko">회원가입 화면만 적용</title>
+				</options>
+				<options value="N">
+					<title xml:lang="ko">적용않음</title>
+				</options>
+			</var>
+			<var name="btn_border" type="select">
+				<title xml:lang="ko">버튼 테두리(보더) 색상</title>
+				<description xml:lang="ko">버튼 테두리(보더) 색상을 선택합니다.</description>
+				<options value="N">
+					<title xml:lang="ko">보더없음 - 모든단추</title>
+				</options>
+				<options value="random">
+					<title xml:lang="ko">랜덤색상 - 모든단추</title>
+				</options>
+				<options value="red">
+					<title xml:lang="ko">적색 - 등록단추만 보더색상</title>
+				</options>
+				<options value="blue">
+					<title xml:lang="ko">청색 - 등록단추만 보더색상</title>
+				</options>
+				<options value="green">
+					<title xml:lang="ko">녹색 - 등록단추만 보더색상</title>
+				</options>
+			</var>
+			<var name="target_css" type="select">
+				<title xml:lang="ko">CSS코드 검색대상</title>
+				<description xml:lang="ko">CSS코드 검색을 적용할 사용자</description>
+				<options value="none_mgr">
+					<title xml:lang="ko">모든 사용자(관리자 제외)</title>
+				</options>
+				<options value="none">
+					<title xml:lang="ko">적용 않음</title>
+				</options>
+			</var>
+			<var name="empty_tag" type="select">
+				<title xml:lang="ko">문서: 내용없는 "a" 태그 검색대상</title>
+				<description xml:lang="ko">내용없는 "a" 태그 검색대상</description>
+				<options value="none_mgr">
+					<title xml:lang="ko">모든 사용자(관리자 제외)</title>
+				</options>
+				<options value="none">
+					<title xml:lang="ko">적용 않음</title>
+				</options>
+			</var>
+			<var name="target" type="select">
+				<title xml:lang="ko">문서: 한글조건/스팸키워드 검색대상</title>
+				<description xml:lang="ko">한글조건 및 스팸필터 검색을 적용할 사용자</description>
+				<options value="none_user">
+					<title xml:lang="ko">로그인하지 않은 사용자</title>
+				</options>
+				<options value="none_mgr">
+					<title xml:lang="ko">모든 사용자(관리자 제외)</title>
+				</options>
+				<options value="none">
+					<title xml:lang="ko">적용 않음</title>
+				</options>
+			</var>
+			<var name="no_hangul_option" type="select">
+				<title xml:lang="ko">문서: 한글이 없을 경우 처리</title>
+				<description xml:lang="ko">문서 내용에 한글이 없을 경우 처리방법.</description>
+				<options value="allow">
+					<title xml:lang="ko">한글이 없어도 문서등록 허용</title>
+				</options>
+				<options value="notallow_link">
+					<title xml:lang="ko">한글이 없는데 링크가 있으면 스팸글로 간주</title>
+				</options>
+				<options value="notallow">
+					<title xml:lang="ko">한글이 없으면 스팸글로 간주</title>
+				</options>
+			</var>
+			<var name="signature_url" type="select">
+				<title xml:lang="ko">가입: 회원정보 입력시 서명난의 "a" 태그 처리</title>
+				<description xml:lang="ko">회원정보 입력시 서명난에 앵커태그가 있을 경우 처리방법.</description>
+				<options value="nochange">
+					<title xml:lang="ko">그대로 둠</title>
+				</options>
+				<options value="remove_tag">
+					<title xml:lang="ko">앵커태그 만 자동삭제</title>
+				</options>
+				<options value="remove_tag_and_content">
+					<title xml:lang="ko">앵커태그 및 태그내용 자동삭제</title>
+				</options>
+			</var>
+			<var name="max_count" type="text">
+				<title xml:lang="ko">스팸 검출 허용횟수</title>
+				<description xml:lang="ko">키워드 검출회수가 허용횟수를 초과할 경우, 브라우저를 다시 시작해야 글 등록이 가능합니다.(생략시 6회)</description>
+			</var>
+			<var name="spam_word" type="textarea">
+				<title xml:lang="ko">스팸키워드 등록</title>
+				<description xml:lang="ko">문서에 스팸키워드가 포함되어 있으면 스팸글로 간주됨(키워드는 띄어쓰기 없이 한글/영문/숫자만 사용, 복수등록은 콤마(,)로 구분)</description>
+			</var>
+		</group>
+	</extra_vars>
+</addon>

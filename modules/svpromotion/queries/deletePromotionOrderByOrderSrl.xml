@@ -1,0 +1,8 @@
+<query id="deletePromotionOrderByOrderSrl" action="delete">
+	<tables>
+		<table name="svpromotion_order" />
+	</tables>
+	<conditions>
+		<condition operation="equal" column="order_srl" var="order_srl" filter="number" notnull="notnull" />
+	</conditions>
+</query>

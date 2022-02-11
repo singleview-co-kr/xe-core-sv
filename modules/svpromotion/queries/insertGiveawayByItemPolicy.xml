@@ -1,0 +1,13 @@
+<query id="insertGiveawayByItemPolicy" action="insert">
+	<tables>
+		<table name="svpromotion_giveaways" />
+	</tables>
+	<columns>
+		<column name="item_srl" var="item_srl" notnull="notnull" />
+		<column name="module_srl" var="module_srl" notnull="notnull" />
+		<column name="giveaway_item_srl" var="giveaway_item_srl" notnull="notnull" />
+		<column name="giveaway_quantity" var="giveaway_item_qty" notnull="notnull" />
+		<column name="giveaway_info" var="giveaway_info" notnull="notnull" />
+		<column name="regdate" var="regdate" default="curdate()" />
+	</columns>
+</query>

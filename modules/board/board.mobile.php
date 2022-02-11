@@ -63,6 +63,10 @@ class boardMobile extends boardView
 			$this->consultation = false;
 		}
 
+		// MID 설정에서 요청하면, skin에서 $_SESSION 읽도록 허용
+		if( $this->module_info->allow_session_value_skin == 'Y' )
+			Context::set('session', $_SESSION );
+
 		$oDocumentModel = getModel('document');
 		$extra_keys = $oDocumentModel->getExtraKeys($this->module_info->module_srl);
 		Context::set('extra_keys', $extra_keys);

@@ -1,0 +1,12 @@
+<query id="getDocByApplicantPhone" action="select">
+    <tables>
+        <table name="svdocs" />
+    </tables>
+    <columns>
+        <column name="doc_srl" />
+    </columns>
+    <conditions>
+		<condition operation="equal" column="applicant_phone" var="applicant_phone" notnull="notnull" />
+        <condition operation="equal" column="module_srl" var="module_srl" filter="number" notnull="notnull" pipe="and" />
+    </conditions>
+</query>

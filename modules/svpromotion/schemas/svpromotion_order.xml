@@ -1,0 +1,5 @@
+<table name="svpromotion_order">
+	<column name="order_promo_srl" type="number" size="11" notnull="notnull" primary_key="primary_key" auto_increment="auto_increment" />
+	<column name="order_srl" type="number" size="11" default="0" index="idx_order_srl" />
+	<column name="promotion_info" type="text"/>
+</table>

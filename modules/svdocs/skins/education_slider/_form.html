@@ -1,0 +1,139 @@
+{@
+if(!$module_info->submit_btn_text)
+	$module_info->submit_btn_text = '응모하기';
+}
+
+<style type="text/css">
+/* section for the floating application layer begins */
+.pop-layer {display:none; position: absolute; top: 50%; left: 50%; width: 90%; height:auto;  background-color:#fff; border: 5px solid #3571B5; z-index: 10000;}	
+.pop-layer .pop-container {padding: 20px 25px;overflow-y : scroll;}
+.pop-layer p.ctxt {color: #666; line-height: 25px;}
+.pop-layer .btn-r {width: 100%; margin:10px 0 20px; padding-top: 10px; border-top: 1px solid #DDD; text-align:right;}
+a.cbtn {display:inline-block; height:25px; padding:0 14px 0; border:1px solid #304a8a; background-color:#3f5a9d; font-size:13px; color:#fff; line-height:25px;}	
+a.cbtn:hover {border: 1px solid #091940; background-color:#1f326a; color:#fff;}
+/* section for the floating application layer ends */
+
+/* section for the textarea like div begins */
+#textarea {
+	-moz-appearance: textfield-multiline;
+	-webkit-appearance: textarea;
+	border: 1px solid gray;
+	font: medium -moz-fixed;
+	font: -webkit-small-control;
+	overflow: auto;
+	padding: 2px;
+	resize: both;
+	height: 60px;
+	width: 100%;
+	-webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+    box-sizing: border-box;         /* Opera/IE 8+ */
+}
+/* section for the textarea like div ends */
+</style>
+<div id="layer1" class="pop-layer">
+	<div class="pop-container">
+		<div class="pop-conts">
+			<!--content //-->
+			<div style="width: 100%; margin: 10px 0 20px; border-bottom: 1px solid #DDD; font-size:14px;text-align: left; font-weight:bold;>">{$module_info->form_title}</div>
+			<div id='' style="font-size:14px;text-align: left; font-weight:bold;>">{$module_info->form_description}</div>
+<block cond="$svauth_on=='Y'">
+			<em>(필수)</em> 성함<strong>:</strong> <input type="text" name="applicant_name" id="applicant_name" value="" class="text" placeholder='신청자 성함'/><BR>
+			<em>(필수)</em> 연락처<strong>:</strong> <input type="text" name="applicant_phone_number" id="applicant_phone_number" value="" class="text" placeholder='SMS 수신 연락처'/><BR>
+			<em>(필수)</em> 응모자 인증<strong>:</strong> <input type='text' id='authcode' name='authcode' placeholder='인증번호'><input type='button' id='get_authcode' name='get_authcode' value='인증번호 받기' onClick="getAuthCode();">
+</block>
+<block cond="count($extra_keys)">
+<style type="text/css">
+#exForm textarea
+{
+	width: 100%;
+	height: 60px;
+	-webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+    box-sizing: border-box;         /* Opera/IE 8+ */
+}
+#exForm .txt_free_answer
+{
+	width: 100px;
+}
+
+#exForm input[type=text]:not(.txt_free_answer) 
+{
+	width: 400px;
+}
+</style>
+			<BR>
+			<div id='exForm'>
+				<!----label class='' for='usage_experience'>경추베개 사용경험</label>&nbsp;<select name="usage_experience" id="usage_experience">
+				<option value="">사용경험 선택</option>
+				<option value="0">없음</option>
+				<option value="1">있음</option>				
+				</select>
+				<label class='' for='applicant_name'>수령자 성함</label>&nbsp;<input type='text' id='applicant_name' name='applicant_name' placeholder='체험품 받을 이름'---->
+	<block loop="$extra_keys=>$key,$val">
+		<block cond="$val->type!='hidden'">
+				<em cond="$val->is_required=='Y'">(필수)</em> {$val->name}<strong>:</strong>	{$val->getFormHTML()}<BR>
+		</block>
+		<block cond="$val->type=='hidden'">
+			{$val->getFormHTML()}
+		</block>
+	</block>		
+</block>
+			</div>
+			<BR>
+			<!---div id=''><label class='' for='applicant_addr'>받으실 주소</label>
+				<div id="postcodify_1" class="postcodify_address_area" data-server-url="https://api.poesis.kr/post/search.php" data-map-provider="naver" data-address-format="postcodify" data-postcode-format="5"  data-server-request-format="CORS" data-require-exact-query="N" data-use-full-jibeon="N">    
+					<input type="text" class="postcodify postcode" id="postcodify_1_postcode" name="preview[]" value="" data-origin-value="" readonly="readonly" placeholder="우편번호" />
+					<label class="postcodify postcode" for="postcodify_1_postcode">우편번호</label>
+					<button type="button" class="btn postcodify_search_button" data-not-loaded-yet="우편번호 검색 모듈이 아직 완전히 로딩되지 않았습니다. 잠시만 기다려 주십시오.">검색</button>
+					<br />    
+					<div class="postcodify_hidden_fields">
+						<input type="text" class="postcodify postcodify_address" id="postcodify_1_address" name="preview[]" value="" data-origin-value="" />
+						<label class="postcodify postcodify_address" for="postcodify_1_address">도로명주소</label>
+						<br />
+						<input type="text" class="postcodify postcodify_details" id="postcodify_1_details" name="preview[]" value="" data-origin-value="" />
+						<label class="postcodify postcodify_details" for="postcodify_1_details">상세주소</label>
+						<br />
+						<input type="text" class="postcodify postcodify_extra_info" id="postcodify_1_extra_info" name="preview[]" value="" data-origin-value="" />
+						<label class="postcodify postcodify_extra_info" for="postcodify_1_extra_info">참고항목</label>
+						<br />
+					</div>
+				</div>
+			</div>
+			<BR--->
+			<h5><strong>개인정보 수집 및 이용에 대한 동의</strong></h5>
+			<div class="box">
+				<div id="textarea">{$module_info->privacy_usage_term}</div>
+				<input type="checkbox" name="privacy_collection" id="privacy_collection" value="Y" class="check" /> 위 개인정보 수집 및 이용에 대한 동의문을 모두 읽었으며, 동의합니다.
+			</div>
+<block cond="$module_info->is_hide_privacy_shr_term!='Y'">
+			<BR>
+			<h5><strong>개인정보 제3자 제공 동의(필수)</strong></h5>
+			<div class="box">
+				<div id="textarea">{$module_info->privacy_shr_term}</div>
+				<input type="checkbox" name="privacy_sharing" id="privacy_sharing" value="Y" class="check" /> 위 개인정보 제3자 제공 동의 조항을 모두 읽었으며, 이에 동의합니다.
+			</div>
+</block>
+			<input type="hidden" name="module_srl" id="module_srl" value="{$module_srl}">
+			<div class="btn-r">
+				<button type="button" id='btnSubmit' name='btnSubmit' onClick="doRegistration();" STYLE='display: inline-block; height: 25px; padding: 0 14px 0; border: 1px solid #ed1c24; background-color: #ed1c24; font-size: 13px; color: #fff; line-height: 25px;'>{$module_info->submit_btn_text}</button >
+			</div>
+			<!--// content-->
+		</div>
+	</div>
+</div>
+<!--- section for the floating application layer ends ------>
+
+<div id="layer_thankyou" class="pop-layer">
+	<div class="pop-container">
+		<div class="pop-conts">
+			<!--content //-->
+			<div style="width: 100%; margin: 10px 0 20px; border-bottom: 1px solid #DDD; font-size:14px;text-align: left; font-weight:bold;text-align:center;>">{$module_info->complete_title}</div>
+			<div id='' style="font-size:14px;text-align: left; font-weight:bold;text-align:center;>">{$module_info->complete_description}</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript" src="/modules/svdocs/tpl/skin.js/registration.js"></script>
+<script>
+layer_open('layer1');
+</script>

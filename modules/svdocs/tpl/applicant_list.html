@@ -1,0 +1,144 @@
+<load target="js/applicants_list.js" />
+<include target="header.html" />
+
+<div cond="$XE_VALIDATOR_MESSAGE && $XE_VALIDATOR_ID == 'modules/module/tpl/manage_selected'" class="message {$XE_VALIDATOR_MESSAGE_TYPE}">
+	<p>{$XE_VALIDATOR_MESSAGE}</p>
+</div>
+
+<!-- 검색 -->
+<form action="./" method="get" class="search x_input-append x_pull-right" style="margin-bottom:-28px">
+	<input type="hidden" name="module" value="{$module}" />
+	<input type="hidden" name="module_srl" value="{$module_srl}" />
+	<input type="hidden" name="act" value="dispSvdocsAdminApplicantsBoard" />
+	<select name="search_target" id="search_target" style="margin-right:4px">
+		<option value="s_applicant_name" selected="selected"|cond="$search_target=='s_applicant_name'">{$lang->applicant_name}</option>
+		<option cond="$module_category">{$lang->module_category}</option>
+	</select>
+	<select name="module_category_srl" title="{$lang->module_category}" cond="$module_category" style="margin-right:4px">
+		<option loop="$module_category => $key,$val" value="{$key}" selected="selected"|cond="$module_category_srl==$key">{$val->title}</option>
+	</select>
+	<input type="search" name="search_keyword" title="Search" value="{htmlspecialchars($search_keyword, ENT_COMPAT | ENT_HTML401, 'UTF-8', false)}" required style="width:150px" />
+	<button class="x_btn x_btn-inverse" type="submit">{$lang->cmd_search}</button>
+	<a href="{getUrl('','module',$module,'act',$act)}" class="x_btn">{$lang->cmd_cancel}</a>
+</form>
+<script>
+jQuery(function($){
+	$('#search_target').change(function(){
+		var $this = $(this);
+		if($this.find('>option:last-child').is(':selected')){
+			$this.next('select').show().removeAttr('disabled').next('input[type="search"]').hide().attr('disabled','disabled');
+		} else {
+			$this.next('select').hide().attr('disabled','disabled').next('input[type="search"]').show().removeAttr('disabled');
+		}
+	}).change();
+});
+</script>
+
+<!-- 목록 -->
+
+<form action="./" method="get" id="fo_list">
+<table class="x_table x_table-striped x_table-hover">
+	<caption><strong>Total: {number_format($total_count)}, Page: {number_format($page)}/{number_format($total_page)}</strong> <a href='#' onClick='downloadCsv();'>{$lang->cmd_download_docs}</a></caption>
+	<thead>
+		<tr>
+			<th scope="col">{$lang->no}</th>
+			<th scope="col">{$lang->user_id}</th>
+			<th scope="col">{$lang->acceptance_status}</th>
+			<th scope="col">{$lang->applicant_name}</th>
+			<th scope="col">{$lang->applicant_duration}</th>
+			<th scope="col">{$lang->ipaddress}</th>
+			<th scope="col">{$lang->regdate}</th>
+			<th scope="col">&nbsp;</th>
+			<th scope="col"><input type="checkbox" /></th>
+		</tr>
+	</thead>
+	<tbody>
+<!--@foreach($svdocs_list as $no => $val)-->
+		<tr class="row{$cycle_idx}">
+			<td>{$no}</td>
+			<td><a href="#popup_menu_area" class="member_{$val->member_srl}" title="Info">{$val->user_id}</a></td>
+			<td>{$val->is_accepted}</td>
+			<td>{$val->applicant_name}</td>
+			<td>{$val->duration_sec}s</td>
+			<td>{$val->ipaddress}</td>
+			<td>{zdate($val->regdate,"Y-m-d")}</td>
+			<td>
+				<a href="{getUrl('act','dispSvdocsAdminDocDetail','doc_srl',$val->doc_srl)}">{$lang->cmd_detail}</a>
+			</td>
+			<td><input type="checkbox" name="cart" value="{$val->doc_srl}" data-appli-name="{$val->applicant_name}" data-appli-phone="{$val->applicant_phone}" /></td>
+		</tr>
+<!--@end-->
+	</tbody>
+</table>
+
+<div class="x_clearfix">
+	<div class="x_btn-group x_pull-right">
+		<a class="x_btn modalAnchor x_pull-right deleteDoc" href="#deleteDoc">{$lang->cmd_delete}</a>
+	</div>
+</div>
+</form>
+
+<!-- 페이지 네비게이션 -->
+<form cond="$page_navigation" action="./" class="x_pagination" no-error-return-url="true" style="margin:-36px 0 0 0">
+	<input type="hidden" name="module" value="{$module}" />
+	<input type="hidden" name="act" value="{$act}" />
+	<input cond="$search_target" type="hidden" name="search_target" value="{$search_target}" />
+	<input cond="$search_keyword" type="hidden" name="search_keyword" value="{$search_keyword}" />
+	<ul>
+		<li class="x_disabled"|cond="!$page || $page == 1"><a href="{getUrl('page', '')}">&laquo; {$lang->first_page}</a></li>
+
+		<block cond="$page_navigation->first_page != 1 && $page_navigation->first_page + $page_navigation->page_count > $page_navigation->last_page - 1 && $page_navigation->page_count != $page_navigation->total_page">
+			{@$isGoTo = true}
+			<li>
+				<a href="#goTo" data-toggle title="{$lang->cmd_go_to_page}">&hellip;</a>
+				<span cond="$isGoTo" id="goTo" class="x_input-append">
+					<input type="number" min="1" max="{$page_navigation->last_page}" required name="page" title="{$lang->cmd_go_to_page}" />
+					<button type="submit" class="x_add-on">Go</button>
+				</span>
+			</li>
+		</block>
+
+<!--@while($page_no = $page_navigation->getNextPage())-->
+		{@$last_page = $page_no}
+		<li class="x_active"|cond="$page_no == $page"><a  href="{getUrl('page', $page_no)}">{$page_no}</a></li>
+		<!--@end-->
+
+		<block cond="$last_page != $page_navigation->last_page && $last_page + 1 != $page_navigation->last_page">
+			{@$isGoTo = true}
+			<li>
+				<a href="#goTo" data-toggle title="{$lang->cmd_go_to_page}">&hellip;</a>
+				<span cond="$isGoTo" id="goTo" class="x_input-append">
+					<input type="number" min="1" max="{$page_navigation->last_page}" required name="page" title="{$lang->cmd_go_to_page}" />
+					<button type="submit" class="x_add-on">Go</button>
+				</span>
+			</li>
+			
+		</block>
+
+		<li class="x_disabled"|cond="$page == $page_navigation->last_page"><a href="{getUrl('page', $page_navigation->last_page)}" title="{$page_navigation->last_page}">{$lang->last_page} &raquo;</a></li>
+	</ul>
+</form>
+
+<div class="x_modal" id="deleteDoc">
+	<form action="./" class="fg form" method="post">
+		<input type="hidden" name="act" value="procSvdocsAdminDeleteDoc" />
+		<input type="hidden" name="module_srl" value="{$module_srl}" />
+		<input type="hidden" name="page" value="{$page}" />
+		<div id="deleteDocForm">
+		</div>
+	</form>
+</div>
+
+<!--- hidden form to download CSV begin ----->
+<form action="./" method="post" id='frmCsvDownloadByModule' name="frmCsvDownloadByModule">
+<input type="hidden" name="module" value="{$module}" />
+<input type='hidden' name='act' id='act' value='procSvdocsAdminCSVDownloadByModule'/>
+<input type="hidden" name="module_srl" value="{$module_srl}" />
+</form>
+<script type="text/javascript">
+function downloadCsv()
+{
+	document.frmCsvDownloadByModule.submit();
+}
+</script>
+<!--- hidden form to download CSV end ----->

@@ -1622,6 +1622,15 @@ function requirePear()
 
 function checkCSRF()
 {
+	// Patch Begin (2018-04-26 22:56:23) singleview.co.kr
+	//$sTargetAct = Context::get('act');
+	//$sTargetMode = Context::get('mode');
+	$aAllowModule = array('svpg', 'svorder', 'svauth');
+	$sTargetModule = Context::get('module');
+	if( in_array($sTargetModule, $aAllowModule)
+		return TRUE;
+	// Patch End (2018-04-26 22:56:23) singleview.co.kr 
+
 	if($_SERVER['REQUEST_METHOD'] != 'POST')
 	{
 		return FALSE;
