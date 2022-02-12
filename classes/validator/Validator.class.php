@@ -124,7 +124,7 @@ class Validator
 			return FALSE;
 		}
 
-		$parser = new XmlParser();
+		$parser = new XeXmlParser();
 		$xml = $parser->loadXmlFile($xml_path);
 		if(!isset($xml->ruleset) || !isset($xml->ruleset->fields) || !isset($xml->ruleset->fields->field))
 		{
@@ -279,7 +279,8 @@ class Validator
 		foreach($this->_filters as $key => $filter)
 		{
 			$names = array();
-			if($key{0} == '^')
+			//if($key{0} == '^')
+			if($key[0] == '^')
 			{
 				$names = preg_grep('/^' . preg_quote(substr($key, 1)) . '/', $field_names);
 			}

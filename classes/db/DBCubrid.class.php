@@ -59,7 +59,7 @@ class DBCubrid extends DB
 	 * Create an instance of this class
 	 * @return DBCubrid return DBCubrid object instance
 	 */
-	function create()
+	public static function create()
 	{
 		return new DBCubrid;
 	}
@@ -1118,7 +1118,7 @@ class DBCubrid extends DB
 	 * @param boolean $force
 	 * @return DBParser
 	 */
-	function getParser($force = FALSE)
+	public static function getParser($force = FALSE)
 	{
 		return new DBParser('"', '"', $this->prefix);
 	}

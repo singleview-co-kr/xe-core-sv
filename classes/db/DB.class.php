@@ -139,7 +139,7 @@ class DB
 	 * @param string $db_type type of db
 	 * @return DB return DB object instance
 	 */
-	function getInstance($db_type = NULL)
+	public static function getInstance($db_type = NULL)
 	{
 		if(!$db_type)
 		{
@@ -176,7 +176,7 @@ class DB
 	 * returns instance of db
 	 * @return DB return DB object instance
 	 */
-	function create()
+	public static function create()
 	{
 		return new DB;
 	}
@@ -1342,7 +1342,7 @@ class DB
 	 * @param boolean $force force load DBParser instance
 	 * @return DBParser
 	 */
-	function getParser($force = FALSE)
+	public static function getParser($force = FALSE)
 	{
 		static $dbParser = NULL;
 		if(!$dbParser || $force)

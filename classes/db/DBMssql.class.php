@@ -52,7 +52,7 @@ class DBMssql extends DB
 	 * Create an instance of this class
 	 * @return DBMssql return DBMssql object instance
 	 */
-	function create()
+	public static function create()
 	{
 		return new DBMssql;
 	}
@@ -871,7 +871,7 @@ class DBMssql extends DB
 	 * @param boolean $force
 	 * @return DBParser
 	 */
-	function getParser($force = FALSE)
+	public static function getParser($force = FALSE)
 	{
 		return new DBParser("[", "]", $this->prefix);
 	}

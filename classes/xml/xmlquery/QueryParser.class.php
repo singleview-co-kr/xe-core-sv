@@ -48,7 +48,7 @@ class QueryParser
 	 * @param bool $table_name
 	 * @return array
 	 */
-	function getTableInfo($query_id, $table_name)
+	public static function getTableInfo($query_id, $table_name)
 	{
 		$column_type = array();
 		$module = '';
@@ -91,7 +91,7 @@ class QueryParser
 		if(file_exists($table_file))
 		{
 			$table_xml = FileHandler::readFile($table_file);
-			$xml_parser = new XmlParser();
+			$xml_parser = new XeXmlParser();
 			$table_obj = $xml_parser->parse($table_xml);
 			if($table_obj->table)
 			{

@@ -480,7 +480,7 @@ class moduleModel extends module
 
 		foreach($target_module_info as $key => $val)
 		{
-			if(!$extra_vars[$val->module_srl] || !count($extra_vars[$val->module_srl])) continue;
+			if(!$extra_vars[$val->module_srl] || !count((array)$extra_vars[$val->module_srl])) continue;
 			foreach($extra_vars[$val->module_srl] as $k => $v)
 			{
 				if($target_module_info[$key]->{$k}) continue;
@@ -747,7 +747,7 @@ class moduleModel extends module
 		$xml_file = sprintf("%s/conf/info.xml", $module_path);
 		if(!file_exists($xml_file)) return;
 
-		$oXmlParser = new XmlParser();
+		$oXmlParser = new XeXmlParser();
 		$tmp_xml_obj = $oXmlParser->loadXmlFile($xml_file);
 		$xml_obj = $tmp_xml_obj->module;
 
@@ -764,6 +764,7 @@ class moduleModel extends module
 			$module_info->homepage = $xml_obj->link->body;
 			$module_info->category = $xml_obj->category->body;
 			if(!$module_info->category) $module_info->category = 'service';
+			$date_obj = new stdClass();
 			sscanf($xml_obj->date->body, '%d-%d-%d', $date_obj->y, $date_obj->m, $date_obj->d);
 			$module_info->date = sprintf('%04d%02d%02d', $date_obj->y, $date_obj->m, $date_obj->d);
 			$module_info->license = $xml_obj->license->body;
@@ -789,6 +790,7 @@ class moduleModel extends module
 			$module_info->version = $xml_obj->attrs->version;
 			$module_info->category = $xml_obj->attrs->category;
 			if(!$module_info->category) $module_info->category = 'service';
+			$date_obj = new stdClass();
 			sscanf($xml_obj->author->attrs->date, '%d. %d. %d', $date_obj->y, $date_obj->m, $date_obj->d);
 			$module_info->date = sprintf('%04d%02d%02d', $date_obj->y, $date_obj->m, $date_obj->d);
 			$author_obj = new stdClass();
@@ -838,9 +840,8 @@ class moduleModel extends module
 			$buff['simple_setup_index_act'] = '$info->simple_setup_index_act=\'%s\';';
 			$buff['admin_index_act'] = '$info->admin_index_act = \'%s\';';
 
-			$xml_obj = XmlParser::loadXmlFile($xml_file); // /< Read xml file and convert it to xml object
-
-			if(!count($xml_obj->module)) return; // /< Error occurs if module tag doesn't included in the xml
+			$xml_obj = XeXmlParser::loadXmlFile($xml_file); // /< Read xml file and convert it to xml object
+			if(!count((array)$xml_obj->module)) return; // /< Error occurs if module tag doesn't included in the xml
 
 			$grants = $xml_obj->module->grants->grant; // /< Permission information
 			$permissions = $xml_obj->module->permissions->permission; // /<  Acting permission
@@ -915,6 +916,11 @@ class moduleModel extends module
 					$buff[] = sprintf('$info->menu->%s->type=\'%s\';', $menu_name, $menu_type);
 				}
 			}
+			if(is_null($info->menu))
+			{
+				$info->menu = new stdClass();
+				$buff[] = '$info->menu = new stdClass;';
+			}
 
 			// actions
 			if($actions)
@@ -954,7 +960,9 @@ class moduleModel extends module
 					{
 						if($menu_index == 'true')
 						{
+							$info->menu->{$action->attrs->menu_name} = new stdClass();
 							$info->menu->{$action->attrs->menu_name}->index = $name;
+							$buff[] = sprintf('$info->menu->%s = new stdClass;', $action->attrs->menu_name);
 							$buff[] = sprintf('$info->menu->%s->index=\'%s\';', $action->attrs->menu_name, $name);
 						}
 						if(is_array($info->menu->{$action->attrs->menu_name}->acts))
@@ -1137,7 +1145,7 @@ class moduleModel extends module
 		$skin_xml_file = sprintf("%s%s/%s/skin.xml", $path, $dir, $skin);
 		if(!file_exists($skin_xml_file)) return;
 		// Create XmlParser object
-		$oXmlParser = new XmlParser();
+		$oXmlParser = new XeXmlParser();
 		$_xml_obj = $oXmlParser->loadXmlFile($skin_xml_file);
 		// Return if no skin information is
 		if(!$_xml_obj->skin) return;
@@ -1149,6 +1157,7 @@ class moduleModel extends module
 		if($xml_obj->version && $xml_obj->attrs->version == '0.2')
 		{
 			// skin format v0.2
+			$date_obj = new stdClass();
 			sscanf($xml_obj->date->body, '%d-%d-%d', $date_obj->y, $date_obj->m, $date_obj->d);
 			$skin_info->version = $xml_obj->version->body;
 			$skin_info->date = sprintf('%04d%02d%02d', $date_obj->y, $date_obj->m, $date_obj->d);
@@ -1225,6 +1234,7 @@ class moduleModel extends module
 		else
 		{
 			// skin format v0.1
+			$date_obj = new stdClass();
 			sscanf($xml_obj->maker->attrs->date, '%d-%d-%d', $date_obj->y, $date_obj->m, $date_obj->d);
 
 			$skin_info->version = $xml_obj->version->body;

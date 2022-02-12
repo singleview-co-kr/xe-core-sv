@@ -220,7 +220,7 @@ function executeQueryArray($query_id, $args = NULL, $arg_columns = NULL)
 {
 	$oDB = DB::getInstance();
 	$output = $oDB->executeQuery($query_id, $args, $arg_columns);
-	if(!is_array($output->data) && count($output->data) > 0)
+	if(!is_array($output->data) && count((array)$output->data) > 0)
 	{
 		$output->data = array($output->data);
 	}
@@ -1612,10 +1612,12 @@ function requirePear()
 	{
 		set_include_path(_XE_PATH_ . "libs/PEAR" . PATH_SEPARATOR . get_include_path());
 	}
-	else
+	elseif(version_compare(PHP_VERSION, "7.5.0") < 0)
 	{
 		set_include_path(_XE_PATH_ . "libs/PEAR.1.9.5" . PATH_SEPARATOR . get_include_path());
 	}
+	else  // PHP8.0
+		set_include_path(_XE_PATH_ . "libs/PEAR.1.10.13" . PATH_SEPARATOR . get_include_path());
 
 	$required = true;
 }
@@ -1627,7 +1629,7 @@ function checkCSRF()
 	//$sTargetMode = Context::get('mode');
 	$aAllowModule = array('svpg', 'svorder', 'svauth');
 	$sTargetModule = Context::get('module');
-	if( in_array($sTargetModule, $aAllowModule)
+	if(in_array($sTargetModule, $aAllowModule))
 		return TRUE;
 	// Patch End (2018-04-26 22:56:23) singleview.co.kr 
 

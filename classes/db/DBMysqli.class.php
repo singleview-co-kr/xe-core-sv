@@ -30,7 +30,7 @@ class DBMysqli extends DBMysql
 	 * Create an instance of this class
 	 * @return DBMysqli return DBMysqli object instance
 	 */
-	function create()
+	public static function create()
 	{
 		return new DBMysqli;
 	}
@@ -256,7 +256,8 @@ class DBMysqli extends DBMysql
 
 			// Array passed needs to contain references, not values
 			$row[$field->name] = "";
-			$resultArray[$field->name] = &$row[$field->name];
+			//$resultArray[$field->name] = &$row[$field->name];
+			$resultArray[] = &$row[$field->name];
 
 			if($field->type == 252)
 			{

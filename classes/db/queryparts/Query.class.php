@@ -385,7 +385,7 @@ class Query extends BaseObject
 				}
 			}
 		}
-		return trim(implode($select, ', '));
+		return trim(implode(', ', $select));
 	}
 
 	/**
@@ -404,7 +404,7 @@ class Query extends BaseObject
 		}
 
 		if(!$update) return;
-		return trim(implode($update, ', '));
+		return trim(implode(', ', $update));
 	}
 
 	/**
@@ -560,7 +560,7 @@ class Query extends BaseObject
 	{
 		if(!$this->_orderByString)
 		{
-			if(count($this->orderby) === 0)
+			if(count((array)$this->orderby) === 0)
 			{
 				return '';
 			}
@@ -587,7 +587,7 @@ class Query extends BaseObject
 	function getLimitString()
 	{
 		$limit = '';
-		if(count($this->limit) > 0)
+		if(count((array)$this->limit) > 0)
 		{
 			$limit = '';
 			$limit .= $this->limit->toString();
@@ -657,12 +657,12 @@ class Query extends BaseObject
 			}
 
 			// Navigation arguments
-			if(count($this->orderby) > 0)
+			if(count((array)$this->orderby) > 0)
 			{
 				foreach($this->orderby as $order)
 				{
 					$args = $order->getArguments();
-					if(count($args) > 0)
+					if(count((array)$args) > 0)
 					{
 						$this->arguments = array_merge($this->arguments, $args);
 					}

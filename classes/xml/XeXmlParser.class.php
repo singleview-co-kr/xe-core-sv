@@ -35,7 +35,7 @@ class Xml_Node_
  * @package /classes/xml
  * @version 0.1
  */
-class XmlParser
+class XeXmlParser
 {
 
 	/**
@@ -67,7 +67,7 @@ class XmlParser
 	 * @param string $filename a file path of file
 	 * @return array Returns a data object containing data extracted from a xml file or NULL if a specified file does not exist
 	 */
-	function loadXmlFile($filename)
+	public static function loadXmlFile($filename)
 	{
 		if(!file_exists($filename))
 		{
@@ -75,7 +75,7 @@ class XmlParser
 		}
 		$buff = FileHandler::readFile($filename);
 
-		$oXmlParser = new XmlParser();
+		$oXmlParser = new XeXmlParser();
 		return $oXmlParser->parse($buff);
 	}
 

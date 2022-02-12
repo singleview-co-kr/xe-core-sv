@@ -20,7 +20,7 @@ class Mobile
 	 *
 	 * @return Mobile
 	 */
-	function &getInstance()
+	public static function &getInstance()
 	{
 		static $theInstance;
 		if(!isset($theInstance))
@@ -35,7 +35,7 @@ class Mobile
 	 *
 	 * @return bool If mobile mode returns true or false
 	 */
-	function isFromMobilePhone()
+	public static function isFromMobilePhone()
 	{
 		$oMobile = & Mobile::getInstance();
 		return $oMobile->_isFromMobilePhone();
@@ -226,13 +226,13 @@ class Mobile
 	 * @param bool $ismobile
 	 * @return void
 	 */
-	function setMobile($ismobile)
+	public static function setMobile($ismobile)
 	{
 		$oMobile = Mobile::getInstance();
 		$oMobile->ismobile = $ismobile;
 	}
 
-	function isMobileEnabled()
+	public static function isMobileEnabled()
 	{
 		$db_info = Context::getDBInfo();
 		return ($db_info->use_mobile_view === 'Y');
