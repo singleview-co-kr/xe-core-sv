@@ -67,7 +67,7 @@ class svestudioModel extends module
 				}
 			}
 		}
-		if( count( $aPermittedMid ) > 0 )
+		if( count( (array)$aPermittedMid ) > 0 )
 			Context::set('success_return_url', '/'.$aPermittedMid[0]);
 	}
 /**

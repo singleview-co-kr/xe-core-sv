@@ -1607,6 +1607,7 @@ function requirePear()
 	{
 		return;
 	}
+	$sPhpVerLevel = 5;  // this is for /classes/file/FileHandler.class.php::getRemoteFile()
 
 	if(version_compare(PHP_VERSION, "5.3.0") < 0)
 	{
@@ -1615,11 +1616,16 @@ function requirePear()
 	elseif(version_compare(PHP_VERSION, "7.5.0") < 0)
 	{
 		set_include_path(_XE_PATH_ . "libs/PEAR.1.9.5" . PATH_SEPARATOR . get_include_path());
+		$sPhpVerLevel = 7;
 	}
-	else  // PHP8.0
+	else  // PHP8.0  XE1 can't updage over PHP8.0 as PHP8.1 deprecates $GLOBALS var
+	{
 		set_include_path(_XE_PATH_ . "libs/PEAR.1.10.13" . PATH_SEPARATOR . get_include_path());
+		$sPhpVerLevel = 8;
+	}
 
 	$required = true;
+	return $sPhpVerLevel;
 }
 
 function checkCSRF()

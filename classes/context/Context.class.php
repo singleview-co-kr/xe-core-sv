@@ -757,7 +757,7 @@ class Context
 	 *
 	 * @return object FTP information
 	 */
-	function getFTPInfo()
+	public static function getFTPInfo()
 	{
 		$self = self::getInstance();
 
@@ -1324,7 +1324,7 @@ class Context
 			exit;
 		}
 
-		$oXml = new XmlParser();
+		$oXml = new XeXmlParser();
 		$xml_obj = $oXml->parse($xml);
 
 		$params = $xml_obj->methodcall->params;
@@ -2367,7 +2367,7 @@ class Context
 	 * @return void
 	 *
 	 */
-	function addCSSFile($file, $optimized = FALSE, $media = 'all', $targetie = '', $index = 0)
+	public static function addCSSFile($file, $optimized = FALSE, $media = 'all', $targetie = '', $index = 0)
 	{
 		$self = self::getInstance();
 		$self->oFrontEndFileHandler->loadFile(array($file, $media, $targetie, $index));
@@ -2471,7 +2471,7 @@ class Context
 	 * @param string $plugin_name plugin name
 	 * @return void
 	 */
-	function loadJavascriptPlugin($plugin_name)
+	public static function loadJavascriptPlugin($plugin_name)
 	{
 		static $loaded_plugins = array();
 

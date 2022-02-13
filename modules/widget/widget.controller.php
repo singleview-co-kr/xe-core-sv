@@ -278,7 +278,7 @@ class widgetController extends widget
 	{
 		$buff = trim($matches[0]);
 
-		$oXmlParser = new XmlParser();
+		$oXmlParser = new XeXmlParser();
 		$xml_doc = $oXmlParser->parse(trim($buff));
 
 		if($xml_doc->img) $vars = $xml_doc->img->attrs;

@@ -628,7 +628,7 @@ class Query extends BaseObject
 
 			// Column arguments
 			// The if is for delete statements, all others must have columns
-			if(count($this->columns) > 0)
+			if(count((array)$this->columns) > 0)
 			{
 				foreach($this->columns as $column)
 				{

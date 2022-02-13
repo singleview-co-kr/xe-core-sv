@@ -143,7 +143,7 @@ class Mobile
 	 *
 	 * @return bool Returns true on mobile device or false.
 	 */
-	function isMobileCheckByAgent()
+	public static function isMobileCheckByAgent()
 	{
 		static $UACheck;
 		if(isset($UACheck))

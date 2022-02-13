@@ -159,7 +159,7 @@ class addonAdminModel extends addon
 			return;
 		}
 
-		$oXmlParser = new XmlParser();
+		$oXmlParser = new XeXmlParser();
 		$tmp_xml_obj = $oXmlParser->loadXmlFile($xml_file);
 		$xml_obj = $tmp_xml_obj->addon;
 
@@ -295,7 +295,7 @@ class addonAdminModel extends addon
 							$val->options = array($val->options);
 						}
 
-						for($i = 0, $c = count($val->options); $i < $c; $i++)
+						for($i = 0, $c = count((array)$val->options); $i < $c; $i++)
 						{
 							$obj->options[$i] = new stdClass();
 							$obj->options[$i]->title = $val->options[$i]->title->body;

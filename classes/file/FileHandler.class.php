@@ -445,7 +445,7 @@ class FileHandler
 	 * @param string $path Path of the target directory
 	 * @return void
 	 */
-	function removeFilesInDir($path)
+	public static function removeFilesInDir($path)
 	{
 		if(($path = self::getRealPath($path)) === FALSE)
 		{
@@ -683,16 +683,25 @@ class FileHandler
 	 * @param string[] $headers Headers key value array.
 	 * @return bool TRUE: success, FALSE: failed
 	 */
-	function getRemoteFile($url, $target_filename, $body = null, $timeout = 3, $method = 'GET', $content_type = null, $headers = array(), $cookies = array(), $post_data = array(), $request_config = array())
+	public static function getRemoteFile($url, $target_filename, $body = null, $timeout = 3, $method = 'GET', $content_type = null, $headers = array(), $cookies = array(), $post_data = array(), $request_config = array())
 	{
 		$target_filename = self::getRealPath($target_filename);
 		self::writeFile($target_filename, '');
 		
-		requirePear();
-		require_once('HTTP/Request2/Observer/Download.php');
+		$sPhpVerLevel = requirePear();
+		if($sPhpVerLevel <= 7)
+		{
+			require_once('HTTP/Request2/Observer/Download.php');
+			$request_config['store_body'] = false;
+			$request_config['observers'][] = new HTTP_Request2_Observer_Download($target_filename);
+		}
+		if($sPhpVerLevel > 7)  // for PHP8.0
+		{
+			require_once('HTTP/Request2/Observer/UncompressingDownload.php');
+			$request_config['store_body'] = false;
+			$request_config['observers'][] = new HTTP_Request2_Observer_UncompressingDownload($target_filename);
+		}
 		
-		$request_config['store_body'] = false;
-		$request_config['observers'][] = new HTTP_Request2_Observer_Download($target_filename);
 		try
 		{
 			$result = self::getRemoteResource($url, $body, $timeout, $method, $content_type, $headers, $cookies, $post_data, $request_config);

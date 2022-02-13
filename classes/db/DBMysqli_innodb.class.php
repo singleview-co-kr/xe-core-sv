@@ -315,6 +315,7 @@ class DBMysqli_innodb extends DBMysql
 			// Array passed needs to contain references, not values
 			$row[$field->name] = "";
 			$resultArray[$field->name] = &$row[$field->name];
+			$bindArray[] = &$row[$field->name];
 
 			if($field->type == 252)
 			{
@@ -322,13 +323,14 @@ class DBMysqli_innodb extends DBMysql
 			}
 		}
 		$resultArray = array_merge(array($stmt), $resultArray);
+		$bindArray = array_merge(array($stmt), $bindArray);  // this is to cheat mysqli_stmt_bind_result() on PHP8 only
 
 		if($longtext_exists)
 		{
 			mysqli_stmt_store_result($stmt);
 		}
 
-		call_user_func_array('mysqli_stmt_bind_result', $resultArray);
+		call_user_func_array('mysqli_stmt_bind_result', $bindArray);
 
 		$rows = array();
 		while(mysqli_stmt_fetch($stmt))
