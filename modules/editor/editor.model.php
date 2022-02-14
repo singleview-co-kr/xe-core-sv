@@ -128,7 +128,7 @@ class editorModel extends editor
 			return $xml_info;
 		}
 		// Return after parsing and caching if the cached file does not exist
-		$oParser = new XmlParser();
+		$oParser = new XeXmlParser();
 		$xml_doc = $oParser->loadXmlFile($xml_file);
 
 		$component_info->component_name = $drComponentName;
@@ -639,7 +639,7 @@ class editorModel extends editor
 			$group_list = array();
 		}
 
-		if(count($component_list))
+		if(count((array)$component_list))
 		{
 			foreach($component_list as $key => $val)
 			{
@@ -767,7 +767,7 @@ class editorModel extends editor
 			return $xml_info;
 		}
 
-		$oParser = new XmlParser();
+		$oParser = new XeXmlParser();
 		$xml_doc = $oParser->loadXmlFile($xml_file);
 
 		// Component information listed

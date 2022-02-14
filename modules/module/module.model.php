@@ -501,7 +501,7 @@ class moduleModel extends module
 		$oCacheHandler = CacheHandler::getInstance('object', null, true);
 		if($oCacheHandler->isSupport())
 		{
-			if(count($args) === 1 && isset($args->site_srl))
+			if(count((array)$args) === 1 && isset($args->site_srl))
 			{
 				$object_key = 'module:mid_list_' . $args->site_srl;
 				$cache_key = $oCacheHandler->getGroupKey('site_and_module', $object_key);
@@ -511,7 +511,7 @@ class moduleModel extends module
 
 		if($list === false)
 		{
-			if($oCacheHandler->isSupport() && count($args) === 1 && isset($args->site_srl))
+			if($oCacheHandler->isSupport() && count((array)$args) === 1 && isset($args->site_srl))
 			{
 				$columnList = array();
 			}
@@ -520,7 +520,7 @@ class moduleModel extends module
 			if(!$output->toBool()) return $output;
 			$list = $output->data;
 
-			if($oCacheHandler->isSupport() && count($args) === 1 && isset($args->site_srl))
+			if($oCacheHandler->isSupport() && count((array)$args) === 1 && isset($args->site_srl))
 			{
 				$oCacheHandler->put($cache_key, $list);
 			}
@@ -962,7 +962,8 @@ class moduleModel extends module
 						{
 							$info->menu->{$action->attrs->menu_name} = new stdClass();
 							$info->menu->{$action->attrs->menu_name}->index = $name;
-							$buff[] = sprintf('$info->menu->%s = new stdClass;', $action->attrs->menu_name);
+							if(is_null($menus))  // to be compatible with php8's strict variable validation
+								$buff[] = sprintf('$info->menu->%s = new stdClass;', $action->attrs->menu_name);
 							$buff[] = sprintf('$info->menu->%s->index=\'%s\';', $action->attrs->menu_name, $name);
 						}
 						if(is_array($info->menu->{$action->attrs->menu_name}->acts))
@@ -1659,7 +1660,7 @@ class moduleModel extends module
 	 * Because XE DBHandler doesn't support left outer join,
 	 * it should be as same as $Output->data[]->module_srl.
 	 */
-	function syncModuleToSite(&$data)
+	public static function syncModuleToSite(&$data)
 	{
 		if(!$data) return;
 

@@ -24,7 +24,7 @@
 						<option loop="$editor_skin_list => $editor" value="{$editor}" selected="selected"|cond="$editor==$editor_config->editor_skin">{$editor}</option>
 					</select>
 					<br/>
-					<select name="sel_editor_colorset" id="sel_editor_colorset" data-display="none"|cond="!count($editor_colorset_list)">
+					<select name="sel_editor_colorset" id="sel_editor_colorset" data-display="none"|cond="!count((array)$editor_colorset_list)">
 						<option loop="$editor_colorset_list => $key, $val" value="{$val->name}" selected="selected"|cond="$editor_config->sel_editor_colorset == $val->name">{$val->title}</option>
 					</select>
 				</td>
@@ -33,7 +33,7 @@
 						<option loop="$editor_skin_list => $editor" value="{$editor}" selected="selected"|cond="$editor==$editor_config->comment_editor_skin">{$editor}</option>
 					</select>
 					<br/>
-					<select name="sel_comment_editor_colorset" id="sel_comment_editor_colorset" data-display="none"|cond="!count($editor_comment_colorset_list)">
+					<select name="sel_comment_editor_colorset" id="sel_comment_editor_colorset" data-display="none"|cond="!count((array)$editor_comment_colorset_list)">
 						<option loop="$editor_comment_colorset_list => $key, $val" value="{$val->name}" selected="selected"|cond="$editor_config->sel_comment_editor_colorset == $val->name">{$val->title}</option>
 					</select>
 				</td>

@@ -56,6 +56,7 @@ class svauthAdminView extends svauth
 		$aBoard = array();
 		foreach( $output->data as $key=>$val)
 		{
+			$aBoard[$nIdx] = new stdClass();
 			$aBoard[$nIdx]->module_srl =  $val->module_srl;
 			$aBoard[$nIdx++]->mid =  $val->mid;
 		}
@@ -130,6 +131,7 @@ class svauthAdminView extends svauth
  */
 	function dispSvauthAdminManageAuthMemberList()
 	{
+		$args = new stdClass();
 		$args->page = Context::get('page');
 		$output = executeQueryArray('svauth.getAuthList', $args);
 		if (!$output->toBool()) 
@@ -146,6 +148,7 @@ class svauthAdminView extends svauth
  */
 	function dispSvauthAdminManageAuthList()
 	{
+		$args = new stdClass();
 		$sSearchKeyword = Context::get('search_keyword');
 		if($sSearchKeyword)
 			$args->search_keyword = $sSearchKeyword;
@@ -174,6 +177,7 @@ class svauthAdminView extends svauth
  */
 	function dispSvauthAdminManageSmsAuthList()
 	{
+		$args = new stdClass();
 		$sSearchKeyword = Context::get('search_keyword');
 		if($sSearchKeyword)
 			$args->search_keyword = $sSearchKeyword;

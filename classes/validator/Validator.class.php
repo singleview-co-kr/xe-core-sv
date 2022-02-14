@@ -343,7 +343,12 @@ class Validator
 				}
 
 				$func_body = preg_replace('/\\$(\w+)/', '$c[\'$1\']', $cond['test']);
-				$func = create_function('$c', "return !!({$func_body});");
+				// refer to https://lindevs.com/function-create_function-has-been-removed-in-php-8-0/
+				//$func = create_function('$c', "return !!({$func_body});");
+				$func = function ($c)
+				{ 
+					return !!($func_body); 
+				};
 
 				if($func($fields))
 				{
@@ -624,9 +629,13 @@ class Validator
 			case 'expr':
 				if(!$rule['func_test'])
 				{
-					$rule['func_test'] = create_function('$a', 'return (' . preg_replace('/\$\$/', '$a', html_entity_decode($rule['test'])) . ');');
+					$sEvaluation = 'return (' . preg_replace('/\$\$/', $value, html_entity_decode($rule['test'])) . ');';
+					//$rule['func_test'] = create_function('$a', 'return (' . preg_replace('/\$\$/', '$a', html_entity_decode($rule['test'])) . ');');
+					return eval($sEvaluation);
 				}
-				return $rule['func_test']($value);
+				//return $rule['func_test']($value);
+				echo 'applyRule occured error on '.__FILE__.':'.__LINE__.'<BR>';
+				exit;
 		}
 
 		return TRUE;

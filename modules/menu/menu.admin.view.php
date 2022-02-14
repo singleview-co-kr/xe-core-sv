@@ -67,7 +67,7 @@ class menuAdminView extends menu
 					$value->php_file = sprintf(_XE_PATH_ . 'files/cache/menu/%s.php',$value->menu_srl);
 					if(file_exists($value->php_file)) include($value->php_file);
 
-					if(count($menu->list)>0)
+					if(count((array)$menu->list)>0)
 					{
 						foreach($menu->list as $key2=>$value2)
 						{

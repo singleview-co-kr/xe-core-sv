@@ -1,7 +1,7 @@
 <!--// 목록형 출력 -->
 <!--@if($widget_info->markup_type=="list")-->
     {@$have_first_thumbnail=false}
-    <!--@if(count($widget_info->content_items) && $widget_info->content_items[0]->haveFirstThumbnail())-->
+    <!--@if(count((array)$widget_info->content_items) && $widget_info->content_items[0]->haveFirstThumbnail())-->
         {@$thumbnail_idx = $widget_info->content_items[0]->getFirstThumbnailIdx() }
         {@$have_first_thumbnail=true}
         <p class="widgetThumb floatLeft" style="margin-right:-{$widget_info->thumbnail_width}px">
@@ -59,7 +59,7 @@
 <!--// 테이블형 출력 -->
 <!--@else-->
     {@$have_first_thumbnail=false}
-    <!--@if(count($widget_info->content_items) && $widget_info->content_items[0]->haveFirstThumbnail())-->
+    <!--@if(count((array)$widget_info->content_items) && $widget_info->content_items[0]->haveFirstThumbnail())-->
         {@$thumbnail_idx = $widget_info->content_items[0]->getFirstThumbnailIdx() }
         {@$have_first_thumbnail=true}
         <p class="widgetThumb floatLeft" style="margin-right:-{$widget_info->thumbnail_width}px">

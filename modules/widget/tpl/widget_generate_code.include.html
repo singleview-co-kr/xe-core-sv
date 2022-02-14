@@ -90,7 +90,7 @@
 			</block>
 			<block cond="$var->type == 'mid_list'">
 				<fieldset loop="$mid_list => $module_category_srl, $modules">
-					<block cond="count($mid_list) > 1">
+					<block cond="count((array)$mid_list) > 1">
 						<legend cond="$modules->title">{$modules->title}</legend>
 						<legend cond="!$modules->title">{$lang->none_category}</legend>
 					</block>

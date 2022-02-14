@@ -315,6 +315,8 @@ class counterModel extends counter
 					}
 
 					$count = (int)($isPageView ? $output->data->pageview : $output->data->unique_visitor);
+					if(is_null($status))
+						$status = new stdClass();
 					$status->list[$i] = $count;
 
 					if($count > $max) $max = $count;

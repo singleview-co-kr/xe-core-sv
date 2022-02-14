@@ -88,7 +88,7 @@ class svauthAdminModel extends svauth
  */
 	public function getPluginList()
 	{
-		$args->page = Context::get('page');
+		//$args->page = Context::get('page');
 		$output = executeQueryArray('svauth.getPluginList');
 		return $output->data;
 	}
@@ -140,16 +140,19 @@ class svauthAdminModel extends svauth
 		if(!file_exists($xml_file)) 
 			return;
 
-		$oXmlParser = new XmlParser();
+		$oXmlParser = new XeXmlParser();
 		$tmp_xml_obj = $oXmlParser->loadXmlFile($xml_file);
 		$xml_obj = $tmp_xml_obj->plugin;
 
 		if(!$xml_obj) 
 			return;
-
+		
+		$plugin_info = new stdClass();
 		$plugin_info->title = $xml_obj->title->body;
 		$plugin_info->description = $xml_obj->description->body;
 		$plugin_info->version = $xml_obj->version->body;
+		
+		$date_obj = new stdClass();
 		sscanf($xml_obj->date->body, '%d-%d-%d', $date_obj->y, $date_obj->m, $date_obj->d);
 		$plugin_info->date = sprintf('%04d%02d%02d', $date_obj->y, $date_obj->m, $date_obj->d);
 		$plugin_info->license = $xml_obj->license->body;
@@ -163,6 +166,7 @@ class svauthAdminModel extends svauth
 		foreach($author_list as $author)
 		{
 			unset($author_obj);
+			$author_obj = new stdClass();
 			$author_obj->name = $author->name->body;
 			$author_obj->email_address = $author->attrs->email_address;
 			$author_obj->homepage = $author->attrs->link;

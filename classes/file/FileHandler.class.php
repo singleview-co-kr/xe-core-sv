@@ -370,7 +370,7 @@ class FileHandler
 	 * @param string $path Path of the target directory
 	 * @return void
 	 */
-	function removeDir($path)
+	public static function removeDir($path)
 	{
 		if(($path = self::isDir($path)) === FALSE)
 		{
@@ -487,7 +487,7 @@ class FileHandler
 	 * @param int $size Number of the size
 	 * @return string File size string
 	 */
-	function filesize($size)
+	public static function filesize($size)
 	{
 		if(!$size)
 		{
@@ -697,9 +697,14 @@ class FileHandler
 		}
 		if($sPhpVerLevel > 7)  // for PHP8.0
 		{
+			$stream = fopen($target_filename, 'wb');
+			if(!$stream) 
+			{
+				throw new Exception('fopen failed');
+			}
 			require_once('HTTP/Request2/Observer/UncompressingDownload.php');
 			$request_config['store_body'] = false;
-			$request_config['observers'][] = new HTTP_Request2_Observer_UncompressingDownload($target_filename);
+			$request_config['observers'][] = new HTTP_Request2_Observer_UncompressingDownload($stream);
 		}
 		
 		try
@@ -722,7 +727,7 @@ class FileHandler
 	 * @param $val Size in string (ex., 10, 10K, 10M, 10G )
 	 * @return int converted size
 	 */
-	function returnBytes($val)
+	public static function returnBytes($val)
 	{
 		$unit = strtoupper(substr($val, -1));
 		$val = (float)$val;

@@ -80,6 +80,8 @@ class addonAdminView extends addon
 			{
 				foreach($mid_list as $module_srl => $module)
 				{
+					if(is_null($module_categories[$module->module_category_srl]))
+						$module_categories[$module->module_category_srl] = new stdClass();
 					$module_categories[$module->module_category_srl]->list[$module_srl] = $module;
 				}
 			}

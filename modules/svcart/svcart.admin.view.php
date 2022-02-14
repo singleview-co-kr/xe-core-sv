@@ -295,7 +295,7 @@ class svcartAdminView extends svcart
 
 		if(file_exists($cache_file)) 
 		{
-			$oXml = new XmlParser();
+			$oXml = new XeXmlParser();
 			$buff = $oXml->parse(FileHandler::readFile($cache_file));
 
 			$item = $buff->zbxe_news->item;

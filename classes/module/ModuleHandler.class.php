@@ -959,10 +959,12 @@ class ModuleHandler extends Handler
 	{
 		$requestVars = Context::getRequestVars();
 		unset($requestVars->act, $requestVars->mid, $requestVars->vid, $requestVars->success_return_url, $requestVars->error_return_url);
+		$aTmp = [];
 		foreach($requestVars AS $key => $value)
 		{
-			$_SESSION['INPUT_ERROR'][$key] = $value;
+			$aTmp[$key] = $value;  //$_SESSION['INPUT_ERROR'][$key] = $value;
 		}
+		$_SESSION['INPUT_ERROR'] = $aTmp;
 	}
 
 	/**

@@ -32,7 +32,7 @@
 				<a href="#" onclick="winopen('{$component->link}');return false;">{$component->link}</a>
 			</div>
 		</div>
-		<block cond="count($component->extra_vars)">
+		<block cond="count((array)$component->extra_vars)">
 			<block loop="$component->extra_vars => $id, $var">
 				<block cond="$group != $var->group">
 					<h2>{$var->group}</h2>
@@ -71,7 +71,7 @@
 				<span class="x_help-block">{$lang->about_component_mid}</span>
 				 <label class="checked" for="check_all"> <input id="check_all" type="checkbox"/> Check all</label>
 				<!--@foreach($mid_list as $module_category_srl => $modules)-->
-				<!--@if(count($mid_list) > 1)-->
+				<!--@if(count((array)$mid_list) > 1)-->
 				<fieldset>
 					<legend>
 						<input type="checkbox" />
@@ -86,7 +86,7 @@
 							</label>
 					<!--@end-->
 					</div>
-				<!--@if(count($mid_list) > 1)-->
+				<!--@if(count((array)$mid_list) > 1)-->
 				</fieldset>
 				<!--@end-->
 				<!--@end-->

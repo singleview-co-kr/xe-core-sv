@@ -22,6 +22,8 @@ class krzip extends ModuleObject
         );
         
         $config = getModel('module')->getModuleConfig('krzip');
+		if(is_null($config))
+			$config = new stdClass();
         
         foreach ($defaults as $key => $value)
         {

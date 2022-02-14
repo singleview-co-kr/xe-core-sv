@@ -777,7 +777,7 @@ class Context
 	 * @param string $site_title Browser title to be added
 	 * @return void
 	 */
-	function addBrowserTitle($site_title)
+	public static function addBrowserTitle($site_title)
 	{
 		if(!$site_title)
 		{
@@ -830,7 +830,7 @@ class Context
 	 * Return layout's title
 	 * @return string layout's title
 	 */
-	public function getSiteTitle()
+	public static function getSiteTitle()
 	{
 		$oModuleModel = getModel('module');
 		$moduleConfig = $oModuleModel->getModuleConfig('module');
@@ -1184,7 +1184,7 @@ class Context
 	 * @param string $type Request method. (Optional - GET|POST|XMLRPC|JSON)
 	 * @return void
 	 */
-	function setRequestMethod($type = '')
+	public static function setRequestMethod($type = '')
 	{
 		$self = self::getInstance();
 
@@ -1569,7 +1569,7 @@ class Context
 	 * Return request URL
 	 * @return string request URL
 	 */
-	function getRequestUrl()
+	public static function getRequestUrl()
 	{
 		static $url = null;
 		if(is_null($url))
@@ -2313,7 +2313,7 @@ class Context
 	 * @param string $filename File name
 	 * @return void
 	 */
-	function addJsFilter($path, $filename)
+	public static function addJsFilter($path, $filename)
 	{
 		$oXmlFilter = new XmlJSFilter($path, $filename);
 		$oXmlFilter->compile();
@@ -2535,7 +2535,7 @@ class Context
 		$self->html_header .= "\n" . $header;
 	}
 
-	function clearHtmlHeader()
+	public static function clearHtmlHeader()
 	{
 		$self = self::getInstance();
 		$self->html_header = '';
