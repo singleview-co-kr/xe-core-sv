@@ -70,6 +70,7 @@ class svauthController extends svauth
 	function triggerInsertMemberAfter(&$obj) 
 	{
 		$member_srl = $obj->member_srl;
+		$args = new stdClass();
 		$args->member_srl = $member_srl;
 		$oSvauthModel = getModel('svauth');
 		$aAuth = $oSvauthModel->getAuthLog($_COOKIE['sv_auth_info']);
