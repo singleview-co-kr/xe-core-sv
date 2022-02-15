@@ -2603,7 +2603,7 @@ class Context
 	 *
 	 * @param string $footer Add html code before </body>
 	 */
-	function addHtmlFooter($footer)
+	public static function addHtmlFooter($footer)
 	{
 		$self = self::getInstance();
 		$self->html_footer .= ($self->Htmlfooter ? "\n" : '') . $footer;

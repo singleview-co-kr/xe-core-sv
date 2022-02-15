@@ -110,6 +110,7 @@ class svauthController extends svauth
  **/
 	function triggerDeleteMemberBefore(&$obj) 
 	{
+		$args = new stdClass();
 		$args->member_srl = $obj->member_srl;
 		$args->is_deleted = 'Y';
 		$output = executeQuery('svauth.deleteAuthByMemberSrl',$args);

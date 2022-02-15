@@ -348,7 +348,7 @@ class XmlJsFilter extends XeXmlParser
 		}
 
 		// generates the response script
-		$response_count = count($response_tag);
+		$response_count = count((array)$response_tag);
 		$responses = array();
 		for($i = 0; $i < $response_count; $i++)
 		{
