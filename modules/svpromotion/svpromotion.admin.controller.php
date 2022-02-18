@@ -54,6 +54,7 @@ class svpromotionAdminController extends svpromotion
 			if( (int)$val > 0 )
 				$aSiteBulkPromotionQtyRange[$val] = $oArgs->discount_rate[$key];
 		}
+		$oFinalArgs = new stdClass();
 		$oFinalArgs->site_bulk_promotion['qty_range'] = $aSiteBulkPromotionQtyRange;
 		if( $oArgs->allow_site_bulk_promotion == 'Y' )
 			$oFinalArgs->site_bulk_promotion['toggle'] = 'Y';
@@ -338,6 +339,7 @@ class svpromotionAdminController extends svpromotion
 				$opt = Context::get('group_opt_'.$oGroup->group_srl);
 				if( !$opt ) 
 					$opt = '1';
+				$oArgs = new stdClass();
 				$oArgs->group_srl = $oGroup->group_srl;
 				$oArgs->opt = $opt;
 				$oArgs->price = Context::get('group_discount_'.$oGroup->group_srl);

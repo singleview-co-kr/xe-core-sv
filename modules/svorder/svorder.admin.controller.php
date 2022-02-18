@@ -844,7 +844,8 @@ class svorderAdminController extends svorder
 	{
 		if( !Context::get( 'status' ) )
 			Context::set( 'status', svorder::ORDER_STATE_ON_DEPOSIT );
- 
+		
+		$oArgs = new stdClass();
 		$oArgs->order_status = Context::get( 'status' );
 		$oArgs->page = Context::get( 'page' );
 		if( Context::get( 'search_key' ) )
@@ -866,6 +867,7 @@ class svorderAdminController extends svorder
 /////////////////////////////////////
 		//$bDumpMode = false;
 		//$oDataConfig = $oSvorderAdminModel->getDataFormatConfig( $this->module_info->module_srl, $bDumpMode ); // 이 줄보다 이후에 호출하면 svpg::lang의 배열형 payment_method 정보를 불러옴		
+		$oParam = new stdClass();
 		$oParam->nModuleSrl = $this->module_info->module_srl;
 		$oParam->bDumpMode = false;
 		$oDataConfig = $oSvorderAdminModel->getDataFormatConfig($oParam); // 이 줄보다 이후에 호출하면 svpg::lang의 배열형 payment_method 정보를 불러옴
@@ -1208,6 +1210,7 @@ class svorderAdminController extends svorder
 //		}
 //exit;
 		$sYrMo = Context::get( 's_yr_mo_dl');
+		$oArgs = new stdClass();
 		if( $sYrMo )
 			$oArgs->last_changed_date = $sYrMo;
 		else
@@ -1231,6 +1234,7 @@ class svorderAdminController extends svorder
 		//$bDumpMode = true;
 		// 이 줄보다 이후에 호출하면 svpg::lang의 배열형 payment_method 정보를 불러옴
 		//$oDataConfig = $oSvorderAdminModel->getDataFormatConfig( $this->module_info->module_srl, $bDumpMode );
+		$oParam = new stdClass();
 		$oParam->nModuleSrl = $this->module_info->module_srl;
 		$oParam->bDumpMode = true;
 		$oParam->bPrivacyMode = $bPrivacyMode;
@@ -1242,6 +1246,8 @@ class svorderAdminController extends svorder
 		$aCategoryInfoByItem = $oSvitemAdminModel->getAllItemCategoryInfo();
 		foreach( $oDataConfig as $sFieldTitle => $oFieldInfo )
 		{
+			if(is_null($aHeader[$sFieldTitle]))
+				$aHeader[$sFieldTitle] = new stdClass();
 			$aHeader[$sFieldTitle]->sKrName = $oFieldInfo->name;
 			$aHeader[$sFieldTitle]->sExcelColName = null;
 			if( $sFieldTitle == 'title' )
@@ -1257,6 +1263,8 @@ class svorderAdminController extends svorder
 			{
 				foreach($aExtendedAddrCol as $nIdxTmp => $sColTitle )
 				{
+					if(is_null($aHeader[$sColTitle]))
+						$aHeader[$sColTitle] = new stdClass();
 					$aHeader[$sColTitle]->sKrName = $sColTitle;
 					$aHeader[$sColTitle]->sExcelColName = null;
 				}

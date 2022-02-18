@@ -19,7 +19,8 @@ class svitemAdminView extends svitem
 			if(file_exists($sClassPath))
 			{
 				require_once($sClassPath);
-				svshopmaster::init($this);
+				$oSvshopmaster = new svshopmaster;
+				$oSvshopmaster->init($this);
 			}
 		}
 
@@ -244,6 +245,7 @@ class svitemAdminView extends svitem
 	public function dispSvitemAdminModInstList() 
 	{
 		$oModuleModel = &getModel('module');
+		$args = new stdClass();
 		$args->sort_index = "module_srl";
 		$args->page = Context::get('page');
 		$args->list_count = 20;
@@ -319,6 +321,7 @@ class svitemAdminView extends svitem
 		$oEditorModel = &getModel('editor');
 		$config = $oEditorModel->getEditorConfig(0);
 		// 에디터 옵션 변수를 미리 설정
+		$option = new stdClass();
 		$option->skin = $config->editor_skin;
 		$option->content_style = $config->content_style;
 		$option->content_font = $config->content_font;
@@ -351,6 +354,8 @@ class svitemAdminView extends svitem
 		$aBoard = array();
 		foreach( $output->data as $key=>$val)
 		{
+			if(is_null($aBoard[$nIdx]))
+				$aBoard[$nIdx] = new stdClass();
 			$aBoard[$nIdx]->module_srl =  $val->module_srl;
 			$aBoard[$nIdx++]->mid =  $val->mid;
 		}
@@ -400,6 +405,8 @@ class svitemAdminView extends svitem
 		$aBoard = array();
 		foreach( $output->data as $key=>$val)
 		{
+			if(is_null($aBoard[$nIdx]))
+				$aBoard[$nIdx] = new stdClass();
 			$aBoard[$nIdx]->module_srl =  $val->module_srl;
 			$aBoard[$nIdx++]->mid =  $val->mid;
 		}

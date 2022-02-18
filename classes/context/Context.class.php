@@ -1150,7 +1150,7 @@ class Context
 	 * @param string $method Response method. [HTML|XMLRPC|JSON]
 	 * @return void
 	 */
-	function setResponseMethod($method = 'HTML')
+	public static function setResponseMethod($method = 'HTML')
 	{
 		$self = self::getInstance();
 

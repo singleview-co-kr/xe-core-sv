@@ -19,7 +19,8 @@ class svestudioAdminView extends svestudio
 			if(file_exists($sClassPath))
 			{
 				require_once($sClassPath);
-				svshopmaster::init($this);
+				$oSvshopmaster = new svshopmaster;
+				$oSvshopmaster->init($this);
 			}
 		}
 
@@ -252,6 +253,8 @@ class svestudioAdminView extends svestudio
 		$aGroupList = array();
 		foreach( $oGroups as $key=>$val )
 		{
+			if(is_null($aGroupList[$key]))
+				$aGroupList[$key] = new stdClass();
 			$aGroupList[$key]->group_srl = $val->group_srl;
 			$aGroupList[$key]->title = $val->title;
 		}

@@ -7,7 +7,7 @@
 class svauthPlugin
 {
 	function svauthPlugin() { }
-	function getFormData() { }
+	function getFormData($args) { }
 	function processPayment() { }
 	function processReview() { }
 	function processReport() { }

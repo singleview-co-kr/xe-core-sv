@@ -28,6 +28,8 @@ class svitemModel extends svitem
 	{
 		$oModuleModel = &getModel('module');
 		$oConfig = $oModuleModel->getModuleConfig('svitem');
+		if(is_null($oConfig))
+			$oConfig = new stdClass();
 		if(!$oConfig->cart_thumbnail_width) $oConfig->cart_thumbnail_width = 100;
 		if(!$oConfig->cart_thumbnail_height) $oConfig->cart_thumbnail_height = 100;
 		if(!$oConfig->favorite_thumbnail_width) $oConfig->favorite_thumbnail_width = 100;

@@ -7,10 +7,10 @@
 class SvpgPlugin extends svpg 
 {
 	function SvpgPlugin() { }
-	function getFormData() { }
-	function processPayment() { }
-	function processReview() { }
-	function processReport() { }
+	function getFormData($args) { }
+	function processPayment($args) { }
+	function processReview($args) { }
+	function processReport(&$transaction) { }
 	function getReceipt($pg_tid, $paymethod = NULL) { return Context::getLang('unable_to_issue_receipt'); }
 	function getReport() { }
 	function dispExtra1(&$svpgObj) { }
@@ -21,8 +21,8 @@ class SvpgPlugin extends svpg
 	function procExtra2() { }
 	function procExtra3() { }
 	function procExtra4() { }
-	function dispEscrowDelivery() { return "<script>alert('에스크로를 지원하지 않는 결제건 입니다.');window.close();</script>"; }
-	function dispEscrowConfirm() { return "<script>alert('에스크로를 지원하지 않는 결제건 입니다.');window.close();</script>"; }
+	function dispEscrowDelivery(&$order_info, &$payment_info, &$escrow_info) { return "<script>alert('에스크로를 지원하지 않는 결제건 입니다.');window.close();</script>"; }
+	function dispEscrowConfirm(&$order_info, &$payment_info, &$escrow_info) { return "<script>alert('에스크로를 지원하지 않는 결제건 입니다.');window.close();</script>"; }
 	function procEscrowDelivery() { }
 	function procEscrowConfirm() { }
 }

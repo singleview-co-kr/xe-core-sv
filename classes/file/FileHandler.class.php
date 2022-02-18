@@ -101,7 +101,7 @@ class FileHandler
 	 * @param string $force Y: overwrite
 	 * @return void
 	 */
-	function copyFile($source, $target, $force = 'Y')
+	public static function copyFile($source, $target, $force = 'Y')
 	{
 		setlocale(LC_CTYPE, 'en_US.UTF8', 'ko_KR.UTF8');
 		$source = self::getRealPath($source);
@@ -1006,7 +1006,7 @@ class FileHandler
 	 * @param string $filename Path of the ini file
 	 * @return array ini array (if the target file does not exist, it returns FALSE)
 	 */
-	function readIniFile($filename)
+	public static function readIniFile($filename)
 	{
 		if(($filename = self::exists($filename)) === FALSE)
 		{
@@ -1037,7 +1037,7 @@ class FileHandler
 	 * @param array $arr Array
 	 * @return bool if array contains nothing it returns FALSE, otherwise TRUE
 	 */
-	function writeIniFile($filename, $arr)
+	public static function writeIniFile($filename, $arr)
 	{
 		if(!is_array($arr) || count($arr) == 0)
 		{
@@ -1053,7 +1053,7 @@ class FileHandler
 	 * @param array $arr Array
 	 * @return string
 	 */
-	function _makeIniBuff($arr)
+	public static function _makeIniBuff($arr)
 	{
 		$return = array();
 		foreach($arr as $key => $val)

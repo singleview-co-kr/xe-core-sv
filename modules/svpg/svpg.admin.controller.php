@@ -165,6 +165,7 @@ class svpgAdminController extends svpg
 	public function procSvpgAdminInsertPlugin()
 	{
 		$plugin_srl = getNextSequence();
+		$args = new stdClass();
 		$args->plugin_srl = $plugin_srl;
 		$args->plugin = Context::get('plugin');
 		$args->title = Context::get('title');
@@ -174,8 +175,8 @@ class svpgAdminController extends svpg
 		require_once(_XE_PATH_.'modules/svpg/svpg.plugin.php');
 		require_once(_XE_PATH_.'modules/svpg/plugins/'.$args->plugin.'/'.$args->plugin.'.plugin.php');
 
-		$tmp_fn = create_function('', "return new {$args->plugin}();");
-		$oPlugin = $tmp_fn();
+		//$tmp_fn = create_function('', "return new {$args->plugin}();");
+		$oPlugin = eval("return new {$args->plugin}();"); //$tmp_fn();
 		if (@method_exists($oPlugin,'pluginInstall'))
 			$oPlugin->pluginInstall($args);
 		// 결과 리턴

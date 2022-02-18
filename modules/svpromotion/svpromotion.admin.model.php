@@ -20,9 +20,10 @@ class svpromotionAdminModel extends svpromotion
 	{
 		$oModuleModel = &getModel('module');
 		$config = $oModuleModel->getModuleConfig('svpromotion');
-		if( !$config->fb_app_id )
+		if(is_null($config))
+			$config = new stdClass();
+		if(!$config->fb_app_id)
 			$config->fb_app_id = '';
-		
 		return $config;
 	}
 /**

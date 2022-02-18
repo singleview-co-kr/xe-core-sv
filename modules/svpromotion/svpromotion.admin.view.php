@@ -18,7 +18,8 @@ class svpromotionAdminView extends svpromotion
 			if(file_exists($sClassPath))
 			{
 				require_once($sClassPath);
-				svshopmaster::init($this);
+				$oSvshopmaster = new svshopmaster;
+				$oSvshopmaster->init($this);
 			}
 		}
 
@@ -250,6 +251,7 @@ class svpromotionAdminView extends svpromotion
 		Context::set('config',$config);
 		
 		$oSvitemAdminModel = &getAdminModel('svitem');
+		$oArgs = new stdClass();
 		$oArgs->page = Context::get('page');
 		$output = $oSvitemAdminModel->getSvitemAdminItemList($oArgs);
 		Context::set('total_count', $output->total_count);
@@ -277,6 +279,7 @@ class svpromotionAdminView extends svpromotion
 	function dispSvpromotionAdminItemDiscountList()
 	{
 		$oSvitemAdminModel = &getAdminModel('svitem');
+		$oArgs = new stdClass();
 		$oArgs->page = Context::get('page');
 		$output = $oSvitemAdminModel->getSvitemAdminItemList($oArgs);
 		Context::set('total_count', $output->total_count);

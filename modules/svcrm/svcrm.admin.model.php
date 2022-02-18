@@ -17,6 +17,7 @@ class svcrmAdminModel extends svcrm
  **/
 	public function getModInstList( $nPage = null ) 
 	{
+		$oArgs = new stdClass();
 		$oArgs->sort_index = 'module_srl';
 		$oArgs->page = $nPage;
 		$oArgs->list_count = 20;
@@ -144,6 +145,7 @@ class svcrmAdminModel extends svcrm
  **/
 	public function getCommunicationLog($nRecipientMemberSrl)
 	{
+		$oArgs = new stdClass();
 		$oArgs->recepient_member_srl = $nRecipientMemberSrl;
 		$output = executeQuery('svcrm.getCommLogByMemberSrl', $oArgs);
 

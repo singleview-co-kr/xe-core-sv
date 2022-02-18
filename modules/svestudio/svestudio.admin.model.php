@@ -29,6 +29,7 @@ class svestudioAdminModel extends svestudio
 	public function getMidList($nPage)
 	{
 		$oModuleModel = &getModel('module');
+		$oArgs = new stdClass();
 		$oArgs->sort_index = "module_srl";
 		$oArgs->page = $nPage;
 		$oArgs->list_count = 20;
@@ -77,8 +78,11 @@ class svestudioAdminModel extends svestudio
 		$oGrossStatus = new stdClass();
 		
 		// sessions from google
+		$oSessioArgs = new stdClass();
 		$oSessioArgs->logdate = date('Ymd', strtotime('-1 day'));
 		$oSessionRst = executeQuery('svestudio.getSessionLogDaily', $oSessioArgs );
+
+		$oGrossStatus->session = new stdClass();
 		$oGrossStatus->session->yesterdayCnt = $oSessionRst->data->tot_session;
 		$oSessionRst = executeQuery('svestudio.getSessionLogDaily' );
 		$oGrossStatus->session->totalCnt = $oSessionRst->data->tot_session;
@@ -86,21 +90,27 @@ class svestudioAdminModel extends svestudio
 		$sToday = date('Ymd');
 		// Member Status
 		$oMemberAdminModel = &getAdminModel('member');
+		
+		$oGrossStatus->member = new stdClass();
 		$oGrossStatus->member->todayCnt = $oMemberAdminModel->getMemberCountByDate($sToday);
 		$oGrossStatus->member->totalCnt = $oMemberAdminModel->getMemberCountByDate();
 		// Document Status
 		$oDocumentAdminModel = &getAdminModel('document');
 		$aStatus = ['PUBLIC', 'SECRET'];
+
+		$oGrossStatus->document = new stdClass();
 		$oGrossStatus->document->todayCnt = $oDocumentAdminModel->getDocumentCountByDate($sToday, [], $aStatus);
 		$oGrossStatus->document->totalCnt = $oDocumentAdminModel->getDocumentCountByDate('', [], $aStatus);
 		// Comment Status
 		$oCommentModel = &getModel('comment');
+		$oGrossStatus->comment = new stdClass();
 		$oGrossStatus->comment->todayCnt = $oCommentModel->getCommentCountByDate($sToday);
 		$oGrossStatus->comment->totalCnt = $oCommentModel->getCommentCountByDate();
 		// svshop
 		$oSvorderAdminModel = &getAdminModel('svorder');
 		if($oSvorderAdminModel)
 		{
+			$oGrossStatus->sales = new stdClass();
 			$oGrossSalesInfo = $oSvorderAdminModel->getTodaySalesInfo();
 			$oGrossStatus->sales->todayTrs = $oGrossSalesInfo->count;
 			$oGrossStatus->sales->todayRev = $oGrossSalesInfo->amount;
@@ -175,6 +185,7 @@ class svestudioAdminModel extends svestudio
 			
 			$oConfig = $oSvorderModel->getModuleConfig();
 			require_once(_XE_PATH_.'modules/svorder/svorder.order_update.php');
+			$oParams = new stdClass();
 			$oParams->oSvorderConfig = $oConfig;
 			$oOrder = new svorderUpdateOrder($oParams );
 			foreach( $aDatePeriod as $date=>$val )
@@ -799,6 +810,7 @@ class svestudioAdminModel extends svestudio
 		$oSvorderAdminModel = &getAdminModel('svorder'); // 매출 데이터를 GA아니고 insite에서 가져오는 설정
 		foreach( $aDatePeriod as $sDate=>$PeriodVal )
 		{
+			$args = new stdClass();
 			$args->logdate = $sDate;
 			$output = executeQueryArray('svestudio.getPerformanceLogDaily', $args);
 			foreach($output->data as $nDataKey=>$oRow)
@@ -974,8 +986,18 @@ class svestudioAdminModel extends svestudio
 				if( $this->_g_nElapsedDaysOfThisMonth > (int)substr($sDate,6,2) )
 					$nMtdInsiteTrs += $oInsiteRevRst->nTrs;
 			}
-			$PeriodVal->roas = (int)($PeriodVal->in_site_revenue / $PeriodVal->media_gross_cost*100);
-			$PeriodVal->conv_rate = $PeriodVal->in_site_trs / $PeriodVal->in_site_tot_session * 100;
+			if($PeriodVal->in_site_revenue && $PeriodVal->media_gross_cost)
+				$nRoas = (int)($PeriodVal->in_site_revenue / $PeriodVal->media_gross_cost*100);
+			else
+				$nRoas = 0;
+			$PeriodVal->roas = $nRoas;
+
+			if($PeriodVal->in_site_trs && $in_site_tot_session->media_gross_cost)
+				$fConvRate = $PeriodVal->in_site_trs / $PeriodVal->in_site_tot_session * 100;
+			else
+				$fConvRate = 0;
+			$PeriodVal->conv_rate = $fConvRate;
+			
 			$nTotalEffSession += $PeriodVal->tot_eff_session; 
 			$nTotalEffSessionMob += $PeriodVal->tot_eff_session_mob;
 			$nTotalEffSessionPc += $PeriodVal->tot_eff_session_pc;
@@ -988,19 +1010,34 @@ class svestudioAdminModel extends svestudio
 		if( $oConfig->revenue_referrence == 'insite' )
 		{
 			$aGrossStatus['mtd_revenue'] = $nMtdInsiteRevenue;
-			$aGrossStatus['mtd_conv_rate'] = sprintf("%.4f",$nMtdInsiteTrs/$nMtdSession);
-			$aGrossStatus['mtd_roas'] = sprintf("%.4f",$nMtdInsiteRevenue/$nMtdMediCost);
+			if($nMtdInsiteTrs && $nMtdSession)
+				$aGrossStatus['mtd_conv_rate'] = sprintf("%.4f",$nMtdInsiteTrs/$nMtdSession);
+			else
+				$aGrossStatus['mtd_conv_rate'] = '0.0';
+			if($nMtdInsiteRevenue && $nMtdMediCost)
+				$aGrossStatus['mtd_roas'] = sprintf("%.4f",$nMtdInsiteRevenue/$nMtdMediCost);
+			else
+				$aGrossStatus['mtd_roas'] = '0.0';
 		}
 		else
 		{
 			$aGrossStatus['mtd_revenue'] = $nMtdRevenue;
-			$aGrossStatus['mtd_conv_rate'] = sprintf("%.4f",$nMtdTrs/$nMtdSession);
-			$aGrossStatus['mtd_roas'] = sprintf("%.4f",$nMtdRevenue/$nMtdMediCost);
+			if($nMtdTrs && $nMtdSession)
+				$aGrossStatus['mtd_conv_rate'] = sprintf("%.4f",$nMtdTrs/$nMtdSession);
+			else
+				$aGrossStatus['mtd_conv_rate'] = '0.0';
+			if($nMtdRevenue && $nMtdMediCost)
+				$aGrossStatus['mtd_roas'] = sprintf("%.4f",$nMtdRevenue/$nMtdMediCost);
+			else
+				$aGrossStatus['mtd_roas'] = '0.0';
 		}
 		$aGrossStatus['gross_cost'] = $nTotalMediaCost;
 		$aGrossStatus['gross_imp'] = $nTotalImp;
 		$aGrossStatus['gross_click'] = $nTotalClick;
-		$aGrossStatus['gross_ctr'] = sprintf("%.4f",$nTotalClick/$nTotalImp);
+		if($nTotalClick && $nTotalImp)
+			$aGrossStatus['gross_ctr'] = sprintf("%.4f",$nTotalClick/$nTotalImp);
+		else
+			$aGrossStatus['gross_ctr'] = '0.0';
 		$aGrossStatus['gross_session'] = $nTotalSession;
 		$aGrossStatus['gross_eff_session'] = $nTotalEffSession;
 		$aGrossStatus['gross_new_session'] = $nTotalNew;
@@ -1008,14 +1045,26 @@ class svestudioAdminModel extends svestudio
 		if( $oConfig->revenue_referrence == 'insite' )
 		{
 			$aGrossStatus['gross_revenue'] = $nTotalInsiteRevenue;
-			$aGrossStatus['gross_conv_rate'] = sprintf("%.4f",$nTotalInsiteTrs/$nTotalSession);
-			$aGrossStatus['gross_roas'] = sprintf("%.4f",$nTotalInsiteRevenue/$nTotalMediaCost);
+			if($nTotalInsiteTrs && $nTotalSession)
+				$aGrossStatus['gross_conv_rate'] = sprintf("%.4f",$nTotalInsiteTrs/$nTotalSession);
+			else
+				$aGrossStatus['gross_conv_rate'] = '0.0';
+			if($nTotalInsiteRevenue && $nTotalMediaCost)
+				$aGrossStatus['gross_roas'] = sprintf("%.4f",$nTotalInsiteRevenue/$nTotalMediaCost);
+			else
+				$aGrossStatus['gross_roas'] = '0.0';
 		}
 		else
 		{
 			$aGrossStatus['gross_revenue'] = $nTotalRevenue;
-			$aGrossStatus['gross_conv_rate'] = sprintf("%.4f",$nTotalTrs/$nTotalSession);
-			$aGrossStatus['gross_roas'] = sprintf("%.4f",$nTotalRevenue/$nTotalMediaCost);
+			if($nTotalTrs && $nTotalSession)
+				$aGrossStatus['gross_conv_rate'] = sprintf("%.4f",$nTotalTrs/$nTotalSession);
+			else
+				$aGrossStatus['gross_conv_rate'] = '0.0';
+			if($nTotalRevenue && $nTotalMediaCost)
+				$aGrossStatus['gross_roas'] = sprintf("%.4f",$nTotalRevenue/$nTotalMediaCost);
+			else
+				$aGrossStatus['gross_roas'] = '0.0';
 		}
 
 		$aGrossStatus['gross_imp_mob'] = $nTotalImpMob;
@@ -1068,7 +1117,8 @@ class svestudioAdminModel extends svestudio
 			array_pop( $aMonthlyPeriod ); // eliminate this month
 		}
 		$sOnProgressMonth = $dtObject->format('Ym');
-
+		
+		$oArgs = new stdClass();
 		foreach( $aMonthlyPeriod as $nIdx => $sYrMo )
 		{
 			if( $sYrMo != $sOnProgressMonth ) // 진행 중월의 직전월까지는 단순 총계 작업
@@ -1090,7 +1140,7 @@ class svestudioAdminModel extends svestudio
 				$oArgs->logdate = $sYrMo;
 				$oOldCompiledMonthlyLogRst = executeQuery('svestudio.getCompiledByMonth', $oArgs);
 				$nSession = $oOldCompiledMonthlyLogRst->data->tot_monthly_session;
-				$nRecCnt = count( $oOldCompiledMonthlyLogRst->data );
+				$nRecCnt = count((array)$oOldCompiledMonthlyLogRst->data);
 				$sLastUpdateDate = $oOldCompiledMonthlyLogRst->data->last_update_date;
 				unset( $oOldCompiledMonthlyLogRst );
 
@@ -1211,9 +1261,14 @@ class svestudioAdminModel extends svestudio
 			if( (int)$date < (int)$this->_g_sToday - 7 ) // 7일 전 까지 실시간 계산
 				$output = FileHandler::writeFile($sCacheByDateFile, serialize($oRst));
 		}
+		$oFinalRst = new stdClass();
 		$oFinalRst->nAmount = $oRst->amount;
 		$oFinalRst->nTrs = $oRst->count; // # of transactions
-		$oFinalRst->nCustomerPrice = (int)($oRst->amount / $oRst->count); // customer price
+		if($oRst->amount && $oRst->count)
+			$nCustomerPrice = (int)($oRst->amount / $oRst->count); // customer price
+		else
+			$nCustomerPrice = 0;
+		$oFinalRst->nCustomerPrice = $nCustomerPrice;
 		return $oFinalRst;
 	}
 /**
@@ -1269,14 +1324,29 @@ class svestudioAdminModel extends svestudio
 				$aWeeklyGrossTrs[$val->wknum] += $val->trs;
 				$aWeekdailyGrossTrs[$val->dayname] += $val->trs;
 				$nTotalTrs += $val->trs;
+				
+				if($aMonthlyGrossSales[$val->mo] && $aMonthlyGrossTrs[$val->mo])
+					$aMonthlyGrossCp[$val->mo] = (int)($aMonthlyGrossSales[$val->mo] / $aMonthlyGrossTrs[$val->mo]);
+				else
+					$aMonthlyGrossCp[$val->mo] = 0;
 
-				$aMonthlyGrossCp[$val->mo] = (int)($aMonthlyGrossSales[$val->mo] / $aMonthlyGrossTrs[$val->mo]);
-				$aWeeklyGrossCp[$val->wknum] = $aMonthlyGrossSales[$val->wknum] / $aMonthlyGrossTrs[$val->wknum];
-				$aWeekdailyGrossCp[$val->dayname] = $aMonthlyGrossSales[$val->dayname] / $aMonthlyGrossTrs[$val->dayname];
+				if($aMonthlyGrossSales[$val->wknum] && $aMonthlyGrossTrs[$val->wknum])
+					$aWeeklyGrossCp[$val->wknum] = $aMonthlyGrossSales[$val->wknum] / $aMonthlyGrossTrs[$val->wknum];
+				else
+					$aWeeklyGrossCp[$val->wknum] = 0;
+
+				if($aMonthlyGrossSales[$val->dayname] && $aMonthlyGrossTrs[$val->dayname])
+					$aWeekdailyGrossCp[$val->dayname] = $aMonthlyGrossSales[$val->dayname] / $aMonthlyGrossTrs[$val->dayname];
+				else
+					$aWeekdailyGrossCp[$val->dayname] = 0;
 			}
 			$aDatePeriod['gross_sales'] = $nTotalSales;
 			$aDatePeriod['gross_trs'] = $nTotalTrs;
-			$aDatePeriod['gross_cp'] = (int)($nTotalSales/$nTotalTrs);
+			
+			if($nTotalSales && $nTotalTrs)
+				$aDatePeriod['gross_cp'] = (int)($nTotalSales/$nTotalTrs);
+			else
+				$aDatePeriod['gross_cp'] = 0;
 
 			// estimate this month fullfillment
 			if( count( $aMonthlyGrossSales ) )

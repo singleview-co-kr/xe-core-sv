@@ -21,6 +21,7 @@ class svitemAdminModel extends svitem
 	public function getModInstList() 
 	{
 		// get module instance list
+		$args = new stdClass();
 		$args->list_count = 1000;
 		$output = executeQueryArray('svitem.getModInstList', $args);
 		return $output->data;
@@ -112,6 +113,7 @@ class svitemAdminModel extends svitem
  */
 	public function getAllDisplayingItemList() 
 	{
+		$args = new stdClass();
 		$args->display = 'Y';
 		$output = executeQueryArray('svitem.getItemList', $args);
 		if (!$output->toBool())
@@ -415,6 +417,7 @@ class svitemAdminModel extends svitem
  **/
 	private function _getItemList($oParam)
 	{
+		$oArg = new stdClass();
 		if( !is_null($oParam->module_srl) && $oParam->module_srl != 0 )
 			$oArg->module_srl = $oParam->module_srl;
 		if( !is_null($oParam->category_node_srl) )//&& $oParam->category_node_srl != 0 )

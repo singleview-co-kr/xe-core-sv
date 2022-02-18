@@ -367,7 +367,9 @@ class svorderModel extends svorder
 	{
 		$oModuleModel = &getModel('module');
 		$oConfig = $oModuleModel->getModuleConfig('svorder');
-		if( !$oConfig->address_input )
+		if(is_null($oConfig))
+			$oConfig = new stdClass();
+		if(!$oConfig->address_input)
 			$oConfig->address_input = 'krzip';
 
 		$oConfig->currency = 'KRW';

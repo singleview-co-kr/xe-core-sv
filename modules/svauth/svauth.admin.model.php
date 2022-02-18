@@ -15,6 +15,7 @@ class svauthAdminModel extends svauth
  **/
 	public function getMemberAuthCheck($nMemberSrl)
 	{
+		$args = new stdClass();
 		$args->member_srl = $nMemberSrl;
 		$args->is_deleted = 'N';
 		$output = executeQuery('svauth.getAdminMemberAuthCheck', $args);
@@ -36,6 +37,7 @@ class svauthAdminModel extends svauth
 			if( !$this->_g_aDefaultPrivacyInfoList[$allowval] )
 				$this->_g_aDefaultPrivacyInfoList[$allowval] = 1;
 		}
+		$args = new stdClass();
 		$args->member_srl = $nMemberSrl;
 		$args->is_deleted = 'N';
 		$output = executeQuery('svauth.getAdminMemberAuthInfo', $args);
@@ -74,6 +76,7 @@ class svauthAdminModel extends svauth
 	public function getPluginInfo($nPluginSrl)
 	{
 		// 일단 DB에서 정보를 가져옴
+		$args = new stdClass();
 		$args->plugin_srl = $nPluginSrl;
 		$output = executeQuery('svauth.getPluginInfo', $args);
 		if(!$output->data) 
@@ -192,12 +195,15 @@ class svauthAdminModel extends svauth
 				$extra_var_count = count($extra_vars);
 
 				$buff .= sprintf('$plugin_info->extra_var_count = "%s";', $extra_var_count);
+				$buff .= sprintf('$plugin_info->extra_var = new stdClass();', $name);
 				for($i=0;$i<$extra_var_count;$i++)
 				{
 					unset($var);
 					unset($options);
 					$var = $extra_vars[$i];
 					$name = $var->attrs->name;
+
+					$buff .= sprintf('$plugin_info->extra_var->%s = new stdClass();', $name);
 
 					$buff .= sprintf('$plugin_info->extra_var->%s->group = "%s";', $name, $group->title->body);
 					$buff .= sprintf('$plugin_info->extra_var->%s->title = "%s";', $name, $var->title->body);

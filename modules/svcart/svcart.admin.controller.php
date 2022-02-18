@@ -19,6 +19,7 @@ class svcartAdminController extends svcart
 	{
 		$oMemberModel = &getModel('member');
 		$aMemberGroup = $oMemberModel->getGroups();
+		$oGuest = new stdClass();
 		$oGuest->group_srl = 0;
 		$aMemberGroup[0] = $oGuest;
 		ksort($aMemberGroup);
@@ -30,6 +31,7 @@ class svcartAdminController extends svcart
 		}
 
 		$nCartExpirationDays = Context::get('cart_expiration_days');
+		$oArgs = new stdClass();
 		if( isset( $nCartExpirationDays ) )
 			$oArgs->cart_expiration_days = $nCartExpirationDays;
 		
@@ -132,7 +134,9 @@ class svcartAdminController extends svcart
 	{
 		$oSvcartAdminModel = &getAdminModel('svcart');
 		$oConfig = $oSvcartAdminModel->getModuleConfig();
-		foreach( $oArgs as $key=>$val)
+		if(is_null($oConfig))
+			$oConfig = new stdClass();
+		foreach($oArgs as $key=>$val)
 			$oConfig->{$key} = $val;
 
 		$oModuleControll = getController('module');

@@ -18,7 +18,8 @@ class svcartAdminView extends svcart
 			if(file_exists($sClassPath))
 			{
 				require_once($sClassPath);
-				svshopmaster::init($this);
+				$oSvshopmaster = new svshopmaster;
+				$oSvshopmaster->init($this);
 			}
 		}
 
@@ -149,6 +150,7 @@ class svcartAdminView extends svcart
 		$oEditorModel = &getModel('editor');
 		$config = $oEditorModel->getEditorConfig(0);
 		// 에디터 옵션 변수를 미리 설정
+		$option = new stdClass();
 		$option->skin = $config->editor_skin;
 		$option->content_style = $config->content_style;
 		$option->content_font = $config->content_font;
@@ -217,6 +219,7 @@ class svcartAdminView extends svcart
 	{
 		if(!Context::get('s_year'))
 			Context::set('s_year', date('Y'));
+		$args = new stdClass();
 		$args->regdate = Context::get('s_year');
 	   	if(Context::get('s_month')) 
 			$args->regdate = $args->regdate . Context::get('s_month');

@@ -22,6 +22,7 @@ class svorderAdminModel extends svorder
  */
 	public function getMidList()
 	{
+		$oArgs = new stdClass();
 		$oArgs->sort_index = 'module_srl';
 		$oArgs->list_count = 99;
 		$oRst = executeQueryArray('svorder.getSvorderMidList', $oArgs);
@@ -221,6 +222,7 @@ class svorderAdminModel extends svorder
 			}
 		}
 		require_once(_XE_PATH_.'modules/svorder/svorder.order_update.php');
+		$oParams = new stdClass();
 		$oParams->oSvorderConfig = $oConfig;
 		return new svorderUpdateOrder($oParams );
 	}
@@ -243,8 +245,9 @@ class svorderAdminModel extends svorder
  **/
 	public function getOrdersByMemberSrl($nMemberSrl)
 	{
-		if( !$nMemberSrl )
+		if(!$nMemberSrl)
 			return new BaseObject(-1,'msg_invalid_member_srl');
+		$args = new stdClass();
 		$args->member_srl = $nMemberSrl;
 		$args->order_status = svorder::ORDER_STATE_PAID;
 		$output = executeQueryArray('svorder.getAdminOrderList', $args);
@@ -339,6 +342,7 @@ class svorderAdminModel extends svorder
 		$aOrderList = [];
 		$oConfig = $this->getModuleConfig();
 		require_once(_XE_PATH_.'modules/svorder/svorder.order_update.php');
+		$oParams = new stdClass();
 		$oParams->oSvorderConfig = $oConfig;
 		$oOrder = new svorderUpdateOrder($oParams );
 		if( $oArgs->aStatusList ) // 다중 상태 추출; dispSvorderAdminOrderRawDataDownload
@@ -443,6 +447,7 @@ class svorderAdminModel extends svorder
 	{
 		if($sDate) 
 		{
+			$oArgs = new stdClass();
 			$oArgs->regdate = $sDate;
 			$oRst = executeQueryArray('svorder.getSalesInfoDaily', $oArgs);
 			$aStatusList = $this->getOrderStatusListForMasterRaw();
@@ -530,6 +535,7 @@ class svorderAdminModel extends svorder
  **/
 	public function getModInstList( $nPage = null ) 
 	{
+		$oArgs = new stdClass();
 		$oArgs->sort_index = 'module_srl';
 		$oArgs->page = $nPage;
 		$oArgs->list_count = 20;
@@ -565,7 +571,7 @@ class svorderAdminModel extends svorder
  **/
 //////////////////////////////////
 	//public function getDataFormatConfig($nModuleSrl, $bDumpMode=false)
-	public function getDataFormatConfig($oParam)
+	public function getDataFormatConfig($oParam=null)
 	{
 		$nModuleSrl = $oParam->nModuleSrl;
 		if( $oParam->bDumpMode == true )
@@ -637,6 +643,7 @@ class svorderAdminModel extends svorder
  **/
 	private function _getPeriodSalesInfo($sDate=null)
 	{
+		$oArgs = new stdClass();
 		if( $sDate )
 			$oArgs->regdate = $sDate;
 		
@@ -652,7 +659,8 @@ class svorderAdminModel extends svorder
 				$fGrossCnt++;
 			}
 		}
-		unset( $oRst->data );
+		unset($oRst->data);
+		$oRst->data = new stdClass();
 		$oRst->data->amount = $fGrossAmnt;
 		$oRst->data->count = $fGrossCnt;
 		return $oRst;

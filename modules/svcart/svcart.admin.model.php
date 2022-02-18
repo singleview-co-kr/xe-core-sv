@@ -43,6 +43,7 @@ class svcartAdminModel extends svcart
  **/
 	public function getModInstList( $nPage = null ) 
 	{
+		$oArgs = new stdClass();
 		$oArgs->sort_index = 'module_srl';
 		$oArgs->page = $nPage;
 		$oArgs->list_count = 20;

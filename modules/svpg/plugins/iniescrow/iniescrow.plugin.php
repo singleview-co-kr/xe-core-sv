@@ -290,7 +290,7 @@ class iniescrow extends SvpgPlugin
 		return $output;
 	}
 
-	function getReceipt($pg_tid)
+	function getReceipt($pg_tid, $paymethod = NULL)
 	{
 		Context::set('tid', $pg_tid);
 		$oTemplate = &TemplateHandler::getInstance();

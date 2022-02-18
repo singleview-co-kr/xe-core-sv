@@ -72,7 +72,7 @@
 		<div class="x_controls" >
 			<textarea name="sms_order_status_cancel_request">{$config->sms_order_status_cancel_request}</textarea>
 			<label class="x_inline" for="sms_order_status_cancel_request_yn">
-				<input type="radio" name="sms_order_status_cancel_request_yn" id="sms_order_status_cancel_request_yn" value="off" checked="checked"|cond="sms_order_status_cancel_request_yn=='' || $config->sms_order_status_cancel_request_yn=='off'" />
+				<input type="radio" name="sms_order_status_cancel_request_yn" id="sms_order_status_cancel_request_yn" value="off" checked="checked"|cond="$config->sms_order_status_cancel_request_yn=='' || $config->sms_order_status_cancel_request_yn=='off'" />
 				{$lang->cmd_sms_off}
 				<input type="radio" name="sms_order_status_cancel_request_yn" id="sms_order_status_cancel_request_yn" value="on" checked="checked"|cond="$config->sms_order_status_cancel_request_yn=='on'" />
 				{$lang->cmd_sms_on}
@@ -86,7 +86,7 @@
 		<div class="x_controls" >
 			<textarea name="sms_order_status_cancel_completed">{$config->sms_order_status_cancel_completed}</textarea>
 			<label class="x_inline" for="sms_order_status_cancel_completed_yn">
-				<input type="radio" name="sms_order_status_cancel_completed_yn" id="sms_order_status_cancel_completed_yn" value="off" checked="checked"|cond="sms_order_status_cancel_completed_yn=='' || $config->sms_order_status_cancel_completed_yn=='off'" />
+				<input type="radio" name="sms_order_status_cancel_completed_yn" id="sms_order_status_cancel_completed_yn" value="off" checked="checked"|cond="$config->sms_order_status_cancel_completed_yn=='' || $config->sms_order_status_cancel_completed_yn=='off'" />
 				{$lang->cmd_sms_off}
 				<input type="radio" name="sms_order_status_cancel_completed_yn" id="sms_order_status_cancel_completed_yn" value="on" checked="checked"|cond="$config->sms_order_status_cancel_completed_yn=='on'" />
 				{$lang->cmd_sms_on}

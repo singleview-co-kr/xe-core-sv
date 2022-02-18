@@ -23,10 +23,11 @@ class svpgModel extends svpg
 
 		if(!$xml_obj)
 			return;
-
+		$plugin_info = new stdClass();
 		$plugin_info->title = $xml_obj->title->body;
 		$plugin_info->description = $xml_obj->description->body;
 		$plugin_info->version = $xml_obj->version->body;
+		$date_obj = new stdClass();
 		sscanf($xml_obj->date->body, '%d-%d-%d', $date_obj->y, $date_obj->m, $date_obj->d);
 		$plugin_info->date = sprintf('%04d%02d%02d', $date_obj->y, $date_obj->m, $date_obj->d);
 		$plugin_info->license = $xml_obj->license->body;
@@ -37,7 +38,7 @@ class svpgModel extends svpg
 
 		foreach($author_list as $author)
 		{
-			unset($author_obj);
+			$author_obj = new stdClass();
 			$author_obj->name = $author->name->body;
 			$author_obj->email_address = $author->attrs->email_address;
 			$author_obj->homepage = $author->attrs->link;
@@ -60,12 +61,14 @@ class svpgModel extends svpg
 					$extra_vars = array($extra_vars);
 				$extra_var_count = count($extra_vars);
 				$buff .= sprintf('$plugin_info->extra_var_count = "%s";', $extra_var_count);
+				$buff .= sprintf('$plugin_info->extra_var = new stdClass();');
 				for($i=0;$i<$extra_var_count;$i++)
 				{
 					unset($var);
 					unset($options);
 					$var = $extra_vars[$i];
 					$name = $var->attrs->name;
+					$buff .= sprintf('$plugin_info->extra_var->%s = new stdClass();', $name);
 					$buff .= sprintf('$plugin_info->extra_var->%s->group = "%s";', $name, $group->title->body);
 					$buff .= sprintf('$plugin_info->extra_var->%s->title = "%s";', $name, $var->title->body);
 					$buff .= sprintf('$plugin_info->extra_var->%s->type = "%s";', $name, $var->attrs->type);
@@ -83,15 +86,18 @@ class svpgModel extends svpg
 					$thumbnail_exist = false;
 					for($j=0; $j < $options_count; $j++)
 					{
+						$buff .= sprintf('$plugin_info->extra_var->%s->options["%s"] = new stdClass();', $var->attrs->name, $options[$j]->attrs->value);
 						$thumbnail = $options[$j]->attrs->src;
 						if($thumbnail)
 						{
 							$thumbnail = $plugin_path.$thumbnail;
 							if(file_exists($thumbnail))
 							{
+								$buff .= sprintf('$plugin_info->extra_var->%s->options["%s"]->thumbnail = new stdClass();', $var->attrs->name, $options[$j]->attrs->value, $thumbnail);
 								$buff .= sprintf('$plugin_info->extra_var->%s->options["%s"]->thumbnail = "%s";', $var->attrs->name, $options[$j]->attrs->value, $thumbnail);
 								if(!$thumbnail_exist)
 								{
+									$buff .= sprintf('$plugin_info->extra_var->%s->thumbnail_exist = new stdClass();', $var->attrs->name);
 									$buff .= sprintf('$plugin_info->extra_var->%s->thumbnail_exist = true;', $var->attrs->name);
 									$thumbnail_exist = true;
 								}
@@ -102,7 +108,7 @@ class svpgModel extends svpg
 				}
 			}
 		}
-		if ($buff)
+		if($buff)
 			eval($buff);
 		return $plugin_info;
 	}
@@ -150,6 +156,7 @@ class svpgModel extends svpg
 	function getPluginInfo($plugin_srl)
 	{
 		// 일단 DB에서 정보를 가져옴
+		$args = new stdClass();
 		$args->plugin_srl = $plugin_srl;
 		$output = executeQuery('svpg.getPluginInfo', $args);
 		if(!$output->data)
@@ -171,6 +178,7 @@ class svpgModel extends svpg
  */
 	function getSvpgList()
 	{
+		$args = new stdClass();
 		$args->sort_index = "module_srl";
 		$args->list_count = 99;
 		$output = executeQueryArray('svpg.getSvpgList', $args);

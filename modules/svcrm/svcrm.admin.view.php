@@ -18,7 +18,8 @@ class svcrmAdminView extends svcrm
 			if(file_exists($sClassPath))
 			{
 				require_once($sClassPath);
-				svshopmaster::init($this);
+				$oSvshopmaster = new svshopmaster;
+				$oSvshopmaster->init($this);
 			}
 		}
 		
@@ -164,6 +165,8 @@ class svcrmAdminView extends svcrm
 		$aBoard = array();
 		foreach( $output->data as $key=>$val)
 		{
+			if(is_null($aBoard[$nIdx]))
+				$aBoard[$nIdx] = new stdClass();
 			$aBoard[$nIdx]->module_srl =  $val->module_srl;
 			$aBoard[$nIdx++]->mid =  $val->mid;
 		}
@@ -175,6 +178,8 @@ class svcrmAdminView extends svcrm
 		$aGroupList = array();
 		foreach( $oGroups as $key=>$val )
 		{
+			if(is_null($aGroupList[$key]))
+				$aGroupList[$key] = new stdClass();
 			$aGroupList[$key]->group_srl = $val->group_srl;
 			$aGroupList[$key]->title = $val->title;
 		}

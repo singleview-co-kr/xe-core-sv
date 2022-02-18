@@ -18,7 +18,8 @@ class svpgAdminView extends svpg
 			if(file_exists($sClassPath))
 			{
 				require_once($sClassPath);
-				svshopmaster::init($this);
+				$oSvshopmaster = new svshopmaster;
+				$oSvshopmaster->init($this);
 			}
 		}
 
@@ -70,6 +71,7 @@ class svpgAdminView extends svpg
 	function dispSvpgAdminSvpgList()
 	{
 		// load svpg module instances
+		$args = new stdClass();
 		$args->sort_index = "module_srl";
 		$args->page = Context::get('page');
 		$args->list_count = 20;
@@ -132,6 +134,7 @@ class svpgAdminView extends svpg
  */
 	function dispSvpgAdminPluginList()
 	{
+		$args = new stdClass();
 		$args->page = Context::get('page');
 		$output = executeQueryArray('svpg.getPluginList', $args);
 		if (!$output->toBool())
@@ -172,6 +175,7 @@ class svpgAdminView extends svpg
 	function dispSvpgAdminTransactions()
 	{
 		// transactions
+		$args = new stdClass();
 		$args->page = Context::get('page');
 		$output = executeQueryArray('svpg.getTransactionList',$args);
 		if(!$output->toBool()) 

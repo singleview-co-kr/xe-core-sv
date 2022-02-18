@@ -330,6 +330,8 @@ echo '<BR><BR>';
 	{
 		$oSvorderAdminModel = &getAdminModel('svestudio');
 		$oConfig = $oSvorderAdminModel->getModuleConfig();
+		if(is_null($oConfig))
+				$oConfig = new stdClass();
 		foreach( $oArgs as $key=>$val)
 			$oConfig->{$key} = $val;
 

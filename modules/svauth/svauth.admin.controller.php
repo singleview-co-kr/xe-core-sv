@@ -56,6 +56,7 @@ class svauthAdminController extends svauth
 	function procSvauthAdminInsertPlugin()
 	{
 		$plugin_srl = getNextSequence();
+		$args = new stdClass();
 		$args->plugin_srl = $plugin_srl;
 		$args->plugin = Context::get('plugin');
 		$args->title = Context::get('title');
@@ -66,9 +67,7 @@ class svauthAdminController extends svauth
 
 		require_once(_XE_PATH_.'modules/svauth/svauth.plugin.php');
 		require_once(_XE_PATH_.'modules/svauth/plugins/'.$args->plugin.'/'.$args->plugin.'.plugin.php');
-
-		$tmp_fn = create_function('', "return new {$args->plugin}();");
-		$oPlugin = $tmp_fn();
+		$oPlugin = eval("return new {$args->plugin}();");
 		if(@method_exists($oPlugin,'pluginInstall'))
 			$oPlugin->pluginInstall($args);
 

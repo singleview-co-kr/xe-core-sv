@@ -370,6 +370,7 @@ class svcrmController extends svcrm
 		if( is_null( getClass('textmessage') ) )
 			return new BaseObject(-1, 'msg_error_no_sms_module');
 		$oSmsController = &getController('textmessage');
+		$oArgs = new stdClass();
 		if($oSmsController)
 		{
 			$oSvcrmAdminModel = &getAdminModel('svcrm');

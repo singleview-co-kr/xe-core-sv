@@ -18,7 +18,8 @@ class svorderAdminView extends svorder
 			if(file_exists($sClassPath))
 			{
 				require_once($sClassPath);
-				svshopmaster::init($this);
+				$oSvshopmaster = new svshopmaster;
+				$oSvshopmaster->init($this);
 			}
 		}
 
@@ -89,6 +90,7 @@ class svorderAdminView extends svorder
 		$aAvailablePeriod = $oPeriodRange->get('aAvailablePeriod ');
 		Context::set('aAvailablePeriod', $aAvailablePeriod);
 		
+		$oArgs = new stdClass();
 		if( Context::get( 'status' ) )
 			$oArgs->order_status = Context::get( 'status' );
 		else
@@ -163,6 +165,7 @@ class svorderAdminView extends svorder
 			$oArgs->last_changed_date = $sYrMo;
 		
 		$bAllActive=true;
+		$oArgs = new stdClass();
 		$oArgs->aStatusList = $oSvorderAdminModel->getOrderStatusListForMasterRaw($bAllActive);
 		$oArgs->page = Context::get( 'page' );
 		$oOrderList = $oSvorderAdminModel->getOrderListByStatus( $oArgs );
@@ -200,7 +203,8 @@ class svorderAdminView extends svorder
 		$oSvorderModel = &getModel('svorder');
 		$oConfig = $oSvorderModel->getModuleConfig();
 		Context::set('config', $oConfig);
-
+		
+		$oArgs = new stdClass();
 		$oArgs->order_status = svorder::ORDER_STATE_ON_CART;
 		$oArgs->page = Context::get( 'page' );
 		if( Context::get( 'search_key' ) )

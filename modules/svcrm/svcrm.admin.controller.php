@@ -20,6 +20,7 @@ class svcrmAdminController extends svcrm
 		$sSmsSenderNo = trim(Context::get('sender_no'));
 		$sSmsSenderNo = preg_replace("/[^0-9]*/s", '', $sSmsSenderNo);
 		$nCouponSize = (int)Context::get('coupon_digit_number');
+		$oArgs = new stdClass();
 		if( $nCouponSize > 3 )
 			$oArgs->coupon_digit_number = $nCouponSize;
 		$oArgs->sender_no = $sSmsSenderNo;
@@ -195,7 +196,8 @@ class svcrmAdminController extends svcrm
 		$sConents = strip_tags($sConents);
 		if(!strlen( $sConents ))
 			return new BaseObject(-1, 'msg_error_nothing_to_say');
-
+		
+		$oArgs = new stdClass();
 		$sGuestPhoneNumber =  preg_replace("/[^0-9]*/s", '', strip_tags(trim(Context::get('guest_phone_number'))));
 		$oArgs->recipient_no = $sGuestPhoneNumber;
 		$oArgs->sender_member_srl = $oLoggedInfo->member_srl;
@@ -234,6 +236,7 @@ class svcrmAdminController extends svcrm
 			if( $key == 'except_member_group' )
 				$aExceptGrp = $val;
 		}
+		$oArgs = new stdClass();
 		$oArgs->monitor_board = $aMonitorBoard;
 		$oArgs->except_member_group = $aExceptGrp;
 		$oArgs->crm_responsible_number = str_replace('-', '', $oTempArgs->crm_responsible_number);
@@ -347,6 +350,7 @@ class svcrmAdminController extends svcrm
 			if( strlen( $sCancelCompletedMsg ) == 0 || is_null( $sCancelCompletedMsg ) )
 				$sCancelCompletedMsgActivate = 'off';
 		}
+		$oArgs = new stdClass();
 		$oArgs->sms_order_status_wait_for_deposit = $sWaitForDepostMsg;
 		$oArgs->sms_order_status_wait_for_deposit_yn = $sWaitForDepostMsgActivate;
 		$oArgs->sms_order_status_deposit_confirmed = $sDepostConfirmedMsg;
@@ -596,6 +600,8 @@ class svcrmAdminController extends svcrm
 	{
 		$oSvcrmAdminModel = &getAdminModel('svcrm');
 		$oConfig = $oSvcrmAdminModel->getModuleConfig();
+		if(is_null($oConfig))
+			$oConfig = new stdClass();
 		foreach( $oArgs as $key=>$val)
 			$oConfig->{$key} = $val;
 

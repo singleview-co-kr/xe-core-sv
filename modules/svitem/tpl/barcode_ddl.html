@@ -25,7 +25,7 @@ $oCurBarcodeInfo = $barcode_ddl_group[$barcode_srl];
 	</div>
 	<table class="sortable x_table x_table-striped x_table-hover">
 		<caption>
-			<strong>{count($oCurBarcodeInfo->aDdlDefinition)}{$lang->msg_barcode_ddl_exist}</strong>
+			<strong>{count((array)$oCurBarcodeInfo->aDdlDefinition)}{$lang->msg_barcode_ddl_exist}</strong>
 			<span class="x_pull-right" style="position:relative;top:7px">
 				{$lang->dfg}
 			</span>

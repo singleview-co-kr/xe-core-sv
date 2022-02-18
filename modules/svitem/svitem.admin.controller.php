@@ -679,9 +679,10 @@ exit;
 			{
 				$nItemSrl = str_replace('qna_connect_', '', $key);
 				foreach( $val as $rev_key=>$rev_val)
-					$aItemQnaMatch[$nItemSrl]{$rev_val} = 'match';
+					$aItemQnaMatch[$nItemSrl][$rev_val] = 'match';
 			}
 		}
+		$oArgs = new stdClass();
 		$oArgs->qna_for_item = $aItemQnaMatch;
 		$oArgs->order_target = $oTempArgs->order_target;
 		$oArgs->order_type = $oTempArgs->order_type;
@@ -713,10 +714,10 @@ exit;
 			{
 				$nItemSrl = str_replace('review_connect_', '', $key);
 				foreach( $val as $rev_key=>$rev_val)
-					$aItemReviewMatch[$nItemSrl]{$rev_val} = 'match';// echo $rev_val.'<BR>';
+					$aItemReviewMatch[$nItemSrl][$rev_val] = 'match';// echo $rev_val.'<BR>';
 			}
 		}
-
+		$oArgs = new stdClass();
 		$oArgs->review_for_item = $aItemReviewMatch;
 		$oArgs->order_target = $oTempArgs->order_target;
 		$oArgs->order_type = $oTempArgs->order_type;
