@@ -1140,7 +1140,7 @@ class FileHandler
 	 * @param string $path Target dir path
 	 * @return bool
 	 */
-	function isWritableDir($path)
+	public static function isWritableDir($path)
 	{
 		$path = self::getRealPath($path);
 		if(is_dir($path)==FALSE)

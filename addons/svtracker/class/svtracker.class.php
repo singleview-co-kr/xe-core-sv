@@ -66,7 +66,7 @@ class SvTracker
 	{
 		if( strlen( $sShortnerQueryName ) == 0 )
 			return false;
-
+		$this->_g_aQuery = explode( '&', $_SERVER['QUERY_STRING'] );
 		foreach( $this->_g_aQuery as $key => $val )
 		{
 			if( preg_match( "/\b$sShortnerQueryName\b/i", $val ) )

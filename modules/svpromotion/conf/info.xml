@@ -4,8 +4,8 @@
 	<title xml:lang="en">promotion management</title>
 	<description xml:lang="ko">모든 프로모션을 관리합니다.</description>
 	<description xml:lang="en">You can register and manage item here.</description>
-	<version>1.1.0</version>
-	<date>2020-12-20</date>
+	<version>1.2.0</version>
+	<date>2022-02-18</date>
 	<category>service</category>
 	<author email_address="root@singleview.co.kr" link="http://singleview.co.kr">
         <name xml:lang="ko">Singleview.co.kr</name>

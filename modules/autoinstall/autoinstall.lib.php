@@ -277,6 +277,8 @@ class ModuleInstaller
 	{
 		$real_path = FileHandler::getRealPath($path);
 		$oDir = dir($path);
+        if(!$oDir)  // if directory does not exist
+            return new BaseObject();
 		$files = array();
 		while($file = $oDir->read())
 		{

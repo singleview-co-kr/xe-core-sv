@@ -8,8 +8,8 @@
     <description xml:lang="en">This module supports online payment such as paypal.</description>
     <description xml:lang="jp">Edy、PayPalなどのオンライン決済をサポートするモジュールです。</description>
     <description xml:lang="zh-TW">支援第三方支付工具電子商務,如: PayPal、歐付寶...等</description>
-    <version>0.5.0</version>
-    <date>2020-12-20</date>
+    <version>0.6.0</version>
+    <date>2022-02-18</date>
     <category>service</category>
 	<author email_address="root@singleview.co.kr" link="http://singleview.co.kr">
         <name xml:lang="ko">Singleview.co.kr</name>

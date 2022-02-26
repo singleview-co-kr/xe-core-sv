@@ -4,8 +4,8 @@
 	<title xml:lang="en">Shorten Tracking URL management</title>
 	<description xml:lang="ko">매체 효율 측정을 위한 단축 URL을 관리합니다. Svtracker Addon과 같이 사용해야 합니다.</description>
 	<description xml:lang="en">You can register and manage shorten tracking URL to monitor ROAS of organic search execution here.</description>
-	<version>0.1.1</version>
-	<date>2020-12-28</date>
+	<version>0.2.0</version>
+	<date>2022-02-18</date>
 	<category>service</category>
 	<author email_address="root@singleview.co.kr" link="http://singleview.co.kr">
         <name xml:lang="ko">Singleview.co.kr</name>

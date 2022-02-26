@@ -8,8 +8,8 @@
 	<description xml:lang="en">Order management module of shopping mall.</description>
 	<description xml:lang="jp">インターネットショッピングモール注文管理モジュールです。</description>
 	<description xml:lang="zh-TW">商店訂單管理</description>
-	<version>3.1.4</version>
-	<date>2021-09-10</date>
+	<version>3.2.0</version>
+	<date>2022-02-18</date>
 	<category>service</category>
 	<author email_address="root@singleview.co.kr" link="http://singleview.co.kr">
         <name xml:lang="ko">Singleview.co.kr</name>

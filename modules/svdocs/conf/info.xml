@@ -4,8 +4,8 @@
 	<title xml:lang="en">Docs management</title>
 	<description xml:lang="ko">간단한 응모를 관리합니다.</description>
 	<description xml:lang="en">You can register and manage registration here.</description>
-	<version>0.5.2</version>
-	<date>2021-08-26</date>
+	<version>0.6.0</version>
+	<date>2022-02-18</date>
 	<category>service</category>
 	<author email_address="root@singleview.co.kr" link="http://singleview.co.kr">
         <name xml:lang="ko">Singleview.co.kr</name>

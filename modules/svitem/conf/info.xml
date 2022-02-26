@@ -8,8 +8,8 @@
 	<description xml:lang="en">You can register and manage item here.</description>
 	<description xml:lang="jp">商品の登録、管理するためのモジュールです。</description>
 	<description xml:lang="zh-TW">商品登録與管理</description>	
-	<version>4.1.9</version>
-	<date>2021-09-10</date>
+	<version>4.2.0</version>
+	<date>2022-02-18</date>
 	<category>service</category>
 	<author email_address="root@singleview.co.kr" link="http://singleview.co.kr">
         <name xml:lang="ko">Singleview.co.kr</name>

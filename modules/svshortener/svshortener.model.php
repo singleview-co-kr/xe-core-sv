@@ -20,6 +20,7 @@ class svshortenerModel extends module
  **/
 	public function getShortenerInfo( $sQueryValue )
 	{
+		$args = new stdClass();
 		$args->shorten_uri_value = $sQueryValue;
 		$output = executeQuery('svshortener.getSvshortenersUriInfo', $args );
 
