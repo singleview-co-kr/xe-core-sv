@@ -29,7 +29,7 @@ define('__ZBXE__', __XE__);
 /**
  * Display XE's full version.
  */
-define('__XE_VERSION__', '1.11.6');
+define('__XE_VERSION__', '1.12.0');
 define('__XE_VERSION_ALPHA__', (stripos(__XE_VERSION__, 'alpha') !== false));
 define('__XE_VERSION_BETA__', (stripos(__XE_VERSION__, 'beta') !== false));
 define('__XE_VERSION_RC__', (stripos(__XE_VERSION__, 'rc') !== false));
@@ -77,6 +77,17 @@ else
 	 * Download server
 	 */
 	define('_XE_DOWNLOAD_SERVER_', 'http://download.xpressengine.com/');
+
+    /**
+	 * Location site singleview
+	 */
+	define('_XE_SV_LOCATION_SITE_', 'http://singleview.co.kr/');
+
+    /**
+	 * Location site singleview
+	 */
+	define('_XE_SV_DOWNLOAD_SERVER_', 'http://mp.singleview.co.kr/');
+
 }
 
 /*

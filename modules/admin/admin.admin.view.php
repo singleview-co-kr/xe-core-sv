@@ -529,6 +529,7 @@ class adminAdminView extends admin
 	 */
 	function showSendEnv()
 	{
+        return;
 		if(Context::getResponseMethod() != 'HTML')
 		{
 			return;
