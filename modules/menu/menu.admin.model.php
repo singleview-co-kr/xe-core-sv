@@ -541,7 +541,7 @@ class menuAdminModel extends menu
 						include($value->php_file);
 
 						$isMenuFixed = false;
-						if(count($menu->list) > 0)
+						if(count((array)$menu->list) > 0)
 						{
 							foreach($menu->list AS $key2=>$value2)
 							{
