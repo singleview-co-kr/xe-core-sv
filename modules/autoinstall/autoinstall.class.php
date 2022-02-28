@@ -39,8 +39,17 @@ class XmlGenerater
 	 */
 	public static function getXmlDoc(&$params)
 	{
-		$body = XmlGenerater::generate($params);
-		$buff = FileHandler::getRemoteResource(_XE_DOWNLOAD_SERVER_, $body, 3, "POST", "application/xml");
+		// $body = XmlGenerater::generate($params);
+		// $buff = FileHandler::getRemoteResource(_XE_DOWNLOAD_SERVER_, $body, 3, "POST", "application/xml");
+		$ch = curl_init(); // 리소스 초기화
+		$url = _XE_SV_DOWNLOAD_SERVER_ . '?mode=applist';
+	  
+		// 옵션 설정
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		$buff = curl_exec($ch); // 데이터 요청 후 수신
+		curl_close($ch);  // 리소스 해제
+
 		if(!$buff)
 		{
 			return;
