@@ -164,13 +164,14 @@ class svorderAddr extends svorder
 	private function _setSkeletonHeader()
 	{
 		// 입력값 초기화
+        $this->_g_oAddrHeader = new stdClass();
 		$this->_g_oAddrHeader->sDo = svorder::S_NULL_SYMBOL;
 		$this->_g_oAddrHeader->sSi = svorder::S_NULL_SYMBOL;
 		$this->_g_oAddrHeader->sGu = svorder::S_NULL_SYMBOL;
 		$this->_g_oAddrHeader->sGun = svorder::S_NULL_SYMBOL;
 		$this->_g_oAddrHeader->sDong = svorder::S_NULL_SYMBOL;
 		$this->_g_oAddrHeader->sMyun = svorder::S_NULL_SYMBOL;
-		$this->_g_oAddrHeader->sEup = svorder::S_NULL_SYMBOL;		
+		$this->_g_oAddrHeader->sEup = svorder::S_NULL_SYMBOL;
 		$this->_g_oAddrHeader->sRi = svorder::S_NULL_SYMBOL;
 		$this->_g_oAddrHeader->sBunji = svorder::S_NULL_SYMBOL; // 동/리의 하위 번지
 		//$this->_g_oAddrHeader->sRiMisc = svorder::S_NULL_SYMBOL; // 

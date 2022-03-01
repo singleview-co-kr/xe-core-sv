@@ -28,7 +28,7 @@ class svorderUpdateOrder extends svorder
  * $oNpayOrderApi is required if order_referral == svorder::ORDER_REFERRAL_NPAY
  * bApiMode is required when anonymous machine API does
  **/
-	public function svorderUpdateOrder($oParams) 
+	public function __construct($oParams) 
 	{
 		if( $oParams->oSvorderConfig )
 			$this->_g_oSvorderConfig = $oParams->oSvorderConfig;
@@ -347,6 +347,7 @@ class svorderUpdateOrder extends svorder
 			if(!$oOrderRst->toBool())
 				return $oOrderRst;
 
+			$oCsParam = new stdClass();
 			$oCsParam->bAllowed = true;
 			$oCsParam->sOriginStatus = $sOriginOrderStatus;
 			$oCsParam->sTgtStatus = $sTgtOrderStatus;
@@ -523,6 +524,7 @@ class svorderUpdateOrder extends svorder
  **/
 	private function _getDeductInfo()
 	{
+		$oArgs = new stdClass();
 		$oArgs->order_srl = $this->_g_oOrderHeader->order_srl;
 		$oRst = executeQueryArray( 'svorder.getDeductionInfo', $oArgs );
 		if(!$oRst->toBool())
@@ -1148,6 +1150,7 @@ echo '<BR><BR>';
 			$aOrderLabel = $oSvorderModel->getOrderStatusLabel();
 			$sCsMemo .= $nSvCartSrl.'번 장바구니 '.Context::getLang( $aOrderLabel[$nOriginalOrderStatus] ).' -> '.Context::getLang( $aOrderLabel[$sTgtCartItemStatus] ).' 이동 불가능';
 		}
+        $oCsParam = new stdClass();
 		$oCsParam->bAllowed = $bChangeCartStatus;
 		$oCsParam->nSvCartSrl = $nSvCartSrl;
 		$oCsParam->nItemSrl = $this->_g_aCartItem[$nSvCartSrl]->item_srl;
@@ -1294,7 +1297,8 @@ echo '<BR><BR>';
 			}
 		}
 
-		// for order table 
+		// for order table
+		$oOrderArgs = new stdClass();
 		$oOrderArgs->order_srl = $nOrderSrl;
 		$oOrderArgs->order_status = $sTargetOrderStatus;
 		// [배송완료] [거래완료]는 거래확정용 형식적 상태 변경이므로 월마감시 last_changed_date 기준 추출에서 혼란 방지
@@ -1573,6 +1577,7 @@ echo '<BR><BR>';
 		{
 			if( $oCartVal->bChanged == 'true' ) // 변경된 주문 품목만 업데이트
 			{
+				$oArgs = new stdClass();
 				$oArgs->order_srl = $oCartVal->order_srl;
 				$oArgs->cart_srl = $oCartVal->cart_srl;
 				$oArgs->order_status = $oCartVal->order_status;
@@ -1620,6 +1625,8 @@ echo '<BR><BR>';
  */
 	private function _registerPurchaserNoticeable($sTargetOrderStatus)
 	{
+		if(is_null($this->_g_oNewPurchaserNotice))
+			$this->_g_oNewPurchaserNotice = new stdClass();
 		$this->_g_oNewPurchaserNotice->medium = 'sms';
 		$this->_g_oNewPurchaserNotice->order_srl = $this->_g_oOrderHeader->order_srl;
 		$this->_g_oNewPurchaserNotice->purchaser_name = $this->_g_oOrderHeader->purchaser_name;
@@ -1840,12 +1847,15 @@ echo '<BR><BR>';
  **/
 	private function _getSvOrderHeader( $nOrderSrl )
 	{
+		$oArgs = new stdClass();
 		$oArgs->order_srl = $nOrderSrl;
 		$oRst = executeQuery('svorder.getOrderInfo', $oArgs); // must be a single rec
 		if(!$oRst->toBool())
 			return $oRst;
-		if(count($oRst->data)!=1)
+		//if(count((array)$oRst->data)!=1)
+		if(is_array($oRst->data))  // weird! get multiple recs by single order srl
 			return new BaseObject(-1, 'msg_invalid_order_srl');
+
 		$oOrderInfo = $oRst->data;
 		unset( $oRst );
 		if( $oOrderInfo->order_referral == svorder::ORDER_REFERRAL_NPAY )
@@ -1944,7 +1954,7 @@ echo '<BR><BR>';
 		$aCartItemsRst = array();
 		if( !$nOrderSrl )
 			return $aCartItemsRst;
-
+		$oArgs = new stdClass();
 		$oArgs->order_srl = $nOrderSrl;
 		$oCartItemRst = executeQueryArray( 'svorder.getCartItems', $oArgs );
 		if(!$oCartItemRst->toBool())
@@ -1957,6 +1967,7 @@ echo '<BR><BR>';
 		
 		if( count( $aCartItems ) == 0 ) // 장바구니가 없는 비정상 주문은 삭제라도 작동시키기 위한 가상 주문 생성
 		{
+			$aCartItems[0] = new stdClass();
 			$aCartItems[0]->order_srl = $this->_g_oOrderHeader->order_srl;
 			$aCartItems[0]->order_status=$this->_g_oOrderHeader->order_status;
 			$aCartItems[0]->quantity=0;
@@ -2028,7 +2039,7 @@ echo '<BR><BR>';
 			$oCartItem->discount_info = $aDiscountInfo;
 			$oCartItem->aChangeableStatus = $this->_getChangeableStatus( $oCartItem->order_status );
 			$aCartItemsRst[$oCartItem->cart_srl] = $oCartItem;
-
+			$oShipArgs = new stdClass();
 			$oShipArgs->cart_srl = $oCartItem->cart_srl;
 			$oShipRst = executeQueryArray( 'svorder.getShippingInfoBySvCartSrl', $oShipArgs );
 			if( !$oShipRst->toBool() )
@@ -2320,6 +2331,7 @@ echo '<BR><BR>';
 		if(!$nAddrSrl)
 			return $oRst;
 
+		$oArgs = new stdClass();
 		$oArgs->addr_srl = $nAddrSrl;
 		$oAddrInfo = executeQuery( 'svorder.getAddressInfoByAddrSrl', $oArgs );
 		switch( $oAddrInfo->data->addr_type )
@@ -2357,6 +2369,7 @@ echo '<BR><BR>';
 			return new BaseObject(-1, 'msg_invalid_param');
 
 		require_once(_XE_PATH_.'modules/svcrm/svcrm.log_trigger.php');
+		$oCsArg = new stdClass();
 		$oCsArg->bAllowed = $oBasicArgs->bAllowed;
 		$oCsArg->nSvCartSrl = $oBasicArgs->nSvCartSrl;
 		$oCsArg->nItemSrl = $oBasicArgs->nItemSrl;

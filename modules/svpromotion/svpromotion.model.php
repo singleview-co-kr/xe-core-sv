@@ -20,7 +20,9 @@ class svpromotionModel extends module
 	{
 		$oModuleModel = &getModel('module');
 		$oConfig = $oModuleModel->getModuleConfig('svpromotion');
-		if( !$oConfig->fb_app_id )
+        if((is_null($oConfig)))
+            $oConfig = new stdClass();
+		if(!$oConfig->fb_app_id)
 			$oConfig->fb_app_id = '';
 		return $oConfig;
 	}
@@ -393,18 +395,18 @@ class svpromotionModel extends module
 		$oPromotionInfo = new stdClass();
 		$oPromotionInfo->version = svpromotion::PROMO_INFO_VERS;
 
-		if( count( $oCartVal->conditional_promotion->promotion ) )
+		if(count((array)$oCartVal->conditional_promotion->promotion))
 			$oPromotionInfo->oSocialPromotion = $oCartVal->conditional_promotion->promotion;
 		
-		if( $oCartVal->oItemDiscountPromotion )
+		if($oCartVal->oItemDiscountPromotion)
 			$oPromotionInfo->oItemDiscountPromotion = $oCartVal->oItemDiscountPromotion;
 	
-		if( $oCartVal->oGiveawayPromotion )
+		if($oCartVal->oGiveawayPromotion)
 			$oPromotionInfo->oGiveawayPromotion = $oCartVal->oGiveawayPromotion;
 
-		if( isset( $oPromotionInfo->oSocialPromotion ) || 
-			isset( $oPromotionInfo->oItemDiscountPromotion ) ||
-			isset( $oPromotionInfo->oGiveawayPromotion ) )
+		if(isset($oPromotionInfo->oSocialPromotion) || 
+			isset($oPromotionInfo->oItemDiscountPromotion) ||
+			isset($oPromotionInfo->oGiveawayPromotion))
 		{
 			$oRstFinal->oPromotionInfo = $oPromotionInfo;
 			$oRstFinal->is_promoted = 'Y';
@@ -908,12 +910,11 @@ class svpromotionModel extends module
 				$oConditionalPromoResult->promotion[$key] = $oFbLikeConditionalPromoResult;
 			}
 		}
+        $oConditionalPromoResult = new stdClass();
 		$oConditionalPromoResult->fb_app_id = $config->svpromotion_fb_app_id;
-
 		$aCoupon = $this->_getCouponConditionalDiscountItem( $item, $nBalanceToGoMax );
 		foreach( $aCoupon as $nIdx => $oVal )
 			$oConditionalPromoResult->promotion[] = $oVal;
-
 		$oPromotionPolicy['conditional'] = $oConditionalPromoResult;
 		return $oPromotionPolicy;
 	}
@@ -923,7 +924,7 @@ class svpromotionModel extends module
  * promotion[1]->resultant_giveaway_qty 와 같이 Qty 구조체가 추가되면 
  * svcart.controller.php::procSvcartUpdateQuantity()도 변경해야 함
  **/
-	public function getPromotionDetailForCartAddition( $item, $oOrderInfo, $aRequestedPromotion )
+	public function getPromotionDetailForCartAddition($item, $oOrderInfo, $aRequestedPromotion)
 	{
 		$oPromotionPolicy = array();
 		$oItemInfo = new stdClass();
@@ -931,16 +932,17 @@ class svpromotionModel extends module
 		$oConditionalPromotionInfo = new stdClass();
 
 		// 기존 할인액 계산
-		$oUnconditionalDiscountPolicy = $this->_discountSpecificItem( $item );
-		if( !$oUnconditionalDiscountPolicy->toBool() )
+		$oUnconditionalDiscountPolicy = $this->_discountSpecificItem($item);
+		if(!$oUnconditionalDiscountPolicy->toBool())
 			return $oUnconditionalDiscountPolicy;
 
 		$oDiscountInfo->version = svpromotion::PROMO_INFO_VERS;
+        $oDiscountInfo->promotion[0] = new stdClass();
 		$oDiscountInfo->promotion[0]->type = 'item_policy';
 		$oDiscountInfo->promotion[0]->unit_disc_amnt = $oUnconditionalDiscountPolicy->discount_amount;
 		$oDiscountInfo->promotion[0]->title = $oUnconditionalDiscountPolicy->discount_info;
 		
-		if( $oDiscountInfo->promotion[0]->unit_disc_amnt > 0 )
+		if($oDiscountInfo->promotion[0]->unit_disc_amnt > 0)
 			$oItemInfo->discount_info = $oDiscountInfo;
 		else
 			$oItemInfo->discount_info = null;
@@ -956,20 +958,20 @@ class svpromotionModel extends module
 		// FB like 와 FB shr만 conditional_promotion에 남기고 장바구니 DB에 기록함
 		$oConditionalPromotionInfo->version = svpromotion::PROMO_INFO_VERS;
 		$nIdx = 0;
-		foreach( $aRequestedPromotion as $key => $sPromotionType )
+		foreach($aRequestedPromotion as $key => $sPromotionType)
 		{
-			switch( $sPromotionType )
+			switch($sPromotionType)
 			{
 				case 'fblike': // 아이템별 fb like 할인 정책 가져오기
 				case 'fbshare': // 아이템별 fb share 할인 정책 가져오기
-					$oConditionalPromoResult = $this->_getFbConditionalDiscountItem( $item, $nBalanceToGoMax, $sPromotionType );
-					if( !$oConditionalPromoResult->toBool() ) 
+					$oConditionalPromoResult = $this->_getFbConditionalDiscountItem($item, $nBalanceToGoMax, $sPromotionType);
+					if(!$oConditionalPromoResult->toBool()) 
 						return $oConditionalPromoResult;
 
-					if( $oConditionalPromoResult->discount_amount > 0 )
+					if($oConditionalPromoResult->discount_amount > 0)
 						$oConditionalPromoResult->conditional_additional_discount_amount += $oUnconditionalDiscountPolicy->discount_amount;
 
-					if( $oConditionalPromoResult->conditional_additional_discount_amount > 0 )
+					if($oConditionalPromoResult->conditional_additional_discount_amount > 0)
 					{
 						$oItemInfo->discount_amount = $oConditionalPromoResult->conditional_additional_discount_amount;
 						$oItemInfo->discounted_price = ($item->price - $oConditionalPromoResult->conditional_additional_discount_amount)*$oOrderInfo->quantity;
@@ -1254,6 +1256,7 @@ var_dump( $oConditionalPromoResult );
 		$result = new BaseObject();
 		$result->conditional_additional_discount_type = '';
 		$result->conditional_additional_discount_info = '';
+        $args = new stdClass();
 		$args->module_srl = $item_info->module_srl;
 		$args->item_srl = $item_info->item_srl;
 		$output = executeQuery( 'svpromotion.getGiveawayPromotionByItem', $args );
@@ -1292,6 +1295,7 @@ var_dump( $oConditionalPromoResult );
 			$result->conditional_additional_discount_info = '잘못된 facebook 할인 요청입니다.';
 			return $result;	
 		}
+        $args = new stdClass();
 		$args->item_srl = $item_info->item_srl;
 		$args->promotion_type = $sPromotionType;//'fblike';
 		$output = executeQuery( 'svpromotion.getConditionalDiscountByItem', $args );
@@ -1384,6 +1388,7 @@ var_dump( $oConditionalPromoResult );
 	{
 		// get email domain group discount policy firstly
 		$aMemeberEmailInfo = $logged_info->email_host;
+        $args = new stdClass();
 		$args->email_domain = $aMemeberEmailInfo;
 		$oEmailDomainDiscountInfo = executeQuery('svpromotion.getMemberDiscountInfoByEmailDomain', $args );
 		
@@ -1397,6 +1402,7 @@ var_dump( $oConditionalPromoResult );
 		
 		// get individual member discount policy secondly
 		unset($args);
+        $args = new stdClass();
 		$args->member_srl = $logged_info->member_srl;
 		$oMemberDiscountInfo = executeQuery('svpromotion.getMemberDiscountInfo', $args);
 
@@ -1447,6 +1453,7 @@ var_dump( $oConditionalPromoResult );
  **/
 	private function _getItemLevelQuantityDiscount( &$item_info )
 	{
+        $args = new stdClass();
 		$args->module_srl = $item_info->module_srl;
 		$args->item_srl = 0;
 		$output = executeQueryArray( 'svpromotion.getBulkDiscountInfo', $args );
@@ -1506,10 +1513,11 @@ var_dump( $oConditionalPromoResult );
 /**
  * @brief $sOrderDate = date('YmdHis')
  **/
-	private function _getItemDiscount( $oItemInfo, $sOrderDate = null )
+	private function _getItemDiscount($oItemInfo, $sOrderDate = null)
 	{
+        $oArgs = new stdClass();
 		$oArgs->item_srl = $oItemInfo->item_srl;
-		$output = executeQueryArray('svpromotion.getGroupDiscountByItem', $oArgs );
+		$output = executeQueryArray('svpromotion.getGroupDiscountByItem', $oArgs);
 		if(!$output->toBool())
 			return $output;
 
@@ -1520,39 +1528,38 @@ var_dump( $oConditionalPromoResult );
 		$oRst->allow_duplication = $oDiscountInfo->allow_duplication;
 		$oRst->discount_info = 0;
 
-		if( !$sOrderDate )
+		if(!$sOrderDate)
 		{
-			reset( $output->data );
-			$nFirstIdx = key( $output->data );
+			reset($output->data);
+			$nFirstIdx = key($output->data);
 			$oDiscountInfo = $output->data[$nFirstIdx];
 			$dtBegin = strtotime($oDiscountInfo->begindate);
 			$dtEnd = strtotime($oDiscountInfo->enddate);
 			$dtNow = time();
 			
-			if( $dtBegin && $dtBegin >= $dtNow )
+			if($dtBegin && $dtBegin >= $dtNow)
 				return $oRst;
 
-			if( $dtEnd && $dtEnd <= $dtNow )
+			if($dtEnd && $dtEnd <= $dtNow)
 				return $oRst;
 			
-			if( $dtBegin && $dtEnd )
+			if($dtBegin && $dtEnd)
 			{
-				if( $dtBegin >= $dtNow || $dtEnd <= $dtNow  )
+				if($dtBegin >= $dtNow || $dtEnd <= $dtNow)
 					return $oRst;
 			}
-			if( $oDiscountInfo->opt == '1' )
+			if($oDiscountInfo->opt == '1')
 			{
 				$discounted_price = $oItemInfo->price - $oDiscountInfo->price;
 				$nDiscountAmount = $oDiscountInfo->price;
 				$discount_info = $oDiscountInfo->discount_info.' '.number_format($oDiscountInfo->price,0).'원 할인';
 			}
-			else if( $oDiscountInfo->opt == '2' )
+			else if($oDiscountInfo->opt == '2')
 			{
 				$discounted_price = $oItemInfo->price * ((100 - $oDiscountInfo->price) / 100);
 				$nDiscountAmount = $oItemInfo->price * $oDiscountInfo->price / 100;
 				$discount_info = $oDiscountInfo->discount_info.' '.$oDiscountInfo->price.'% 할인';
 			}
-
 			$oRst->discount_amount = $nDiscountAmount;
 			$oRst->discounted_price = $discounted_price;
 			$oRst->allow_duplication = $oDiscountInfo->allow_duplication;
@@ -1560,35 +1567,35 @@ var_dump( $oConditionalPromoResult );
 		}
 		else
 		{
-			$output = executeQueryArray('svpromotion.getGroupDiscountByItem', $oArgs );
+			$output = executeQueryArray('svpromotion.getGroupDiscountByItem', $oArgs);
 			if(!$output->toBool())
 				return $output;
 
-			foreach( $output->data as $nIdx => $oData )
+			foreach($output->data as $nIdx => $oData)
 			{
 				$oDiscountInfo = $oData;
 				$dtBegin = strtotime($oDiscountInfo->begindate);
 				$dtEnd = strtotime($oDiscountInfo->enddate);
 				$dtOrder = strtotime($sOrderDate);
 				
-				if( $dtBegin && $dtBegin >= $dtOrder )
+				if($dtBegin && $dtBegin >= $dtOrder)
 					continue;
 
-				if( $dtEnd && $dtEnd <= $dtOrder )
+				if($dtEnd && $dtEnd <= $dtOrder)
 					continue;
 				
-				if( $dtBegin && $dtEnd )
+				if($dtBegin && $dtEnd)
 				{
-					if( $dtBegin >= $dtOrder || $dtEnd <= $dtOrder  )
+					if($dtBegin >= $dtOrder || $dtEnd <= $dtOrder)
 						continue;
 				}
-				if( $oDiscountInfo->opt == '1' )
+				if($oDiscountInfo->opt == '1')
 				{
 					$discounted_price = $oItemInfo->price - $oDiscountInfo->price;
 					$nDiscountAmount = $oDiscountInfo->price;
 					$discount_info = $oDiscountInfo->discount_info.' '.number_format($oDiscountInfo->price,0).'원 할인';
 				}
-				else if( $oDiscountInfo->opt == '2' )
+				else if($oDiscountInfo->opt == '2')
 				{
 					$discounted_price = $oItemInfo->price * ((100 - $oDiscountInfo->price) / 100);
 					$nDiscountAmount = $oItemInfo->price * $oDiscountInfo->price / 100;

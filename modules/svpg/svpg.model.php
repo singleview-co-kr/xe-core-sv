@@ -190,12 +190,13 @@ class svpgModel extends svpg
 	function getPlugin($plugin_srl)
 	{
 		$plugin_info = $this->getPluginInfo($plugin_srl);
-		if( is_null( $plugin_info ) )
+		if(is_null($plugin_info))
 			return null;
 		require_once(sprintf("%ssvpg.plugin.php",$this->module_path));
 		require_once(sprintf("%splugins/%s/%s.plugin.php",$this->module_path, $plugin_info->plugin, $plugin_info->plugin));
-		$tmpFn = create_function('', "return new {$plugin_info->plugin}();");
-		$pluginObj = $tmpFn();
+
+		// $tmpFn = create_function('', "return new {$plugin_info->plugin}();");
+		$pluginObj = eval("return new {$plugin_info->plugin}();");//$tmpFn();
 		$pluginObj->init($plugin_info);
 		return $pluginObj;
 	}
@@ -223,6 +224,7 @@ class svpgModel extends svpg
  */
 	function getTransactionByOrderSrl($order_srl)
 	{
+		$args = new stdClass();
 		$args->order_srl = $order_srl;
 		$args->state = array('1','2');
 		

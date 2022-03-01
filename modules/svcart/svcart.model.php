@@ -102,12 +102,13 @@ class svcartModel extends svcart
  **/
 	public function getMemberCartInfo($nMemberSrl, $sOldestDatetime, $sCartNos=null)
 	{
+        $oArgs = new stdClass();
 		$oArgs->cartnos = $sCartNos;
 		$oArgs->member_srl = $nMemberSrl;
-		if( $sOldestDatetime)
+		if($sOldestDatetime)
 			$oArgs->startdate = $sOldestDatetime;
 		$oRst = executeQueryArray('svcart.getCartItems', $oArgs);
-		if (!$oRst->toBool())
+		if(!$oRst->toBool())
 			return $oRst;
 
 		$aItemList = $oRst->data;

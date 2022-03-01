@@ -26,7 +26,7 @@ class SvorderExtraVar
 	 * @param int $module_srl Sequence of module
 	 * @return SvorderExtraVar
 	 */
-	function &getInstance($module_srl)
+	public static function &getInstance($module_srl)
 	{
 		return new SvorderExtraVar($module_srl);
 	}

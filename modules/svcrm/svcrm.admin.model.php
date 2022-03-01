@@ -65,6 +65,7 @@ class svcrmAdminModel extends svcrm
  **/
 	public function getCsLogByOrderSrl($nSvOrderSrl)
 	{
+        $oArgs = new stdClass();
 		$oArgs->order_srl = $nSvOrderSrl;
 		$oCsRst = executeQueryArray('svcrm.getCsLogBySvOrderSrl', $oArgs);
 		if(!$oCsRst->toBool())

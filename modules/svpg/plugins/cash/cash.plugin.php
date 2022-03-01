@@ -130,7 +130,6 @@ class cash extends svpgPlugin
 	function dispExtra1(&$svpgObj)
 	{
 		$svpgObj->setLayoutFile('default_layout');
-
 		$vars = Context::getRequestVars();
 		unset($vars->act);
 		Context::set('request_vars', $vars);
@@ -139,6 +138,7 @@ class cash extends svpgPlugin
 		$x = Context::get('select_account');
 		if($x === '0')
 		{
+            $obj = new stdClass();
 			$obj->bank_name = $this->plugin_info->bank_name;
 			$obj->account_number = $this->plugin_info->account_number;
 			$obj->account_holder = $this->plugin_info->account_holder;
@@ -149,12 +149,12 @@ class cash extends svpgPlugin
 			$bn = 'bank_name_x'.$x;
 			$an = 'account_number_x'.$x;
 			$ah = 'account_holder_x'.$x;
+            $obj = new stdClass();
 			$obj->bank_name = $this->plugin_info->{$bn};
 			$obj->account_number = $this->plugin_info->{$an};
 			$obj->account_holder = $this->plugin_info->{$ah};
 			Context::set('account_info', $obj);
 		}
-
 		$oTemplate = &TemplateHandler::getInstance();
 		$tpl_path = _XE_PATH_."modules/svpg/plugins/cash/tpl";
 		$tpl_file = 'start.html';

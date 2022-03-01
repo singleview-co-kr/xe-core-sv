@@ -79,7 +79,7 @@ class svorderAdminModel extends svorder
  * svorder.admin.view.php::dispSvorderAdminCartItemManagement()에서 호출
  * $nOrderSrl is for svorder::ORDER_STATE_CANCELLED and svorder::ORDER_STATE_CANCEL_REQUESTED only
  **/
-	public function getOrderStatusUpdateForm($sTgtStatus,$nOrderSrl,$sAcutalAct)
+	public function getOrderStatusUpdateForm($sTgtStatus,$nOrderSrl,$sAcutalAct=null)
 	{
 		switch( $sTgtStatus )
 		{
@@ -356,6 +356,8 @@ class svorderAdminModel extends svorder
 				foreach( $oSvorderRecs->data as $nIdx=>$oRec ) 
 				{
 					if( $oArgs->aStatusList[$oRec->order_status] )
+                        if(is_null($aOrderList[$nIdx]))
+                            $aOrderList[$nIdx] = new stdClass();
 						$aOrderList[$nIdx]->order_srl = $oRec->order_srl;
 				}
 			}

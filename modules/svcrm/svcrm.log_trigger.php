@@ -13,7 +13,7 @@ class svcrmEngageLogTrigger
  * 조건을 만족하면 방문자의 새글 댓글 작성 로그 등록
  * 빠른 작동과 완결을 위해서 log trigger는 최소 기능으로 구현
  */
-	public function svcrmEngageLogTrigger($oParam, $oConfig) //$sVisitorEngageLogDocSrls=null)
+	public function __construct($oParam, $oConfig) //$sVisitorEngageLogDocSrls=null)
 	{
 		$sIgnoreMemberSrls = $oConfig->ignore_member_srls;
 		if(strlen($sIgnoreMemberSrls) > 0)  // if exceptional member requested
@@ -83,7 +83,7 @@ class svcrmOrderCsLogTrigger extends svorder
  * $oCsArg->sClaimStatus = svorder::ORDER_STATE_ON_DEPOSIT;
  * $o = new svorderCsLogTrigger($oCsArg);
  */
-	public function svcrmOrderCsLogTrigger($oInArgs)
+	public function __construct($oInArgs)
 	{
 		if( !$oInArgs->nOrderSrl || is_null( $oInArgs->sOriginStatus ) || !$oInArgs->sTgtStatus )
 		{
@@ -101,7 +101,7 @@ class svcrmOrderCsLogTrigger extends svorder
 			$this->_g_oRst = new BaseObject( -1, 'invalid order status target:'.$oInArgs->sTgtStatus);
 			return;
 		}
-
+        $oArgs = new stdClass();
 		// add simple cs memo
 		if( $oInArgs->sOriginStatus == $oInArgs->sTgtStatus )
 			$oArgs->memo = strip_tags(trim($oInArgs->sQuickCsMemo)); 
@@ -200,7 +200,8 @@ class svcrmOrderCsLogTrigger extends svorder
 		//$oTmp->sAmntType = -1; // +는 판매자의 채권 -는 판매자의 채무
 		//$oTmp->sCsDueDate = -1; // 약속한 처리 완료일
 		//$oTmp->sMemo = -1; // CS 비정형 메모
-		switch( $sTgtStatus )
+		$oTmp = new stdClass();
+        switch( $sTgtStatus )
 		{
 			case svorder::ORDER_STATE_ON_DEPOSIT: // PG 완료 후 입금대기
 				$oTmp->sMemo = $oCsParam->sSystemMemo;

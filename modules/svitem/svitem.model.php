@@ -85,32 +85,32 @@ class svitemModel extends svitem
 /**
  * @brief extract item list 
  **/
-	public function extractItemListForListPage($oParam) //nModuleSrl, $nCatalogSrl )
+	public function extractItemListForListPage($oParam)
 	{
 		$nModuleSrl = (int)$oParam->nModuleSrl;
 		$nCatalogSrl = (int)$oParam->nCatalogSrl;
 		$sSearchTags = $oParam->sSearchTags;
-
 		$list_count = Context::get('disp_numb');
-		if (!$list_count && $this->module_info->list_count)
+		if(!$list_count && $this->module_info->list_count)
 			$list_count = $this->module_info->list_count;
 
 		$sort_index = Context::get('sort_index');
-		if( !$sort_index )
+		if(!$sort_index)
 			$sort_index = "list_order";
 
 		$order_type = Context::get('order_type');
-		if( !$order_type )
+		if(!$order_type)
 			$order_type = 'asc';
 
 		// item list
+        $args = new stdClass();
 		$args->module_srl = $nModuleSrl;
 		$args->display = 'Y';
 		$args->page = Context::get('page');
 		$args->list_count = $list_count;
 		$args->sort_index = $sort_index;
 		$args->order_type = $order_type;
-		if( is_null( $args->page ) )
+		if(is_null( $args->page))
 			$args->page = 1;
 
 		$oCatalog = $this->getCatalog($nModuleSrl, $nCatalogSrl);
@@ -125,12 +125,12 @@ class svitemModel extends svitem
 		}
 		else // 카탈로그 모드가 기본
 		{
-			if( $nCatalogSrl ) // 카테고리 입력되면, category_node_srl 검색
+			if($nCatalogSrl) // 카테고리 입력되면, category_node_srl 검색
 				$args->category_node_srls = $oCatalog->displaying_catalog_srls;
 
 			$sCatalogItemListCacheFile = FileHandler::readFile('./files/cache/svitem/catalog_itemlist.'.$nModuleSrl.'.'.$nCatalogSrl.'.'.$args->page.'.cache.php');
 			if($sCatalogItemListCacheFile)
-				$oRst = unserialize( $sCatalogItemListCacheFile );
+				$oRst = unserialize($sCatalogItemListCacheFile);
 			else
 				$oRst = $this->_compileCatalogItemListCache($nModuleSrl, $nCatalogSrl, $args);
 		}
@@ -138,18 +138,19 @@ class svitemModel extends svitem
 		require_once(_XE_PATH_.'modules/svitem/svitem.item_consumer.php');
 		$aItemOnCatalog = [];
 		$oSvpromotionModel = &getModel('svpromotion');
-		foreach( $oRst->data as $nIdx => $oVal )
+		foreach($oRst->data as $nIdx => $oVal)
 		{
 			$oItemConsumer = new svitemItemConsumer();
+            $oParams = new stdClass();
 			$oParams->mode = 'import';
 			$oParams->oRawData = $oVal;
 			$oTmpRst = $oItemConsumer->loadHeader($oParams);
-			if (!$oTmpRst->toBool())
+			if(!$oTmpRst->toBool())
 				return new BaseObject(-1,'msg_invalid_item_request');
 			unset($oTmpRst);
 			
 			$oApplyRst = $oItemConsumer->applyPromotionForCatalog($oSvpromotionModel);
-			if (!$oApplyRst->toBool())
+			if(!$oApplyRst->toBool())
 				return $oApplyRst;
 			unset($oApplyRst);
 
@@ -206,7 +207,7 @@ class svitemModel extends svitem
 		$item_info = $this->getItemInfoByItemSrl($nItemSrl);
 		$oExtraVars = unserialize( $item_info->extmall_log_conf );
 		$this->add('sExtmallLoggerToggle', $oExtraVars->toggle );
-
+		$args = new stdClass();
 		$args->item_srl = $nItemSrl;
 		$args->is_active = 'Y';
 		$output = executeQueryArray('svitem.getExtmallListByItemSrl', $args);
@@ -260,13 +261,14 @@ class svitemModel extends svitem
  */
 	public function getItemInfoNewFull($oInArg)
 	{
-		if( $oInArg->nDocumentSrl ) // svitem.view.php::dispSvitemItemDetail()에서 호출
+        $oParams = new stdClass();
+		if($oInArg->nDocumentSrl) // svitem.view.php::dispSvitemItemDetail()에서 호출
 			$oParams->nDocumentSrl = $oInArg->nDocumentSrl;
-		elseif( $oInArg->nItemSrl )
+		elseif($oInArg->nItemSrl)
 			$oParams->nItemSrl = $oInArg->nItemSrl;
-		elseif( $oInArg->sItemCode )
+		elseif($oInArg->sItemCode)
 			$oParams->sItemCode = $oInArg->sItemCode;
-		elseif( $oInArg->sItemBarcode )
+		elseif($oInArg->sItemBarcode)
 			$oParams->sItemBarcode = $oInArg->sItemBarcode;
 		else
 			return new BaseObject(-1,'msg_invalid_item_request');
@@ -276,25 +278,21 @@ class svitemModel extends svitem
 		$oItemConsumer = new svitemItemConsumer();
 		$oParams->mode = 'retrieve';
 		$oParams->oSvitemModuleConfig = $oSvitemModuleConfig;
-		
 		$oTmpRst = $oItemConsumer->loadHeader($oParams);
 		if(!$oTmpRst->toBool())
 			return new BaseObject(-1,'msg_invalid_item_request');
 		unset($oTmpRst);
-		
-		if( $oInArg->nDocumentSrl ) // svitem.view.php::dispSvitemItemDetail()에서 호출
+		if($oInArg->nDocumentSrl) // svitem.view.php::dispSvitemItemDetail()에서 호출
 		{
 			$oApplyRst = $oItemConsumer->applyPromotionForDetail();
 			if(!$oApplyRst->toBool())
 				return $oApplyRst;
 			unset($oApplyRst);
 		}
-
 		$oDetailRst = $oItemConsumer->loadDetail();
 		if(!$oDetailRst->toBool())
 			return $oDetailRst;
 		unset($oDetailRst);
-
 		return $oItemConsumer;
 	}
 /**
@@ -322,6 +320,7 @@ class svitemModel extends svitem
  **/
 	public function getItemByCode($sItemCode)
 	{
+        $oArgs = new stdClass();
 		$oArgs->item_code = $sItemCode;
 		$oItem = $this->_getItemInfo($oArgs);
 		return $oItem;
@@ -333,6 +332,7 @@ class svitemModel extends svitem
  **/
 	public function getItemInfoByItemSrl($nItemItemSrl) 
 	{
+		$oArgs = new stdClass();
 		$oArgs->item_srl = $nItemItemSrl;
 		$oItem = $this->_getItemInfo($oArgs);
 		return $oItem;
@@ -346,28 +346,29 @@ class svitemModel extends svitem
 	public function getItemStock($nItemSrl)
 	{
 		$config = $this->getModuleConfig();
+        $oArgs = new stdClass();
 		$oArgs->item_srl = $nItemSrl;
 		$oItem = $this->_getItemInfo($oArgs);
-		if( is_null($oItem ) )
+		if(is_null($oItem))
 			return 0;
 
 		$nDefaultSafeStock = (int)$config->default_safe_stock;
 		$nSafeStockByItem = (int)$oItem->safe_stock;
 		$nSafeStock = $nDefaultSafeStock;
 
-		if( $nSafeStockByItem > 0 )
+		if($nSafeStockByItem > 0)
 			$nSafeStock = $nSafeStockByItem;
 
-		if( $config->external_server_type == 'ecaso' )
+		if($config->external_server_type == 'ecaso')
 		{
 			require_once(_XE_PATH_.'modules/svitem/ext_class/ecaso.class.php');
-			$oExtServer = new ecaso( $oItem->item_code );
+			$oExtServer = new ecaso($oItem->item_code);
 			$nCurrentStock = $oExtServer->getStock();
 		}
 		else
 			$nCurrentStock = (int)$oItem->current_stock;
 
-		if( $nSafeStock >= $nCurrentStock )
+		if($nSafeStock >= $nCurrentStock)
 			return 0;
 		else 
 			return $nCurrentStock;
@@ -955,6 +956,7 @@ class svitemModel extends svitem
 	{
 		if( !$nModuleSrl )
 			return false;
+        $args = new stdClass();
 		$args->module_srl = $nModuleSrl;
 		$output = executeQueryArray('svitem.getCatalogNodeList', $args);
 		if(count($output->data)==0)

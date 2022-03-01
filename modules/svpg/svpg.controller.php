@@ -161,6 +161,7 @@ class svpgController extends svpg
 		}
 
 		// save success transaction info begin.
+        $args = new stdClass();
 		$args->result_code = $pp_ret->get('result_code');
 		$args->result_message = $pp_ret->get('result_message');
 		$args->pg_tid = $pp_ret->get('pg_tid');

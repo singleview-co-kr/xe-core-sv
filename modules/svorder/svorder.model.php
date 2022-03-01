@@ -185,14 +185,13 @@ class svorderModel extends svorder
  * this->getSvorderConfirmInvoice()에서 호출
  * svcart.view.php::dispSvcartNpayBuy()에서 호출
  **/
-	public function confirmOffer( $oParam, $sMode, $bApiMode )
+	public function confirmOffer($oParam, $sMode, $bApiMode)
 	{
-		if( $sMode != 'new' && $sMode != 'replace' )
-			return new BaseObject(-1, 'msg_invalid_offer_mode' );
+		if($sMode != 'new' && $sMode != 'replace')
+			return new BaseObject(-1, 'msg_invalid_offer_mode');
 
 		$oSvpromotionModel = &getModel('svpromotion');
-
-		if( $sMode == 'new' ) // 신규 주문 평가
+		if($sMode == 'new') // 신규 주문 평가
 		{
 			$nClaimingReserves = $oParam->nClaimingReserves;
 			$sCouponSerial = $oParam->sCouponSerial;
@@ -200,70 +199,71 @@ class svorderModel extends svorder
 			$oLoggedInfo = $oParam->oLoggedInfo;
 			$oCart = $oParam->oCart;
 			if(!count($oCart->item_list))
-				return new BaseObject(-1, Context::getLang('msg_no_items') );
+				return new BaseObject(-1, Context::getLang('msg_no_items'));
 
 			// validate cart stock authority begin
 			$nMaxQty = 123456789; // set maximum sentinel
 			$oSvcartModel = &getModel('svcart');
 			$oCartConfig = $oSvcartModel->getModuleConfig();
-			if( $oCartConfig->group_policy_toggle == 'on' )
+			if($oCartConfig->group_policy_toggle == 'on')
 			{
-				if( !$oLoggedInfo )
+				if(!$oLoggedInfo)
 				{
 					$oLoggedInfo->group_list[0] = 'guest';
 					$oLoggedInfo->member_srl = 0;
 				}
-				foreach( $oLoggedInfo->group_list as $key => $val )
+				foreach($oLoggedInfo->group_list as $key => $val)
 				{
-					if( isset( $oCartConfig->group_cart_policy[$key] ) )
+					if(isset($oCartConfig->group_cart_policy[$key]))
 					{
 						$nTempMaxQty = $oCartConfig->group_cart_policy[$key];
-						if( $nMaxQty > $nTempMaxQty )
+						if($nMaxQty > $nTempMaxQty)
 							$nMaxQty = $nTempMaxQty;
 					}
 				}
 				$nExistingCartQty = 0;
-				foreach( $oCart->item_list as $key => $val )
+				foreach($oCart->item_list as $key => $val)
 					$nExistingCartQty += $val->quantity;
 			}
-			if( $nExistingCartQty > $nMaxQty )
+			if($nExistingCartQty > $nMaxQty)
 				return new BaseObject(-1, 'msg_exceed_qty_limit');
 			// validate cart stock authority end
 
 			// stock quantity check begin if order from localhost
-			if( !$bApiMode )
+			if(!$bApiMode)
 			{
 				$oSvitemModel = &getModel('svitem');
 				$aStockInfo = array();
-				foreach( $oCart->item_list as $key=>$val )
+				foreach($oCart->item_list as $key=>$val)
 				{
 					$item_info = $oSvitemModel->getItemInfoByItemSrl($val->item_srl);
 					$nCurItemStock = $oSvitemModel->getItemStock($val->item_srl);
 					$aStockInfo[$val->item_srl] += $val->quantity;
-					if( $nCurItemStock == 0 || $nCurItemStock < $aStockInfo[$val->item_srl] )
+					if($nCurItemStock == 0 || $nCurItemStock < $aStockInfo[$val->item_srl])
 						return new BaseObject(-1, sprintf(Context::getLang('msg_not_enough_stock'), $item_info->item_name));
 				}
 				// stock quantity check end
 			}
 		}
-		elseif( $sMode == 'replace' ) // 기존 주문 부분 취소
+		elseif($sMode == 'replace') // 기존 주문 부분 취소
 		{
 			$nClaimingReserves = $oParam->nClaimingReserves;
 			$sCouponSerial = $oParam->sCouponSerial;
 			$nMemberSrl = $oParam->nMemberSrl;
-			$oCart = $oSvpromotionModel->getItemPriceCart($oParam->oOrderInfo->item_list );
+			$oCart = $oSvpromotionModel->getItemPriceCart($oParam->oOrderInfo->item_list);
 			// coupon check begin
 			$oTempArgs->recheck_mode = true;
 		}
 		// coupon check begin
+        $oTempArgs = new stdClass();
 		$oTempArgs->cart = $oCart;
 		$oTempArgs->coupon_number = $sCouponSerial;	
-		$oCheckoutPromotion = $oSvpromotionModel->getCheckoutPrice( $oTempArgs );
-		if( !$oCheckoutPromotion->toBool() )
+		$oCheckoutPromotion = $oSvpromotionModel->getCheckoutPrice($oTempArgs);
+		if(!$oCheckoutPromotion->toBool())
 			return $oCheckoutPromotion;
 
 		$nTotalDiscountAmnt = (int)$oCheckoutPromotion->get('total_discount_amount');
-		if( $nTotalDiscountAmnt )
+		if($nTotalDiscountAmnt)
 		{
 			$oCart->total_discount_amount = $nTotalDiscountAmnt;
 			$oCart->total_price = $oCart->sum_price - $oCart->total_discount_amount;
@@ -277,16 +277,16 @@ class svorderModel extends svorder
 		// will consume reserves info check begin
 		$oSvpromotionConfig = $oSvpromotionModel->getModuleConfig();
 		$sReservesMsg = '정상';
-		if( $nClaimingReserves )
+		if($nClaimingReserves)
 		{
-			$nMinimumGrossPaymentAfterReserves = round( $oCart->total_price * (1-($oSvpromotionConfig->discount_rate_limit/100)) );
+			$nMinimumGrossPaymentAfterReserves = round($oCart->total_price * (1-($oSvpromotionConfig->discount_rate_limit/100)));
 			$nTempGrossPayment = $oCart->total_price;
-			$oReservesRst = $oSvpromotionModel->isClaimingReservesAcceptable( $nClaimingReserves );
+			$oReservesRst = $oSvpromotionModel->isClaimingReservesAcceptable( $nClaimingReserves);
 			if(!$oReservesRst->toBool())
 				return $oReservesRst;
 			else
 			{
-				if( $nTempGrossPayment < $nClaimingReserves )
+				if($nTempGrossPayment < $nClaimingReserves)
 				{
 					$nClaimingReserves = $oCart->total_price;
 					$nTempGrossPayment = 0;
@@ -294,7 +294,7 @@ class svorderModel extends svorder
 				else
 					$nTempGrossPayment -= $nClaimingReserves;
 
-				if( $nTempGrossPayment < $nMinimumGrossPaymentAfterReserves )
+				if($nTempGrossPayment < $nMinimumGrossPaymentAfterReserves)
 				{
 					$nClaimingReserves = $oCart->total_price - $nMinimumGrossPaymentAfterReserves;
 					$oCart->total_price = $nMinimumGrossPaymentAfterReserves;
@@ -309,7 +309,7 @@ class svorderModel extends svorder
 
 		// tobe reserved reserves info check begin
 		$aReservesInfo = array();
-		if( $oSvpromotionConfig->allow_reserves_consumption == 'Y' )
+		if($oSvpromotionConfig->allow_reserves_consumption == 'Y')
 		{
 			$aReservesInfo['use_reserves'] = $oSvpromotionConfig->allow_reserves_consumption;
 			$nActualPayment = $oCart->sum_price - $oCart->total_discount_amount - $nClaimingReserves;
@@ -327,13 +327,13 @@ class svorderModel extends svorder
 		//if( $sMode == 'new' )
 		{
 			$oDeliveryFeeRst = $this->_getDeliveryFee($oCart->total_price);
-			if( $oDeliveryFeeRst->delivery_fee_pay_mode == 'free' || $oDeliveryFeeRst->delivery_fee_pay_mode == 'pre' )
+			if( $oDeliveryFeeRst->delivery_fee_pay_mode == 'free' || $oDeliveryFeeRst->delivery_fee_pay_mode == 'pre')
 			{
 				$oCart->delivfee_inadvance = 'Y';
 				$oCart->total_price += $oDeliveryFeeRst->delivery_fee;
 				$oCart->nDeliveryFee = $oDeliveryFeeRst->delivery_fee;
 			}
-			else if( $oDeliveryFeeRst->delivery_fee_pay_mode == 'post' )
+			else if($oDeliveryFeeRst->delivery_fee_pay_mode == 'post')
 			{
 				$oCart->delivfee_inadvance = 'N';
 				$oCart->nDeliveryFee = 0;
@@ -341,11 +341,11 @@ class svorderModel extends svorder
 		}
 		// get delivery fee end
 
-		if( $sMode == 'replace' ) // 기존 주문 부분 취소 시 추가 비용
+		if($sMode == 'replace') // 기존 주문 부분 취소 시 추가 비용
 			$oCart->total_price += $oParam->nEtcFeeDemandAmount;
 
 		$nRecommendedQtyRange = (int)$oCheckoutPromotion->get('recommeded_qty_range');
-		if( $nRecommendedQtyRange )
+		if($nRecommendedQtyRange)
 		{
 			$fBulkDiscountRecommendedRate = (float)$oCheckoutPromotion->get('recommeded_discount_rate');
 			$aBulkDiscountRecommendedItemList = $oCheckoutPromotion->get('recommeded_item_list');
@@ -505,13 +505,14 @@ class svorderModel extends svorder
  **/
 	public function getAddressListByMemberSrl($nMemberSrl) 
 	{
-		if( !$nMemberSrl )
+		if(!$nMemberSrl)
 			return new BaseObject();
+		$oArgs = new stdClass();
 		$oArgs->member_srl = $nMemberSrl;
 		$oArgs->addr_type = $this->_g_aAddrType['postcodify'];
 		$oRst = executeQueryArray('svorder.getAddressList', $oArgs);
-		foreach( $oRst->data as $nIdx => $oRec )
-			$oRec->address = unserialize( $oRec->address );
+		foreach($oRst->data as $nIdx => $oRec)
+			$oRec->address = unserialize($oRec->address);
 		return $oRst;
 	}
 /**

@@ -17,11 +17,14 @@ class svorderCreateOrder extends svorder
  * $oNpayOrderApi is required if order_referral == svorder::ORDER_REFERRAL_NPAY
  * bApiMode is required when anonymous machine API does
  **/
-	public function svorderCreateOrder($oParams=null) 
+	public function __construct($oParams=null) 
 	{
-		if( is_null( $oParams->bApiMode ) )
+		if(is_null($oParams->bApiMode))
+        {
+            $oParams = new stdClass();
 			$oParams->bApiMode = false;
-		if( !$oParams->bApiMode )
+        }
+		if(!$oParams->bApiMode)
 			$this->_g_oPuchaserLoggedInfo = Context::get('logged_info');
 	}
 /**
@@ -30,33 +33,35 @@ class svorderCreateOrder extends svorder
  **/
 	public function setCartOffered($aItemList)
 	{
-		foreach( $aItemList as $nIdx => $oVal )
+		foreach($aItemList as $nIdx => $oVal)
 		{
 			$oRst = $this->_getSingleCartOffered($oVal->cart_srl);
-			if( !$oRst->toBool() )
+			if(!$oRst->toBool())
 				return $oRst;
+			$oArg = new stdClass();
 			$oArg->cart_srl = $oVal->cart_srl;
 			$oArg->item_srl = $oVal->item_srl;
 			$oArg->item_price_offered = $oVal->item_price;
+			$oPromoInfo = new stdClass();
 			$oPromoInfo->oItemDiscountPromotion = $oVal->oItemDiscountPromotion;
 			$oPromoInfo->oGiveawayPromotion = $oVal->oGiveawayPromotion;
 			$oArg->promotion_info = serialize($oPromoInfo);
-			if( count( $oRst->data ) == 0 )
+			if(count((array)$oRst->data) == 0)
 			{
-				unset( $oRst );
-				$oRst = executeQuery( 'svorder.insertCartItemOffered', $oArg );
-				if( !$oRst->toBool() )
+				unset($oRst);
+				$oRst = executeQuery('svorder.insertCartItemOffered', $oArg);
+				if(!$oRst->toBool())
 					return $oRst;
 			}
 			else
 			{
-				unset( $oRst );
-				$oRst = executeQuery( 'svorder.updateCartItemOffered', $oArg );
-				if( !$oRst->toBool() )
+				unset($oRst);
+				$oRst = executeQuery('svorder.updateCartItemOffered', $oArg);
+				if(!$oRst->toBool())
 					return $oRst;
 			}
-			unset( $oRst );
-			unset( $oArg );
+			unset($oRst);
+			unset($oArg);
 		}
 		return new BaseObject();
 	}
@@ -68,45 +73,45 @@ class svorderCreateOrder extends svorder
 		$this->_setSkeletonSvOrderHeader();
 		$this->_matchSvOrderInfo($oNewOrderArgs);
 		$oTmp = $this->_validatePurchaserReceipientInfo();
-		if (!$oTmp->toBool()) 
+		if(!$oTmp->toBool()) 
 			return $oTmp;
 		unset($oTmp);
-		switch( $this->_g_oOrderHeader->order_referral )
+		switch($this->_g_oOrderHeader->order_referral)
 		{ 
 			case svorder::ORDER_REFERRAL_LOCALHOST: 
 				// 품목 정보를 svcart DB에서 가져옴
 				$oSvcartModel = &getModel('svcart');
-				$oParam->oCart = $oSvcartModel->getCartInfo( $this->_g_oOrderHeader->cartnos );
-
+                $oParam = new stdClass();
+				$oParam->oCart = $oSvcartModel->getCartInfo($this->_g_oOrderHeader->cartnos);
 				// 장바구니 화면에서 [주문하기] 클릭한 시점과 주문서 화면에서 [결제하기] 클릭한 시점의 시차 관리 시작
-				foreach( $oParam->oCart->item_list as $nIdx => $oCartVal )
+                foreach($oParam->oCart->item_list as $nIdx => $oCartVal)
 				{
 					$oRst = $this->_getSingleCartOffered($oCartVal->cart_srl);
-					if( !$oRst->toBool() )
+					if(!$oRst->toBool())
 						return $oRst;
-					if( $oCartVal->item_srl != $oRst->data->item_srl )
+					if($oCartVal->item_srl != $oRst->data->item_srl)
 						return new BaseObject(-1, 'msg_invalid_cart_item');
-					if( $oCartVal->price != $oRst->data->item_price_offered )
+					if($oCartVal->price != $oRst->data->item_price_offered)
 					{
 						$sErrMsg = sprintf(Context::getLang('msg_price_changed'), $oCartVal->item_name);
 						return new BaseObject(-1, $sErrMsg);
 					}
-					if( $oRst->data->promotion_info->oGiveawayPromotion[0] )
+					if($oRst->data->promotion_info->oGiveawayPromotion[0])
 					{
-						if( $oRst->data->promotion_info->oGiveawayPromotion[0]->type != $oCartVal->oGiveawayPromotion[0]->type ||
+						if($oRst->data->promotion_info->oGiveawayPromotion[0]->type != $oCartVal->oGiveawayPromotion[0]->type ||
 							$oRst->data->promotion_info->oGiveawayPromotion[0]->giveaway_item_srl != $oCartVal->oGiveawayPromotion[0]->giveaway_item_srl ||
-							$oRst->data->promotion_info->oGiveawayPromotion[0]->giveaway_item_qty != $oCartVal->oGiveawayPromotion[0]->giveaway_item_qty )
+							$oRst->data->promotion_info->oGiveawayPromotion[0]->giveaway_item_qty != $oCartVal->oGiveawayPromotion[0]->giveaway_item_qty)
 						{
 							$sErrMsg = sprintf(Context::getLang('msg_promotion_changed'), $oCartVal->item_name);
 							return new BaseObject(-1, $sErrMsg);
 						}
 					}
-					if( $oRst->data->promotion_info->oItemDiscountPromotion[0] )
+					if($oRst->data->promotion_info->oItemDiscountPromotion[0])
 					{
-						if( $oRst->data->promotion_info->oItemDiscountPromotion[0]->type != $oCartVal->oItemDiscountPromotion[0]->type ||
+						if($oRst->data->promotion_info->oItemDiscountPromotion[0]->type != $oCartVal->oItemDiscountPromotion[0]->type ||
 							$oRst->data->promotion_info->oItemDiscountPromotion[0]->unit_disc_amnt != $oCartVal->oItemDiscountPromotion[0]->unit_disc_amnt ||
 							$oRst->data->promotion_info->oItemDiscountPromotion[0]->allow_duplication != $oCartVal->oItemDiscountPromotion[0]->allow_duplication || 
-							$oRst->data->promotion_info->oItemDiscountPromotion[0]->is_applied != $oCartVal->oItemDiscountPromotion[0]->is_applied )
+							$oRst->data->promotion_info->oItemDiscountPromotion[0]->is_applied != $oCartVal->oItemDiscountPromotion[0]->is_applied)
 						{
 							$sErrMsg = sprintf(Context::getLang('msg_promotion_changed'), $oCartVal->item_name);
 							return new BaseObject(-1, $sErrMsg);
@@ -117,43 +122,43 @@ class svorderCreateOrder extends svorder
 				// 장바구니 화면에서 [주문하기] 클릭한 시점과 주문서 화면에서 [결제하기] 클릭한 시점의 시차 관리 끝
 				// get reserves claimed
 				$oTmp = $this->_consumeReserves($this->_g_oOrderHeader->will_claim_reserves);
-				if( !$oTmp->toBool() )
+				if(!$oTmp->toBool())
 					return $oTmp;
 				$this->_g_oOrderHeader->reserves_consume_srl = $oTmp->get('nReservesComsumeSrl');
 				unset($oTmp);
 				
 				// set utm_params and UA
 				$oOrderRst = $this->_setMyhostNewOrderInfo();
-				if( !$oOrderRst->toBool() )
+				if(!$oOrderRst->toBool())
 					return $oOrderRst;
 				unset($oOrderRst);
 
 				$nExpirationTimestamp = time() + 86400 * 30; // 30 days
-				setcookie(COOKIE_PURCHASER_NAME, $this->_g_oOrderHeader->purchaser_name, $nExpirationTimestamp);
-				setcookie(COOKIE_PURCHASER_EMAIL, $this->_g_oOrderHeader->purchaser_email, $nExpirationTimestamp);
+				setcookie('COOKIE_PURCHASER_NAME', $this->_g_oOrderHeader->purchaser_name, $nExpirationTimestamp);
+				setcookie('COOKIE_PURCHASER_EMAIL', $this->_g_oOrderHeader->purchaser_email, $nExpirationTimestamp);
 				$bApiMode = false;
 				break;
 			case svorder::ORDER_REFERRAL_NPAY: 
 				$oSvpromotionModel = &getModel('svpromotion');
 				$oSvcartController = &getController('svcart');
 				$oSvitemModel = &getModel('svitem');
-				foreach( $this->_g_oOrderHeader->api_cart->item_list as $nIdx => $oCartVal )
+				foreach($this->_g_oOrderHeader->api_cart->item_list as $nIdx => $oCartVal)
 				{
 					$oCartVal->cart_srl = $oSvcartController->getCartSrl();
 					$oItemInfo = $oSvitemModel->getItemInfoByItemSrl($oCartVal->item_srl);
 					$oCartVal->price = $oItemInfo->price;
-					if( $oCartVal->DeliveryCompany && $oCartVal->SendDate && $oCartVal->TrackingNumber ) // 이미 발송된 주문을 수집
+					if($oCartVal->DeliveryCompany && $oCartVal->SendDate && $oCartVal->TrackingNumber) // 이미 발송된 주문을 수집
 					{
 						$oCartVal->ship->express_id = $oCartVal->DeliveryCompany;
 						$oCartVal->ship->regdate = $oCartVal->SendDate;
 						$oCartVal->ship->invoice_no = $oCartVal->TrackingNumber;
-						unset( $oCartVal->DeliveryCompany);
-						unset( $oCartVal->SendDate);
-						unset( $oCartVal->TrackingNumber);
+						unset($oCartVal->DeliveryCompany);
+						unset($oCartVal->SendDate);
+						unset($oCartVal->TrackingNumber);
 					}
 				}
 				// 품목별 기본 할인 정책을 가져옴
-				$this->_g_oOrderHeader->api_cart = $oSvpromotionModel->getItemPriceCart($this->_g_oOrderHeader->api_cart->item_list );
+				$this->_g_oOrderHeader->api_cart = $oSvpromotionModel->getItemPriceCart($this->_g_oOrderHeader->api_cart->item_list);
 				// 품목 정보를 메모리에서 가져옴
 				$oParam->oCart = $this->_g_oOrderHeader->api_cart;
 				$bApiMode = true;
@@ -165,7 +170,7 @@ class svorderCreateOrder extends svorder
 		$oParam->nClaimingReserves = $this->_g_oOrderHeader->will_claim_reserves;
 		$oParam->sCouponSerial = $this->_g_oOrderHeader->coupon_number;
 		$oSvorderModel = &getModel('svorder');
-		$oTmp = $oSvorderModel->confirmOffer( $oParam, 'new', $bApiMode );
+		$oTmp = $oSvorderModel->confirmOffer($oParam, 'new', $bApiMode);
 		if(!$oTmp->toBool())
 			return $oTmp;
 		
@@ -176,16 +181,16 @@ class svorderCreateOrder extends svorder
 		$this->_g_oOrderHeader->sum_price = $oCart->sum_price;
 		$this->_g_oOrderHeader->total_discount_amount = $oCart->total_discount_amount;
 
-		if( $oCart->promotion_info->promotion )
+		if($oCart->promotion_info->promotion)
 		{
 			$oSvpromotionModel = &getModel('svpromotion');
-			$oOrderPromoInfo = $oSvpromotionModel->buildOrderLevelPromotionInfo($oCart->promotion_info );
+			$oOrderPromoInfo = $oSvpromotionModel->buildOrderLevelPromotionInfo($oCart->promotion_info);
 			$this->_g_oOrderHeader->oCheckoutPromotionInfo = $oOrderPromoInfo;
 			$this->_g_oOrderHeader->is_promoted = 'Y';
-			unset( $oOrderPromoInfo );
+			unset($oOrderPromoInfo);
 		}
 
-		if( $this->_g_oOrderHeader->order_referral == svorder::ORDER_REFERRAL_NPAY )
+		if($this->_g_oOrderHeader->order_referral == svorder::ORDER_REFERRAL_NPAY)
 			$this->_g_oOrderHeader->offered_price = $oCart->total_price - $oCart->total_discount_amount;
 		else
 			$this->_g_oOrderHeader->offered_price = $oCart->total_discounted_price;
@@ -223,12 +228,12 @@ class svorderCreateOrder extends svorder
 
 		// write into DB
 		$oCommitRst = $this->_commitNew();
-		if( !$oCommitRst->toBool() )
+		if(!$oCommitRst->toBool())
 			return $oCommitRst;
 		unset($oCommitRst);
 		
 		// localhost 주문
-		if( $this->_g_oOrderHeader->order_referral == svorder::ORDER_REFERRAL_LOCALHOST )
+		if($this->_g_oOrderHeader->order_referral == svorder::ORDER_REFERRAL_LOCALHOST)
 		{
 //			// 장바구니 화면에서 [주문하기] 클릭한 시점과 주문서 화면에서 [결제하기] 클릭한 시점의 시차 관리 기록 삭제
 //			foreach( $oParam->oCart->item_list as $nIdx => $oCartVal )
@@ -238,7 +243,7 @@ class svorderCreateOrder extends svorder
 //					return $oRst;
 //				unset( $oRst );
 //			}
-			if( $this->_g_oOrderHeader->member_srl == 0 ) // guest buy: set passwd to update order status
+			if($this->_g_oOrderHeader->member_srl == 0) // guest buy: set passwd to update order status
 			{
 				$nExpirationTimestamp = time() + 600; // 10 mins
 				setcookie('svorder_guest_buy_pw', $this->_g_oOrderHeader->non_password, $nExpirationTimestamp);
@@ -250,12 +255,12 @@ class svorderCreateOrder extends svorder
 		// $tbis->_matchSvOrderInfo($oNewOrderArgs) 와 중복처리
 		// order_title이 svpg에서 넘어오는 거 같은데 $oSvorderModel->confirmOffer( $oParam );에서 다시 실행함
 		//주문 생성하고 svpg.controller.php::procSvpgReviewOrder()로 반환하는 값
-		$oFinalRst->add( 'nOrderSrl', $this->_g_oOrderHeader->order_srl );
-		$oFinalRst->add( 'sPurchaserCellphone', $this->_g_oOrderHeader->purchaser_cellphone );
+		$oFinalRst->add('nOrderSrl', $this->_g_oOrderHeader->order_srl);
+		$oFinalRst->add('sPurchaserCellphone', $this->_g_oOrderHeader->purchaser_cellphone);
 		// to set final paying amnt for PG
-		$oFinalRst->add( 'nTotalPriceForPg', $this->_g_oOrderHeader->total_price );
+		$oFinalRst->add('nTotalPriceForPg', $this->_g_oOrderHeader->total_price);
 		// to set order title for npay PG transaction
-		$oFinalRst->add( 'sOrderTitle', $this->_g_oOrderHeader->title);
+		$oFinalRst->add('sOrderTitle', $this->_g_oOrderHeader->title);
 		return $oFinalRst;
 	}
 /**
@@ -263,7 +268,7 @@ class svorderCreateOrder extends svorder
 */
 	public function dumpInfo()
 	{
-		foreach( $this->_g_oOrderHeader as $sTitle=>$sVal)
+		foreach($this->_g_oOrderHeader as $sTitle=>$sVal)
 		{
 			if(is_object($sVal))
 			{
@@ -275,10 +280,10 @@ class svorderCreateOrder extends svorder
 				echo $sTitle.'=>'.$sVal.'<BR>';
 		}
 		echo '<BR>';
-		foreach( $this->_g_aCartItem as $nSvCartSrl=>$oVal)
+		foreach($this->_g_aCartItem as $nSvCartSrl=>$oVal)
 		{
 			echo $nSvCartSrl.' product order detail<BR>';
-			foreach( $oVal as $sProdTitle=>$sProdVal)
+			foreach($oVal as $sProdTitle=>$sProdVal)
 				echo $sProdTitle.'=>'.$sProdVal.'<BR>';
 			echo '<BR>';
 		}
@@ -288,6 +293,8 @@ class svorderCreateOrder extends svorder
  **/
 	private function _setSkeletonSvOrderHeader()
 	{
+        if(is_null($this->_g_oOrderHeader))
+            $this->_g_oOrderHeader = new stdClass();
 		$this->_g_oOrderHeader->order_srl = -1;
 		$this->_g_oOrderHeader->non_password = -1;
 		$this->_g_oOrderHeader->order_referral = -1;
@@ -542,17 +549,19 @@ class svorderCreateOrder extends svorder
 	{
 		if($this->_g_oOrderHeader->registered_addr != -1 && $this->_g_oOrderHeader->order_referral == svorder::ORDER_REFERRAL_LOCALHOST )
 		{ // 자사몰 주문이고 기존 주소를 재이용한다면
-			$oArg->address_srl = $this->_g_oOrderHeader->registered_addr;
+			$oArg = new stdClass();
+            $oArg->address_srl = $this->_g_oOrderHeader->registered_addr;
 			$oArg->member_srl = $this->_g_oOrderHeader->member_srl;
-			$oRst = executeQuery( 'svorder.getAddressByAddrSrl', $oArg );
-			if( !$oRst->toBool() )
+			$oRst = executeQuery('svorder.getAddressByAddrSrl', $oArg);
+			if(!$oRst->toBool())
 				return $oRst;
-			unset( $oArg );
-			unset( $oRst );
+			unset($oArg);
+			unset($oRst);
 			$this->_g_oOrderHeader->addr_srl = $this->_g_oOrderHeader->registered_addr;
 		}
 		else
 		{
+            $oTgtParams = new stdClass();
 			$oTgtParams->nOrderReferral = $this->_g_oOrderHeader->order_referral;
 			$oTgtParams->sAddrType = $this->_g_oOrderHeader->addr_type;
 			$oTgtParams->recipient_address = $this->_g_oOrderHeader->recipient_address;
@@ -560,9 +569,10 @@ class svorderCreateOrder extends svorder
 			$oTgtParams->nMemberSrl = $this->_g_oOrderHeader->member_srl;
 			$oSvorderController = &getController('svorder');
 			$oRst = $oSvorderController->insertRecipientAddress($oTgtParams);
-			if( !$oRst->toBool() )
+			unset($oSvorderController);
+            if(!$oRst->toBool())
 				return $oRst;
-			$this->_g_oOrderHeader->addr_srl = $oRst->get( 'nAddrSrl' );
+			$this->_g_oOrderHeader->addr_srl = $oRst->get('nAddrSrl');
 		}
 		return new BaseObject();
 	}
@@ -651,16 +661,22 @@ class svorderCreateOrder extends svorder
 	private function _getSingleCartOffered($nCartSrl)
 	{
 		if(!$nCartSrl)
-			return new BaseObject( -1, 'msg_invalid_cart_srl');
+			return new BaseObject(-1, 'msg_invalid_cart_srl');
+        $oArg = new stdClass();
 		$oArg->cart_srl = $nCartSrl;
-		$oRst = executeQuery( 'svorder.getCartItemOfferedByCartSrl', $oArg );
-		if( !$oRst->toBool() )
+		$oRst = executeQuery('svorder.getCartItemOfferedByCartSrl', $oArg);
+		if(!$oRst->toBool())
 			return $oRst;
-		unset( $oArg );
-		$oPromotinoInfo = unserialize($oRst->data->promotion_info);
-		unset( $oRst->data->promotion_info );
-		$oRst->data->promotion_info = $oPromotinoInfo;
-		return $oRst;		
+        unset($oArg);
+        if(is_object($oRst->data))
+        {
+            $oPromotinoInfo = unserialize($oRst->data->promotion_info);
+            unset($oRst->data->promotion_info);
+		    $oRst->data->promotion_info = $oPromotinoInfo;
+            return $oRst;	
+        }
+        else  // means no record  executeQuery() returns ambiguous type
+            return $oRst;
 	}
 /**
  * @brief 신규 장바구니 배열 생성
@@ -799,59 +815,59 @@ exit;
 	private function _commitNew()
 	{
 		$oSvpromotionController = &getController('svpromotion');
-		foreach( $this->_g_aCartItem as $nSvCartSrl=>$oCartVal )
+        $oCartitemArg = new stdClass();
+		foreach($this->_g_aCartItem as $nSvCartSrl=>$oCartVal)
 		{
-			foreach( $oCartVal as $sTitle => $sVal )
+			foreach($oCartVal as $sTitle => $sVal)
 			{
-				if( $sVal == -1 )
+				if($sVal == -1)
 					continue;
-				if( is_object( $sVal ) )
+				if(is_object($sVal))
 				{
 					$sTmpTitle = $sTitle.'_srz';
-					$oCartitemArg->$sTmpTitle = serialize( $sVal );
+					$oCartitemArg->$sTmpTitle = serialize($sVal);
 				}
 				else
 					$oCartitemArg->$sTitle = $sVal;
 			}
-			$oRst = executeQuery( 'svorder.deleteCartItem', $oCartitemArg );
-			if( !$oRst->toBool() )
+			$oRst = executeQuery('svorder.deleteCartItem', $oCartitemArg);
+			if(!$oRst->toBool())
 				return $oRst;
 
-			$oRst = executeQuery( 'svorder.insertCartItem', $oCartitemArg );
-			if( !$oRst->toBool() )
+			$oRst = executeQuery('svorder.insertCartItem', $oCartitemArg);
+			if(!$oRst->toBool())
 				return $oRst;
-			if( isset( $oCartVal->oPromotionInfo ) && $oCartVal->oPromotionInfo != -1 )
+			if(isset($oCartVal->oPromotionInfo) && $oCartVal->oPromotionInfo != -1)
 			{
-				$oRst = $oSvpromotionController->insertCartLevelPromotionInfo($oCartitemArg );
-				if( !$oRst->toBool() )
+				$oRst = $oSvpromotionController->insertCartLevelPromotionInfo($oCartitemArg);
+				if(!$oRst->toBool())
 					return $oRst;
 			}
-			unset( $oCartitemArg );
+			unset($oCartitemArg);
 		}
-
-		foreach( $this->_g_oOrderHeader as $sTitle => $sVal )
+        $oOrderArgs = new stdClass();
+		foreach($this->_g_oOrderHeader as $sTitle => $sVal)
 		{
-			if( $sVal == -1 )
+			if($sVal == -1)
 				continue;
-			if( is_object( $sVal ) )
+			if(is_object($sVal))
 			{
 				$sTmpTitle = $sTitle.'_srz';
-				$oOrderArgs->$sTmpTitle = serialize( $sVal );
+				$oOrderArgs->$sTmpTitle = serialize($sVal);
 			}
 			else
 				$oOrderArgs->$sTitle = $sVal;
 		}
 		$oRst = executeQuery('svorder.insertOrder', $oOrderArgs);
-		if (!$oRst->toBool()) 
+		if(!$oRst->toBool()) 
 			return $oRst;
-
-		if( isset( $this->_g_oOrderHeader->oCheckoutPromotionInfo ) && $this->_g_oOrderHeader->oCheckoutPromotionInfo != -1 )
+		if(isset($this->_g_oOrderHeader->oCheckoutPromotionInfo) && $this->_g_oOrderHeader->oCheckoutPromotionInfo != -1)
 		{
-			$oRst = $oSvpromotionController->insertOrderLevelPromotionInfo($oOrderArgs );
-			if( !$oRst->toBool() )
+			$oRst = $oSvpromotionController->insertOrderLevelPromotionInfo($oOrderArgs);
+			if(!$oRst->toBool())
 				return $oRst;
 		}
-		unset( $oOrderArgs );
+		unset($oOrderArgs);
 
 		// Insert extra variables if the order successfully inserted.
 		/*if(count($this->_g_oOrderHeader->extra_order_form_info))

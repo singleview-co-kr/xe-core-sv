@@ -32,9 +32,10 @@ class svcartAdminModel extends svcart
  **/
 	public function getCartItem($cart_srl) 
 	{
+        $args = new stdClass();
 		$args->cart_srl = $cart_srl;
 		$output = executeQuery('svcart.getCartItem', $args);
-		if(!$output->toBool() || count( $output->data ) == 0 ) 
+		if(!$output->toBool() || count((array)$output->data ) == 0 ) 
 			return;
 		return $output->data;
 	}

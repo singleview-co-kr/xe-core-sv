@@ -22,21 +22,23 @@ class svorderController extends svorder
  * 무통장입금 프로세스를 완료하고 svcart.controller.php::_updateTransaction()를 통해서 호출됨 -> 이런 함수 없음
  * $obj->return_url 에 URL을 넘겨주면 pay::procSvpgDoPayment에서 해당 URL로 Redirect시켜준다.
  */
-	public function completePgProcess( &$oPgParam )
+	public function completePgProcess(&$oPgParam)
 	{
-debugPrint( $oPgParam );
+//debugPrint( $oPgParam );
 		$oSvorderModel = &getModel('svorder');
 		$oConfig = $oSvorderModel->getModuleConfig();
 		require_once(_XE_PATH_.'modules/svorder/svorder.order_update.php');
-		$oParams->oSvorderConfig = $oConfig;
+		$oParams = new stdClass();
+        $oParams->oSvorderConfig = $oConfig;
 		if($oPgParam->calling_method == 'svpg::procSvpgReport()' || $oPgParam->calling_method == 'svpg::procSvpgDoPayment()' ) // $oPgParam->calling_method 설정된 상태는 procSvpgReport()에서 호출했다는 의미: 무통장입금, procSvpgDoPayment()는 신용카드 결제 완료
 			$oParams->bApiMode = true;
-		$oOrder = new svorderUpdateOrder($oParams );
-		$oLoadRst = $oOrder->loadSvOrder($oPgParam->order_srl);
+		$oOrder = new svorderUpdateOrder($oParams);
+debugPrint( $oPgParam->order_srl );
+        $oLoadRst = $oOrder->loadSvOrder($oPgParam->order_srl);
 debugPrint( $oLoadRst );
-		if (!$oLoadRst->toBool()) 
+		if (!$oLoadRst->toBool())
 			return $oLoadRst;
-		unset( $oLoadRst );
+		unset($oLoadRst);
 		
 		$oOrderHeader = $oOrder->getHeader();
 		$aCartItem = $oOrder->getCartItemList();
@@ -45,7 +47,7 @@ debugPrint( $oLoadRst );
 		{
 			$oSvitemModel = &getModel('svitem');
 			$oSvitemController = &getController('svitem');
-			foreach( $aCartItem as $nCartSrl=>$oCartVal)
+			foreach($aCartItem as $nCartSrl=>$oCartVal)
 			{
 				$nStock = $oSvitemModel->getItemStock($oCartVal->item_srl);
 				if($nStock != null)
@@ -79,7 +81,8 @@ debugPrint( $oLoadRst );
 		else if($oPgParam->state == 2) // PG completed
 			$sTgtCartItemStatus = svorder::ORDER_STATE_PAID;
 		
-		$oInArgs->sDetailReason = 'completePgProcess() 일괄처리';
+        $oInArgs = new stdClass();
+        $oInArgs->sDetailReason = 'completePgProcess() 일괄처리';
 		$oOrderStatusRst = $oOrder->updateOrderStatusQuick($sTgtCartItemStatus, $oInArgs); // update and commit order table 
 debugPrint( $oInArgs );
 		if(!$oOrderStatusRst->toBool())
@@ -88,16 +91,19 @@ debugPrint( $oInArgs );
 		$oSvcrmController = &getController('svcrm');
 		if( !is_null( $oSvcrmController ) )
 		{
+            $oArgs = new stdClass();
 			$oArgs->order_srl = $oOrderHeader->order_srl;
 			$oArgs->purchaser_name = $oOrderHeader->purchaser_name;
 			$oArgs->purchaser_cellphone = $oOrderHeader->purchaser_cellphone;
 			$oArgs->order_status = $sTgtCartItemStatus;
 			$oSvcrmController->notifyOrderStatusUpdate($oArgs);
+            unset($oArgs);
 		}
-		
+        $oTmpArg = new stdClass();
 		if( $oPgParam->use_escrow )
 			$oTmpArg->use_escrow = $oPgParam->use_escrow;
 		$oOrderHeaderRst = $oOrder->updateOrderHeader($oTmpArg); // update and commit order table 
+        unset($oTmpArg);
 debugPrint( $oInArgs );
 		if(!$oOrderHeaderRst->toBool())
 			return $oOrderHeaderRst;
@@ -191,19 +197,20 @@ debugPrint( $oInArgs );
  */
 	public function insertRecipientAddress($oTgtParams)
 	{
+        $oTmpArgs = new stdClass();
 		$oTmpArgs->addr_type = -1;
-		switch( $oTgtParams->nOrderReferral )
+		switch($oTgtParams->nOrderReferral)
 		{ 
 			case svorder::ORDER_REFERRAL_LOCALHOST:
-				if( $oTgtParams->sAddrType == $this->_g_aAddrType['postcodify'] ) // used to be localhost
+				if($oTgtParams->sAddrType == $this->_g_aAddrType['postcodify']) // used to be localhost
 				{
-					$sReceipientAddress = trim( $oTgtParams->recipient_address );
-					if( strlen( $sReceipientAddress ) == 0 )
+					$sReceipientAddress = trim($oTgtParams->recipient_address);
+					if(strlen($sReceipientAddress) == 0)
 						return new BaseObject(-1, 'msg_invalid_receipient_address');
-					if( strlen( trim( $oTgtParams->recipient_postcode ) ) == 0 )
+					if(strlen(trim($oTgtParams->recipient_postcode)) == 0)
 						return new BaseObject(-1, 'msg_invalid_receipient_address');
 					$aReceipientAddress = explode( '|@|', $sReceipientAddress );
-					if( count( $aReceipientAddress ) < 4 )
+					if(count($aReceipientAddress) < 4)
 						return new BaseObject(-1, 'msg_invalid_receipient_address');
 					
 					$oTmpArgs->addr_type = $this->_g_aAddrType['postcodify'];
@@ -213,18 +220,18 @@ debugPrint( $oInArgs );
 				}
 				break;
 			case svorder::ORDER_REFERRAL_NPAY:
-				$sReceipientAddress = trim( $oTgtParams->recipient_address->BaseAddress );
-				if( strlen( $sReceipientAddress ) == 0 )
+				$sReceipientAddress = trim($oTgtParams->recipient_address->BaseAddress);
+				if(strlen($sReceipientAddress) == 0)
 					return new BaseObject(-1, 'msg_invalid_receipient_address');
 
-				$sReceipientAddress = trim( $oTgtParams->recipient_address->DetailedAddress );
+				$sReceipientAddress = trim($oTgtParams->recipient_address->DetailedAddress);
 				//if( strlen( $sReceipientAddress ) == 0 )
 				//	return new BaseObject(-1, 'msg_invalid_receipient_address');
 							
-				if( strlen( trim( $oTgtParams->recipient_postcode ) ) == 0 )
+				if(strlen(trim($oTgtParams->recipient_postcode)) == 0)
 					return new BaseObject(-1, 'msg_invalid_receipient_address');
 				
-				if( $oTgtParams->recipient_address->AddressType == 'FOREIGN' )
+				if($oTgtParams->recipient_address->AddressType == 'FOREIGN')
 					$oTmpArgs->is_abroad = 1;
 				
 				$oTmpArgs->addr_type = $this->_g_aAddrType['npay'];
@@ -420,7 +427,8 @@ debugPrint( "external order transmission finish" );
 		if(preg_match("/^[_\.0-9a-zA-Z-]+@([0-9a-zA-Z][0-9a-zA-Z-]+\.)+[a-zA-Z]{2,6}$/i", $sMailTo) == false)
 			return;// array(false, "올바른 이메일 주소를 입력해주세요.");
 		
-		$oGmailParam->aReceiverInfo = array();
+        $oGmailParam = new stdClass();
+        $oGmailParam->aReceiverInfo = array();
 
 		$aTemp = array( 'receiver_addr'=>$sMailTo, 'receiver_title'=>$sPurchaserName );
 		array_push($oGmailParam->aReceiverInfo, $aTemp );
@@ -622,7 +630,8 @@ debugPrint( "external order transmission finish" );
 	{
 		if(!$nCartSrl)
 			return new BaseObject( -1, 'msg_invalid_cart_srl');
-		$oArg->cart_srl = $nCartSrl;
+        $oArg = new stdClass();
+        $oArg->cart_srl = $nCartSrl;
 		$oRst = executeQuery( 'svorder.deleteCartItemOfferedByCartSrl', $oArg );
 		unset( $oArg );
 		return $oRst;		

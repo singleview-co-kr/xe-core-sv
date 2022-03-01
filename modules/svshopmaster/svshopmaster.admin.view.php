@@ -110,6 +110,48 @@ class svshopmasterAdminView extends svshopmaster
 	}
 /**
  * @brief 
+ **/    
+    function getNotice()
+	{
+		//Retrieve recent news and set them into context
+		$newest_news_url = sprintf("http://singleview.co.kr/?module=broadcast&act=getNewsagencyArticle&inst=notice&top=6&loc=%s", _XE_LOCATION_);
+		$cache_file = sprintf("%sfiles/cache/svec_notice.%s.cache.php", _XE_PATH_, _XE_LOCATION_);
+		if(!file_exists($cache_file) || filemtime($cache_file)+ 60*60 < time())
+		{
+			// Considering if data cannot be retrieved due to network problem, modify filemtime to prevent trying to reload again when refreshing textmessageistration page
+			// Ensure to access the textmessageistration page even though news cannot be displayed
+			FileHandler::writeFile($cache_file,'');
+			FileHandler::getRemoteFile($newest_news_url, $cache_file, null, 1, 'GET', 'text/html', array('REQUESTURL'=>getFullUrl('')));
+		}
+
+		if(file_exists($cache_file)) 
+		{
+			$oXml = new XeXmlParser();
+			$buff = $oXml->parse(FileHandler::readFile($cache_file));
+
+			$item = $buff->zbxe_news->item;
+			if($item) 
+			{
+				if(!is_array($item)) 
+				{
+					$item = array($item);
+				}
+
+				foreach($item as $key => $val) {
+					$obj = null;
+					$obj->title = $val->body;
+					$obj->date = $val->attrs->date;
+					$obj->url = $val->attrs->url;
+					$news[] = $obj;
+				}
+				Context::set('news', $news);
+			}
+			Context::set('released_version', $buff->zbxe_news->attrs->released_version);
+			Context::set('download_link', $buff->zbxe_news->attrs->download_link);
+		}
+	}
+/**
+ * @brief 
  **/
 	private function _getTime() 
 	{

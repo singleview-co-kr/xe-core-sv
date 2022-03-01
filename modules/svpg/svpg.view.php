@@ -179,7 +179,10 @@ class svpgView extends svpg
 		else
 		{
 			$template_path = $this->module_path."skins/{$module_info->skin}";
-			if(!is_dir($template_path)||!$this->module_info->skin) {
+			if(!is_dir($template_path)||!$this->module_info->skin) 
+            {
+                if(is_null($this->module_info))
+                    $this->module_info = new stdClass();
 				$this->module_info->skin = 'default';
 				$template_path = sprintf("%sskins/%s/",$this->module_path, $this->module_info->skin);
 			}

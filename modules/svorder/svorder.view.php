@@ -38,39 +38,40 @@ class svorderView extends svorder
 		Context::set('config', $oSvorderConfig );
 
 		$logged_info = Context::get('logged_info');
-		if( $oSvorderConfig->guest_buy != 'Y' && !$logged_info )
+		if($oSvorderConfig->guest_buy != 'Y' && !$logged_info)
 			return new BaseObject(-1, 'msg_no_guest_buy');
 		
 		$sCartnos = Context::get('cartnos');
 		// order_referral == ORDER_REFERRAL_LOCALHOST 면, 품목 정보를 svcart에서 가져옴 
 		$oSvcartModel = &getModel('svcart');
-		$oParam->oCart = $oSvcartModel->getCartInfo( $sCartnos );
+        $oParam = new stdClass();
+		$oParam->oCart = $oSvcartModel->getCartInfo($sCartnos);
 		$oParam->oLoggedInfo = $logged_info;
 		$oParam->nClaimingReserves = 0;
 		$oParam->sCouponSerial = '';
 		$bApiMode = false;
-		$oRst = $oSvorderModel->confirmOffer( $oParam, 'new', $bApiMode );
+		$oRst = $oSvorderModel->confirmOffer($oParam, 'new', $bApiMode);
 		if(!$oRst->toBool())
 			return $oRst;
 
 		$oOrderFormRst = $oRst->get('oCart');
-		unset( $oRst );
-		Context::set( 'list', $oOrderFormRst->item_list );
-		Context::set( 'sum_price', $oOrderFormRst->sum_price );
-		Context::set( 'total_discount_amount', $oOrderFormRst->total_discount_amount );
-		Context::set( 'total_discounted_price', $oOrderFormRst->total_discounted_price ); // 배송비 합산 전 총액
-		Context::set( 'total_price', $oOrderFormRst->total_price );
-		Context::set( 'delivery_fee', $oOrderFormRst->nDeliveryFee );
-		if( strlen( $oOrderFormRst->promotion_title ) )
-			Context::set( 'promotion_title', $oOrderFormRst->promotion_title );
+		unset($oRst);
+		Context::set('list', $oOrderFormRst->item_list);
+		Context::set('sum_price', $oOrderFormRst->sum_price);
+		Context::set('total_discount_amount', $oOrderFormRst->total_discount_amount);
+		Context::set('total_discounted_price', $oOrderFormRst->total_discounted_price); // 배송비 합산 전 총액
+		Context::set('total_price', $oOrderFormRst->total_price);
+		Context::set('delivery_fee', $oOrderFormRst->nDeliveryFee);
+		if(strlen($oOrderFormRst->promotion_title))
+			Context::set('promotion_title', $oOrderFormRst->promotion_title);
 
-		if( $oOrderFormRst->recommended_bulk_discount_rate )
+		if($oOrderFormRst->recommended_bulk_discount_rate)
 		{
-			Context::set( 'recommended_bulk_discount_rate', $oOrderFormRst->recommended_bulk_discount_rate );
-			Context::set( 'recommended_bulk_item_list', $oOrderFormRst->recommended_bulk_item_list );
-			Context::set( 'recommended_remaining_qty', $oOrderFormRst->recommended_remaining_qty );
+			Context::set('recommended_bulk_discount_rate', $oOrderFormRst->recommended_bulk_discount_rate);
+			Context::set('recommended_bulk_item_list', $oOrderFormRst->recommended_bulk_item_list);
+			Context::set('recommended_remaining_qty', $oOrderFormRst->recommended_remaining_qty);
 		}
-
+        $args = new stdClass();
 		$args->item_name = $oOrderFormRst->sOrderTitle;
 		// pass payment amount, item name, etc.. to svpg module.
 		$args->svpg_module_srl = $this->module_info->svpg_module_srl;
@@ -88,24 +89,24 @@ class svorderView extends svorder
 		$sSvpgForm = null;
 		$oSvpromotionModel = &getModel('svpromotion');
 		$oSvpromotionConfig = $oSvpromotionModel->getModuleConfig();
-		if( $oSvpromotionConfig->aPromotionMallOrderModuleSrl[$this->module_info->module_srl] == 'Y' )
+		if($oSvpromotionConfig->aPromotionMallOrderModuleSrl[$this->module_info->module_srl] == 'Y')
 		{
-			if( $args->price == 0 ) // PG 표시
+			if($args->price == 0) // PG 표시
 				$args->price = true;
 		}
 		else
 		{
-			if( $args->price == 0 ) // PG 중단
+			if($args->price == 0) // PG 중단
 				$sSvpgForm = Context::getLang('msg_error_free_item_not_allowed');
 		}
-		if( !$sSvpgForm )
+		if(!$sSvpgForm)
 		{
 			$oSvpgView = &getView('svpg');
 			$oPgRst = $oSvpgView->getPaymentForm($args);
-			if (!$oPgRst->toBool()) 
+			if(!$oPgRst->toBool()) 
 				return $oPgRst;
 			$sSvpgForm = $oPgRst->data;
-			unset( $oPgRst );
+			unset($oPgRst);
 		}
 		Context::set('svpg_form', $sSvpgForm);
 		unset($args);
@@ -115,18 +116,18 @@ class svorderView extends svorder
 		
 		// localhost 주문에서는 장바구니 화면에서 [주문하기] 클릭한 시점과 주문서 화면에서 [결제하기] 클릭한 시점의 시차 관리
 		$oCartRst = $oNewOrder->setCartOffered($oParam->oCart->item_list);
-		if (!$oCartRst->toBool()) 
+		if(!$oCartRst->toBool()) 
 			return $oCartRst;
-		unset( $oCartRst );
+		unset($oCartRst);
 
 		$oSvcartController = &getController('svcart');
 		$oCartRst = $oSvcartController->markOfferDate($sCartnos);
-		if (!$oCartRst->toBool()) 
+		if(!$oCartRst->toBool()) 
 			return $oCartRst;
-		unset( $oCartRst );
+		unset($oCartRst);
 
-		Context::addCssFile( './modules/krzip/tpl/css/postcodify.css' );
-		Context::addJsFile( './modules/krzip/tpl/js/postcodify.js' );
+		Context::addCssFile('./modules/krzip/tpl/css/postcodify.css');
+		Context::addJsFile('./modules/krzip/tpl/js/postcodify.js');
 		$oKrzip = &getClass('krzip');
 		$oKrzipConfig = $oKrzip->getKrzipConfig();
 		Context::set('krzip_config', $oKrzipConfig);
@@ -134,7 +135,7 @@ class svorderView extends svorder
 		$oExtraKeys = $oSvorderModel->getExtraKeys($this->module_srl);
 		foreach($oExtraKeys as $key=>$val)
 		{
-			if( $val->type == 'checkbox' )
+			if($val->type == 'checkbox')
 				$val->name .= Context::getLang('title_multiple_choice');
 		}
 		Context::set('extra_keys', $oExtraKeys);
@@ -145,7 +146,7 @@ class svorderView extends svorder
 			Context::set('member_address_list', $oAddrRst->data);
 			unset($oAddrRst);
 		}
-
+		$oPurchaserInfo = new stdClass();
 		$oPurchaserInfo->is_readonly_name = false;
 		$oPurchaserInfo->is_readonly_email = false;
 		if($logged_info)
@@ -175,6 +176,7 @@ class svorderView extends svorder
 		$oSvorderModel = &getModel('svorder');
 		$oConfig = $oSvorderModel->getModuleConfig();
 		require_once(_XE_PATH_.'modules/svorder/svorder.order_update.php');
+        $oParams = new stdClass();
 		$oParams->oSvorderConfig = $oConfig;
 		$oOrder = new svorderUpdateOrder($oParams );
 		$oLoadRst = $oOrder->loadSvOrder($nOrderSrl);
@@ -194,7 +196,7 @@ class svorderView extends svorder
 		Context::set('cart_list', $aCartList );
 		// fieldset
 		Context::set('extra_vars', $oOrderInfo->extra_vars);
-
+        $oMailParam = new stdClass();
 		$oMailParam->sPurchaserName = $oOrderInfo->purchaser_name;
 		$oMailParam->sPurchaserEmail = $oOrderInfo->purchaser_email;
 		$oMailParam->nOrderSrl = $oOrderInfo->order_srl;

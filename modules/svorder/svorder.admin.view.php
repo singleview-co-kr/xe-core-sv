@@ -9,7 +9,7 @@ class svorderAdminView extends svorder
 /**
  * @brief Contructor
  **/
-	public function init() 
+	public function init()
 	{
 		// module이 svshopmaster일때 관리자 레이아웃으로
 		if(Context::get('module') == 'svshopmaster')
@@ -244,6 +244,7 @@ class svorderAdminView extends svorder
 		$oSvorderAdminModel = &getAdminModel('svorder');
 		$oOrder = $oSvorderAdminModel->getSvOrderClass();
 		$nOrderSrl = Context::get('order_srl');
+        $oArg = new stdClass();
 		$oArg->bIncludeCsLog = true;
 		$oLoadRst = $oOrder->loadSvOrder($nOrderSrl,$oArg);
 		if (!$oLoadRst->toBool()) 

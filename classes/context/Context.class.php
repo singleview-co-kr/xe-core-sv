@@ -436,7 +436,7 @@ class Context
 	 *
 	 * @return void
 	 */
-	function close()
+	public static function close()
 	{
 		session_write_close();
 	}

@@ -51,6 +51,7 @@ class svitemView extends svitem
 		Context::set('mid_config',$oMidConfig);
 
 		$nModuleSrl = $this->module_info->module_srl;
+        $oArgs = new stdClass();
 		$oArgs->sPageType = 'catalog';
 		$oArgs->nModuleSrl = $this->module_info->module_srl;
 		$oRst = $oSvitemModel->getDisplayConf($oArgs);
@@ -106,6 +107,7 @@ class svitemView extends svitem
 		Context::set('mid_config',$oMidConfig);
 
 		$nModuleSrl = $this->module_info->module_srl;
+        $oArgs = new stdClass();
 		$oArgs->sPageType = 'detail';
 		$oArgs->nModuleSrl = $this->module_info->module_srl;
 		$oRst = $oSvitemModel->getDisplayConf($oArgs);
@@ -113,8 +115,8 @@ class svitemView extends svitem
 		unset($oArgs);
 		unset($oRst);
 
-		
 		// begin - item info
+        $oItemParams = new stdClass();
 		$oItemParams->nDocumentSrl = Context::get('document_srl');
 		$oItemInfo = $oSvitemModel->getItemInfoNewFull($oItemParams);
 		unset($oItemParams);
@@ -285,7 +287,7 @@ RewriteRule  ^daum_ep\.txt index.php?module=svitem&act=dispSvitemDaumEp [L,QSA]
  * @brief svitem 스킨에서 호출하는 메쏘드
  * will be deprecated
  */	
-	public function _dispThumbnailUrl( $nThumbFileSrl, $nWidth = 80, $nHeight = 0, $sThumbnailType = 'crop' )
+	public static function _dispThumbnailUrl( $nThumbFileSrl, $nWidth = 80, $nHeight = 0, $sThumbnailType = 'crop' )
 	{
 		$sNoimgUrl = Context::getRequestUri().'/modules/svitem/tpl/img/no_img_80x80.jpg';
 		if(!$nThumbFileSrl) // 기본 이미지 반환

@@ -748,7 +748,7 @@ class FileHandler
 	 * @param array $imageInfo Image info retrieved by getimagesize function
 	 * @return bool TRUE: it's ok, FALSE: otherwise
 	 */
-	function checkMemoryLoadImage(&$imageInfo)
+	public static function checkMemoryLoadImage(&$imageInfo)
 	{
 		$memoryLimit = self::returnBytes(ini_get('memory_limit'));
 		if($memoryLimit == -1)
@@ -786,7 +786,7 @@ class FileHandler
 	 * @param bool $thumbnail_transparent If $target_type is png, set background set transparent color
 	 * @return bool TRUE: success, FALSE: failed
 	 */
-	function createImageFile($source_file, $target_file, $resize_width = 0, $resize_height = 0, $target_type = '', $thumbnail_type = 'crop', $thumbnail_transparent = FALSE)
+	public static function createImageFile($source_file, $target_file, $resize_width = 0, $resize_height = 0, $target_type = '', $thumbnail_type = 'crop', $thumbnail_transparent = FALSE)
 	{
 		// check params
 		if (($source_file = self::exists($source_file)) === FALSE)

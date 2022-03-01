@@ -59,7 +59,7 @@
 		<select name="search_key">
 			<option value="">{$lang->search_target}</option>
 			<option value="item_name" selected="selected"|cond="$search_key==''">{$lang->item_name}</option>
-			{@$lang->search_target_list = array_merge($lang->search_target_list, $usedIdentifiers)}
+			{@$lang->search_target_list = array_merge($lang->search_target_list, (array)$usedIdentifiers)}
 			<option value="{$key}" loop="$lang->search_target_list=>$key,$val" selected="selected"|cond="$search_target==$key">{$val}</option>
 		</select>
 		<input type="text" name="search_item_name" value="{htmlspecialchars($search_item_name)}" />

@@ -15,10 +15,10 @@ class svitemItemAdmin extends svitem
  * @brief 생성자
  * $oParams->oSvitemConfig
  **/
-	public function svitemItemAdmin(&$oParams=null)
+	public function __construct(&$oParams=null)
 	{
 		$this->_g_oLoggedInfo = Context::get('logged_info');
-		if( $oParams->oSvitemModuleConfig )
+		if($oParams->oSvitemModuleConfig)
 			$this->_g_oSvitemModuleConfig = $oParams->oSvitemModuleConfig;
 		$this->_setSkeletonHeader();
 	}
@@ -27,7 +27,7 @@ class svitemItemAdmin extends svitem
  **/
 	public function __get($sName) 
 	{
-		if( $sName == 'nModuleSrl' )
+		if($sName == 'nModuleSrl')
 			return $this->_g_oOldItemHeader->module_srl; // [module_srl] attr은 Context 클래스를 통과하면서 전달되지 않는 것 같음
 
 		if( isset($this->_g_oOldItemHeader->{$sName}) )
@@ -70,11 +70,11 @@ class svitemItemAdmin extends svitem
 	{
 		$this->_initHeader();
 		$this->_matchNewItemInfo($oNewItemArgs);
-		if( $this->_g_oNewItemHeader->module_srl == svitem::S_NULL_SYMBOL || 
-			$this->_g_oNewItemHeader->item_name == svitem::S_NULL_SYMBOL )
+		if($this->_g_oNewItemHeader->module_srl == svitem::S_NULL_SYMBOL || 
+			$this->_g_oNewItemHeader->item_name == svitem::S_NULL_SYMBOL)
 			return new BaseObject(-1,'msg_invalid_request');
 		
-		if( $sMode == 'bulk' ) // excel bulk upload mode
+		if($sMode == 'bulk') // excel bulk upload mode
 			;
 		return $this->_insertItem();
 	}
@@ -94,17 +94,18 @@ class svitemItemAdmin extends svitem
 				break;
 			default:
 				$this->_initHeader();
+                $oTmpArgs = new stdClass();
 				$oTmpArgs->item_srl = $oParams->item_srl;
 				$oTmpRst = executeQuery('svitem.getItemInfo', $oTmpArgs);
-				if (!$oTmpRst->toBool())
+				if(!$oTmpRst->toBool())
 					return $oTmpRst;
-				if( count($oTmpRst->data) == 0 )
+				if(count((array)$oTmpRst->data) == 0)
 					return new BaseObject(-1,'msg_invalid_item_request');
 				unset($oTmpArgs);
 				break;
 		}
-		if( $oTmpRst->data->enhanced_item_info )
-			$oTmpRst->data->enhanced_item_info = unserialize( $oTmpRst->data->enhanced_item_info );
+		if($oTmpRst->data->enhanced_item_info)
+			$oTmpRst->data->enhanced_item_info = unserialize($oTmpRst->data->enhanced_item_info);
 
 		$this->_matchOldItemInfo($oTmpRst->data);
 		$this->_consturctExtraVars(); // extra_var 설정
@@ -312,37 +313,41 @@ class svitemItemAdmin extends svitem
 						'display', 'sales_count', 'current_stock', 'safe_stock', 'sv_tags', 'list_order', 'updatetime', 'regdate'];
 						// 'delivery_info', 'related_items' // 폐기 예정
 
-		$aEnhancedAttr = [ 'ga_brand_name', 'ga_category_name', 'ga_variation_name', 'gallery_rep_thumbnail_idx', 'extmall_log_conf', 
+		$aEnhancedAttr = ['ga_brand_name', 'ga_category_name', 'ga_variation_name', 'gallery_rep_thumbnail_idx', 'extmall_log_conf', 
 							'item_brief', 'badge_icon', 'description_skin_pc', 'description_skin_mob'];
 
-		$aInMemoryAttr = [ 'review_count', 'mid', 'sDescription', 'extra_vars' ]; // 'extra_vars'는 unserialize된 구조체 적재
+		$aInMemoryAttr = ['review_count', 'mid', 'sDescription', 'extra_vars' ]; // 'extra_vars'는 unserialize된 구조체 적재
 
-		$aEpAttr = [ 'naver_ep_item_name', 'naver_ep_maker', 'naver_ep_origin', 'naver_ep_search_tag', 'naver_ep_barcode', 
-						'naver_ep_naver_category', 'naver_ep_event_words', 'naver_ep_sv_campaign2', 'naver_ep_sv_campaign3', 'daum_ep_item_name' ];
+		$aEpAttr = ['naver_ep_item_name', 'naver_ep_maker', 'naver_ep_origin', 'naver_ep_search_tag', 'naver_ep_barcode', 
+						'naver_ep_naver_category', 'naver_ep_event_words', 'naver_ep_sv_campaign2', 'naver_ep_sv_campaign3', 'daum_ep_item_name'];
 		
-		$aTempAttr = [ 'ua_type', 'thumbnail_image' ];
+		$aTempAttr = ['ua_type', 'thumbnail_image'];
 
-		foreach( self::A_ITEM_HEADER_TYPE as $nTypeIdx => $sHeaderType )
+		foreach(self::A_ITEM_HEADER_TYPE as $nTypeIdx => $sHeaderType)
 		{
-			foreach( $aBasicAttr as $nAttrIdx => $sAttrName )
+            $this->{$sHeaderType} = new stdClass();
+			foreach($aBasicAttr as $nAttrIdx => $sAttrName)
 				$this->{$sHeaderType}->{$sAttrName} = svitem::S_NULL_SYMBOL;
 
 			// in-memory item info
-			foreach( $aInMemoryAttr as $nAttrIdx => $sAttrName )
+			foreach($aInMemoryAttr as $nAttrIdx => $sAttrName)
 				$this->{$sHeaderType}->{$sAttrName} = svitem::S_NULL_SYMBOL;
 			
 			// queried enhanced item info
-			foreach( $aEnhancedAttr as $nAttrIdx => $sAttrName )
+			foreach($aEnhancedAttr as $nAttrIdx => $sAttrName)
 				$this->{$sHeaderType}->{$sAttrName} = svitem::S_NULL_SYMBOL;
 			
 			// queried shopping ep
-			foreach( $aEpAttr as $nAttrIdx => $sAttrName )
+			foreach($aEpAttr as $nAttrIdx => $sAttrName)
 				$this->{$sHeaderType}->{$sAttrName} = svitem::S_NULL_SYMBOL;
 			
 			// temp item info for insertion
-			foreach( $aTempAttr as $nAttrIdx => $sAttrName )
+			foreach($aTempAttr as $nAttrIdx => $sAttrName)
 				$this->{$sHeaderType}->{$sAttrName} = svitem::S_NULL_SYMBOL;
 		}
+
+        // private $_g_oOldItemHeader = NULL; // 정보 수정할 때 과거 상태에 관한 참조일 뿐
+	    // private $_g_oNewItemHeader 
 		unset($aBasicAttr);
 		unset($aEnhancedAttr);
 		unset($aInMemoryAttr);
@@ -357,7 +362,7 @@ class svitemItemAdmin extends svitem
 	{
 		require_once(_XE_PATH_.'modules/svitem/svitem.extravar.controller.php');
 		$oExtraVarsController = new svitemExtraVarController();
-		
+		$oArg = new stdClass();
 		$oArg->nItemSrl = $this->_g_oOldItemHeader->item_srl;
 		$oArg->nModuleSrl = $this->_g_oOldItemHeader->module_srl;
 		$this->_g_oOldItemHeader->extra_vars = $oExtraVarsController->getExtendedVarsNameValueByItemSrl($oArg);
@@ -435,24 +440,24 @@ class svitemItemAdmin extends svitem
 		$aIgnoreVar = array('error_return_url', 'ruleset', 'module', 'mid', 'act' );
 		$aCleanupVar = array('ga_brand_name', 'ga_category_name', 'ga_variation_name', 'naver_ep_item_name', 'naver_ep_maker', 'naver_ep_origin', 'naver_ep_search_tag', 'naver_ep_barcode', 'naver_ep_naver_category', 'naver_ep_event_words', 'naver_ep_sv_campaign2', 'naver_ep_sv_campaign3', 'daum_ep_item_name' );
 
-		foreach( $oNewItemArgs as $sTitle => $sVal)
+		foreach($oNewItemArgs as $sTitle => $sVal)
 		{
 			if(in_array($sTitle, $aIgnoreVar)) 
 				continue;
 
 			if(in_array($sTitle, $aCleanupVar))
-				$sVal = trim( strip_tags( $sVal ) );
+				$sVal = trim(strip_tags($sVal));
 			
-			if( $sTitle == 'naver_ep_sv_campaign2' || $sTitle == 'naver_ep_sv_campaign3')
+			if($sTitle == 'naver_ep_sv_campaign2' || $sTitle == 'naver_ep_sv_campaign3')
 				$sVal = strtoupper($sVal);
 
-			if( $sTitle == 'item_brief' || $sTitle == 'description_skin_pc' || $sTitle == 'description_skin_mob' )
+			if($sTitle == 'item_brief' || $sTitle == 'description_skin_pc' || $sTitle == 'description_skin_mob')
 				$sVal = trim( $sVal );
 
-			if( $sTitle == 'naver_ep_barcode' )
+			if($sTitle == 'naver_ep_barcode' )
 				$sVal = preg_replace("/[^0-9]*/s", '', $sVal); 
 		
-			if( $this->_g_oNewItemHeader->$sTitle == svitem::S_NULL_SYMBOL )
+			if($this->_g_oNewItemHeader->$sTitle == svitem::S_NULL_SYMBOL)
 				$this->_g_oNewItemHeader->$sTitle = $sVal;
 			else
 			{
@@ -478,9 +483,9 @@ class svitemItemAdmin extends svitem
  **/
 	private function _nullifyHeader()
 	{
-		foreach( $this->_g_oNewItemHeader as $sTitle => $sVal)
+		foreach($this->_g_oNewItemHeader as $sTitle => $sVal)
 		{
-			if( $sVal == svitem::S_NULL_SYMBOL )
+			if($sVal == svitem::S_NULL_SYMBOL)
 				$this->_g_oNewItemHeader->$sTitle = null;
 		}
 	}
@@ -489,10 +494,14 @@ class svitemItemAdmin extends svitem
  **/
 	private function _initHeader()
 	{
-		foreach( $this->_g_oNewItemHeader as $sTitle => $sVal)
+		foreach($this->_g_oNewItemHeader as $sTitle => $sVal)
 			$this->_g_oNewItemHeader->$sTitle = svitem::S_NULL_SYMBOL;
-		foreach( $this->_g_oOldItemHeader as $sTitle => $sVal)
+		if(is_null($this->_g_oNewItemHeader))
+            $this->_g_oNewItemHeader = new stdClass();
+        foreach($this->_g_oOldItemHeader as $sTitle => $sVal)
 			$this->_g_oOldItemHeader->$sTitle = svitem::S_NULL_SYMBOL;
+        if(is_null($this->_g_oOldItemHeader))
+            $this->_g_oOldItemHeader = new stdClass();
 	}
 /**
  * @brief 
@@ -501,7 +510,8 @@ class svitemItemAdmin extends svitem
 	{
 		// insert document for OG
 		$this->_g_oNewItemHeader->document_srl = getNextSequence();
-		$oDocArgs->document_srl = $this->_g_oNewItemHeader->document_srl;
+		$oDocArgs = new stdClass();
+        $oDocArgs->document_srl = $this->_g_oNewItemHeader->document_srl;
 		$oDocArgs->module_srl = $this->_g_oNewItemHeader->module_srl;
 		$oDocArgs->content = $this->_g_oNewItemHeader->item_name.'의 상세페이지';
 		$oDocArgs->title = $this->_g_oNewItemHeader->item_name;
@@ -519,11 +529,11 @@ class svitemItemAdmin extends svitem
 		$this->_g_oNewItemHeader->item_srl = getNextSequence(); // doc srl과 통일할 수 있는지 검토
 		
 		// pre-treat unset value
-		if($this->_g_oNewItemHeader->item_code == svitem::S_NULL_SYMBOL || $this->_g_oNewItemHeader->item_code == null )
+		if($this->_g_oNewItemHeader->item_code == svitem::S_NULL_SYMBOL || $this->_g_oNewItemHeader->item_code == null)
 			$this->_g_oNewItemHeader->item_code = $this->_g_oNewItemHeader->item_srl;
 
 		$this->_nullifyHeader();
-
+        $oArgs = new stdClass();
 		$oArgs->item_srl = $this->_g_oNewItemHeader->item_srl;
 		$oArgs->item_code = $this->_g_oNewItemHeader->item_code;
 		$oArgs->barcode = $this->_g_oNewItemHeader->barcode;
@@ -593,28 +603,29 @@ class svitemItemAdmin extends svitem
 	{
 		$this->_nullifyHeader();
 		// 기본 정보 설정
+        $oArgs = new stdClass();
 		$oArgs->item_srl = $this->_g_oOldItemHeader->item_srl; // item_srl은 수정하면 안됨
 		$oArgs->module_srl = $this->_g_oNewItemHeader->module_srl;
 
-		if( $this->_g_oNewItemHeader->item_name )
+		if($this->_g_oNewItemHeader->item_name)
 			$oArgs->item_name = $this->_g_oNewItemHeader->item_name;
-		if( $this->_g_oNewItemHeader->item_code )
+		if($this->_g_oNewItemHeader->item_code)
 			$oArgs->item_code = $this->_g_oNewItemHeader->item_code;
-		if( $this->_g_oNewItemHeader->barcode )
+		if($this->_g_oNewItemHeader->barcode)
 			$oArgs->barcode = $this->_g_oNewItemHeader->barcode;
-		if( $this->_g_oNewItemHeader->price )
+		if($this->_g_oNewItemHeader->price)
 			$oArgs->price = $this->_g_oNewItemHeader->price;
-		if( $this->_g_oNewItemHeader->current_stock )
+		if($this->_g_oNewItemHeader->current_stock)
 			$oArgs->current_stock = $this->_g_oNewItemHeader->current_stock;
-		if( $this->_g_oNewItemHeader->safe_stock )
+		if($this->_g_oNewItemHeader->safe_stock)
 			$oArgs->safe_stock = $this->_g_oNewItemHeader->safe_stock;
-		if( $this->_g_oNewItemHeader->taxfree )
+		if($this->_g_oNewItemHeader->taxfree)
 			$oArgs->taxfree = $this->_g_oNewItemHeader->taxfree;
-		if( $this->_g_oNewItemHeader->display )
+		if($this->_g_oNewItemHeader->display)
 			$oArgs->display = $this->_g_oNewItemHeader->display;
-		if( $this->_g_oNewItemHeader->list_order )
+		if($this->_g_oNewItemHeader->list_order)
 			$oArgs->list_order = $this->_g_oNewItemHeader->list_order;
-		if( $this->_g_oNewItemHeader->sv_tags )
+		if($this->_g_oNewItemHeader->sv_tags)
 			$oArgs->sv_tags = $this->_g_oNewItemHeader->sv_tags;
 
 		$oEnhancedItemInfo = new stdClass();
@@ -623,21 +634,22 @@ class svitemItemAdmin extends svitem
 		$oEnhancedItemInfo->ga_category_name = $this->_g_oNewItemHeader->ga_category_name ? $this->_g_oNewItemHeader->ga_category_name : $this->_g_oOldItemHeader->enhanced_item_info->ga_category_name;
 		$oEnhancedItemInfo->ga_variation_name = $this->_g_oNewItemHeader->ga_variation_name ? $this->_g_oNewItemHeader->ga_variation_name : $this->_g_oOldItemHeader->enhanced_item_info->ga_variation_name;
 		
-		if( $this->_g_oNewItemHeader->gallery_rep_thumbnail_idx != svitem::S_NULL_SYMBOL )
+		if($this->_g_oNewItemHeader->gallery_rep_thumbnail_idx != svitem::S_NULL_SYMBOL)
 		{
 			$oFileModel = getModel('file');
 			$nThumFileCnt = $oFileModel->getFilesCount($this->_g_oNewItemHeader->gallery_doc_srl);
-			if( $this->_g_oNewItemHeader->gallery_rep_thumbnail_idx > $nThumFileCnt - 1 )
+			if($this->_g_oNewItemHeader->gallery_rep_thumbnail_idx > $nThumFileCnt - 1)
 				return new BaseObject(-1, 'msg_invalid_gallery_rep_thumbnail_idx');
 			$oEnhancedItemInfo->rep_gallery_thumb_idx = $this->_g_oNewItemHeader->gallery_rep_thumbnail_idx;
 		}
-		if( $this->_g_oNewItemHeader->item_brief )
+		if($this->_g_oNewItemHeader->item_brief)
 			$oEnhancedItemInfo->item_brief = $this->_g_oNewItemHeader->item_brief;
 		
 		// OG description,  mob PC 상세페이지 내용 설정
-		switch( $this->_g_oNewItemHeader->ua_type )
+		switch($this->_g_oNewItemHeader->ua_type)
 		{
 			case 'og':
+                $oDocArgs = new stdClass();
 				$oDocArgs->document_srl = $this->_g_oNewItemHeader->document_srl;
 				$oDocArgs->module_srl = $this->_g_oNewItemHeader->module_srl;
 				$oDocArgs->content = $this->_g_oNewItemHeader->description;
@@ -648,7 +660,7 @@ class svitemItemAdmin extends svitem
 				$oDocumentModel = &getModel('document');
 				$oDocumentController = &getController('document');
 				$oDocRst = $oDocumentController->updateDocument($oDocumentModel->getDocument($this->_g_oNewItemHeader->document_srl), $oDocArgs);
-				if (!$oDocRst->toBool())
+				if(!$oDocRst->toBool())
 					return $oDocRst;
 
 				unset($oDocRst);
@@ -657,11 +669,11 @@ class svitemItemAdmin extends svitem
 				unset($oDocArgs);
 				break;
 			case 'mob':
-				if( $this->_g_oNewItemHeader->description )
+				if($this->_g_oNewItemHeader->description)
 					$oArgs->mob_description = $this->_g_oNewItemHeader->description;
 				break;
 			case 'pc':
-				if( $this->_g_oNewItemHeader->description )
+				if($this->_g_oNewItemHeader->description)
 					$oArgs->pc_description = $this->_g_oNewItemHeader->description;
 				break;
 		}
@@ -674,14 +686,14 @@ class svitemItemAdmin extends svitem
 		$oEnhancedItemInfo->naver_ep_barcode = $this->_g_oNewItemHeader->naver_ep_barcode ? $this->_g_oNewItemHeader->naver_ep_barcode : $this->_g_oOldItemHeader->enhanced_item_info->naver_ep_barcode;
 		$oEnhancedItemInfo->naver_ep_naver_category = $this->_g_oNewItemHeader->naver_ep_naver_category ? $this->_g_oNewItemHeader->naver_ep_naver_category : $this->_g_oOldItemHeader->enhanced_item_info->naver_ep_naver_category;
 		$oEnhancedItemInfo->naver_ep_event_words = $this->_g_oNewItemHeader->naver_ep_event_words ? $this->_g_oNewItemHeader->naver_ep_event_words : $this->_g_oOldItemHeader->enhanced_item_info->naver_ep_event_words;
-		if( $this->_g_oNewItemHeader->naver_ep_sv_campaign2 )
+		if($this->_g_oNewItemHeader->naver_ep_sv_campaign2)
 		{
 			if(!ctype_alnum( $this->_g_oNewItemHeader->naver_ep_sv_campaign2)) 
 				return new BaseObject(-1, 'msg_invalid_naverep_sv_campaign_code');
 			else
 				$oEnhancedItemInfo->naver_ep_sv_campaign2 = $this->_g_oNewItemHeader->naver_ep_sv_campaign2 ? $this->_g_oNewItemHeader->naver_ep_sv_campaign2 : $this->_g_oOldItemHeader->enhanced_item_info->naver_ep_sv_campaign2;
 		}
-		if( $this->_g_oNewItemHeader->naver_ep_sv_campaign3 )
+		if($this->_g_oNewItemHeader->naver_ep_sv_campaign3)
 		{
 			if(!ctype_alnum( $this->_g_oNewItemHeader->naver_ep_sv_campaign3)) 
 				return new BaseObject(-1, 'msg_invalid_naverep_sv_campaign_code');
@@ -693,10 +705,10 @@ class svitemItemAdmin extends svitem
 		$oEnhancedItemInfo->daum_ep_item_name = $this->_g_oNewItemHeader->daum_ep_item_name ? $this->_g_oNewItemHeader->daum_ep_item_name : $this->_g_oOldItemHeader->enhanced_item_info->daum_ep_item_name;
 		
 		// badge info processing
-		if( $this->_g_oNewItemHeader->badge_icon )
+		if($this->_g_oNewItemHeader->badge_icon)
 		{
 			$aBadgeIconToSave = [];
-			foreach( $this->_g_oNewItemHeader->badge_icon as $nIdx=>$sVal)
+			foreach($this->_g_oNewItemHeader->badge_icon as $nIdx=>$sVal)
 				$aBadgeIconToSave[$sVal] = 1;
 			$oEnhancedItemInfo->default_badge_icon = $aBadgeIconToSave;
 		}
@@ -705,15 +717,15 @@ class svitemItemAdmin extends svitem
 		
 		// 개발자용 PC / MOB 상세 페이지 등록
 		$oEnhancedItemInfo->description_skin_pc = $this->_g_oNewItemHeader->description_skin_pc ? $this->_g_oNewItemHeader->description_skin_pc : $this->_g_oOldItemHeader->enhanced_item_info->description_skin_pc;
-		if( $oEnhancedItemInfo->description_skin_pc == 'use_each_pc' )
+		if($oEnhancedItemInfo->description_skin_pc == 'use_each_pc')
 			$oEnhancedItemInfo->description_skin_pc = null;
 		$oEnhancedItemInfo->description_skin_mob = $this->_g_oNewItemHeader->description_skin_mob ? $this->_g_oNewItemHeader->description_skin_mob : $this->_g_oOldItemHeader->enhanced_item_info->description_skin_mob;
-		if( $oEnhancedItemInfo->description_skin_mob == 'use_each_mob' )
+		if($oEnhancedItemInfo->description_skin_mob == 'use_each_mob')
 			$oEnhancedItemInfo->description_skin_mob = null;
 		// end GA EEC & EXTRA info processing
 
 		$oArgs->enhanced_item_info = serialize($oEnhancedItemInfo);
-		unset( $oEnhancedItemInfo );
+		unset($oEnhancedItemInfo);
 		$oUpdateRst = executeQuery('svitem.updateAdminItem', $oArgs);
 		if(!$oUpdateRst->toBool())
 			return $oUpdateRst;
@@ -723,10 +735,11 @@ class svitemItemAdmin extends svitem
 		require_once(_XE_PATH_.'modules/svitem/svitem.extravar.controller.php');
 		$oExtraVarsController = new svitemExtraVarController();
 		// begin - retrieve extended var info
+        $oParam = new stdClass();
 		$oParam->nModuleSrl = $this->_g_oNewItemHeader->module_srl;
 		$oParam->nItemSrl = $this->_g_oNewItemHeader->item_srl;
 		$oExtendedVarRst = $oExtraVarsController->getExtendedVarsNameValueByItemSrl($oParam);
-		foreach( $oExtendedVarRst->data as $nIdx => $oExtVar )
+		foreach($oExtendedVarRst->data as $nIdx => $oExtVar)
 		{
 			$sVarTitle = $oExtVar->column_name;
 			if($this->_g_oNewItemHeader->{$sVarTitle})
@@ -765,6 +778,7 @@ class svitemItemAdmin extends svitem
 				return $oTmpRst;
 			$this->_g_oNewItemHeader->thumb_file_srl = $oTmpRst->get('file_srl');
 			unset($oTmpRst);
+            $oTmpArgs = new stdClass();
 			$oTmpArgs->item_srl = $this->_g_oNewItemHeader->item_srl;
 			$oTmpArgs->thumb_file_srl = $this->_g_oNewItemHeader->thumb_file_srl;
 			$oUpdateRst = executeQuery('svitem.updateItemFile', $oTmpArgs);

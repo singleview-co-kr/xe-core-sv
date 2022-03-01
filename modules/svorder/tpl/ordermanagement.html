@@ -5,7 +5,7 @@
 <block cond="count($list)">
 	{@$list_keys = array_keys($list)}
 	{@$first_order = $list[$list_keys[0]]}
-	{@$extra_vars = unserialize($first_order->extra_vars)}
+	{@$extra_vars = $first_order->extra_vars}
 	<block cond="$extra_vars">
 		{@$keys = array_keys($extra_vars)}
 		{@$representative = $keys[0]}
@@ -85,8 +85,8 @@
 						<div cond="$config->external_server!=''">{$config->external_server} 주문번호<BR>({$order->thirdparty_order_id})</div>
 					</td>
 					<td>
-						<img cond="$order->order_referral==svorder::ORDER_REFERRAL_NPAY" src="/modules/svorder/tpl/imgs/icons/naverpay.png" />
-						<img cond="$order->order_referral==svorder::ORDER_REFERRAL_LOCALHOST" src="/modules/svorder/tpl/imgs/icons/localhost.png" />
+						<img cond="$order->order_referral==svorder::ORDER_REFERRAL_NPAY" src="./modules/svorder/tpl/imgs/icons/naverpay.png" />
+						<img cond="$order->order_referral==svorder::ORDER_REFERRAL_LOCALHOST" src="./modules/svorder/tpl/imgs/icons/localhost.png" />
 						<BR><span cond='$order->ext_pg_order_id' title="">{$order->ext_pg_order_id}</span></td>
 					<td>
 						<div><span title="{$order->title}">{cut_str($order->title, 34)}</span></div>

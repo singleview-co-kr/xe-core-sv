@@ -228,7 +228,11 @@ class svcartAdminView extends svcart
 		$aDisplayingItems = $oSvitemAdminModel->getAllDisplayingItemList();
 		$aItemInfoByItemSrl = array();
 		foreach( $aDisplayingItems as $nIdx => $oItemVal )
+        {
+            if(is_null($aItemInfoByItemSrl[$oItemVal->item_srl]))
+                $aItemInfoByItemSrl[$oItemVal->item_srl] = new stdClass();
 			$aItemInfoByItemSrl[$oItemVal->item_srl]->item_name = $oItemVal->item_name;
+        }
 
 		if( !defined(svorder::ORDER_STATE_ON_DEPOSIT) )
 			getClass('svorder');
@@ -263,7 +267,7 @@ class svcartAdminView extends svcart
  **/
 	public function dispSvcartAdminCartDetail() 
 	{
-		$oSvcartAdminModel = &getAdminModel('svcart');
+		$oSvcartAdminModel = getAdminModel('svcart');
 		$nCartSrl = Context::get('cart_srl');
 		$oOrderInfo = $oSvcartAdminModel->getCartItem($nCartSrl);
 		Context::set('order_info', $oOrderInfo);

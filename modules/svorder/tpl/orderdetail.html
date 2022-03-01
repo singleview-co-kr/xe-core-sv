@@ -343,7 +343,7 @@ else
 			</table>
 			<div id="OrderStatusUpdateForm"></div>
 		</section>
-		<section id='section_deduction' class="section" cond="count( $order_info->aSingleDeductionInfo ) > 0 && $order_info->aSingleDeductionInfo!=-1">
+		<section id='section_deduction' class="section" cond="count((array)$order_info->aSingleDeductionInfo ) > 0 && $order_info->aSingleDeductionInfo!=-1">
 			<h1>{$lang->deduction_for_cancel}</h1>
 <block loop="$order_info->aSingleDeductionInfo=>$nSvCartSrl,$aDeductInfo">
 			<table class="x_table">

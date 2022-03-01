@@ -17,14 +17,12 @@ class svitemItemConsumer extends svitem
  * @brief 생성자
  * $oParams->oSvitemConfig
  **/
-	public function svitemItemConsumer($oParams=null) 
+	public function __construct($oParams=null) 
 	{
 		$this->_g_sArchivePath = _XE_PATH_.'files/svitem/';
 		$this->_g_oLoggedInfo = Context::get('logged_info');
-		
-		if( $oParams->oSvitemModuleConfig )
+		if($oParams->oSvitemModuleConfig)
 			$this->_g_oSvitemModuleConfig = $oParams->oSvitemModuleConfig;
-
 		$this->_setSkeletonSvitemHeader();
 	}
 /**
@@ -44,11 +42,12 @@ class svitemItemConsumer extends svitem
 				$oTmpRst->data = $oParams->oRawData;
 				break;
 			default:
-				if( $oParams->nItemSrl )
+                $oTmpArgs = new stdClass();
+				if($oParams->nItemSrl)
 					$oTmpArgs->item_srl = $oParams->nItemSrl;
-				elseif( $oParams->nDocumentSrl )
+				elseif($oParams->nDocumentSrl)
 					$oTmpArgs->document_srl = $oParams->nDocumentSrl;
-				elseif( $oParams->item_code )
+				elseif($oParams->item_code)
 					$oTmpArgs->item_code = $oParams->item_code;
 
 				$oTmpRst = executeQuery('svitem.getItemInfo', $oTmpArgs);
@@ -98,7 +97,7 @@ class svitemItemConsumer extends svitem
 		{
 			$oFileModel = getModel('file');
 			$aGalleryImg = $oFileModel->getFiles($this->_g_oOldItemHeader->gallery_doc_srl, array(), 'file_srl', true);
-			if( count( $aGalleryImg ) )
+			if(count((array)$aGalleryImg))
 			{
 				$aAllowdFileExtension = [ 'GIF', 'JPG', 'PNG', 'BMP', 'TIFF' ];
 				foreach( $aGalleryImg as $nIdx => $oFile )
@@ -154,7 +153,7 @@ class svitemItemConsumer extends svitem
 					$this->_g_oOldItemHeader->pc_description = $this->_g_oOldItemHeader->mob_description;
 			}
 			if( strlen($this->_g_oOldItemHeader->pc_description) == 0 ) // 최종적으로 아무 내용도 설정되지 않았으면
-				$this->_g_oOldItemHeader->pc_description = 'Please define pc descrtion!';
+				$this->_g_oOldItemHeader->pc_description = 'Please define pc description!';
 			unset($this->_g_oOldItemHeader->mob_description ); // to save memory
 		}
 
@@ -166,6 +165,7 @@ class svitemItemConsumer extends svitem
 			$this->_g_oOldItemHeader->enhanced_item_info->item_brief = $oDocument->getContent(false);
 
 		$oDbInfo = Context::getDBInfo();
+        $oSnsInfo = new stdClass();
 		$oSnsInfo->sPermanentUrl = $oDocument->getPermanentUrl().'?l='.$oDbInfo->lang_type;
 		$oSnsInfo->sEncodedDocTitle = urlencode($this->_g_oOldItemHeader->item_name);
 		$this->_g_oOldItemHeader->oSnsInfo = $oSnsInfo;
@@ -210,18 +210,16 @@ class svitemItemConsumer extends svitem
 				unset($oRst);
 			}
 		}
-		if( count( $aFloatingProduct ) ) // multi bundling
+		if(count((array)$aFloatingProduct)) // multi bundling
 		{
 			$this->_g_oOldItemHeader->aFloatingProduct = $aFloatingProduct;
 			$this->_g_oOldItemHeader->aMaxQty = $aMaxQty; 
 		}
-		if( count( $aFixedProduct ) ) // single bundling
+		if(count((array)$aFixedProduct)) // single bundling
 			$this->_g_oOldItemHeader->aFixedProduct = $aFixedProduct;
 		//bundling_info end
-
 		// get buying options
 		$this->_setBuyingOption();
-
 		return new BaseObject();
 	}
 /**
@@ -231,6 +229,7 @@ class svitemItemConsumer extends svitem
 	{
 		// $_SESSION에 catalog 거쳤는지 표시
 		// pass through impression vs standalone imppression of detail page
+        $oParams = new stdClass();
 		$oParams->location = 'catalog';//'detail'//'cart'//'order_complete';
 		$oParams->postion = 1;// 'catalog'일 때 진열 순서
 		$oParams->session = 'user_Session_id';
@@ -265,6 +264,7 @@ class svitemItemConsumer extends svitem
 	public function applyPromotionForDetail()
 	{
 		// 아이템별 기본 할인 정책 가져오기
+        $oInfo4Promotion = new stdClass();
 		$oInfo4Promotion->module_srl = $this->_g_oOldItemHeader->module_srl;
 		$oInfo4Promotion->item_srl = $this->_g_oOldItemHeader->item_srl;
 		$oInfo4Promotion->price = $this->_g_oOldItemHeader->price;
@@ -484,6 +484,7 @@ class svitemItemConsumer extends svitem
  **/	
 	private function _setBuyingOption()
 	{
+        $oArgs = new stdClass();
 		$oArgs->item_srl = $this->_g_oOldItemHeader->item_srl;
 		$oOptionRst = executeQueryArray('svitem.getOptions', $oArgs);
 		if(!$oOptionRst->toBool())
@@ -537,6 +538,7 @@ class svitemItemConsumer extends svitem
  **/
 	private function _setSkeletonSvitemHeader()
 	{
+        $this->_g_oOldItemHeader = new stdClass();
 		$this->_g_oOldItemHeader->module_srl = svitem::S_NULL_SYMBOL; // __get 메소드로 접근하면 XE context를 통과하여 전달할 수 없는 거 같음
 		$this->_g_oOldItemHeader->document_srl = svitem::S_NULL_SYMBOL;
 		$this->_g_oOldItemHeader->disp_module_srl = svitem::S_NULL_SYMBOL;
@@ -616,7 +618,7 @@ class svitemItemConsumer extends svitem
 	{
 		require_once(_XE_PATH_.'modules/svitem/svitem.extravar.controller.php');
 		$oExtraVarsController = new svitemExtraVarController();
-
+        $oArg = new stdClass();
 		$oArg->nItemSrl = $this->_g_oOldItemHeader->item_srl;
 		$oArg->nModuleSrl = $this->_g_oOldItemHeader->module_srl;
 		$this->_g_oOldItemHeader->extra_vars = $oExtraVarsController->getExtendedVarsNameValueByItemSrl($oArg);
@@ -640,6 +642,7 @@ class svitemItemConsumer extends svitem
  **/
 	private function _getBundlings()
 	{
+        $oArgs = new stdClass();
 		$oArgs->item_srl = $this->_g_oOldItemHeader->item_srl;
 		$oRst = executeQueryArray( 'svitem.getBundles', $oArgs );
 		$aBundle = [];

@@ -398,6 +398,12 @@ class autoinstallAdminView extends autoinstall
 
 		$this->setTemplateFile('index');
 
+        $sTgtFilePath = _XE_PATH_.'files/ddd.pdf';
+
+        $url = 'http://192.168.0.37/xe-core-sv/?module=file&act=procFileDownload&file_srl=153&sid=4d17db965b284b372aabd35d78ba6aaa&module_srl=79';
+        # $url = 'http://192.168.0.37/xe-core-sv/index.php?act=procFileOutput&file_srl=153&file_key=f47b1200eec20fa2e6f15c4fe6664233';
+        //exec("wget -O ".$sTgtFilePath." '".$url."'");  // curl does not work act=procFileDownload is redirection
+        
 		// $params = array();
 		// $params["act"] = "getResourceapiLastupdate";
 		// $body = XmlGenerater::generate($params);

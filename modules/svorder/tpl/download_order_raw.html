@@ -2,7 +2,7 @@
 <block cond="count($list)">
 	{@$list_keys = array_keys($list)}
 	{@$first_order = $list[$list_keys[0]]}
-	{@$extra_vars = unserialize($first_order->extra_vars)}
+	{@$extra_vars = $first_order->extra_vars}
 	<block cond="$extra_vars">
 		{@$keys = array_keys($extra_vars)}
 		{@$representative = $keys[0]}

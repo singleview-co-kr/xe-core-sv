@@ -51,10 +51,9 @@ class svitemExtraVarController extends svitem
 	{
 		if(!$oParam->nModuleSrl)
 			return new BaseObject(-1, 'msg_invalid_module_srl');
-
 		if(!$oParam->nExtraSrl)
 			return new BaseObject(-1, 'msg_invalid_extra_srl');
-
+        $oTmpArg = new stdClass();
 		$oTmpArg->extra_srl = $oParam->nExtraSrl;
 		$oRmRst = executeQuery('svitem.deleteItemExtra', $oTmpArg);
 		if(!$oRmRst->toBool())
@@ -124,13 +123,13 @@ class svitemExtraVarController extends svitem
  **/
 	public function getExtraVarsConfiguration($oParam)
 	{
-		if( !$oParam->nModuleSrl )
+		if(!$oParam->nModuleSrl)
 			return new BaseObject(-1, 'msg_invalid_module_srl');
-		if( $oParam->sPageType != 'catalog' && $oParam->sPageType != 'detail' )
+		if($oParam->sPageType != 'catalog' && $oParam->sPageType != 'detail')
 			return new BaseObject(-1, 'msg_invalid_page_type');
 		// extended var, default var를 병합한 변수 목록 가져오기
 		// 기본 변수 가져오기
-		switch( $oParam->sPageType )
+		switch($oParam->sPageType)
 		{
 			case 'catalog':
 				$aVirtualVars = self::A_DEFAULT_VAR_CATALOG;
@@ -148,7 +147,7 @@ class svitemExtraVarController extends svitem
 
 		// 기본변수 + 확장변수 = 전체변수
 		$aExtraVars = [];
-		foreach($aVirtualVars as $sVarTitle) 
+		foreach($aVirtualVars as $sVarTitle)
 			$aExtraVars[$sVarTitle] = new svExtenVar($oParam->nModuleSrl, -1,  $sVarTitle, Context::getLang($sVarTitle),'default', '', null, null);
 		if(count($aFormList))
 		{
@@ -166,9 +165,9 @@ class svitemExtraVarController extends svitem
 		
 		$aDisplayingVars = [];
 		$aHiddenVars = [];
-		foreach( $aExtraVars as $sVarName => $oVar )
+		foreach($aExtraVars as $sVarName => $oVar)
 		{
-			if( in_array( $sVarName, $aRegisteredVars) ) // 저장 변수명이면 표시 변수 목록으로
+			if(in_array($sVarName, (array)$aRegisteredVars)) // 저장 변수명이면 표시 변수 목록으로
 				$aDisplayingVars[$sVarName] = $oVar->title;
 			else // 저장 변수명이 아니면 숨김 변수 목록으로
 				$aHiddenVars[$sVarName] = $oVar->title;
@@ -190,15 +189,16 @@ class svitemExtraVarController extends svitem
 	public function getExtendVarsByModuleSrl($nModuleSrl)
 	{
 		//global $oLang; // to Add language variable
+        $oArgs = new stdClass();
 		$oArgs->sort_index = 'list_order';
 		$oArgs->module_srl = $nModuleSrl;
 		$oRst = executeQueryArray('svitem.getItemExtraList', $oArgs);
 		if(!$oRst->toBool()) 
 			return $oRst;
-		unset( $oArgs);
+		unset($oArgs);
 		$aDecodeVarType = ['checkbox','select','radio'];
 		$aFinalExtraVar = [];
-		foreach($oRst->data as $nIdx => $oExtraVar )
+		foreach($oRst->data as $nIdx => $oExtraVar)
 		{
 			$nExtraSrl = $oExtraVar->extra_srl;
 			$sVarType = $oExtraVar->column_type;
@@ -274,7 +274,7 @@ class svitemExtraVarController extends svitem
 	{
 		if(!$nItemSrl)
 			return new BaseObject(-1, 'msg_invalid_item_srl');
-
+        $oArgs = new stdClass();
 		$oArgs->item_srl = $nItemSrl;
 		$oRst = executeQueryArray("svitem.getSvitemExtraVars",$oArgs);
 		if(!$oRst->toBool()) 
@@ -302,6 +302,7 @@ class svitemExtraVarController extends svitem
 		if(in_array($sColumnName, array('module','act','module_srl', 'document_srl','description', 'delivery_info', 'item_srl','category_depth1','category_depth2','category_depth3','category_depth4','thumbnail_image','contents_file'))) 
 			return TRUE;
 		// check in extra keys
+        $oArgs = new stdClass();
 		$oArgs->module_srl = $nModulesrl;
 		$oArgs->column_name = $sColumnName;
 		$oRst = executeQuery('svitem.isExistsExtraKey', $oArgs);
@@ -344,7 +345,7 @@ class svExtenVar//NExtraItem
  * @param string $eid Unique id of extra variable in module
  * @return void
  */
-	function svExtenVar($module_srl, $idx, $name, $title, $type = 'text', $default = null, $desc = '', $is_required = 'N', $search = 'N', $value = null, $eid = '')
+	function __construct($module_srl, $idx, $name, $title, $type = 'text', $default = null, $desc = '', $is_required = 'N', $search = 'N', $value = null, $eid = '')
 	{
 		if(!$idx)
 			return;

@@ -1406,9 +1406,11 @@ class moduleModel extends module
 				}
 				$GLOBALS['__ModuleConfig__'][$site_srl][$module] = $config;
 			}
+            
 			return $GLOBALS['__ModuleConfig__'][$site_srl][$module];
 		}
-
+        if(is_null($config))
+            $config = new stdClass();
 		return $config;
 	}
 

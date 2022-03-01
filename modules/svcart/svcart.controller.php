@@ -13,13 +13,14 @@ class svcartController extends svcart
 	{
 		$cart_srls = Context::get('cart_srls');
 		$cart_srls = explode(',', $cart_srls);
-		foreach ($cart_srls as $val) 
+		$args = new stdClass();
+        foreach($cart_srls as $val) 
 		{
 			if (!$val)
 				continue;
 			$args->cart_srl = $val;
 			$output = executeQuery('svcart.deleteCart', $args);
-			if (!$output->toBool())
+			if(!$output->toBool())
 				return $output;
 		}
 		$this->setMessage('success_deleted');
@@ -30,13 +31,13 @@ class svcartController extends svcart
 	public function procSvcartDeleteFavoriteItems() {
 		$item_srls = Context::get('item_srls');
 		$item_srls = explode(',', $item_srls);
-		foreach ($item_srls as $val) 
+		foreach($item_srls as $val) 
 		{
-			if (!$val && !$val == 0) 
+			if(!$val && !$val == 0) 
 				continue;
 			$args->item_srl = $val;
 			$output = executeQuery('svcart.deleteFavoriteItem', $args);
-			if (!$output->toBool()) 
+			if(!$output->toBool()) 
 				return $output;
 		}
 		$this->setMessage('success_deleted');
@@ -46,41 +47,39 @@ class svcartController extends svcart
  */
 	public function procSvcartUpdateQuantity() 
 	{
+        $args = new stdClass();
 		$args->cart_srl = (int)Context::get('cart_srl');
 		$args->quantity = (int)Context::get('quantity');
-
 		$oRst = $this->_validateCartAuthority();
-
 		$nMaxQty = $oRst->nMaxQty;
 		$nExistingCartQty = 0;
-		foreach( $oRst->aExistingCartQtyInfo as $key=>$val )
+		foreach($oRst->aExistingCartQtyInfo as $key=>$val)
 			$nExistingCartQty += $key == $args->cart_srl ? $args->quantity : $val;
 
-		if( $nExistingCartQty > $nMaxQty )
+		if($nExistingCartQty > $nMaxQty)
 			return new BaseObject(-1, 'msg_exceed_qty_limit');
 
 		$output = executeQuery('svcart.getCartItem', $args);
-		if (!$output->toBool()) 
+		if(!$output->toBool()) 
 			return $output;
 
-		$oConditionalPromotionInfo = unserialize( $output->data->conditional_promotion );
-		if( $oConditionalPromotionInfo )
+		$oConditionalPromotionInfo = unserialize($output->data->conditional_promotion);
+		if($oConditionalPromotionInfo)
 		{
-			if( $oConditionalPromotionInfo->version == '1.0')
+			if($oConditionalPromotionInfo->version == '1.0')
 			{
-				foreach( $oConditionalPromotionInfo->promotion as $nIdx => $oVal )
+				foreach($oConditionalPromotionInfo->promotion as $nIdx => $oVal)
 				{
-					if( isset( $oVal->resultant_giveaway_qty ) )
+					if(isset($oVal->resultant_giveaway_qty))
 						$oVal->resultant_giveaway_qty = $args->quantity;
 				}
 			}
-			$sConditionalPromotionInfo = serialize( $oConditionalPromotionInfo );
+			$sConditionalPromotionInfo = serialize($oConditionalPromotionInfo);
 			$args->conditional_promotion = $sConditionalPromotionInfo;
 		}
 		$output = executeQuery('svcart.updateCartItem', $args);
-		if (!$output->toBool()) 
+		if(!$output->toBool()) 
 			return $output;
-
 		$this->setMessage('success_changed');
 	}
 /**
@@ -91,17 +90,16 @@ class svcartController extends svcart
 		$oRst = $this->_validateCartAuthority();
 		$nExistingCartQty = $oRst->nExistingCartQty;
 		$nMaxQty = $oRst->nMaxQty;
-		if( $nExistingCartQty > $nMaxQty )
+		if($nExistingCartQty > $nMaxQty)
 			return new BaseObject(-1, 'msg_exceed_qty_limit');
 
 		$nRequstingCartQty = 0;
-
 		$oSvitemModel = &getModel('svitem');
 		$oModuleModel = &getModel('module');
 		$oSvpromotionModel = &getModel('svpromotion');
 		$sJsonData = Context::get('data');
 		$aRequestedItemToCart = json_decode($sJsonData);
-		foreach( $aRequestedItemToCart as $nCartIdx => $oCartedItemInfo ) 
+		foreach($aRequestedItemToCart as $nCartIdx => $oCartedItemInfo)
 		{
 			if(!$oCartedItemInfo) 
 				continue;
@@ -109,28 +107,29 @@ class svcartController extends svcart
 				$oCartedItemInfo->quantity = 1;
 
 			$nRequstingCartQty += $oCartedItemInfo->quantity;
-			if( $nExistingCartQty + $nRequstingCartQty > $nMaxQty )
+			if($nExistingCartQty + $nRequstingCartQty > $nMaxQty)
 				return new BaseObject(-1, 'msg_exceed_qty_limit');
 			
+            $oItemParam = new stdClass();
 			$oItemParam->nItemSrl = $oCartedItemInfo->item_srl;
 			$oItemInfo = $oSvitemModel->getItemInfoNewFull($oItemParam);
-			if( !$oItemInfo )
+			if(!$oItemInfo)
 				return new BaseObject(-1, 'msg_item_not_found');
 			unset($oItemParam);
 
 ////////// 번들링 제품 선택 정보 확인 시작 /////////////////
-			if( strlen( $oCartedItemInfo->bundling_items ) > 0 )
+			if(strlen($oCartedItemInfo->bundling_items) > 0)
 			{
 				$aDeterminedBundlingInfo = Array();
-				$aFinalBundlings = explode( ',', $oCartedItemInfo->bundling_items );
-				$nElements = count( $aFinalBundlings );
-				if( $nElements > 0 )
+				$aFinalBundlings = explode(',', $oCartedItemInfo->bundling_items);
+				$nElements = count($aFinalBundlings);
+				if($nElements > 0)
 				{
-					for( $i = 0; $i < $nElements; $i++ )
+					for($i = 0; $i < $nElements; $i++)
 					{
-						if( strlen( $aFinalBundlings[$i] ) > 0 )
+						if(strlen( $aFinalBundlings[$i] ) > 0)
 						{
-							$aSingleBundle = explode( '^', $aFinalBundlings[$i] );
+							$aSingleBundle = explode('^', $aFinalBundlings[$i]);
 							$aDeterminedBundlingInfo[$i]->bundle_item_srl = $aSingleBundle[0];
 							$aDeterminedBundlingInfo[$i]->bundle_quantity = $aSingleBundle[1];
 						}
@@ -140,36 +139,38 @@ class svcartController extends svcart
 ////////// 번들링 제품 선택 정보 확인 끝 /////////////////
 			// check stock
 			$nStock = $oItemInfo->current_stock;
-			if( $stock !== null && ($stock < $oCartedItemInfo->quantity || $stock == 0) )
-				return new BaseObject(-1, sprintf( Context::getLang( 'msg_not_enough_stock'), $oItemInfo->item_name ));
+			if($stock !== null && ($stock < $oCartedItemInfo->quantity || $stock == 0))
+				return new BaseObject(-1, sprintf( Context::getLang( 'msg_not_enough_stock'), $oItemInfo->item_name));
 
 			// 수량 할인 기능 추가 위해 구조체 확장
+            $oItemPromo = new stdClass();
 			$oItemPromo->module_srl = $oItemInfo->nModuleSrl;
 			$oItemPromo->item_srl = $oItemInfo->item_srl;
 			$oItemPromo->quantity = $oCartedItemInfo->quantity;
 			$oItemPromo->price = $oItemInfo->price;
 
 			// 프로모션 정보 확인
-			if( $oCartedItemInfo->fb_liked == 1 ) // 아이템별 기본 할인 정책 가져오기
+			if($oCartedItemInfo->fb_liked == 1) // 아이템별 기본 할인 정책 가져오기
 				$aRequestedPromotion[] = 'fblike';
-			if( $oCartedItemInfo->fb_shared == 1 ) // 아이템별 fb share 할인 정책 가져오기
+			if($oCartedItemInfo->fb_shared == 1) // 아이템별 fb share 할인 정책 가져오기
 				$aRequestedPromotion[] = 'fbshare';
 			
-			$oPromoRst = $oSvpromotionModel->getPromotionDetailForCartAddition( $oItemPromo, $oCartedItemInfo, $aRequestedPromotion );
-			if( !$oPromoRst->toBool() )
+			$oPromoRst = $oSvpromotionModel->getPromotionDetailForCartAddition($oItemPromo, $oCartedItemInfo, $aRequestedPromotion);
+			if(!$oPromoRst->toBool())
 				return $oPromoRst;
 			$oPromotionInfo = $oPromoRst->get('item_promotion_info');
 			unset($oPromoRst);
 			unset($oItemPromo);
 			
 			// FB like 와 FB shr만 conditional_promotion에 남기고 장바구니 DB에 기록함
+            $oArgs = new stdClass();
 			$oArgs->conditional_promotion = $oPromotionInfo->conditional_promotion; 
 
 			// 구매옵션 정보 확인
 			$aOption = $oItemInfo->aBuyingOption; //$oSvitemModel->getOptions($oCartedItemInfo->item_srl);
 
 			// 구매옵션이 있는 상품이면 구매옵션 선택 여부를 체크해야 한다.
-			if( count($aOption) && !$oCartedItemInfo->option_srl )
+			if(count($aOption) && !$oCartedItemInfo->option_srl)
 				return new BaseObject(-1, 'msg_select_option');
 
 			// 기본 배송회사ID 가져오기 위해 모듈정보 읽기
@@ -184,11 +185,11 @@ class svcartController extends svcart
 			$oArgs->option_title = $aOption[$oCartedItemInfo->option_srl]->title;
 
 			// 번들링 구매 정보 입력
-			if( count( $aDeterminedBundlingInfo ) > 0 )
-				$oArgs->bundling_order_info = serialize( $aDeterminedBundlingInfo );
+			if(count((array)$aDeterminedBundlingInfo) > 0)
+				$oArgs->bundling_order_info = serialize($aDeterminedBundlingInfo);
 			// addItems will return $oArgs->cart_srl
 			$oCartAddRst = $this->_addItemsToCart($oArgs);
-			if( !$oCartAddRst->toBool() )
+			if(!$oCartAddRst->toBool())
 				return $oCartAddRst;
 			$aCartSrl[] = $oCartAddRst->get('cart_srl');
 			unset($oCartAddRst);
@@ -224,10 +225,10 @@ class svcartController extends svcart
 	public function markOfferDate($sCartnos)
 	{
 		$aCartNo = explode( ',', $sCartnos);
-		if( count( $aCartNo ) == 0 )
+		if(count($aCartNo) == 0)
 			return new BaseObject(-1,'msg_invalid_request');
-		
-		foreach( $aCartNo as $nIdx => $nCartSrl )
+		$oArg = new stdClass();
+		foreach($aCartNo as $nIdx => $nCartSrl)
 		{
 			$oArg->cart_srl = $nCartSrl;
 			$oRst = executeQuery('svcart.updateCartOfferDate', $oArg);
@@ -248,7 +249,7 @@ class svcartController extends svcart
 			return new BaseObject(-1,'msg_duplicated_favorite_item');
 
 		$output = executeQuery('svcart.insertFavoriteItem', $in_args);
-		if (!$output->toBool()) 
+		if(!$output->toBool()) 
 			return $output;
 
 		return new BaseObject();
@@ -263,7 +264,7 @@ class svcartController extends svcart
 		$args->non_key = $non_key;
 		$args->del_non_key = '';
 		$output = executeQuery('svcart.updateNonCartItem', $args);
-		if (!$output->toBool()) 
+		if(!$output->toBool()) 
 			return $output;
 	}
 /**
@@ -272,9 +273,10 @@ class svcartController extends svcart
  */
 	public function deactivateCart($oParam)
 	{
-		if( !defined(svorder::ORDER_STATE_ON_DEPOSIT) )
+		if(!defined(svorder::ORDER_STATE_ON_DEPOSIT))
 			getClass('svorder');
-		switch ($oParam->state) 
+		$oArgs = new stdClass();
+		switch($oParam->state) 
 		{
 			case '1': // not completed
 			case '3': // failure
@@ -291,15 +293,16 @@ class svcartController extends svcart
  * @brief svpg.controller.php::procSvpgReviewOrder()에서 호출
  * 주문 절차 완료 후 svcart의 관련 품목을 비활성화하기 위해 svorder_srl을 먼저 기록함
  */
-	public function setEstiOrderSrl( $oArgs )
+	public function setEstiOrderSrl($oArgs)
 	{
-		$aCartSrl = explode( ',', $oArgs->cartnos );
+		$aCartSrl = explode(',', $oArgs->cartnos);
+		$oCartArgs = new stdClass();
 		$oCartArgs->order_srl = $oArgs->order_srl;
-		foreach( $aCartSrl as $nIdx => $nCartSrl )
+		foreach($aCartSrl as $nIdx => $nCartSrl)
 		{
 			$oCartArgs->cart_srl = $nCartSrl;
 			$oRst = executeQuery('svcart.updateCartItem', $oCartArgs);
-			if (!$oRst->toBool()) 
+			if(!$oRst->toBool()) 
 				return $oRst;
 		}
 		return new BaseObject();
@@ -313,41 +316,42 @@ class svcartController extends svcart
 		$nExistingCartQty = 0;
 		$oSvcartModel = &getModel('svcart');
 		$oConfig = $oSvcartModel->getModuleConfig();
-		if( $oConfig->group_policy_toggle == 'on' )
+		if($oConfig->group_policy_toggle == 'on')
 		{
 			$logged_info = Context::get('logged_info');
-			if( !$logged_info )
+			if(!$logged_info)
 			{
 				$logged_info->group_list[0] = 'guest';
 				$logged_info->member_srl = 0;
 			}
-			foreach( $logged_info->group_list as $key => $val )
+			foreach($logged_info->group_list as $key => $val)
 			{
-				if( isset( $oConfig->group_cart_policy[$key] ) )
+				if(isset($oConfig->group_cart_policy[$key]))
 				{
 					$nTempMaxQty = $oConfig->group_cart_policy[$key];
-					if( $nMaxQty > $nTempMaxQty )
+					if($nMaxQty > $nTempMaxQty)
 						$nMaxQty = $nTempMaxQty;
 				}
 			}
 			// check already existing carted item if member
 			$aExistingCartList = null;
-			if( $logged_info->member_srl == 0 )
+			if($logged_info->member_srl == 0)
 			{
-				if( $_COOKIE['non_key'] )
-					$aExistingCartList = $oSvcartModel->getGuestCartInfo( $_COOKIE['non_key'] );
+				if($_COOKIE['non_key'])
+					$aExistingCartList = $oSvcartModel->getGuestCartInfo($_COOKIE['non_key']);
 			}
-			else if( $logged_info->member_srl > 0 )
-				$aExistingCartList = $oSvcartModel->getMemberCartInfo( $logged_info->member_srl );
+			else if($logged_info->member_srl > 0)
+				$aExistingCartList = $oSvcartModel->getMemberCartInfo($logged_info->member_srl);
 			
 			$nExistingCartQty = 0;
 			$aExistingCartQtyInfo = array();
-			foreach( $aExistingCartList->item_list as $key => $val )
+			foreach($aExistingCartList->item_list as $key => $val)
 			{
 				$nExistingCartQty += $val->quantity;
 				$aExistingCartQtyInfo[$val->cart_srl] = $val->quantity;
 			}
 		}
+        $oRst = new stdClass();
 		$oRst->nExistingCartQty = $nExistingCartQty;
 		$oRst->aExistingCartQtyInfo = $aExistingCartQtyInfo;
 		$oRst->nMaxQty = $nMaxQty;
@@ -361,8 +365,8 @@ class svcartController extends svcart
 		$oSvcartModel = &getModel('svcart');
 		$config = $oSvcartModel->getModuleConfig();
 		$logged_info = Context::get('logged_info');
-
 		$cart_srl = $this->getCartSrl();
+        $args = new stdClass();
 		$args->cart_srl = $cart_srl;
 		$args->module = $in_args->module;
 		$args->item_srl = $in_args->item_srl;
@@ -380,7 +384,7 @@ class svcartController extends svcart
 		$args->discount_info = serialize( $in_args->discount_info );
 		$args->discounted_price = $in_args->discounted_price;
 		$args->conditional_promotion = serialize( $in_args->conditional_promotion );
-		if( strlen( $in_args->bundling_order_info ) > 0 )
+		if(strlen($in_args->bundling_order_info) > 0)
 			$args->bundling_order_info = $in_args->bundling_order_info;
 
 		if(!$logged_info)
@@ -393,13 +397,11 @@ class svcartController extends svcart
 			else
 				$args->non_key = $_COOKIE['non_key']; 
 		}
-
 		//$args->non_key = $in_args->non_key;
 		$output = executeQuery('svcart.insertCartItem', $args);
-		if (!$output->toBool())
+		if(!$output->toBool())
 			return $output;
 		unset($args);
-
 		$retobj = new BaseObject();
 		$retobj->add('cart_srl', $cart_srl);
 		return $retobj;

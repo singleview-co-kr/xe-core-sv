@@ -4,7 +4,6 @@
  * @author singleview(root@singleview.co.kr)
  * @brief  svitemAdminView
  */ 
-//require_once(_XE_PATH_.'modules/svitem/nucommon.class.php');
 class svitemAdminView extends svitem
 {
 /**
@@ -86,8 +85,10 @@ class svitemAdminView extends svitem
 			$order_type = 'asc';
 		
 		$sSearchItemName = Context::get('search_item_name');
-		if( strlen($sSearchItemName) )
+		if(strlen($sSearchItemName))
 			$args->item_name = $sSearchItemName;
+
+        $args = new stdClass();
 		$args->module_srl = $nModuleSrl;
 		$args->page = Context::get('page');
 		$args->list_count = $list_count;
@@ -129,13 +130,14 @@ class svitemAdminView extends svitem
 
 		require_once(_XE_PATH_.'modules/svitem/svitem.item_admin.php');
 		$oItemAdmin = new svitemItemAdmin();
+        $oParams = new stdClass();
 		$oParams->item_srl = $nItemSrl;
 		$oTmpRst = $oItemAdmin->loadHeader($oParams);
 		if(!$oTmpRst->toBool())
 			return new BaseObject(-1,'msg_invalid_item_request');
 		unset($oParams);
 		unset($oTmpRst);
-
+        $oParams = new stdClass();
 		$oParams->sUaType = $sUaType;
 		$oTmpRst = $oItemAdmin->loadDetail($oParams);
 		if(!$oTmpRst->toBool())
@@ -150,6 +152,7 @@ class svitemAdminView extends svitem
 		Context::set('editor', $oEditorModel->getModuleEditor('document', $oItemAdmin->nModuleSrl, $oItemAdmin->document_srl, 'document_srl', 'description'));
 
 		// gallery image editor
+        $oOption = new stdClass();
 		//$oOption->disable_html = true;
 		//$oOption->enable_default_component = true;
 		//$oOption->enable_component = true;
@@ -165,6 +168,7 @@ class svitemAdminView extends svitem
 		unset($oEditorModel);
 
 		// get options
+        $oOptionArgs = new stdClass();
 		$oOptionArgs->item_srl = $nItemSrl;
 		$oOptionRst = executeQueryArray('svitem.getOptions', $oOptionArgs);
 		if(!$oOptionRst->toBool())
@@ -188,9 +192,9 @@ class svitemAdminView extends svitem
 		FileHandler::makeDir($sDescriptionSkinPath);
 		$aSkinFiles = FileHandler::readDir($sDescriptionSkinPath );
 		$aDisplaySkinFiles = [];
-		foreach( $aSkinFiles as $key=>$val)
+		foreach($aSkinFiles as $key=>$val)
 		{
-			if( strpos($val, '.html' ) && strpos($val, 'html.' ) === FALSE)
+			if(strpos($val, '.html') && strpos($val, 'html.') === FALSE)
 				$aDisplaySkinFiles[] = $val;
 		}
 		Context::set('description_skin_list', $aDisplaySkinFiles);
@@ -286,8 +290,10 @@ class svitemAdminView extends svitem
 		$oModules = $oModuleModel->getMidList();
 		foreach($oModules as $key=>$val)
 		{
-			if( $val->module == 'svitem' )
+			if($val->module == 'svitem')
 			{
+                if(is_null($oSvitemModules[$nIdx]))
+                    $oSvitemModules[$nIdx] = new stdClass();
 				$oSvitemModules[$nIdx]->module_srl = $val->module_srl;
 				$oSvitemModules[$nIdx++]->mid = $val->mid;
 			}
@@ -463,6 +469,7 @@ class svitemAdminView extends svitem
  */
 	public function dispSvitemAdminShowWindowCatalog() 
 	{
+        $args = new stdClass();
 		$args->module_srl = Context::get('module_srl');
 		$output = executeQueryArray('svitem.getShowWindowCatalogList', $args);
 		if(!$output->toBool()) 
@@ -547,7 +554,7 @@ class svitemAdminView extends svitem
 	{
 		require_once(_XE_PATH_.'modules/svitem/svitem.extravar.controller.php');
 		$oExtraVarsController = new svitemExtraVarController();
-		
+        $oArgs = new stdClass();
 		$oArgs->sPageType = 'catalog';
 		$oArgs->nModuleSrl = $this->module_info->module_srl;
 		$oRst = $oExtraVarsController->getExtraVarsConfiguration($oArgs);
@@ -577,7 +584,7 @@ class svitemAdminView extends svitem
 	{
 		require_once(_XE_PATH_.'modules/svitem/svitem.extravar.controller.php');
 		$oExtraVarsController = new svitemExtraVarController();
-
+        $oArgs = new stdClass();
 		$oArgs->sPageType = 'detail';
 		$oArgs->nModuleSrl = $this->module_info->module_srl;
 		$oRst = $oExtraVarsController->getExtraVarsConfiguration($oArgs);
@@ -677,15 +684,6 @@ class svitemAdminView extends svitem
 		header("Content-Type: Application/octet-stream;");
 		header("Content-Disposition: attachment; filename=\"ITEMLIST-" . date('Ymd') . ".xls\"");
 	}
-/**
- * @brief 제품등록인증
- */
-	/*function getLicenseFromAgency()
-	{
-		$oSvitemModel = &getModel('svitem');
-		$config = $oSvitemModel->getModuleConfig();
-		return nucommon::getLicenseFromAgency('svitem', $config->user_id, $config->serial_number);
-	}*/
 }
 /* End of file svitem.admin.view.php */
 /* Location: ./modules/svitem/svitem.admin.view.php */

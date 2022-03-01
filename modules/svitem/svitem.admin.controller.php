@@ -214,6 +214,7 @@ exit;
 		// update item
 		require_once(_XE_PATH_.'modules/svitem/svitem.item_admin.php');
 		$oItemAdmin = new svitemItemAdmin();
+        $oParams = new stdClass();
 		$oParams->item_srl = $oArgs->item_srl;
 		$oTmpRst = $oItemAdmin->loadHeader($oParams);
 		if(!$oTmpRst->toBool())
@@ -327,18 +328,18 @@ exit;
 		{
 			$aUpdatedItem = [];
 			$oArg = new stdClass();
-			
 			require_once(_XE_PATH_.'modules/svitem/svitem.item_admin.php');
 			$oItemAdmin = new svitemItemAdmin();
-			foreach ($aItemSrl as $nIdx => $nItemSrl) 
+			foreach($aItemSrl as $nIdx => $nItemSrl) 
 			{
+                $oParams = new stdClass();
 				$oParams->item_srl = $nItemSrl;
 				$oTmpRst = $oItemAdmin->loadHeader($oParams);
-				if (!$oTmpRst->toBool())
+				if(!$oTmpRst->toBool())
 					return new BaseObject(-1,'msg_invalid_item_request');
 				unset($oParams);
 				unset($oTmpRst);
-
+                $oParams = new stdClass();
 				$oParams->sUaType = 'og';
 				$oTmpRst = $oItemAdmin->loadDetail($oParams);
 				$oArg->item_srl = null;
@@ -634,7 +635,8 @@ exit;
 	public function procSvitemAdminUpdateShowWindowCatalog() 
 	{
 		$sActionMode = Context::get('mode');
-		switch( $sActionMode )
+		var_dump('ddd');
+		switch($sActionMode)
 		{
 			case 'insert':
 				$output = $this->_insertShowWindowCatalog();
@@ -793,6 +795,7 @@ exit;
  **/
 	public function procSvitemAdminInsertExtendVar() 
 	{
+        $oArgs = new stdClass();
 		$oArgs->module_srl = Context::get('module_srl');
 		$oArgs->extra_srl = Context::get('extra_srl');
 		$oArgs->column_type = Context::get('column_type');
@@ -826,6 +829,7 @@ exit;
 	public function procSvitemAdminDeleteExtendVar() 
 	{
 		$nModuleSrl = Context::get('module_srl');
+        $oArgs = new stdClass();
 		$oArgs->nModuleSrl = $nModuleSrl;
 		$oArgs->nExtraSrl = Context::get('extra_srl');
 		require_once(_XE_PATH_.'modules/svitem/svitem.extravar.controller.php');
@@ -918,6 +922,7 @@ exit;
  */
 	public function procSvitemAdminSaveDisplayConfig()
 	{
+        $oParam = new stdClass();
 		$oParam->nModuleSrl = Context::get('module_srl');
 		$sPageType = Context::get('page_type'); //'catalog';
 		$oParam->sPageType = $sPageType;
@@ -1118,6 +1123,7 @@ exit;
 		
 		require_once(_XE_PATH_.'modules/svitem/svitem.extravar.controller.php');
 		$oExtraVarsController = new svitemExtraVarController();
+        $oArgs = new stdClass();
 		$oArgs->nModuleSrl = $nModuleSrl;
 		$oArgs->sList = Context::get('list');
 		$oArgs->sPageType = $sPageType;
@@ -1186,21 +1192,20 @@ exit;
 **/
 	private function _updateMidLevelConfig($oArgs)
 	{
-		if( !$oArgs->module_srl )
+		if(!$oArgs->module_srl)
 			return new BaseObject(-1, 'msg_invalid_module_srl');
 
-		unset( $oArgs->module );
-		unset( $oArgs->error_return_url );
-		unset( $oArgs->success_return_url );
-		unset( $oArgs->act );
-		unset( $oArgs->ext_script );
-		unset( $oArgs->list );
+		unset($oArgs->module);
+		unset($oArgs->error_return_url);
+		unset($oArgs->success_return_url);
+		unset($oArgs->act);
+		unset($oArgs->ext_script);
+		unset($oArgs->list);
 
 		$oModuleModel = &getModel('module');
 		$oConfig = $oModuleModel->getModuleInfoByModuleSrl($oArgs->module_srl);
-		foreach( $oArgs as $key=>$val)
+		foreach($oArgs as $key=>$val)
 			$oConfig->{$key} = $val;
-
 		$oModuleController = &getController('module');
 		$oRst = $oModuleController->updateModule($oConfig);
 		return $oRst;
@@ -1241,6 +1246,7 @@ exit;
 	private function _deleteShowWindowCatalog() 
 	{
 		$nCatalogSrl = Context::get('catalog_srl');
+        $args = new stdClass();
 		$args->category_srl = $nCatalogSrl;
 		$output = executeQuery('svitem.deleteShowWindowCatalog', $args);
 		if(!$output->toBool())
@@ -1575,307 +1581,6 @@ exit;
 	{
 		FileHandler::removeFilesInDir('./files/cache/svitem/');
 	}
-/**
- * @brief 
- **/
-/*	private function _updateItemFile() 
-	{
-		$oFileController = &getController('file');
-		$args = Context::getRequestVars();
-		if(is_uploaded_file($args->contents_file['tmp_name']) || $args->thumbnail_image['tmp_name']) 
-		{
-			$args->item_srl = Context::get('item_srl');
-			$output = executeQuery('svitem.getItemInfo', $args);
-			if (!$output->toBool())
-				return $output;
-			$item_info = $output->data;
-			// process for uploaded contents file.
-			//if(is_uploaded_file($args->contents_file['tmp_name'])) 
-			//{
-				// delete contents file
-			//	if($item_info->file_srl) 
-			//		$oFileController->deleteFile($item_info->file_srl);
-				// attach thumbnail
-			//	$output = $oFileController->insertFile($args->contents_file, $args->module_srl, $args->item_srl);
-			//	if(!$output || !$output->toBool())
-			//		return $output;
-			//	$args->file_srl = $output->get('file_srl');
-			//}
-			// process for uplaoded thumbnail image.
-			if(is_uploaded_file($args->thumbnail_image['tmp_name'])) 
-			{
-				// delete thumbnail
-				if($item_info->thumb_file_srl) 
-					$oFileController->deleteFile($item_info->thumb_file_srl);
-				// attach thumbnail
-				$output = $oFileController->insertFile($args->thumbnail_image, $args->module_srl, $args->item_srl);
-				if(!$output || !$output->toBool())
-					return $output;
-				$args->thumb_file_srl = $output->get('file_srl');
-			}
-			$output = executeQuery('svitem.updateItemFile', $args);
-			if(!$output->toBool())
-				return $output;
-			$oFileController->setFilesValid($args->item_srl);
-		}
-	}*/
-/**
- * @brief 
- **/
-/*	private function _insertItem($oInArgs) 
-	{
-		$nModuleSrl = $oInArgs->module_srl;
-		$sItemCode = $oInArgs->item_code;
-		$sItemName = $oInArgs->item_name;
-		$nCatalogNodeSrl = 0;
-		$nDocumentSrl = $oInArgs->document_srl;
-		$sDescription = $oInArgs->description;
-		$nPrice = $oInArgs->price;
-		$bTaxfree = $oInArgs->taxfree;
-		$bDisplay = $oInArgs->display;
-		if (!$nModuleSrl || !$sItemName || !$bDisplay)
-			return new BaseObject(-1,'msg_invalid_request');
-
-		$nItemSrl = getNextSequence();
-		if (!$sItemCode)
-			$sItemCode = $nItemSrl;
-		// insert document
-		if (!$nDocumentSrl)
-			$nDocumentSrl = getNextSequence();
-
-		$doc_args->document_srl = $nDocumentSrl;
-		$doc_args->module_srl = $nModuleSrl;
-		$doc_args->content = $sDescription;
-		$doc_args->title = $sItemName;
-		$doc_args->list_order = $doc_args->document_srl*-1;
-		$doc_args->tags = Context::get('tag');
-		$doc_args->allow_comment = 'Y';
-		$oDocumentController = &getController('document');
-		$output = $oDocumentController->insertDocument($doc_args);
-		if (!$output->toBool())
-			return $output;
-		unset($doc_args);
-		// default delivery_info
-		$oModuleModel = &getModel('module');
-		$module_info = $oModuleModel->getModuleInfoByModuleSrl($nModuleSrl);
-		$delivery_info = $module_info->delivery_info;
-		// insert item
-		$oSvitemModel = &getModel('svitem');
-		$extra_vars = $oSvitemModel->getExtraVars($nModuleSrl);
-		$args->item_srl = $nItemSrl;
-		$args->item_code = $sItemCode;
-		$args->item_name = $sItemName;
-		$args->module_srl = $nModuleSrl;
-		$args->category_node_srl = $nCatalogNodeSrl;
-		$args->document_srl = $nDocumentSrl;
-		$args->mob_doc_srl = getNextSequence();
-		$args->pc_doc_srl = getNextSequence();
-		$args->gallery_doc_srl = getNextSequence();
-		$args->price = $nPrice;
-		$args->taxfree = $bTaxfree;
-		$args->display = $bDisplay;
-		$args->delivery_info = $delivery_info;
-		$args->list_order = $nItemSrl * -1;
-		$extra_vars = delObjectVars($extra_vars, $args);
-		$args->extra_vars = serialize($extra_vars);
-		// begin GA EEC info processing
-		$oEnhancedItemInfo = new stdClass();
-		$oEnhancedItemInfo->ga_brand_name = $oInArgs->ga_brand_name;
-		$oEnhancedItemInfo->ga_category_name = $oInArgs->ga_category_name;
-		$oEnhancedItemInfo->ga_variation_name = $oInArgs->ga_variation_name;
-		$args->enhanced_item_info = serialize($oEnhancedItemInfo);
-		// end GA EEC & SEO info processing
-		
-		$output = executeQuery('svitem.insertItem', $args);
-		if (!$output->toBool())
-			return $output;
-		$output->add('item_srl', $nItemSrl);
-		return $output;
-	}*/
-/**
- * @brief 
- **/
-/*	public function createInsertItemRuleset($extra_vars)
-	{
-		$aField = [];
-		$aField[] = '<field name="module_srl" required="true" />';
-		$aField[] = '<field name="item_name" required="true" length="1:60" />';
-		$aField[] = '<field name="price" required="true" rule="number" />';
-		//$aField[] = '<field name="document_srl" required="true" rule="number" />';
-		//$aField[] = '<field name="description" required="true" />';
-		if(count($extra_vars))
-		{
-			foreach($extra_vars as $formInfo)
-			{
-				if($formInfo->required=='Y')
-				{
-					if($formInfo->type == 'tel' || $formInfo->type == 'kr_zip')
-						$aField[] = sprintf('<field name="%s[]" required="true" />', $formInfo->column_name);
-					else if($formInfo->type == 'email_address')
-						$aField[] = sprintf('<field name="%s" required="true" rule="email"/>', $formInfo->column_name);
-					else if($formInfo->type == 'user_id')
-						$aField[] = sprintf('<field name="%s" required="true" rule="userid" length="3:20" />', $formInfo->column_name);
-					else
-						$aField[] = sprintf('<field name="%s" required="true" />', $formInfo->column_name);
-				}
-			}
-		}
-		$sBuff = '<?xml version="1.0" encoding="utf-8"?>'.
-				'<ruleset version="1.5.0">'.
-				'<customrules></customrules>'.
-				'<fields>%s</fields>'.			
-				'</ruleset>';
-		$sXmlBuff = sprintf($sBuff, implode('', $aField));
-
-		$sXmlFile = './files/ruleset/svitem_insertItem.xml';
-		FileHandler::writeFile($sXmlFile, $sXmlBuff);
-		unset($sXmlBuff);
-		//$validator = new Validator($sXmlFile);
-		//$validator->setCacheDir('files/cache');
-		//$validator->getJsPath();
-	}*/
-/**
- * @brief 상품상세 목록 설정 저장
- */
-/*	public function procSvitemAdminInsertDetailDisplayConfig()
-	{
-		$oParam->nModuleSrl = Context::get('module_srl');
-		$sPageType = 'detail';
-		$oParam->sPageType = $sPageType;
-		$this->_registerExtScript($oParam);
-		$oRst = $this->_insertDisplayConfig($oParam);
-		if(!$oRst->toBool())
-			return $oRst;
-		unset($oParam);
-		unset($oRst);
-		$this->setMessage('success_registed');
-		$this->setRedirectUrl(Context::get('success_return_url'));
-	}*/
-/**
- * @brief 
- **/
-/*	private function _insertListConfig()
-	{
-		$module_srl = Context::get('module_srl');
-		$list = explode(',',Context::get('list'));
-		if(!count($list))
-			return new BaseObject(-1, 'msg_invalid_request');
-
-		$list_arr = array();
-		foreach($list as $val) 
-		{
-			$val = trim($val);
-			if(!$val)
-				continue;
-			if(substr($val,0,10)=='extra_vars')
-				$val = substr($val,10);
-			$list_arr[] = $val;
-		}
-		$oModuleController = &getController('module');
-		$output = $oModuleController->insertModulePartConfig('svitem', $module_srl, $list_arr);
-		if(!$output->toBool())
-			return $output;
-		return new BaseObject();
-	}*/
-/**
- * @brief 
- **/
-/*	private function _insertDetailListConfig()
-	{
-		$aListFromQuery = explode(',',Context::get('list'));
-		if(!count($aListFromQuery ))
-			return new BaseObject(-1, 'msg_invalid_request');
-		$aList = array();
-		foreach($aListFromQuery as $val)
-		{
-			$val = trim($val);
-			if(!$val)
-				continue;
-			if(substr($val,0,10)=='extra_vars')
-				$val = substr($val,10);
-			$aList[] = $val;
-		}
-		$oModuleController = &getController('module');
-		$nModuleSrl = Context::get('module_srl');
-		$output = $oModuleController->insertModulePartConfig('svitem.detail', $nModuleSrl, $aList);
-		if(!$output->toBool())
-			return $output;
-		
-		if($nModuleSrl)
-		{
-			$oArgs = Context::getRequestVars();
-			return $this->_updateMidLevelConfig($oArgs);
-		}
-		else
-			return new BaseObject(-1, 'msg_invalid_module_srl1');
-	}*/
-/**
- * @brief 
- **/
-/*	public function insertItemExtra($args)
-	{
-		$oSvitemModel = &getModel('svitem');
-		// Default values
-		if(in_array($args->column_type, array('checkbox','select','radio')) && count($args->default_value) ) 
-			$args->default_value = serialize($args->default_value);
-		else 
-			$args->default_value = '';
-
-		// Fix if extra_srl exists. Add if not exists.
-		$isInsert;
-		if(!$args->extra_srl)
-		{
-			$isInsert = true;
-			$args->list_order = $args->extra_srl = getNextSequence();
-			$output = executeQuery('svitem.insertItemExtra', $args);
-			$this->setMessage('success_registed');
-		}
-		else
-		{
-			$output = executeQuery('svitem.updateItemExtra', $args);
-			$this->setMessage('success_updated');
-		}
-		if(!$output->toBool()) 
-			return $output;
-		// create dynamic ruleset
-		$extra_vars = $oSvitemModel->getItemExtraFormList($args->module_srl);
-		$this->createInsertItemRuleset($extra_vars);
-	}*/
-/**
- * @brief 추가등록폼 필드가 DB필드 혹은 이미추가된 항목가 중복되는지 체크
- * @return 중복되면 TRUE, 아니면 FALSE
- */
-/*	public function checkColumnName($module_srl, $column_name)
-	{
-		// check in reserved keywords
-		if(in_array($column_name, array('module','act','module_srl', 'document_srl','description', 'delivery_info', 'item_srl','category_depth1','category_depth2','category_depth3','category_depth4','thumbnail_image','contents_file'))) 
-			return TRUE;
-		// check in extra keys
-		$args->module_srl = $module_srl;
-		$args->column_name = $column_name;
-		$output = executeQuery('svitem.isExistsExtraKey', $args);
-		if($output->data->count) 
-			return TRUE;
-		// check in db fields
-		$oDB = &DB::getInstance();
-		if($oDB->isColumnExists('svitem_items', $column_name))
-			return TRUE;
-		return FALSE;
-	}*/
-/**
- * @brief 
- **/
-	/*function deleteSvitemFile($file_srl, $item_srl)
-	{
-		$oFileController = &getController('file');
-		$oFileController->deleteFile($file_srl);
-		$args->file_srl = null;
-		$args->item_srl = $item_srl;
-		$output = executeQuery('svitem.updateItemFile', $args);
-		if (!$output->toBool()) 
-			return $output;
-		return;
-	}*/
 }
 /* End of file svitem.admin.controller.php */
 /* Location: ./modules/svitem/svitem.admin.controller.php */

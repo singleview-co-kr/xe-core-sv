@@ -201,7 +201,7 @@ class svitemAdminModel extends svitem
 		$nModuleSrl = Context::get('module_srl');
 		$nNodeSrl = Context::get('category_node_srl');
 		$aCategoryNode = array();
-		if( $nNodeSrl == 0 ) // simply get the root
+		if($nNodeSrl == 0) // simply get the root
 		{
 			$oRoot = new StdClass();
 			//$obj->state = 'closed';
@@ -214,7 +214,7 @@ class svitemAdminModel extends svitem
 		else // get node_route
 			$aCategoryNode = $this->_getCategoryChildrenList($nModuleSrl,$nNodeSrl);
 
-		Context::setResponseMethod('JSON'); 
+		Context::setResponseMethod('JSON');
 		echo json_encode($aCategoryNode); // model class에서는 output 강제 출력해야 함
 		$this->add('data', $aCategoryNode);
 	}
@@ -224,7 +224,8 @@ class svitemAdminModel extends svitem
 	public function getSvitemAdminInsertItemExtra() 
 	{
 		$extra_srl = Context::get('extra_srl');
-		$args->extra_srl = $extra_srl;
+		$args = new stdClass();
+        $args->extra_srl = $extra_srl;
 		$output = executeQuery('svitem.getItemExtra', $args);
 
 		if($output->toBool() && $output->data)
@@ -296,16 +297,16 @@ class svitemAdminModel extends svitem
 
 		if( !$nModuleSrl || !strlen($nCategoryNodeSrl) )
 			return new BaseObject(-1, 'msg_invalid_request');
-		
+        $args = new stdClass();
 		$args->module_srl = $nModuleSrl;
 		$args->category_srl = $nCategoryNodeSrl;
 		$output = executeQueryArray('svitem.getAdminDisplayItemList', $args);
 		if(!$output->toBool())
 			return $output;
-		if( count($output->data) > 0 )
+		if(count($output->data))
 		{
 			$oSvitemModel = &getModel('svitem');
-			foreach( $output->data as $key=>$val)
+			foreach($output->data as $key=>$val)
 			{
 				$oItem = $oSvitemModel->getItemInfoByItemSrl($val->item_srl);
 				$output->data[$key]->item_name = $oItem->item_name;
@@ -318,14 +319,13 @@ class svitemAdminModel extends svitem
  **/
 	public function getSvitemAdminShowWindowCategoryByModuleSrl($nModuleSrl) 
 	{
-		if( !$nModuleSrl )
+		if(!$nModuleSrl)
 			return new BaseObject(-1, 'msg_invalid_request');
-
+        $args = new stdClass();
 		$args->module_srl = $nModuleSrl;
 		$output = executeQueryArray('svitem.getAdminShowWindowCategoryByModuleSrl', $args);
 		if(!$output->toBool())
 			return $output;
-
 		return $output->data;
 	}
 /**
@@ -456,10 +456,10 @@ class svitemAdminModel extends svitem
  **/
 	private function _getCategoryChildrenList($nModuleSrl,$nNodeSrl) 
 	{
-		if( is_null( $nModuleSrl ) || $nModuleSrl == 0 )
+		if(is_null($nModuleSrl) || $nModuleSrl == 0)
 			return new StdClass();
-
-		if( is_null( $nNodeSrl ) )
+        $args = new stdClass();
+		if(is_null($nNodeSrl))
 			$args->parent_srl = 0;
 		else
 			$args->parent_srl = $nNodeSrl;
@@ -467,9 +467,9 @@ class svitemAdminModel extends svitem
 		$aChild = array();
 		$args->module_srl = $nModuleSrl;
 		$output = executeQueryArray('svitem.getCategoryNodeList', $args);
-		if ($output->data) 
+		if($output->data) 
 		{
-			foreach ($output->data as $no => $val) 
+			foreach($output->data as $no => $val) 
 			{
 				$child = new StdClass();
 				$child->id = $val->category_node_srl;
