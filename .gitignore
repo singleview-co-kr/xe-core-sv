@@ -55,7 +55,6 @@ addons/svtracker
 modules/appstore
 modules/svmarket
 modules/svauth
-modules/svestudio
 modules/svdocs
 modules/svshortener
 modules/svitem/skins/plain

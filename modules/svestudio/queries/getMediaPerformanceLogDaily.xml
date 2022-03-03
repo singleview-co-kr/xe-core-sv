@@ -1,0 +1,28 @@
+<query id="getMediaPerformanceLogDaily" action="select">
+	<tables>
+		<table name="svestudio_gross_compiled_daily_log" />
+	</tables>
+	<columns>
+		<column name="media_ua" />
+		<column name="media_rst_type" />
+		<column name="media_source" />
+		<column name="media_media" />
+		<column name="media_raw_cost" />
+		<column name="media_agency_cost" />
+		<column name="media_cost_vat" />
+		<column name="media_imp" />
+		<column name="media_click" />
+		<column name="media_term" />
+		<column name="media_brd" />
+		<column name="in_site_tot_session" />
+		<column name="in_site_tot_bounce" />
+		<column name="in_site_tot_duration_sec" />
+		<column name="in_site_tot_pvs" />
+		<column name="in_site_tot_new" />
+		<column name="in_site_revenue" />
+		<column name="in_site_trs" />
+	</columns>
+	<conditions>
+		<condition operation="like_prefix" column="logdate" var="logdate" />
+	</conditions>
+</query>

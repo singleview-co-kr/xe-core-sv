@@ -1,0 +1,1984 @@
+v 0.0.1
+12th, Aug 2018
+1. svestudio 생성
+
+v 0.0.2
+5th, Sep 2018
+1. SKU 파이 차트에서 제품명 표시명 단축하기 위해 제거해야 하는 prefix 입력 기능 추가
+./tpl/config.html에 아래의 코드 추가
+<div class="x_control-group">
+	<label class="x_control-label" for="svestudio_sku_remove_word">{$lang->svestudio_sku_remove_word}</label>
+	<div class="x_controls">
+		<input type="text" name="svestudio_sku_remove_word" id="svestudio_sku_remove_word" value="{$config->svestudio_sku_remove_word}" />
+		<a href="#svestudio_sku_remove_word_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+		<p id="svestudio_sku_remove_word_help" class="x_help-block" hidden>{$lang->about_svestudio_sku_remove_word}</p>
+	</div>
+</div>
+
+./svestudio.admin.model.php::getSkuPerfInfoDaily()에 아래의 코드 추가
+$oConfig = $this->getModuleConfig();
+$aRemoveWord = explode(',', $oConfig->svestudio_sku_remove_word);
+
+foreach( $aRemoveWord as $nWordIdx=>$sRemoveWord )
+	$item_val->item_name = str_replace($sRemoveWord, '', $item_val->item_name);
+
+1. SKU 파이 차트에서 제품별 월간 매울 순위 정렬 기능 추가
+./svestudio.admin.model.php::getSkuPerfInfoDaily()에서 아래의 코드를
+if( count( $aMonthlySkuPerformance ) )
+{
+	foreach( $aMonthlySkuPerformance as $sItemName => $oItemInfo )
+	{
+		$oItemInfo->revenue = (int)$oItemInfo->qty * $oItemInfo->price;
+		$oItemInfo->estimated_revenue = (int)($oItemInfo->qty / $this->_g_nElapsedDaysOfThisMonth * $this->_g_nDaysOfMonth) * $oItemInfo->price;
+	}
+}
+$aDatePeriod['sku_gross'] = $aMonthlySkuPerformance;
+
+아래와 같이 변경
+$aRevenueRankedMonthlySkuPerformance = array();
+if( count( $aMonthlySkuPerformance ) )
+{
+	$aRevenueRank = array();
+	foreach( $aMonthlySkuPerformance as $sItemName => $oItemInfo )
+	{
+		$oItemInfo->revenue = (int)$oItemInfo->qty * $oItemInfo->price;
+		$aRevenueRank[$sItemName]=$oItemInfo->revenue;
+		$oItemInfo->estimated_revenue = (int)($oItemInfo->qty / $this->_g_nElapsedDaysOfThisMonth * $this->_g_nDaysOfMonth) * $oItemInfo->price;
+	}
+	arsort($aRevenueRank);
+	foreach( $aRevenueRank as $sItemName => $ooo )
+		$aRevenueRankedMonthlySkuPerformance[$sItemName] = $aMonthlySkuPerformance[$sItemName];
+}
+$aDatePeriod['sku_gross'] = $aRevenueRankedMonthlySkuPerformance;
+
+v 0.0.3
+7th, Sep 2018
+1. 월간 평균 구매액의 최근월 예측 기능 제거, 당월 누적계산값과 동일
+./svestudio.admin.model.php::getSkuPerfInfoDaily()에 아래의 코드 제거
+if( count( $aMonthlyGrossCp ) )
+	$aMonthlyGrossCp['Latest est.'] = (int)($aMonthlyGrossSales['Latest est.'] / $aMonthlyGrossTrs['Latest est.']);
+
+v 0.0.4
+9th, Sep 2018
+1. member status cache 추가
+./svestudio.admin.model.php::$this->_g_sToday = date('Ymd'); 추가
+
+./svestudio.admin.model.php::getMemberStatusPeriod()에서 아래의 코드를
+foreach( $aDatePeriod as $date=>$val )
+{
+	$val->mem_cnt = $oMemberAdminModel->getMemberCountByDate($date);
+	$aMonthly[$val->mo] += $val->mem_cnt;
+	$aWeekly[$val->wknum] += $val->mem_cnt;
+	$aWeekdaily[$val->dayname] += $val->mem_cnt;
+	$nTotal += $val->mem_cnt;
+}
+아래와 같이 변경
+foreach( $aDatePeriod as $date=>$val )
+{
+	$sMemberCacheByDatetFile = _XE_PATH_.'files/svestudio/member/'.$date.'.php';
+	if(is_readable($sMemberCacheByDatetFile))
+		$nMemCnt = FileHandler::readFile($sMemberCacheByDatetFile);
+	else
+	{
+		$nMemCnt = $oMemberAdminModel->getMemberCountByDate($date);
+		$output = FileHandler::writeFile($sMemberCacheByDatetFile, $nMemCnt);
+	}
+
+	$val->mem_cnt = $nMemCnt;
+	$aMonthly[$val->mo] += $val->mem_cnt;
+	$aWeekly[$val->wknum] += $val->mem_cnt;
+	$aWeekdaily[$val->dayname] += $val->mem_cnt;
+	$nTotal += $val->mem_cnt;
+}
+
+./svestudio.admin.model.php::getDocStatusPeriod()에서 아래의 코드를
+foreach( $aDatePeriod as $date=>$val )
+{
+	$val->doc_cnt = $oDocumentAdminModel->getDocumentCountByDate($date, array(), $statusList);
+	$aMonthly[$val->mo] += $val->doc_cnt;
+	$aWeekly[$val->wknum] += $val->doc_cnt;
+	$aWeekdaily[$val->dayname] += $val->doc_cnt;
+	$nTotal += $val->doc_cnt;
+}
+
+
+아래와 같이 변경
+foreach( $aDatePeriod as $date=>$val )
+{
+	$sDocumentCacheByDateFile = _XE_PATH_.'files/svestudio/document/'.$date.'.php';
+	if( is_readable($sDocumentCacheByDateFile))
+		$nDocCnt = FileHandler::readFile($sDocumentCacheByDateFile);
+	else
+	{
+		$nDocCnt = $oDocumentAdminModel->getDocumentCountByDate($date, array(), $statusList);
+
+		if( $date != $this->_g_sToday )
+			$output = FileHandler::writeFile($sDocumentCacheByDateFile, $nDocCnt);
+	}
+
+	$val->doc_cnt = $nDocCnt;
+	$aMonthly[$val->mo] += $val->doc_cnt;
+	$aWeekly[$val->wknum] += $val->doc_cnt;
+	$aWeekdaily[$val->dayname] += $val->doc_cnt;
+	$nTotal += $val->doc_cnt;
+}
+
+./svestudio.admin.model.php::getCommentStatusPeriod()에서 아래의 코드를
+foreach( $aDatePeriod as $date=>$val )
+{
+	$val->com_cnt = $oCommentModel->getCommentCountByDate($date);
+	$aMonthly[$val->mo] += $val->com_cnt;
+	$aWeekly[$val->wknum] += $val->com_cnt;
+	$aWeekdaily[$val->dayname] += $val->com_cnt;
+	$nTotal += $val->com_cnt;
+}
+
+아래와 같이 변경
+foreach( $aDatePeriod as $date=>$val )
+{
+	$sCacheByDateFile = _XE_PATH_.'files/svestudio/comment/'.$date.'.php';
+	if( is_readable($sCacheByDateFile))
+		$nComCnt = FileHandler::readFile($sCacheByDateFile);
+	else
+	{
+		$nComCnt = $oCommentModel->getCommentCountByDate($date);
+
+		if( $date != $this->_g_sToday )
+			$output = FileHandler::writeFile($sCacheByDateFile, $nComCnt);
+	}
+	$val->com_cnt = $nComCnt;
+	$aMonthly[$val->mo] += $val->com_cnt;
+	$aWeekly[$val->wknum] += $val->com_cnt;
+	$aWeekdaily[$val->dayname] += $val->com_cnt;
+	$nTotal += $val->com_cnt;
+}
+
+./svestudio.admin.model.php::getInsiteSalesStatusPeriod()에서 아래의 코드를
+foreach( $aDatePeriod as $date=>$val )
+{
+	$oRst = $oSvorderAdminModel->getSalesInfoDaily($date);
+	$val->amount = $oRst->amount;
+	$val->trs = $oRst->count; // # of transactions
+	$val->cp = (int)($oRst->amount / $oRst->count); // customer price
+	$aMonthlyGrossSales[$val->mo] += $val->amount;
+	$aWeeklyGrossSales[$val->wknum] += $val->amount;
+	$aWeekdailyGrossSales[$val->dayname] += $val->amount;
+	$nTotalSales += $val->amount;
+
+	$aMonthlyGrossTrs[$val->mo] += $val->trs;
+	$aWeeklyGrossTrs[$val->wknum] += $val->trs;
+	$aWeekdailyGrossTrs[$val->dayname] += $val->trs;
+	$nTotalTrs += $val->trs;
+
+	$aMonthlyGrossCp[$val->mo] = (int)($aMonthlyGrossSales[$val->mo] / $aMonthlyGrossTrs[$val->mo]);
+	$aWeeklyGrossCp[$val->wknum] = $aMonthlyGrossSales[$val->wknum] / $aMonthlyGrossTrs[$val->wknum];
+	$aWeekdailyGrossCp[$val->dayname] = $aMonthlyGrossSales[$val->dayname] / $aMonthlyGrossTrs[$val->dayname];
+}
+
+아래와 같이 변경
+foreach( $aDatePeriod as $date=>$val )
+{
+	$sCacheByDateFile = _XE_PATH_.'files/svestudio/sales/'.$date.'.php';
+	if( is_readable($sCacheByDateFile))
+	{
+		$sSalesInfo = FileHandler::readFile($sCacheByDateFile);
+		$oRst = unserialize($oRst);
+	}
+	else
+	{
+		$oRst = $oSvorderAdminModel->getSalesInfoDaily($date);
+		if( (int)$date < (int)$this->_g_sToday - 7 )
+			$output = FileHandler::writeFile($sCacheByDateFile, serialize($oRst));
+	}
+	$val->amount = $oRst->amount;
+	$val->trs = $oRst->count; // # of transactions
+	$val->cp = (int)($oRst->amount / $oRst->count); // customer price
+	$aMonthlyGrossSales[$val->mo] += $val->amount;
+	$aWeeklyGrossSales[$val->wknum] += $val->amount;
+	$aWeekdailyGrossSales[$val->dayname] += $val->amount;
+	$nTotalSales += $val->amount;
+
+	$aMonthlyGrossTrs[$val->mo] += $val->trs;
+	$aWeeklyGrossTrs[$val->wknum] += $val->trs;
+	$aWeekdailyGrossTrs[$val->dayname] += $val->trs;
+	$nTotalTrs += $val->trs;
+
+	$aMonthlyGrossCp[$val->mo] = (int)($aMonthlyGrossSales[$val->mo] / $aMonthlyGrossTrs[$val->mo]);
+	$aWeeklyGrossCp[$val->wknum] = $aMonthlyGrossSales[$val->wknum] / $aMonthlyGrossTrs[$val->wknum];
+	$aWeekdailyGrossCp[$val->dayname] = $aMonthlyGrossSales[$val->dayname] / $aMonthlyGrossTrs[$val->dayname];
+}
+
+./svestudio.admin.model.php::getTotalSessionPeriod()에서 아래의 코드를
+foreach( $aDatePeriod as $date=>$val )
+{
+	$args->logdate = $date;
+	$output = executeQueryArray('svestudio.getSessionLogDaily', $args);
+	$val->tot_session = (int)$output->data[0]->tot_session;
+	$aMonthly[$val->mo] += $val->tot_session;
+	$aWeekly[$val->wknum] += $val->tot_session;
+	$aWeekdaily[$val->dayname] += $val->tot_session;
+	$nTotal += $val->tot_session;
+}
+
+아래와 같이 변경
+foreach( $aDatePeriod as $date=>$val )
+{
+	$sCacheByDateFile = _XE_PATH_.'files/svestudio/session/'.$date.'.php';
+	if( is_readable($sCacheByDateFile))
+		$nSession = FileHandler::readFile($sCacheByDateFile);
+	else
+	{
+		$args->logdate = $date;
+		$output = executeQueryArray('svestudio.getSessionLogDaily', $args);
+		$nSession = (int)$output->data[0]->tot_session;
+		if( (int)$date < (int)$this->_g_sToday )
+			$output = FileHandler::writeFile($sCacheByDateFile, $nSession);
+	}
+	$val->tot_session = $nSession;
+	$aMonthly[$val->mo] += $nSession;
+	$aWeekly[$val->wknum] += $nSession;
+	$aWeekdaily[$val->dayname] += $nSession;
+	$nTotal += $nSession;
+}
+
+v 0.0.5
+21st, Sep 2018
+1. 매체비 총액 합산 기능 추가
+./svestudio.admin.model.php::getPerformanceInfo()에 아래의 코드 추가
+$nTotalCostWoVat = 0;
+$nTotalCostWoVat += $nMediaCostWoVat; 
+$aGrossStatus['gross_cost_wo_vat'] = $nTotalCostWoVat;
+
+2. MTD 기능 추가
+./svestudio.admin.model.php::getPerformanceInfo()에 코드 추가
+
+v 0.0.6
+24th, Sep 2018
+1. 품목별 일별 보고서 기능 추가
+./svestudio.admin.model.php::dispSvestudioAdminReportItem() 추가
+./svestudio.admin.view.php::getSkuPerfInfoDaily() 변경
+./tpl/rpt_item.html 추가
+
+v 0.0.7
+2nd, Oct 2018
+1. 일별 ROAS 계산 오류 수정
+./svestudio.admin.model.php::getPerformanceInfo()에서 아래의 코드를
+if( $nMediaCostWoVat > 0 && $nRevenue > 0 )
+{
+	$PeriodVal->roas = (int)($PeriodVal->in_site_revenue / $PeriodVal->media_cost_wo_vat*100);
+}
+
+아래와 같이 변경하고 위치를 일별 모든 거래 데이터 집계 루프 밖으로 이동
+$PeriodVal->roas = (int)($PeriodVal->in_site_revenue / $PeriodVal->media_cost_wo_vat*100);
+
+2. 일별 전환율 계산 오류 수정
+./svestudio.admin.model.php::getPerformanceInfo()에서 아래의 코드를
+if( $nSession > 0 && $nTransactions > 0 )
+{
+	$PeriodVal->conv_rate = $PeriodVal->in_site_trs / $PeriodVal->in_site_tot_session * 100;
+}
+
+아래와 같이 변경하고 위치를 일별 모든 거래 데이터 집계 루프 밖으로 이동
+$PeriodVal->conv_rate = $PeriodVal->in_site_trs / $PeriodVal->in_site_tot_session * 100;
+
+v 0.0.8
+27th, Oct 2018
+1. python client_serve v 0.0.2에 대응
+./sv_queries/insertGrossCompiledLog.sql에서 아래의 코드를
+`media_cost_wo_vat`
+아래와 같이 변경
+`media_raw_cost`
+
+./schemas/svestudio_gross_compiled_daily_log.xml에서 아래의 코드를
+<column name="media_cost_wo_vat" type="number" size="11" notnull="notnull" />
+아래와 같이 변경
+<column name="media_raw_cost" type="number" size="11" notnull="notnull" />
+
+./schemas/svestudio_gross_compiled_daily_log.xml에 아래의 코드 추가
+<column name="media_agency_cost" type="number" size="11" notnull="notnull" />
+<column name="media_cost_vat" type="number" size="11" notnull="notnull" />
+
+./sv_queries/insertGrossCompiledLog.sql에 아래의 코드 추가
+`media_agency_cost`, `media_cost_vat`,
+
+./b2c.php에서 아래의 코드를
+$aVal[24] = date('YmdHis');
+아래와 같이 변경
+$aVal[26] = date('YmdHis');
+
+./queries/getPerformanceLogDaily.xml에서 아래의 코드를
+<column name="media_raw_cost_wo_vat" />
+아래와 같이 변경
+<column name="media_raw_cost" />
+
+./svestudio.admin.model.php::getPerformanceInfo()에서 아래의 코드를
+$nMediaCostWoVat = (int)$oRow->media_cost_wo_vat;
+$PeriodVal->media_cost_wo_vat += $nMediaCostWoVat;
+$PeriodVal->roas = (int)($PeriodVal->in_site_revenue / $PeriodVal->media_cost_wo_vat*100);
+아래와 같이 변경
+$nMediaCostWoVat = (int)$oRow->media_raw_cost;
+$PeriodVal->media_raw_cost += $nMediaCostWoVat;
+$PeriodVal->roas = (int)($PeriodVal->in_site_revenue / $PeriodVal->media_raw_cost*100);
+
+v 0.0.9
+29th, Oct 2018
+1. 매체별 일별 비용 성과 분석 화면 추가
+./svestudio.admin.model.php::getMediaPerformanceInfo() 추가
+./svestudio.admin.view.php::dispSvestudioAdminReportMediaCost() 추가
+./queries/getMediaPerformanceLogDaily.xml 추가
+
+2. 대쉬보드의 매체비용 성과에 부가세와 대행사 수수료 반영
+./queries/getPerformanceLogDaily.xml에 아래의 코드 추가
+<column name="media_agency_cost" />
+<column name="media_cost_vat" />
+
+./svestudio.admin.model.php::getPerformanceInfo()에서 아래와 같이 변경
+매체 비용 관련 변수명에서 WoVat postfix를 제거함
+
+v 0.0.10
+1st, Nov 2018
+1. 대쉬보드 기본 월간 데이터 기간 계산 기능 추가
+./svestudio.admin.model.php::getMontlyPeriod() 추가
+
+2. 매월 1일의 GA 대쉬보는 전월 전체 기간이 되도록 개선
+./svestudio.admin.model.php::init()에서 아래의 코드를
+$this->_g_nElapsedDaysOfThisMonth = (int)date('d');
+
+아래와 같이 변경
+if( (int)date('d') == 1 )
+	$this->_g_nElapsedDaysOfThisMonth = date('Ymd', strtotime('last day of last month'));
+else
+	$this->_g_nElapsedDaysOfThisMonth = (int)date('d');
+
+./svestudio.admin.view.php::dispSvestudioAdminReportItem()에서 아래의 코드를
+// retrieve last month
+$sFirstDayLastMonth = date('Ymd', strtotime('first day of last month'));
+$sLatDayLastMonth = date('Ymd', strtotime('last day of last month'));
+$oLmSkuPerformance = $oSvestudioAdminModel->getSkuPerfInfoDaily($sFirstDayLastMonth,$sLatDayLastMonth);
+Context::set( 'lm_by_item', $oLmSkuPerformance['by_item'] );
+
+// retrieve current month
+$sFirstDayThisMonth = date('Ym01'); // hard-coded '01' for first day
+$sLatDayThisMonth  = date('Ymt');
+$oTmSkuPerformance = $oSvestudioAdminModel->getSkuPerfInfoDaily($sFirstDayThisMonth,$sLatDayThisMonth);
+
+아래와 같이 변경
+$aMonthlyPeriod = $oSvestudioAdminModel->getMontlyPeriod();
+// retrieve last month
+$oLmSkuPerformance = $oSvestudioAdminModel->getSkuPerfInfoDaily($aMonthlyPeriod['first_day_of_last_month'],$aMonthlyPeriod['last_day_of_last_month']);
+
+// retrieve current month
+$oTmSkuPerformance = $oSvestudioAdminModel->getSkuPerfInfoDaily($aMonthlyPeriod['first_day_of_this_month'],$aMonthlyPeriod['last_day_of_this_month']);
+
+3. 지정 기간의 매체 성과 CSV 다운로드 기능 추가
+./svestudio.admin.controller.php::procSvestudioAdminCSVDownload() 추가
+./queries/getPeriodRaw.xml 추가
+
+v 0.0.11
+6th, Nov 2018
+1. 매체 운영 성과 보고서 다양화
+./svestudio.admin.model.php::getMediaPerformanceInfo()에 아래의 코드 추가
+foreach( $aDatePeriod as $sDate=>$PeriodVal )
+{
+	foreach( $PeriodVal->in_site_revenue as $sKey=>$aVal )
+	{
+		if( $sKey == 'gross' )
+			continue;
+
+		foreach($aSourceMediumList as $sSourceMedia=>$nUnknownVal)
+		{
+			$aSm = explode('_', $sSourceMedia);
+			$sSource = $aSm[0];
+			$sMedia = $aSm[1];
+			$PeriodVal->roas[$sSource]['gross'] = (int)($PeriodVal->in_site_revenue[$sSource]['gross']/$PeriodVal->media_cost_info[$sSource]['gross']*100);
+			$PeriodVal->roas[$sSource][$sMedia] = (int)($PeriodVal->in_site_revenue[$sSource][$sMedia]/$PeriodVal->media_cost_info[$sSource][$sMedia]*100);
+
+			$PeriodVal->conv_rate[$sSource]['gross'] = $PeriodVal->in_site_trs[$sSource]['gross']/$PeriodVal->in_site_tot_session[$sSource]['gross']*100;
+			$PeriodVal->conv_rate[$sSource][$sMedia] = $PeriodVal->in_site_trs[$sSource][$sMedia]/$PeriodVal->in_site_tot_session[$sSource][$sMedia]*100;
+		}
+	}
+}
+
+./tpl/rpt_media_perf.html에 아래의 코드 추가
+var _dataTmSourceMediaRevenueDaily = {
+	labels: [ '01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31'],
+	datasets: [
+<block loop="$performance_source_medium_list=>$sSourceMediumName,$nCost">
+				{label: '{$sSourceMediumName}',
+{@
+$aSourceMedium = explode( '_', $sSourceMediumName );
+}
+				backgroundColor: _aSourceMediumColor['{$sSourceMediumName}'],
+				data: [
+	<block loop="$performance_daily=>$date,$period_val">
+	"{$period_val->in_site_revenue[$aSourceMedium[0]][$aSourceMedium[1]]}",
+	</block>
+					],
+					fill: false,
+				},
+</block>	
+	]
+};
+
+jQuery(document).ready(function() {
+	// chartjs Bar chart http://www.chartjs.org
+	var ctx = document.getElementById("tm_source_medium_revenue_daily").getContext('2d');
+	//ctx.height = 200;
+	var mybarChart = new Chart(ctx, {
+		type: 'bar',
+		data: _dataTmSourceMediaRevenueDaily,
+		options: {
+			title: {
+				display: false,
+				text: '전월 금액'
+			},
+			maintainAspectRatio: false,
+			tooltips: {
+				mode: 'index',
+				intersect: false
+			},
+			responsive: true,
+			scales: {
+				xAxes: [{
+					stacked: true,
+				}],
+				yAxes: [{
+					stacked: true
+				}]
+			}
+		}
+	});
+});
+
+var _dataTmSourceMediaRoasDaily = {
+	labels: [ '01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31'],
+	datasets: [
+<block loop="$performance_source_medium_list=>$sSourceMediumName,$nCost">
+				{label: '{$sSourceMediumName}',
+{@
+$aSourceMedium = explode( '_', $sSourceMediumName );
+}
+				backgroundColor: _aSourceMediumColor['{$sSourceMediumName}'],
+				data: [
+	<block loop="$performance_daily=>$date,$period_val">
+	"{$period_val->roas[$aSourceMedium[0]][$aSourceMedium[1]]}",
+	</block>
+					],
+					fill: false,
+				},
+</block>	
+	]
+};
+
+jQuery(document).ready(function() {
+	// chartjs Bar chart http://www.chartjs.org
+	var ctx = document.getElementById("tm_source_medium_roas_daily").getContext('2d');
+	//ctx.height = 200;
+	var mybarChart = new Chart(ctx, {
+		type: 'bar',
+		data: _dataTmSourceMediaRoasDaily,
+		options: {
+			title: {
+				display: false,
+				text: '전월 금액'
+			},
+			maintainAspectRatio: false,
+			tooltips: {
+				mode: 'index',
+				intersect: false
+			},
+			responsive: true,
+			scales: {
+				xAxes: [{
+					//stacked: true,
+				}],
+				yAxes: [{
+					//stacked: true
+				}]
+			}
+		}
+	});
+});
+
+var _dataTmSourceMediaConvRateDaily = {
+	labels: [ '01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31'],
+	datasets: [
+<block loop="$performance_source_medium_list=>$sSourceMediumName,$nCost">
+				{label: '{$sSourceMediumName}',
+{@
+$aSourceMedium = explode( '_', $sSourceMediumName );
+}
+				backgroundColor: _aSourceMediumColor['{$sSourceMediumName}'],
+				data: [
+	<block loop="$performance_daily=>$date,$period_val">
+	"{$period_val->conv_rate[$aSourceMedium[0]][$aSourceMedium[1]]}",
+	</block>
+					],
+					fill: false,
+				},
+</block>	
+	]
+};
+
+jQuery(document).ready(function() {
+	// chartjs Bar chart http://www.chartjs.org
+	var ctx = document.getElementById("tm_source_medium_conv_rate_daily").getContext('2d');
+	//ctx.height = 200;
+	var mybarChart = new Chart(ctx, {
+		type: 'bar',
+		data: _dataTmSourceMediaConvRateDaily,
+		options: {
+			title: {
+				display: false,
+				text: '전월 금액'
+			},
+			maintainAspectRatio: false,
+			tooltips: {
+				mode: 'index',
+				intersect: false
+			},
+			responsive: true,
+			scales: {
+				xAxes: [{
+					//stacked: true,
+				}],
+				yAxes: [{
+					//stacked: true
+				}]
+			}
+		}
+	});
+});
+
+2. 매체 성과 전월 당월 비교 기능 추가
+./svestudio.admin.view.php::dispSvestudioAdminReportMediaCost()에 아래의 코드 추가
+$aPerformanceInfoLastMonth = $oSvestudioAdminModel->getMediaPerformanceInfo($aMonthlyPeriod['first_day_of_last_month'],$aMonthlyPeriod['last_day_of_last_month']);
+Context::set( 'performance_source_list', $aPerformanceInfoLastMonth->source_list );
+Context::set( 'performance_source_medium_list', $aPerformanceInfoLastMonth->source_medium_list );
+Context::set( 'lm_daily', $aPerformanceInfoLastMonth->period_status );
+
+./tpl/rpt_media_perf.html에 아래의 코드 추가
+var _dataLmSourceMediaCostDaily = {
+	labels: [ '01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31'],
+	datasets: [
+<block loop="$performance_source_medium_list=>$sSourceMediumName,$nCost">
+				{label: '{$sSourceMediumName}',
+{@
+$aSourceMedium = explode( '_', $sSourceMediumName );
+}
+				backgroundColor: _aSourceMediumColor['{$sSourceMediumName}'],
+				data: [
+	<block loop="$lm_daily=>$date,$period_val">
+	"{$period_val->media_cost_info[$aSourceMedium[0]][$aSourceMedium[1]]}",
+	</block>
+					],
+					fill: false,
+				},
+</block>	
+	]
+};
+
+jQuery(document).ready(function() {
+	// chartjs Bar chart http://www.chartjs.org
+	var ctx = document.getElementById("lm_source_medium_cost_daily").getContext('2d');
+	//ctx.height = 200;
+	var mybarChart = new Chart(ctx, {
+		type: 'bar',
+		data: _dataLmSourceMediaCostDaily,
+		options: {
+			title: {
+				display: false,
+				text: '전월 금액'
+			},
+			maintainAspectRatio: false,
+			tooltips: {
+				mode: 'index',
+				intersect: false
+			},
+			responsive: true,
+			scales: {
+				xAxes: [{
+					stacked: true,
+				}],
+				yAxes: [{
+					stacked: true
+				}]
+			}
+		}
+	});
+});
+
+3. 조회 월 선택 기능 추가
+./svestudio.admin.model.php::getMontlyPeriod()에 아래의 코드 추가
+if( $sYearMonth )
+{
+	$aParsedDate = date_parse_from_format('Ym', $sYearMonth);
+	$timestamp = mktime(0,0,0,$aParsedDate['month'], '01', $aParsedDate['year']);
+
+	$sFirstDayLastMonth = date('Ymd', strtotime('-1 months', $timestamp));
+	$sLatDayLastMonth = date('Ymt', strtotime('-1 months', $timestamp));
+	$sFirstDayThisMonth = date('Ym01', $timestamp); // hard-coded '01' for first day
+	$sLatDayThisMonth  = date('Ymt', $timestamp);
+}
+
+./tpl/rpt_media_perf.html에서 아래의 코드를
+<?=date('Y-m-01')?> ~ <?=date('Y-m-d')?>
+jQuery(location).attr('href', '/index.php?module=svshopmaster&act=dispSvestudioAdminReportMediaCost&month='+picker.startDate.format('YYYYMMDD')+'&ed='+picker.endDate.format('YYYYMMDD'));
+
+아래와 같이 변경
+{$start_date} ~ {$end_date}
+jQuery(location).attr('href', '/index.php?module=svshopmaster&act=dispSvestudioAdminReportMediaCost&month='+picker.startDate.format('YYYYMM'));
+
+./svestudio.admin.view.php::dispSvestudioAdminReportMediaCost()에 아래의 코드 추가
+$sMonth = Context::get('month');
+if( $sMonth )
+{
+	$sStartDate = $aMonthlyPeriod['first_day_of_this_month'];
+	$sFormattedStartDate = substr($sStartDate,0,4).'-'.substr($sStartDate,4,2).'-'.substr($sStartDate,6,2);
+	Context::set( 'start_date', $sFormattedStartDate );
+	$sEndDate = $aMonthlyPeriod['last_day_of_this_month'];
+	$sFormattedEndDate = substr($sEndDate,0,4).'-'.substr($sEndDate,4,2).'-'.substr($sEndDate,6,2);
+	Context::set( 'end_date', $sFormattedEndDate );
+}
+else
+{
+	Context::set( 'start_date', date('Y-m-01') );
+	Context::set( 'end_date', date('Y-m-d') );
+}
+
+v 0.0.12
+14th, Nov 2018
+
+1. 코드 오류 수정
+./svestudio.admin.model.php::getMediaPerformanceInfo()에서 아래의 코드를
+foreach( $PeriodVal->in_site_revenue as $sKey=>$aVal )
+{
+	if( $sKey == 'gross' )
+		continue;
+
+	foreach($aSourceMediumList as $sSourceMedia=>$nUnknownVal)
+	{
+		$aSm = explode('_', $sSourceMedia);
+		$sSource = $aSm[0];
+		$sMedia = $aSm[1];
+		$PeriodVal->roas[$sSource]['gross'] = (int)($PeriodVal->in_site_revenue[$sSource]['gross']/$PeriodVal->media_cost_info[$sSource]['gross']*100);
+		$PeriodVal->roas[$sSource][$sMedia] = (int)($PeriodVal->in_site_revenue[$sSource][$sMedia]/$PeriodVal->media_cost_info[$sSource][$sMedia]*100);
+
+		$PeriodVal->conv_rate[$sSource]['gross'] = $PeriodVal->in_site_trs[$sSource]['gross']/$PeriodVal->in_site_tot_session[$sSource]['gross']*100;
+		$PeriodVal->conv_rate[$sSource][$sMedia] = $PeriodVal->in_site_trs[$sSource][$sMedia]/$PeriodVal->in_site_tot_session[$sSource][$sMedia]*100;
+	}
+}
+
+아래와 같이 변경
+foreach( $PeriodVal->in_site_revenue as $sKey=>$aVal )
+{
+	if( $sKey == 'gross' )
+		continue;
+}
+foreach($aSourceMediumList as $sSourceMedia=>$nUnknownVal)
+{
+	$aSm = explode('_', $sSourceMedia);
+	$sSource = $aSm[0];
+	$sMedia = $aSm[1];
+	$PeriodVal->roas[$sSource]['gross'] = (int)($PeriodVal->in_site_revenue[$sSource]['gross']/$PeriodVal->media_cost_info[$sSource]['gross']*100);
+	$PeriodVal->roas[$sSource][$sMedia] = (int)($PeriodVal->in_site_revenue[$sSource][$sMedia]/$PeriodVal->media_cost_info[$sSource][$sMedia]*100);
+
+	$PeriodVal->conv_rate[$sSource]['gross'] = $PeriodVal->in_site_trs[$sSource]['gross']/$PeriodVal->in_site_tot_session[$sSource]['gross']*100;
+	$PeriodVal->conv_rate[$sSource][$sMedia] = $PeriodVal->in_site_trs[$sSource][$sMedia]/$PeriodVal->in_site_tot_session[$sSource][$sMedia]*100;
+}
+
+2. 매체 운영 성과 보고서 평균 CPC 표시 기능 추가
+./svestudio.admin.model.php::getMediaPerformanceInfo()에 아래의 코드 추가
+$PeriodVal->media_cpc[$sSource]['gross'] = (int)($PeriodVal->media_cost_info[$sSource]['gross'] / $PeriodVal->media_click[$sSource]['gross']);
+	$PeriodVal->media_cpc[$sSource][$sMedia] = (int)($PeriodVal->media_cost_info[$sSource][$sMedia] / $PeriodVal->media_click[$sSource][$sMedia]);
+
+v 0.0.13
+15th, Nov 2018
+1. 매체 운영 성과 MTD GROSS 구분 기능 추가
+./svestudio.admin.model.php::getMediaPerformanceInfo() 수정
+./svestudio.admin.view.php::dispSvestudioAdminReportMediaCost() 수정
+./tpl/rpt_media_pert.html 수정
+
+v 0.0.14
+16th, Nov 2018
+1. 매체 운영 성과 노출수, 클릭수 그래프 추가
+./svestudio.admin.model.php::getMediaPerformanceInfo() 수정
+./svestudio.admin.view.php::dispSvestudioAdminReportMediaCost() 수정
+./tpl/rpt_media_pert.html 수정
+
+v 0.0.15
+19th, Nov 2018
+1. 매체 운영 성과 체류시간, PV 그래프 추가
+./svestudio.admin.model.php::getMediaPerformanceInfo() 수정
+./svestudio.admin.view.php::dispSvestudioAdminReportMediaCost() 수정
+./tpl/rpt_media_pert.html 수정
+
+./queries/getMediaPerformanceLogDaily.xml에 아래의 코드 추가
+<column name="in_site_tot_duration_sec" />
+<column name="in_site_tot_pvs" />
+
+v 0.0.16
+4th, Dec 2018
+1. google ads의 월마감 정산을 위해 기간 로그 갱신 기능 추가
+./b2c.php::procTask()에 아래의 코드 추가
+case 'PUP':
+	$nRespCode = $this->_checkReplace();
+	break;
+case 'WLYK':
+	$nRespCode = $this->_deletePeriod();
+	break;
+
+./b2c.php::_checkReplace() 추가
+./b2c.php::_deletePeriod() 추가
+
+./sv_queries/deleteCompiledLogByPeriod.sql 추가
+
+./sv_classes/mysql_pdo.php에서 아래의 코드를
+$aQueryType = array( 'select'=>'/^[g][e][t]\w+/', 'update'=>'/^[u][p][d][a][t][e]\w+/', 'insert'=>'/^[i][n][s][e][r][t]\w+/');
+
+아래와 같이 변경
+$aQueryType = array( 'select'=>'/^[g][e][t]\w+/', 'update'=>'/^[u][p][d][a][t][e]\w+/', 'insert'=>'/^[i][n][s][e][r][t]\w+/','delete'=>'/^[d][e][l][e][t][e]\w+/');
+
+v 0.0.17
+18th, Dec 2018
+1. GA 월간 세션수 캐쉬 파일 삭제 기능 추가
+./tpl/_header.html에 아래의 코드 추가
+<li class="x_active"|cond="$act=='dispSvestudioAdminCacheInit'"><a href="{getUrl('act','dispSvestudioAdminCacheInit')}">{$lang->cmd_cache_init}</a></li>
+
+./svestudio.admin.view.php::dispSvestudioAdminCacheInit() 추가
+./tpl/init_cache.html 추가
+./svestudio.admin.controller.php::procSvestudioAdminRemoveCache() 추가
+
+v 0.0.18
+24th, Dec 2018
+1. 당월 매체비 마감 예상 기능 추가
+./svestudio.admin.view.php::dispSvestudioAdminReportMediaCost()에 아래의 코드 추가
+Context::set( 'tm_source_medium_mtd_impression', $aPerformanceInfoCurMonth->source_medium_mtd_impression );
+Context::set( 'tm_source_medium_mtd_cost', $aPerformanceInfoCurMonth->source_medium_mtd_cost );
+Context::set( 'tm_source_medium_mtd_session', $aPerformanceInfoCurMonth->source_medium_mtd_session );
+Context::set( 'tm_source_medium_mtd_new_session', $aPerformanceInfoCurMonth->source_medium_mtd_new_session );
+Context::set( 'tm_source_medium_mtd_pvs', $aPerformanceInfoCurMonth->source_medium_mtd_pvs );
+Context::set( 'tm_source_medium_mtd_dur_sec', $aPerformanceInfoCurMonth->source_medium_mtd_dur_sec );
+Context::set( 'tm_source_medium_mtd_cpc', $aPerformanceInfoCurMonth->source_medium_mtd_cpc );
+Context::set( 'tm_source_medium_mtd_revenue', $aPerformanceInfoCurMonth->source_medium_mtd_revenue );
+Context::set( 'tm_source_medium_mtd_roas', $aPerformanceInfoCurMonth->source_medium_mtd_roas );
+Context::set( 'tm_source_medium_mtd_conv_rate', $aPerformanceInfoCurMonth->source_medium_mtd_conv_rate );
+
+./tpl/rpt_media_pert.html에서 아래의 코드를
+<block loop="$tm_source_medium_gross_cost=>$sSourceMediumName,$nCost">
+	<div>
+		<p>{$sSourceMediumName} {number_format($nCost)} 원</p>
+		<div class="">
+			<div class="progress progress_sm" style="width: 76%;">
+				<div class="progress-bar bg-green" role="progressbar" data-transitiongoal="80"></div>
+			</div>
+		</div>
+	</div>
+</block>
+
+아래와 같이 변경
+<block loop="$tm_source_medium_gross_cost=>$sSourceMediumName,$nCost">
+	<div>
+		<p>{$sSourceMediumName} {number_format($tm_source_medium_mtd_cost[$sSourceMediumName])} 원 / {number_format($nCost)} 원</p>
+		<div class="">
+			<div class="progress progress_sm" style="width: 76%;">
+				<div class="progress-bar bg-green" role="progressbar" data-transitiongoal="{$tm_source_medium_mtd_cost[$sSourceMediumName] / $nCost*100}"></div>
+			</div>
+		</div>
+	</div>
+</block>
+
+./svestudio.admin.model.php::getMediaPerformanceInfo()에 아래의 코드 추가
+if( substr($sDateFrom, 0, 6) == $this->_g_sThisMonth && substr($sDateTo, 0, 6) == $this->_g_sThisMonth )
+{
+	$nElapsedDays = $this->_g_nElapsedDaysOfThisMonth-1;
+	foreach( $aSourceMediumGrossCost as $sSourceMedium=>$nCost )
+		$aSourceMediumGrossCost[$sSourceMedium] = (int)($nCost / $nElapsedDays * $this->_g_nDaysOfMonth);
+	
+	foreach( $aSourceMediumGrossImpression as $sSourceMedium=>$nImp )
+		$aSourceMediumGrossImpression[$sSourceMedium] = (int)($nImp / $nElapsedDays * $this->_g_nDaysOfMonth);
+	
+	foreach( $aSourceMediumGrossSession as $sSourceMedium=>$nSession )
+		$aSourceMediumGrossSession[$sSourceMedium] = (int)($nSession / $nElapsedDays * $this->_g_nDaysOfMonth);
+
+	foreach( $aSourceMediumGrossNewSession as $sSourceMedium=>$nSession )
+		$aSourceMediumGrossNewSession[$sSourceMedium] = (int)($nSession / $nElapsedDays * $this->_g_nDaysOfMonth);
+
+	foreach( $aSourceMediumGrossRevenue as $sSourceMedium=>$nRevenue )
+		$aSourceMediumGrossRevenue[$sSourceMedium] = (int)($nRevenue / $nElapsedDays * $this->_g_nDaysOfMonth);
+}
+
+v 0.0.19
+7th, Jan 2019
+1. 매체 성과 보고서에서 당월과 전월의 모든 source medium이 표시되도록 수정
+./svestudio.admin.view.php::dispSvestudioAdminReportMediaCost()에 아래의 코드 추가
+$aTotalSourceMediumArray = Array();
+foreach( $aPerformanceInfoLastMonth->source_medium_gross_cost as $key=>$val )
+	$aTotalSourceMediumArray[$key] = 0;
+foreach( $aPerformanceInfoCurMonth->source_medium_gross_cost as $key=>$val )
+	$aTotalSourceMediumArray[$key] = 0;
+Context::set( 'total_source_medium', $aTotalSourceMediumArray );
+
+./tpl/rpt_media_pert.html에서 아래의 코드를
+<block loop="$lm_source_medium_gross_cost=>$sSourceMediumName,$nCost">
+_aSourceMediumColor['{$sSourceMediumName}'] = getRandomColor();
+</block>
+
+아래와 같이 변경
+<block loop="$lm_source_medium_gross_cost=>$sSourceMediumName,$nCost">
+_aSourceMediumColor['{$sSourceMediumName}'] = getRandomColor();
+</block>
+
+./tpl/rpt_media_pert.html에서 아래의 코드를
+<block loop="$lm_source_medium_gross_cost=>$sSourceMediumName,$nSession">
+
+아래와 같이 변경
+<block loop="$tm_source_medium_gross_cost=>$sSourceMediumName,$nSession">
+
+2. 매체 성과 보고서에서 당월 CPC가 고평가되는 문제 수정
+./tpl/rpt_media_pert.html에서 아래의 변수 전치사를
+$tm_source_medium_gross
+
+아래와 같이 변경
+$tm_source_medium_mtd
+
+v 0.0.20
+6th, Feb 2019
+1. 네이버 브랜드 검색 바터 계약이면 매체비가 0이어도 노출수 클릭수 존재하는 상황을 처리
+./svestudio.admin.model.php::getMediaPerformanceInfo()에 아래의 코드 추가
+$bProcWithoutCost = false;
+$sSourceMediumId = $oRow->media_source.'_'.$oRow->media_media;
+if( $sSourceMediumId == 'naver_display' )
+	$bProcWithoutCost = true;
+
+관련 코드 수정
+
+v 0.0.21
+18th, Feb 2019
+1. no SV standard campaign code를 수용
+./schemas/svestudio_gross_compiled_daily_log.xml에서 아래의 코드를
+<column name="media_camp1st" type="varchar" size="35" notnull="notnull" />
+
+아래와 같이 변경
+<column name="media_camp1st" type="varchar" size="100" notnull="notnull" />
+
+2. facebook_cpc도 비용없는 로그 허용 기능 추가
+./svestudio.admin.model.php::getMediaPerformanceInfo()에서 아래의 코드를
+if( $sSourceMediumId == 'naver_display' )
+
+아래와 같이 변경
+if( $sSourceMediumId == 'naver_display' || $sSourceMediumId == 'facebook_cpc' )
+
+v 0.0.22
+18th, Feb 2019
+1. PNS 캠페인 그래프 설정
+./svestudio.admin.model.php::getMediaPerformanceInfo()에서 아래의 코드를
+if( $sRstType == 'PS' ) 
+
+아래와 같이 변경
+if( $sRstType == 'PS' || $sRstType == 'PNS' ) 
+
+v 0.0.23
+15th, Mar 2019
+1. 당월 매체별 progress bar의 분모를 sum of mtd로 변경
+./svestudio.admin.model.php::getMediaPerformanceInfo()에 아래의 코드 추가
+$nMtdCost = 0;
+$nMtdImpression = 0;
+$nMtdSession = 0;
+$nMtdNewSession = 0;
+$nMtdRevenue = 0;
+
+$nMtdCost += $aSourceMediumMtdCost[$sSourceMedia];
+$nMtdImpression += $aSourceMediumMtdImpression[$sSourceMedia];
+$nMtdSession +=  $aSourceMediumMtdSession[$sSourceMedia];
+$nMtdNewSession +=  $aSourceMediumMtdNewSession[$sSourceMedia];
+$nMtdRevenue +=  $aSourceMediumMtdRevenue[$sSourceMedia];
+
+$oRst->mtd_cost = $nMtdCost;
+$oRst->mtd_impression = $nMtdImpression;
+$oRst->mtd_session = $nMtdSession;
+$oRst->mtd_new_session = $nMtdNewSession;
+$oRst->mtd_revenue = $nMtdRevenue;
+
+./svestudio.admin.view.php::dispSvestudioAdminReportMediaCost()에 아래의 코드 추가
+Context::set( 'tm_mtd_cost', $aPerformanceInfoCurMonth->mtd_cost );
+Context::set( 'tm_mtd_impression', $aPerformanceInfoCurMonth->mtd_impression );
+Context::set( 'tm_mtd_session', $aPerformanceInfoCurMonth->mtd_session );
+Context::set( 'tm_mtd_new_session', $aPerformanceInfoCurMonth->mtd_new_session );
+Context::set( 'tm_mtd_revenue', $aPerformanceInfoCurMonth->mtd_revenue );
+
+./tpl/rpt_media_pert.html에서 관련 코드 변경
+
+v 0.0.24
+8th, May 2019
+1. 당월 매체별 CPC 중에서 organic은 분모를 click에서 session으로 변경
+./svestudio.admin.model.php::getMediaPerformanceInfo()에 아래의 코드를
+$PeriodVal->media_cpc[$sSource]['gross'] = (int)($PeriodVal->media_gross_cost[$sSource]['gross'] / $PeriodVal->media_gross_click[$sSource]['gross']);
+$PeriodVal->media_cpc[$sSource][$sMedia] = (int)($PeriodVal->media_gross_cost[$sSource][$sMedia] / $PeriodVal->media_gross_click[$sSource][$sMedia]);
+
+아래와 같이 변경
+if( $sMedia == 'organic' )
+{
+	$PeriodVal->media_cpc[$sSource]['gross'] = (int)($PeriodVal->media_gross_cost[$sSource]['gross'] / $PeriodVal->in_site_tot_session[$sSource]['gross']);
+	$PeriodVal->media_cpc[$sSource][$sMedia] = (int)($PeriodVal->media_gross_cost[$sSource][$sMedia] / $PeriodVal->in_site_tot_session[$sSource][$sMedia]);
+}
+else
+{
+	$PeriodVal->media_cpc[$sSource]['gross'] = (int)($PeriodVal->media_gross_cost[$sSource]['gross'] / $PeriodVal->media_gross_click[$sSource]['gross']);
+	$PeriodVal->media_cpc[$sSource][$sMedia] = (int)($PeriodVal->media_gross_cost[$sSource][$sMedia] / $PeriodVal->media_gross_click[$sSource][$sMedia]);
+}
+
+./svestudio.admin.model.php::getMediaPerformanceInfo()에 아래의 코드를
+$aSourceMediumMtdCpc[$sSourceMedia] = (int)($aSourceMediumMtdCost[$sSourceMedia]/$aSourceMediumMtdClick[$sSourceMedia]);
+
+아래와 같이 변경
+if( $sSourceMedia == 'naver_organic' )
+	$aSourceMediumMtdCpc[$sSourceMedia] = (int)($aSourceMediumMtdCost[$sSourceMedia]/$aSourceMediumMtdSession[$sSourceMedia]);
+else
+	$aSourceMediumMtdCpc[$sSourceMedia] = (int)($aSourceMediumMtdCost[$sSourceMedia]/$aSourceMediumMtdClick[$sSourceMedia]);
+
+./svestudio.admin.model.php::getMediaPerformanceInfo()에 아래의 코드를
+$aSourceMediumGrossCpc[$sSourceMedia] = (int)($aSourceMediumGrossCost[$sSourceMedia]/$aSourceMediumGrossClick[$sSourceMedia]);
+
+아래와 같이 변경
+if( $sSourceMedia == 'naver_organic' )
+	$aSourceMediumGrossCpc[$sSourceMedia] = (int)($aSourceMediumGrossCost[$sSourceMedia]/$aSourceMediumGrossSession[$sSourceMedia]);
+else
+	$aSourceMediumGrossCpc[$sSourceMedia] = (int)($aSourceMediumGrossCost[$sSourceMedia]/$aSourceMediumGrossClick[$sSourceMedia]);
+
+v 1.0.0
+26th, May 2019
+1. 개별 관리자의 상세 권한 조정 체제 개발 시작
+./svestudio.class.php::checkUpdate()에 아래의 코드를 추가
+$oModuleModel = &getModel('module');
+if(!$oModuleModel->getTrigger('member.doLogin', 'svestudio', 'model', 'triggerdoLoginAfter', 'after'))
+	return true;
+
+./svestudio.class.php::moduleUpdate()에 아래의 코드를 추가
+$oModuleController = &getController('module');
+$oModuleController->insertTrigger('member.doLogin', 'svestudio', 'model', 'triggerdoLoginAfter', 'after');
+
+./svestudio.modelphp::triggerdoLoginAfter() 추가
+
+./svestudio.admin.view.php::dispSvestudioAdminInviteInfo() 추가
+./svestudio.admin.controller.php::procSvestudioAdminInvitedMemberGrp() 추가
+./svestudio.admin.controller.php::_saveModuleConfig() 추가
+./svestudio.admin.controller.php::procSvestudioAdminGrantByModule() 추가
+
+./svestudio.modelphp::getPermittedModuleListByMemberGrp() 추가
+
+v 1.0.1
+28th, Jun 2019
+1. 주문 관리 화면에서 송장 개별 입력 기능 추가
+./svestudio.controller.php::procSvestudioUpdateDeliveryInfo() 추가
+
+v 1.0.2
+4th, Jul 2019
+1. 주문 관리 화면의 체크박스 모두 선택 해결
+./skins/default/common_layout.html에서 아래의 코드 제거
+<script src="js/icheck/icheck.min.js"></script>
+<script src="js/custom.js"></script>
+<script src="js/pace/pace.min.js"></script>
+
+2. 개별 주문 상태 변경 기능 추가
+./svestudio.controller.php::procSvestudioUpdateOrderStatus() 추가
+
+v 1.0.3
+1st, Aug 2019
+1. 코드 유지보수 편의성 개선
+./svestudio.controller.php::procSvestudioUpdateOrderStatus()에서 아래의 코드를
+foreach( $order_srls as $key=>$order_srl )
+{
+	$express_id = $express_ids[$key];
+	$invoice_no = $invoice_nos[$key];
+	$aInvoiceInfo = $this->_parseInvoiceSerials( $invoice_no );
+	$args->invoice_no = $aInvoiceInfo['default'];
+	$args->extra_invoice_no = $aInvoiceInfo['extra'];
+	$args->order_srl = $order_srl;
+	$args->order_status = 4;
+
+아래와 같이 변경
+$oSvorderModel = &getClass('svorder');
+foreach( $order_srls as $key=>$order_srl )
+{
+	$express_id = $express_ids[$key];
+	$invoice_no = $invoice_nos[$key];
+	$aInvoiceInfo = $this->_parseInvoiceSerials( $invoice_no );
+	$args->invoice_no = $aInvoiceInfo['default'];
+	$args->extra_invoice_no = $aInvoiceInfo['extra'];
+	$args->order_srl = $order_srl;
+	$args->order_status = svorder::ORDER_STATE_ON_DELIVERY;
+
+v 1.0.4
+23rd, Aug 2019
+1. svorder v2.1.0에 대응
+./svestudio.controller.php::procSvestudioUpdateDeliveryInfo()에서 아래의 코드를
+$order_srls = Context::get('order_srls');
+$express_ids = Context::get('express_id');
+$invoice_nos = Context::get('invoice_no');
+$nUpdatedItems = 0;
+
+$oSvorderModel = &getClass('svorder'); // to load svorder global defined
+foreach( $order_srls as $key=>$order_srl )
+{
+	$express_id = $express_ids[$key];
+	$invoice_no = $invoice_nos[$key];
+	$aInvoiceInfo = $this->_parseInvoiceSerials( $invoice_no );
+	$args->invoice_no = $aInvoiceInfo['default'];
+	$args->extra_invoice_no = $aInvoiceInfo['extra'];
+	$args->order_srl = $order_srl;
+	$args->order_status = svorder::ORDER_STATE_ON_DELIVERY;//4; // 송장번호가 입력되면 배송중 상태로 변경
+	$args->express_id = $express_id;
+	// 상태값변경, 배송회사, 운송장번호 데이터가 없으면 업데이트 필요치 않는다.
+	if( !$args->express_id || strlen( $args->invoice_no )==0)
+		continue;
+	
+	// express_id값은 항상 넘어 오므로 이 루틴을 타게된다.
+	$oSvorderController = &getController('svorder');
+	$output = $oSvorderController->updateOrderStatus( $order_srl, $args );
+	if( !$output->toBool() )
+		return $output;
+	
+	unset( $args );
+	$nUpdatedItems++;
+}
+$this->setMessage( $nUpdatedItems.'개의 거래가 처리되었습니다.' );
+
+아래와 같이 변경
+$aOrderSrl = Context::get('order_srls');
+$aExpressId = Context::get('express_id');
+$aInvoiceNo = Context::get('invoice_no');
+$nUpdatedItems = 0;
+$sErrMsg = null;
+$oSvorderAdminController = &getAdminController('svorder');
+
+foreach( $aOrderSrl as $nIdx => $nOrderSrl )
+{
+	$sExpressId = $aExpressId[$nIdx];
+	$sInvoiceNo = $aInvoiceNo[$nIdx];
+	$aInvoiceInfo = $oSvorderAdminController->parseInvoiceSerials( $sInvoiceNo );
+	$oArgs->invoice_no = $aInvoiceInfo['default'];
+	$oArgs->extra_invoice_no = $aInvoiceInfo['extra'];
+	$oArgs->order_srl = $nOrderSrl;
+	$oArgs->order_status = svorder::ORDER_STATE_ON_DELIVERY; // 송장번호가 입력되면 배송중 상태로 변경
+	$oArgs->express_id = $sExpressId;
+	$oArgs->cs_memo = 'procSvestudioUpdateDeliveryInfo 일괄처리';
+	if( !$oArgs->express_id || strlen( $oArgs->invoice_no )==0)
+		continue;
+	
+	$oUpdateRst = $oSvorderAdminController->updateSingleOrderStatus( $nOrderSrl, $oArgs );
+	if( !$oUpdateRst->toBool() )
+		$sErrMsg .= $oUpdateRst->getMessage().'<BR>';
+	else
+	{
+		unset( $args );
+		$nUpdatedItems++;
+	}
+}
+$this->setMessage( $nUpdatedItems.'개의 거래가 처리되었습니다.<BR>'.$sErrMsg );
+
+./svestudio.controller.php::procSvestudioUpdateOrderStatus()에서 아래의 코드를
+$oRst = $oSvorderAdminController->procSvorderAdminUpdateStatus();
+
+아래와 같이 변경
+$oRst = $oSvorderAdminController->procSvorderAdminUpdateStatusMultiple();
+
+./svestudio.controller.php::_parseInvoiceSerials() 제거
+
+v 1.0.5
+16th, Sep 2019
+1. 입금완료 다운 &배송준비 기능 오류 개선
+./svestudio.controller.php::procSvestudioCSVDownloadOrderPrepareShipping()에 아래의 코드 추가
+$args->list_count = 1000
+
+2.
+주문상태 분류를 svorder v2.1.0에 대응
+./svestudio.view.php::dispSvestudioOrderManagement()에 아래의 코드 추가
+$oDummy = &getClass('svorder');
+
+./skins/~/ordermanagement.html에 아래의 코드 추가
+<div class="btn-group">
+	<a href="{getUrl('','mid',$mid,'act','dispSvestudioOrderManagement','status','0')}" cond="0">
+		<button id='0' class="btn btn-info" type="button">{$lang->cmd_cart}</button>
+	</a>
+	<a href="{getUrl('','mid',$mid,'act','dispSvestudioOrderManagement','status',svorder::ORDER_STATE_ON_DEPOSIT)}">
+		<button id='1' class="btn btn-info" type="button">{$lang->wait_deposit}</button>
+	</a>
+	<a href="{getUrl('','mid',$mid,'act','dispSvestudioOrderManagement','status',svorder::ORDER_STATE_PAID)}">
+		<button id='2' class="btn btn-info" type="button">{$lang->deposit_done}</button>
+	</a>
+	<a href="{getUrl('','mid',$mid,'act','dispSvestudioOrderManagement','status',svorder::ORDER_STATE_PREPARE_DELIVERY)}">
+		<button id='3' class="btn btn-info" type="button">{$lang->prepare_delivery}</button>
+	</a>
+	<a href="{getUrl('','mid',$mid,'act','dispSvestudioOrderManagement','status',svorder::ORDER_STATE_ON_DELIVERY)}">
+		<button id='4' class="btn btn-info" type="button">{$lang->on_delivery}</button>
+	</a>
+	<a href="{getUrl('','mid',$mid,'act','dispSvestudioOrderManagement','status',svorder::ORDER_STATE_DELIVERED)}">
+		<button class="btn btn-info" type="button">{$lang->delivery_done}</button>
+	</a>
+</div>
+<div class="btn-group">
+	<a href="{getUrl('','mid',$mid,'act','dispSvestudioOrderManagement','status',svorder::ORDER_STATE_RETURN_REQUESTED)}">
+		<button class="btn btn-success" type="button">{$lang->return_requested}</button>
+	</a>
+	<a href="{getUrl('','mid',$mid,'act','dispSvestudioOrderManagement','status',svorder::ORDER_STATE_RETURNED)}">
+		<button class="btn btn-success" type="button">{$lang->returns}</button>
+	</a>
+	<a href="{getUrl('','mid',$mid,'act','dispSvestudioOrderManagement','status',svorder::ORDER_STATE_EXCHANGE_REQUESTED)}">
+		<button class="btn btn-success" type="button">{$lang->exchange_requested}</button>
+	</a>
+	<a href="{getUrl('','mid',$mid,'act','dispSvestudioOrderManagement','status',svorder::ORDER_STATE_EXCHANGE_REDELIVERY_READY)}">
+		<button class="btn btn-success" type="button">{$lang->exchange_redelivery_ready}</button>
+	</a>
+	<a href="{getUrl('','mid',$mid,'act','dispSvestudioOrderManagement','status',svorder::ORDER_STATE_EXCHANGED)}">
+		<button class="btn btn-success" type="button">{$lang->exchanged}</button>
+	</a>
+	<a href="{getUrl('','mid',$mid,'act','dispSvestudioOrderManagement','status',svorder::ORDER_STATE_CANCEL_REQUESTED)}">
+		<button class="btn btn-success" type="button">{$lang->on_cancelling}</button>
+	</a>
+</div>
+<div class="btn-group">
+	<a href="{getUrl('','mid',$mid,'act','dispSvestudioOrderManagement','status',svorder::ORDER_STATE_CANCELLED)}">
+		<button class="btn btn-warning" type="button">{$lang->cancelled}</button>
+	</a>
+	<a href="{getUrl('','mid',$mid,'act','dispSvestudioOrderManagement','status',svorder::ORDER_STATE_COMPLETED)}">
+		<button class="btn btn-warning" type="button">{$lang->transaction_done}</button>
+	</a>
+</div>
+
+./svestudio.controller.php::procSvestudioUpdateOrderStatus()에서 아래의 코드를
+$this->setMessage($oSvorderAdminController->getMessage());
+
+아래와 같이 변경
+$this->setMessage($oRst->getMessage());
+
+v 1.0.6
+4th, Oct 2019
+1. 매체 보고서 로데이터 다운로드 화면 추가
+./svestudio.admin.view.php::dispSvestudioAdminDownloadRawData() 추가
+
+./queries/getMediaPerfLogLatest.xml 추가
+./queries/getMediaPerfLogByLogSrl.xml 추가
+
+./tpl/rpt_media_perf.html에서 아래의 코드 제거
+<form action="./" method="post" id='frmCsvDownload' name="frmCsvDownload">
+<input type='hidden' name='module' id='module' value='svestudio'/>
+<input type='hidden' name='act' id='act' value='procSvestudioAdminCSVDownload'/>
+<input type='hidden' name='report' id='act' value='media'/>
+</form>
+<script type="text/javascript">
+function downloadCsv()
+{
+	document.frmCsvDownload.submit();
+}
+</script>
+
+./tpl/frm_rawdata_download.html 추가
+
+./svestudio.admin.controller.php::_validateDateString() 추가
+./queries/getPeriodRaw.xml 제거
+./queries/getMediaPerfLogByPeriod.xml 추가
+
+2. 코드 오류 수정
+./queries/svestudio_gross_compiled_daily_log.xml에서 아래의 코드를
+<column name="logdate" type="date" index='idx_logdate' />
+
+아래와 같이 변경
+<column name="logdate" type="date" notnull="notnull" index='idx_logdate' />
+
+v 1.0.7
+15th, Oct 2019
+1. 매체 보고서 로데이터 다운로드시 기간제한 기능
+./svestudio.admin.controller.php::procSvestudioAdminCSVDownload()에 아래의 코드 추가
+$dtStart = new DateTime($sDataBegin);
+$dtEnd  = new DateTime($sDataEnd);
+$dtDiff = $dtStart->diff($dtEnd);
+if( $dtDiff->format('%r%a') > 120 )
+	return new Object(-1, 'msg_period_exceeds_120_days');
+
+2. 오류 수정
+./svestudio.admin.controller.php::procSvestudioAdminCSVDownload()에서 아래의 코드를
+
+아래와 같이 변경
+echo '"'.$oRecord->media_term.'",';
+
+v 1.0.8
+5th, Jan 2020
+1. 미사용 코드 제거
+./svestudio.admin.view.php::dispSvestudioAdminInsertModInst()에서 아래의 코드 제거
+$oSvorderAdminModel = &getAdminModel('svorder');
+$oSvorderModules = $oSvorderAdminModel->getMidList();
+Context::set( 'svorder_modules', $oSvorderModules );
+
+./tpl/insertmodinst.html에서 아래의 코드 제거
+<div class="x_control-group">
+	<label class="x_control-label" for="check_cart">{$lang->check_cart}</label>
+	<div class="x_controls">
+		<select name="check_cart" id="check_cart">
+			<option value="N" selected="selected"|cond="$module_info->check_cart=='N'">{$lang->not_goto_cart}</option>
+			<option value="Y" selected="selected"|cond="$module_info->check_cart=='Y'">{$lang->confirm_after_putting}</option>
+		</select>
+		<a href="#check_cart_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+		<p id="check_cart_help" class="x_help-block" hidden>{$lang->about_check_cart}</p>
+	</div>
+</div>
+<div class="x_control-group">
+	<label class="x_control-label" for="">{$lang->order_mgmt_module}</label>
+	<div class="x_controls">
+		<select name="svorder_module_srl">
+			<option value='' selected="selected"|cond="!$module_info->svorder_module_srl" >{$lang->cmd_select}</option>
+			<option loop="$svorder_modules=>$key,$val" value="{$val->module_srl}" selected="selected"|cond="$module_info->svorder_module_srl==$val->module_srl" >{$val->browser_title}</option>
+		</select>
+		<a href="#svorder_module_srl_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+		<p id="svorder_module_srl_help" class="x_help-block" hidden>{$lang->about_order_mgmt_module}<a href="{getUrl('','module','admin','act','dispSvorderAdminModInstList')}" target="_blank">{$lang->order_mgmt_module_management}</a></p>
+	</div>
+</div>
+<div class="x_control-group">
+	<label class="x_control-label" for="">{$lang->address_selection}</label>
+	<div class="x_controls">
+		<select name="display_delivdest">
+			<option value="N" selected="selected"|cond="$module_info->display_delivdest == 'N'">{$lang->notuse}</option>
+			<option value="Y" selected="selected"|cond="$module_info->display_delivdest == 'Y'">{$lang->use}</option>
+		</select>
+		<a href="#display_delivdest_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+		<p id="display_delivdest_help" class="x_help-block" hidden>{$lang->about_address_selection}</p>
+	</div>
+</div>
+
+2. 총 누적 지표 표시 기능 추가
+./svestudio.admin.model.php::getHistoricalStatus() 추가
+
+3. 반환값 데이터 형식 통일
+./svestudio.admin.model.php::getSkuPerfInfoDaily()에서 아래의 코드를
+return $aDatePeriod;
+
+아래와 같이 변경
+$oRst = new Object();
+$oRst->add( 'aDatePeriod', $aDatePeriod );
+return $oRst;
+
+3. svorder v 3.0.0의 향상된 권한 관리 체제에 대응
+./svestudio.view.php::init()에 아래의 코드 추가
+$oLoggedInfo->svestudio_permitted_order_mgr_member_srl = $oLoggedInfo->member_srl;
+
+4. 코딩 스타일 개선
+./svestudio.controller.php::procSvestudioCSVDownloadOrderPrepareShipping()에서 아래의 코드를
+$sSvorderClassPath = _XE_PATH_.'modules/svorder/svorder.class.php';
+if(file_exists($sSvorderClassPath))
+	require_once($sSvorderClassPath);
+
+아래와 같이 변경
+if( !defined('svorder::ORDER_STATE_ON_DEPOSIT') )
+	getClass('svorder');
+
+5. UI 개선
+./svestudio.controller.php::procSvestudioCSVDownloadOrderPrepareShipping()에서 아래의 코드를
+$oSvorderAdminController->updateOrderStatusPhp($aOrderSrl, svorder::ORDER_STATE_PREPARE_DELIVERY );
+
+아래와 같이 변경
+Context::set( 'cart', $aOrderSrl );
+Context::set( 'order_srls', $aOrderSrl );
+Context::set( 'order_status', svorder::ORDER_STATE_PREPARE_DELIVERY );		
+$oSvorderAdminController->procSvorderAdminUpdateStatusMultiple();
+
+$sRstMsg = $oSvorderAdminController->getMessage();
+if( $sRstMsg != '저장했습니다.' )
+	echo $sRstMsg; // 다운로드 엑셀 파일에 경고 표시
+
+v 1.0.9
+26th, Feb 2020
+1. 캐쉬 초기화 오류 수정
+./conf/module.xml에 아래의 코드 추가
+<action name="procSvestudioAdminRemoveCache" type="controller" />
+
+2. 품목별 판매 성과 리포트 표시 오류 수정
+./svestudio.admin.view.php::dispSvestudioAdminReportItem()에서 아래의 코드를
+// retrieve last month
+$oLmSkuPerformance = $oSvestudioAdminModel->getSkuPerfInfoDaily($aMonthlyPeriod['first_day_of_last_month'],$aMonthlyPeriod['last_day_of_last_month']);
+Context::set( 'lm_by_item', $oLmSkuPerformance['by_item'] );
+
+// retrieve current month
+$oTmSkuPerformance = $oSvestudioAdminModel->getSkuPerfInfoDaily($aMonthlyPeriod['first_day_of_this_month'],$aMonthlyPeriod['last_day_of_this_month']);
+Context::set( 'tm_by_item', $oTmSkuPerformance['by_item'] );
+
+아래와 같이 변경
+$oLmSkuPerformance = $oSvestudioAdminModel->getSkuPerfInfoDaily($aMonthlyPeriod['first_day_of_last_month'],$aMonthlyPeriod['last_day_of_last_month']);
+if (!$oLmSkuPerformance->toBool()) 
+	return $oLmSkuPerformance;
+
+$aLmDataPeriod = $oLmSkuPerformance->get( 'aDatePeriod' );
+Context::set( 'lm_by_item', $aLmDataPeriod['by_item'] );
+unset( $aLmDataPeriod );
+unset( $oLmSkuPerformance );
+
+// retrieve current month
+$oTmSkuPerformance = $oSvestudioAdminModel->getSkuPerfInfoDaily($aMonthlyPeriod['first_day_of_this_month'],$aMonthlyPeriod['last_day_of_this_month']);
+if (!$oTmSkuPerformance->toBool()) 
+	return $oTmSkuPerformance;
+
+$aTmDataPeriod = $oTmSkuPerformance->get( 'aDatePeriod' );
+Context::set( 'tm_by_item', $aTmDataPeriod['by_item'] );
+unset( $aTmDataPeriod );
+unset( $oTmSkuPerformance );
+
+v 2.0.0
+29th, Feb 2020
+1. 세션 파일 캐쉬를 DB 캐쉬로 변경
+./schemas/svestudio_compiled_monthly.xml 추가
+./queries/insertCompiledMonthly.xml 추가
+./queries/getCompiledByMonth.xml 추가
+./queries/getSessionLogMonthly.xml 추가
+./queries/getLastLogDate.xml 추가
+./queries/updateSessionLogMonthly.xml 추가
+
+./svestudio.admin.model.php::_getMonthlyRangeArray() 추가
+./svestudio.admin.model.php::_validateDate() 추가
+
+./svestudio.admin.model.php::getTotalSessionPeriod()에서 아래의 코드를
+$aDatePeriod = $this->_getDateRangeArray($sDateFrom,$sDateTo);
+$nTotal = 0;
+$aMonthly = array();
+$aWeekly = array();
+$aWeekdaily = array();
+foreach( $aDatePeriod as $date=>$val )
+{
+	$sCacheByDateFile = _XE_PATH_.'files/svestudio/session/'.$date.'.php';
+	if( is_readable($sCacheByDateFile))
+		$nSession = FileHandler::readFile($sCacheByDateFile);
+	else
+	{
+		$args->logdate = $date;
+		$output = executeQueryArray('svestudio.getSessionLogDaily', $args);
+		$nSession = (int)$output->data[0]->tot_session;
+		if( (int)$date < (int)$this->_g_sToday )
+			$output = FileHandler::writeFile($sCacheByDateFile, $nSession);
+	}
+	$val->tot_session = $nSession;
+	$aMonthly[$val->mo] += $nSession;
+	$aWeekly[$val->wknum] += $nSession;
+	$aWeekdaily[$val->dayname] += $nSession;
+	$nTotal += $nSession;
+}
+
+아래와 같이 변경
+$aMonthlyPeriod = $this->_getMonthlyRangeArray($sDateFrom,$sDateTo);
+$nTotal = 0;
+$aMonthly = array();
+//$aWeekly = array();
+//$aWeekdaily = array();
+
+$dtObject = new DateTime(); // basically this month is on progress
+// decide on progress month
+if( (int)$dtObject->format('d') == 1 ) // if first day of the month
+{
+	$dtObject->modify('-1 day'); // prev month is on progress
+	array_pop( $aMonthlyPeriod ); // eliminate this month
+}
+$sOnProgressMonth = $dtObject->format('Ym');
+
+foreach( $aMonthlyPeriod as $nIdx => $sYrMo )
+{
+	if( $sYrMo != $sOnProgressMonth ) // 진행 중월의 직전월까지는 단순 총계 작업
+	{
+		$oArgs->logdate = $sYrMo;
+		$output = executeQuery('svestudio.getCompiledByMonth', $oArgs);
+		$nSession = $output->data->tot_monthly_session;
+		if( !$nSession )
+		{
+			$output = executeQueryArray('svestudio.getSessionLogMonthly', $oArgs);
+//echo __FILE__.':'.__lINE__.'<BR>';
+//var_dump( $sYrMo);
+//echo '<BR><BR>';
+			$nSession = (int)$output->data[0]->tot_session;
+			$oArgs->tot_monthly_session = $nSession;
+			$oInsertRst = executeQueryArray('svestudio.insertCompiledByMonth', $oArgs);
+//var_dump( $oInsertRst);
+//echo '<BR><BR>';
+			unset( $oInsertRst );
+		}
+	}
+	elseif( $sYrMo == $sOnProgressMonth ) // 진행 중 월은 직전일까지 총계 작업
+	{
+//echo __FILE__.':'.__lINE__.'<BR>';
+//var_dump( $sYrMo);
+//echo '<BR><BR>';
+//var_dump( $sOnProgressMonth);
+//echo '<BR><BR>';
+		$oArgs->logdate = $sYrMo;
+		$oOldCompiledMonthlyLogRst = executeQuery('svestudio.getCompiledByMonth', $oArgs);
+		$nSession = $oOldCompiledMonthlyLogRst->data->tot_monthly_session;
+		$nRecCnt = count( $oOldCompiledMonthlyLogRst->data );
+		$sLastUpdateDate = $oOldCompiledMonthlyLogRst->data->last_update_date;
+		unset( $oOldCompiledMonthlyLogRst );
+		if( $nRecCnt == 0 && $nSession == null ) // 기존 내역이 없으면 단순 총계 작업
+		{
+			$oMonthlyLogRst = executeQueryArray('svestudio.getSessionLogMonthly', $oArgs);
+			$nSession = (int)$oMonthlyLogRst->data[0]->tot_session;
+			$oLastDateRst = executeQueryArray('svestudio.getLastLogDate', $oArgs);
+//echo __FILE__.':'.__lINE__.'<BR>';
+			$oRec = array_pop($oLastDateRst->data);
+			$oArgs->last_update_date = $oRec->logdate;
+			unset( $oLastDateRst );
+			unset( $oRec );
+
+			$oArgs->tot_monthly_session = $nSession;
+			$oInsertRst = executeQueryArray('svestudio.insertCompiledByMonth', $oArgs);
+			unset( $oInsertRst );
+		}
+		else // 기존 내역이 있으면 최종 갱신일 이후부터 추가
+		{
+			if( $this->_validateDate($sLastUpdateDate, 'Ymd') )
+			{
+//echo '<BR><BR>';
+				$sLastDayOfOnProgressMonth = date('Ymt', strtotime($sLastUpdateDate));
+				for( $nLogDate = (int)$sLastUpdateDate+1; $nLogDate <= $sLastDayOfOnProgressMonth; $nLogDate++)
+				{
+					if( (int)$nLogDate < (int)$this->_g_sToday )
+					{
+						$oRetrieveArgs->logdate = $nLogDate;
+						$oRetrieveRst = executeQueryArray('svestudio.getSessionLogDaily', $oRetrieveArgs);
+						$nSession += (int)$oRetrieveRst->data[0]->tot_session;
+						unset( $oRetrieveRst );
+						unset( $oRetrieveArgs );
+					}
+				}
+				$oUpdateArgs->tot_monthly_session = $nSession;
+				$oUpdateArgs->logdate = $sYrMo;
+				$oUpdateRst = executeQueryArray('svestudio.updateSessionLogMonthly', $oUpdateArgs);
+				if (!$oUpdateRst->toBool()) 
+					return $oUpdateRst;
+				unset( $oUpdateRst );
+				unset( $oUpdateArgs );
+			}
+		}
+	}
+	$aMonthly[$sYrMo] = $nSession;
+	//$aWeekly[$val->wknum] += $nSession;
+	//$aWeekdaily[$val->dayname] += $nSession;
+	$nTotal += $nSession;
+}
+
+v 2.0.1
+3rd, Mar 2020
+1. b2c.php에서 암호화 복호화 기능을 라이브러리로 분리함
+./sv_classes/svapi_crypt.php 추가
+./b2c.php에서 암호복호화 관련 코드 제거
+
+./b2c.php에서 아래의 코드를 
+define('__XE_PATH__', str_replace('modules/svestudio/b2c.php', '', str_replace('\\', '/', __FILE__)));
+require_once( __XE_PATH__.'modules/svestudio/sv_classes/mysql_pdo.php');
+require_once( __XE_PATH__.'modules/svestudio/sv_classes/svapi_crypt.php');
+
+아래와 같이 변경
+define('_XE_PATH_', str_replace('modules/svestudio/b2c.php', '', str_replace('\\', '/', __FILE__)));
+require_once( _XE_PATH_.'modules/svestudio/sv_classes/mysql_pdo.php');
+require_once( _XE_PATH_.'modules/svestudio/sv_classes/svapi_crypt.php');
+
+./sv_classes/mysql_pdo.php::executeQuery()에서 아래의 코드를 
+$sSqlFileAbsPath = __XE_PATH__.'modules/svestudio/sv_queries/'.$sSqlFilename.'.sql';
+
+아래와 같이 변경
+$sSqlFileAbsPath = _XE_PATH_.'modules/svestudio/sv_queries/'.$sSqlFilename.'.sql';
+
+v 2.0.2
+4th, Mar 2020
+1. secured crontab client/receiver 추가
+./tpl/insertmodinsert.html에 아래의 코드 추가
+<section class="section" cond="$module_srl">
+	<h1>{$lang->etc}</h1>
+	<div class="x_control-group">
+		<div class="x_control-label" for="">{$lang->mid_type}</div>
+		<div class="x_controls">
+			<label for="mid_type" class="x_inline"><input type="radio" name="mid_type" id="mid_type" value="{svestudio::MID_TYPE_CRONTAB}" checked="checked"|cond="$module_info->mid_type == svestudio::MID_TYPE_CRONTAB || !$module_info->mid_type" /> {$lang->crontab}</label>
+			<label for="mid_type" class="x_inline"><input type="radio" name="mid_type" id="mid_type" value="{svestudio::MID_TYPE_SHIPPING}" checked="checked"|cond="$module_info->mid_type == svestudio::MID_TYPE_SHIPPING " /> {$lang->shipping}</label>
+		</div>
+	</div>
+</section>
+
+./svestudio.class.php에 아래의 코드 추가
+const MID_TYPE_CRONTAB = '0';
+const MID_TYPE_SHIPPING = '1'; 
+protected $_g_aMidType = array(
+	svestudio::MID_TYPE_CRONTAB=>'crontab',
+	svestudio::MID_TYPE_SHIPPING=>'shipping' );
+
+./svestudio.class.php::init()에 아래의 코드 추가
+$this->_g_oMidConfig = $oSvestudioMidConfig;
+
+./svestudio.view.php::dispSvestudioIndex()에서 아래의 코드를
+Context::set('act', 'dispSvestudioOrderManagement');
+$this->dispSvestudioOrderManagement();
+
+아래와 같이 변경
+switch( $this->_g_oMidConfig->mid_type )
+{
+	case svestudio::MID_TYPE_CRONTAB:
+		echo 'secured crontab mode';
+		break;
+	case svestudio::MID_TYPE_SHIPPING:
+		Context::set('act', 'dispSvestudioOrderManagement');
+		$this->dispSvestudioOrderManagement();
+		break;
+	default:
+		return new Object(-1, 'invalid_request');
+}
+
+./sv_classes/svapi_crypt.php::buildQueryArray($oReceivedParams) 추가
+
+./svestudio.controller.php::insertCrontabLog() 추가
+
+./schemas/svcrm_crontab_log.xml 추가
+./queries/insertCrontabLog.xml 추가
+
+v 2.0.3
+6th, Mar 2020
+1. secured crontab client/receiver protocol 추가
+./svestudio.view.php::_procCrontab()에서 아래의 코드를
+$sQuery = Context::get('@v'); // = %40v
+if( is_null( $sQuery ) )
+{
+	echo 'ok';
+	exit;
+}
+
+require_once( _XE_PATH_.'modules/svestudio/sv_classes/svapi_crypt.php');
+$oSvApiCrypt = new singleviewApiMcrypt();
+echo 'secured crontab mode<BR><BR>';
+
+$oReceivedParams = $oSvApiCrypt->translateMsgCode($sQuery);
+$aParam = $oSvApiCrypt->buildQueryArray($oReceivedParams);
+
+$sStartDate = Context::get( 'start_ymd' );
+$oSvorderAdminModel = &getAdminModel('svorder');
+switch( $aParam['task'] )
+{
+	case 'getNpayOrder':
+
+		break;
+	case 'getNpayReview':
+		
+		$oNpayOrderApi = $oSvorderAdminModel->getNpayOrderApi();
+		$oRst = $oNpayOrderApi->getLatestReview($sStartDate);
+		break;
+	case 'getNpayInquiry':
+
+		break;
+	case 'arrangeSvOrderStatus':
+
+		break;
+	default:
+		echo 'ok';
+		exit;
+}
+
+$oArg->task = $aParam['task'];
+$oArg->param = serialize($aParam);
+$oSvestudioController = &getController('svestudio');
+$oSvestudioController->insertCrontabLog($oArg);
+Context::setResponseMethod('JSON'); // display class 작동 정지
+exit;
+
+아래와 같이 변경
+$aMsg=array(
+'OK' => 1, # OK
+'ED' => 2, # error detected
+);
+$oRespParam->a = null;
+
+// http://chakkhan.com/crontab?%40v=1UVZFqiBpuudzSdPKTyW8tYmePzNJ9dWw%2BerZhQfYgHQpK%2BhHla0OfzD6JEX%2Be6cKZuLFfsySEjTkf3pVr51vw%3D%3D
+$sQuery = Context::get('@v'); // = %40v
+if( is_null( $sQuery ) )
+	$oRespParam->a = array($aMsg['OK']);
+else
+{
+	require_once( _XE_PATH_.'modules/svestudio/sv_classes/svapi_crypt.php');
+	$oSvApiCrypt = new singleviewApiMcrypt();
+	//echo 'secured crontab mode<BR><BR>';
+
+	$oReceivedParams = $oSvApiCrypt->translateMsgCode($sQuery);
+	$aParam = $oSvApiCrypt->buildQueryArray($oReceivedParams);
+	
+	$sStartDate = Context::get( 'start_ymd' );
+	$oSvorderAdminModel = &getAdminModel('svorder');
+	switch( $aParam['task'] )
+	{
+		case 'getNpayOrder':
+
+			break;
+		case 'getNpayReview':
+			$oNpayOrderApi = $oSvorderAdminModel->getNpayOrderApi();
+			$oRst = $oNpayOrderApi->getLatestReview($sStartDate);
+			break;
+		case 'getNpayInquiry':
+
+			break;
+		case 'arrangeSvOrderStatus':
+
+			break;
+		default:
+			echo 'ok';
+			exit;
+	}
+	$aMergedRst = $oRst->get('aMergedRst');
+	$oArg->task = $aParam['task'];
+	$oArg->param = serialize($aParam);
+	$oArg->result = serialize($aMergedRst);
+	$oSvestudioController = &getController('svestudio');
+	$oSvestudioController->insertCrontabLog($oArg);
+	
+	$bRst = true; 
+	foreach( $aMergedRst as $nNpayId => $nBool )
+	{
+		if( $nBool == 0 )
+			$bRst = false;
+	}
+	if( $bRst )
+		$oRespParam->a = array($aMsg['OK']);
+	else
+		$oRespParam->a = array($aMsg['ED']);
+}
+Context::setResponseMethod('JSON'); // display class 작동 정지
+// encrypt transmit
+$res = $oSvApiCrypt->encryptData($oRespParam);
+print $res;
+exit;
+
+v 2.0.4
+19th, Mar 2020
+1. insite deaily revenue 그래프 추가
+./tpl/config.html에 아래의 코드 추가
+<div class="x_control-group">
+	<label class="x_control-label" for="svestudio_revenue_referrence">{$lang->svestudio_revenue_referrence}</label>
+	<div class="x_controls">
+		<label for="revenue_referrence"><input type="radio" name="revenue_referrence" id="revenue_referrence" value="ga" checked="checked"|cond="$config->revenue_referrence=='ga'" />{$lang->google_analytics}</label>
+		
+		<label for="revenue_referrence"><input type="radio" name="revenue_referrence" id="revenue_referrence" value="insite" checked="checked"|cond="$config->revenue_referrence=='insite'" />{$lang->insite}</label>
+		
+		<a href="#svestudio_revenue_referrence_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+		<p id="svestudio_revenue_referrence_help" class="x_help-block" hidden>{$lang->about_svestudio_revenue_referrence}</p>
+	</div>
+</div>
+
+./svestudio.admin.model.php::_getDailyInsiteRevenue() 추가
+
+./svestudio.admin.model.php::getPerformanceInfo()에 아래의 코드를 추가
+$nMtdInsiteRevenue = 0;
+$nMtdInsiteTrs = 0;
+$nTotalInsiteRevenue = 0;
+$nTotalInsiteTrs = 0;
+
+$oConfig = $this->getModuleConfig();
+$oSvorderAdminModel = &getAdminModel('svorder');
+
+if( $oConfig->revenue_referrence == 'insite' )
+{
+	$oInsiteRevRst = $this->_getDailyInsiteRevenue($oSvorderAdminModel,$sDate);
+	$PeriodVal->in_site_revenue = $oInsiteRevRst->nAmount;
+	$PeriodVal->in_site_trs = $oInsiteRevRst->nTrs; // # of transactions
+}
+
+./svestudio.admin.model.php::getPerformanceInfo()에서 아래의 코드를
+$aGrossStatus['mtd_revenue'] = $nMtdRevenue;
+$aGrossStatus['mtd_conv_rate'] = sprintf("%.4f",$nMtdTrs/$nMtdSession);
+$aGrossStatus['mtd_roas'] = sprintf("%.4f",$nMtdRevenue/$nMtdMediCost);
+
+$aGrossStatus['gross_revenue'] = $nTotalRevenue;
+$aGrossStatus['gross_conv_rate'] = sprintf("%.4f",$nTotalTrs/$nTotalSession);
+$aGrossStatus['gross_roas'] = sprintf("%.4f",$nTotalRevenue/$nTotalMediaCost);
+
+아래와 같이 변경
+if( $oConfig->revenue_referrence == 'insite' )
+{
+	$aGrossStatus['mtd_revenue'] = $nMtdInsiteRevenue;
+	$aGrossStatus['mtd_conv_rate'] = sprintf("%.4f",$nMtdInsiteTrs/$nMtdSession);
+	$aGrossStatus['mtd_roas'] = sprintf("%.4f",$nMtdInsiteRevenue/$nMtdMediCost);
+}
+else
+{
+	$aGrossStatus['mtd_revenue'] = $nMtdRevenue;
+	$aGrossStatus['mtd_conv_rate'] = sprintf("%.4f",$nMtdTrs/$nMtdSession);
+	$aGrossStatus['mtd_roas'] = sprintf("%.4f",$nMtdRevenue/$nMtdMediCost);
+}
+
+if( $oConfig->revenue_referrence == 'insite' )
+{
+	$aGrossStatus['gross_revenue'] = $nTotalInsiteRevenue;
+	$aGrossStatus['gross_conv_rate'] = sprintf("%.4f",$nTotalInsiteTrs/$nTotalSession);
+	$aGrossStatus['gross_roas'] = sprintf("%.4f",$nTotalInsiteRevenue/$nTotalMediaCost);
+}
+else
+{
+	$aGrossStatus['gross_revenue'] = $nTotalRevenue;
+	$aGrossStatus['gross_conv_rate'] = sprintf("%.4f",$nTotalTrs/$nTotalSession);
+	$aGrossStatus['gross_roas'] = sprintf("%.4f",$nTotalRevenue/$nTotalMediaCost);
+}
+
+./svestudio.admin.model.php::getInsiteSalesStatusPeriod()에서 아래의 코드를
+$sCacheByDateFile = _XE_PATH_.'files/svestudio/sales/'.$date.'.php';
+if( is_readable($sCacheByDateFile))
+{
+	$sSalesInfo = FileHandler::readFile($sCacheByDateFile);
+	$oRst = unserialize($sSalesInfo);
+}
+else
+{
+	$oRst = $oSvorderAdminModel->getSalesInfoDaily($date);
+	if( (int)$date < (int)$this->_g_sToday - 7 ) // 7일 전 까지 실시간 계산
+		$output = FileHandler::writeFile($sCacheByDateFile, serialize($oRst));
+}
+$val->amount = $oRst->amount;
+$val->trs = $oRst->count; // # of transactions
+$val->cp = (int)($oRst->amount / $oRst->count); // customer price
+
+아래와 같이 변경
+$oInsiteRevRst = $this->_getDailyInsiteRevenue($oSvorderAdminModel,$date);
+$val->amount = $oInsiteRevRst->nAmount;
+$val->trs = $oInsiteRevRst->nTrs; // # of transactions
+$val->cp = $oInsiteRevRst->nCustomerPrice;
+
+v 2.0.5
+10th, Apr 2020
+1. 매체 관리자에서 표시하는 캠페인명과 아웃링크 utm_campaign이 일치하지 않는 경우에도 세션 데이터 표시하도록 개선
+./svestudio.admin.model.php::getInsiteSalesStatusPeriod()에서 아래의 코드를
+if( ( $nSession > 0 && $nMediaGrossCost > 0 ) || $bProcWithoutCost )
+
+아래와 같이 변경
+if( $nSession > 0 || $bProcWithoutCost )
+
+v 2.0.6
+5th, Sep 2020
+1. 매체 관리자에서 대행 수수료 분리 표시함
+./svestudio.admin.model.php::getMediaPerformanceInfo()에 아래의 코드 추가
+
+$aSourceMediumGrossAgencyCost = [];
+$aSourceMediumMtdAgencyCost = []; 
+
+$nSepatedMediaAgencyCost = (int)($nMediaAgencyCost*1.1);
+$aSourceMediumGrossAgencyCost[$sSourceMediumId] += $nSepatedMediaAgencyCost;
+$PeriodVal->media_gross_agency_cost['gross'] += $nSepatedMediaAgencyCost;
+$PeriodVal->media_gross_agency_cost[$oRow->media_source]['gross'] += $nSepatedMediaAgencyCost;
+$PeriodVal->media_gross_agency_cost[$oRow->media_source][$oRow->media_media] += $nSepatedMediaAgencyCost;
+foreach( $aSourceMediumGrossAgencyCost as $sSourceMedium=>$nCost )
+	$aSourceMediumGrossAgencyCost[$sSourceMedium] = (int)($nCost / $nElapsedDays * $this->_g_nDaysOfMonth);
+
+$nMtdAgencyCost = 0;
+$nMtdAgencyCost += $aSourceMediumMtdAgencyCost[$sSourceMedia];
+$oRst->mtd_agency_cost = $nMtdAgencyCost;
+$oRst->source_medium_gross_agency_cost = $aSourceMediumGrossAgencyCost;
+$oRst->source_medium_mtd_agency_cost = $aSourceMediumMtdAgencyCost;
+
+./svestudio.admin.view.php::dispSvestudioAdminReportMediaCost()에 아래의 코드 추가
+Context::set( 'lm_mtd_agency_cost', $aPerformanceInfoLastMonth->mtd_agency_cost );
+Context::set( 'lm_source_medium_gross_agency_cost', $aPerformanceInfoLastMonth->source_medium_gross_agency_cost );
+Context::set( 'lm_source_medium_mtd_agency_cost', $aPerformanceInfoLastMonth->source_medium_mtd_agency_cost );
+Context::set( 'tm_mtd_agency_cost', $aPerformanceInfoCurMonth->mtd_agency_cost );
+Context::set( 'tm_source_medium_gross_agency_cost', $aPerformanceInfoCurMonth->source_medium_gross_agency_cost );
+Context::set( 'tm_source_medium_mtd_agency_cost', $aPerformanceInfoCurMonth->source_medium_mtd_agency_cost );
+
+v 2.1.0
+20th, Dec 2020
+1. php v7.4.13에 대응
+모든 new Object()를 new BaseObject()로 변경
+
+2. 모든 수치가 0이면 CTR이 NaN 표시되는 오류 수정
+./svestudio.admin.model.php::getPerformanceInfo()에서 아래의 코드를
+$aGrossStatus['gross_ctr_mob'] = sprintf("%.4f",$nTotalClickMob/$nTotalImpMob);
+
+$aGrossStatus['gross_ctr_pc'] = sprintf("%.4f",$nTotalClickPc/$nTotalImpPc);
+
+아래와 같이 변경
+if($nTotalImpMob)
+	$aGrossStatus['gross_ctr_mob'] = sprintf("%.4f",$nTotalClickMob/$nTotalImpMob);
+else
+	$aGrossStatus['gross_ctr_mob'] = sprintf("%.4f",0);
+
+
+if($nTotalImpPc)
+	$aGrossStatus['gross_ctr_pc'] = sprintf("%.4f",$nTotalClickPc/$nTotalImpPc);
+else
+	$aGrossStatus['gross_ctr_pc'] = sprintf("%.4f",0);
+
+v 2.1.1
+25th, Dec 2020
+1. php v7.4.13이 mcrypt 폐기한 것에 대응
+./sv_classes/svapi_crypt.php::singleviewApiOpenSsl 추가
+
+./b2c.php::procTask()에서 아래의 코드를
+$oSvApiCrypt = new singleviewApiMcrypt();
+
+아래와 같이 변경
+$oSvApiCrypt = new singleviewApiOpenSsl();
+
+v 2.1.2
+28th, Dec 2020
+1. pdo 라이브러리 오류 수정
+./sv_classes/mysql_pdo.php::executeQuery()에서 아래의 코드를
+$oRst = $stmt->fetchAll();
+$result = $stmt->setFetchMode(PDO::FETCH_ASSOC); 
+
+아래와 같이 변경
+$oRst = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+2. LIMIT 쿼리에서 pdo 라이브러리 작동 개선
+./sv_classes/mysql_pdo.php::executeQuery()에 아래의 코드 추가
+$this->_g_oConn->setAttribute(PDO::ATTR_EMULATE_PREPARES, FALSE);
+
+v 2.1.3
+31th, Dec 2020
+1. 미사용 코드 제거
+./b2c.php::_getTouchDateRange()에서 아래의 코드 제거
+$aLastDate = Array();
+
+2. 코드 가독성 개선
+./b2c.php::procTask()에서 아래의 코드를
+case 'MIHY':
+	$nRespCode = $this->_checkAddNew();
+	break;
+case 'IWSY':
+	$nRespCode = $this->_checkStatus();
+	break;
+case 'PUP':
+	$nRespCode = $this->_checkReplace();
+	break;
+case 'WLYK':
+	$nRespCode = $this->_deletePeriod();
+	break;
+case 'ALD':
+	$nRespCode = $this->_addLatestData();
+	break;
+
+아래와 같이 변경
+case 'MIHY':
+	$this->_checkAddNew();
+	break;
+case 'IWSY':
+	$this->_checkStatus();
+	break;
+case 'PUP':
+	$this->_checkReplace();
+	break;
+case 'WLYK':
+	$this->_deletePeriod();
+	break;
+case 'ALD':
+	$this->_addLatestData();
+	break;
+
+v 2.1.4
+14th, Jan 2021
+1. /files/svestudio/key.config.ini 보안 취약성 개선
+/files/svestudio/key.config.ini를 /files/svestudio/key.config.php로 변경
+
+./sv_classes/svapi_crypt.php::singleviewApiOpenSsl()->_getConfigFile()에서 아래의 코드를
+$sSecretKeyPath = _XE_PATH_.'files/svestudio/key.config.php';
+if(is_readable($sSecretKeyPath))
+	$aSecretConfig = parse_ini_file($sSecretKeyPath, TRUE);
+
+아래와 같이 변경
+$sSecretKeyPath = _XE_PATH_.'files/svestudio/key.config.php';
+if(is_readable($sSecretKeyPath))
+	require_once($sSecretKeyPath);
+
+./sv_classes/svapi_crypt.php::singleviewApiMcrypt()->_getConfigFile()에서 아래의 코드를
+$sSecretKeyPath = _XE_PATH_.'files/svestudio/key.config.php';
+if(is_readable($sSecretKeyPath))
+	$aSecretConfig = parse_ini_file($sSecretKeyPath, TRUE);
+
+아래와 같이 변경
+$sSecretKeyPath = _XE_PATH_.'files/svestudio/key.config.php';
+if(is_readable($sSecretKeyPath))
+	require_once($sSecretKeyPath);
+
+v 2.1.5
+24th, Mar 2021
+1. 매체 성과 그래프의 표현 오류 수정
+./tpl/rpt_media_perf.html에서 아래의 코드를
+scales: {
+	xAxes: [{
+		stacked: true,
+	}],
+	yAxes: [{
+		stacked: true
+	}]
+}
+
+아래와 같이 변경
+scales: {
+	xAxes: [{
+		stacked: false,
+	}],
+	yAxes: [{
+		stacked: false
+	}]
+}
+
+v 2.1.6
+10th, Jul 2021
+1. 사이트 문서 댓글 plain text API 추가
+./wcl.php 추가
+/files/svestudio/wcl.config.php 추가
+
+2. mysql_pdo 코드 효율성 개선
+./sv_classes/mysql_pdo.php::svMysqlPdo에 아래의 코드 추가
+var $_g_aQueryType = array( 'select'=>'/^[g][e][t]\w+/', 'update'=>'/^[u][p][d][a][t][e]\w+/', 'insert'=>'/^[i][n][s][e][r][t]\w+/','delete'=>'/^[d][e][l][e][t][e]\w+/');
+
+./sv_classes/mysql_pdo.php::svMysqlPdo::executeQuery()에서 아래의 코드를
+$aQueryType = array( 'select'=>'/^[g][e][t]\w+/', 'update'=>'/^[u][p][d][a][t][e]\w+/', 'insert'=>'/^[i][n][s][e][r][t]\w+/','delete'=>'/^[d][e][l][e][t][e]\w+/');
+foreach( $aQueryType as $sQueryType => $sRegex )
+
+아래와 같이 변경
+foreach( $this->_g_aQueryType as $sQueryType => $sRegex )
+
+./sv_classes/mysql_pdo.php::svMysqlPdo::__preProcSqlStmt() 추가
+
+./sv_classes/mysql_pdo.php::svMysqlPdo::executeQuery()에서 아래의 코드를
+$sSql = str_replace('`', '', $sSql);
+$aQueryType = array( 'select'=>'/^[g][e][t]\w+/', 'update'=>'/^[u][p][d][a][t][e]\w+/', 'insert'=>'/^[i][n][s][e][r][t]\w+/','delete'=>'/^[d][e][l][e][t][e]\w+/');
+foreach( $aQueryType as $sQueryType => $sRegex )
+{
+	preg_match($sRegex, $sSqlFilename, $matches, PREG_OFFSET_CAPTURE, 0);
+	if( array_key_exists( 0, $matches) )
+		break;
+	$matches = null;
+}
+
+if( $sQueryType == 'select' || $sQueryType == 'delete' ) # 쿼리 종류 확인 SELECT FROM / DELETE FROM
+	$sRegex = '/(?<=[fF][rR][oO][mM]\s)\w+/';
+elseif( $sQueryType == 'update' ) # 쿼리 종류 확인 UPDATE 
+	$sRegex = '/(?<=[uU][pP][dD][aA][tT][eE]\s)\w+/';
+elseif( $sQueryType == 'insert' ) # 쿼리 종류 확인 INSERT INTO
+	$sRegex = '/(?<=[iI][nN][tT][oO]\s)\w+/';
+
+preg_match($sRegex, $sSql, $matches, PREG_OFFSET_CAPTURE, 0);
+$sTableName = $matches[0][0];
+$sSql = str_replace($sTableName, $this->_g_oDbInfo->master_db['db_table_prefix'].$sTableName, $sSql);
+
+아래와 같이 변경
+$aSqlRst = $this->__preProcSqlStmt($sSqlFilename, $sSql);
+$sQueryType = $aSqlRst[0];
+$sSql = $aSqlRst[1];
+unset($aSqlRst);
+
+v 2.1.7
+16th, Jul 2021
+1. 암호화 통신 기능 개선위해 프로토콜 메세지 array를 로 이동
+./sv_classes/svapi_msg_protocol.php 추가
+
+v 2.1.8
+17th, Sep 2021
+1. sv document collection period window 기능 추가
+./wcl.php::singleviewApi::_getUpdatedDocComSrls()에서 아래의 코드를
+$sYyyymmddhhmmss = $this->_g_oReceivedParams->d.'000000';
+$aParam = array($sYyyymmddhhmmss, $this->aIgonreMemberSrl);
+
+아래와 같이 변경
+$sBeginYyyymmddhhmmss = $this->_g_oReceivedParams->d->s_begin_date.'000000';
+$sEndYyyymmddhhmmss = $this->_g_oReceivedParams->d->s_end_date.'235959';
+$aParam = array($sBeginYyyymmddhhmmss, $sEndYyyymmddhhmmss, $this->aIgonreMemberSrl);
+
+./sv_queries/getUpdatedDocSrlsByMemberSrl.php 변경
+./sv_queries/getUpdatedCommentsSrlsByMemberSrl.php 변경
+
+--------- todo ----------------
+./svestudio.admin.model.php::getMonthlyIndex() 추가
+월간 새글 수 캐쉬가 갱신되면, 첫월은 모든 일수가 반영되지 않는 현상 개선

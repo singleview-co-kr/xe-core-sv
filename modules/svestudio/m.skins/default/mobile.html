@@ -1,0 +1,12 @@
+<div id="select">
+	<form method="post" action="">
+		<div> 
+			<select onchange="if(this.value) location.href=(this.value);"> 
+				<option value="/notice">공지사항 </option>
+				<option value="/new_model_2016"  selected="selected">진행 이벤트</option>
+				<option value="/QNA">질문답변</option> 
+			</select>
+		</div>
+	</form>
+</div>
+<include target="_current.html" cond="$sub==''"/>

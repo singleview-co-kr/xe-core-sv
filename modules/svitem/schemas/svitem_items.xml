@@ -24,6 +24,4 @@
 	<column name="sv_tags" type="text" />
 	<column name="updatetime" type="date" />
 	<column name="regdate" type="date" notnull="notnull" />
-	<column name="__related_items" type="varchar" size="250" />
-	<column name="__extra_vars" type="text" />
 </table>

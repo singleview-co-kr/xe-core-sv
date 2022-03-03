@@ -457,7 +457,11 @@ class svorderAdminModel extends svorder
 			foreach( $oRst->data as $nIdx => $oRec )
 			{
 				if( $aStatusList[$oRec->order_status] )
+                {
+                    if(is_null($aRst[$nIdx]))
+                        $aRst[$nIdx] = new stdClass();
 					$aRst[$nIdx]->order_srl = $oRec->order_srl;
+                }
 			}
 			unset( $oRst->data );
 			$oRst->data = $aRst; 
