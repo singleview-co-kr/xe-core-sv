@@ -12,7 +12,7 @@ class svestudioAdminView extends svestudio
  **/
 	public function init()
 	{
-		// moduleÀÌ svshopmasterÀÏ¶§ °ü¸®ÀÚ ·¹ÀÌ¾Æ¿ôÀ¸·Î
+		// moduleï¿½ï¿½ svshopmasterì¼ë•Œ ê´€ë¦¬ìž ë ˆì´ì•„ì›ƒìœ¼ë¡œ
 		if(Context::get('module') == 'svshopmaster')
 		{
 			$sClassPath = _XE_PATH_ . 'modules/svshopmaster/svshopmaster.class.php';
@@ -95,7 +95,7 @@ class svestudioAdminView extends svestudio
  **/
 	function dispSvestudioAdminInsertModInst() 
 	{
-		// ½ºÅ² ¸ñ·ÏÀ» ±¸ÇØ¿È
+		// ìŠ¤í‚¨ ëª©ë¡ì„ êµ¬í•´ì˜´
 		$oModuleModel = &getModel('module');
 		$skin_list = $oModuleModel->getSkins($this->module_path);
 		Context::set('skin_list',$skin_list);
@@ -103,7 +103,7 @@ class svestudioAdminView extends svestudio
 		$mskin_list = $oModuleModel->getSkins($this->module_path, "m.skins");
 		Context::set('mskin_list', $mskin_list);
 
-		// ·¹ÀÌ¾Æ¿ô ¸ñ·ÏÀ» ±¸ÇØ¿È
+		// ë ˆì´ì•„ì›ƒ ëª©ë¡ì„ êµ¬í•´ì˜´
 		$oLayoutModel = &getModel('layout');
 		$layout_list = $oLayoutModel->getLayoutList();
 		Context::set('layout_list', $layout_list);
@@ -125,7 +125,8 @@ class svestudioAdminView extends svestudio
 
 		$oEditorModel = &getModel('editor');
 		$config = $oEditorModel->getEditorConfig(0);
-		// ¿¡µðÅÍ ¿É¼Ç º¯¼ö¸¦ ¹Ì¸® ¼³Á¤
+		// ì—ë””í„° ì˜µì…˜ ë³€ìˆ˜ë¥¼ ë¯¸ë¦¬ ì„¤ì •
+        $option = new stdClass();
 		$option->skin = $config->editor_skin;
 		$option->content_style = $config->content_style;
 		$option->content_font = $config->content_font;
@@ -475,79 +476,4 @@ class svestudioAdminView extends svestudio
 //var_dump( $aMasterCampaign );
 		$this->setTemplateFile('acct_mgmt');
 	}
-/**
- * @brief ÆóÁö ¿¹Á¤ Information output of the selected page
- */
-	/*function dispSvestudioAdminModifyClientInfo()
-	{
-		// Get module_srl by GET parameter
-		$module_srl = Context::get('module_srl');
-		$oSvestudioAdminModel = &getAdminModel('svestudio');
-		$module_info = $oSvestudioAdminModel->getClientConfig($module_srl);
-
-		// If the layout is destined to add layout information haejum (layout_title, layout)
-		if($module_info->layout_srl)
-		{
-			$oLayoutModel = getModel('layout');
-			$layout_info = $oLayoutModel->getLayout($module_info->layout_srl);
-			$module_info->layout = $layout_info->layout;
-			$module_info->layout_title = $layout_info->layout_title;
-		}
-		// Get a layout list
-		$oLayoutModel = getModel('layout');
-		$layout_list = $oLayoutModel->getLayoutList();
-		Context::set('layout_list', $layout_list);
-
-		$mobile_layout_list = $oLayoutModel->getLayoutList(0,"M");
-		Context::set('mlayout_list', $mobile_layout_list);
-
-		// Set a template file
-		$oModuleModel = getModel('module');
-		$skin_list = $oModuleModel->getSkins($this->module_path);
-		Context::set('skin_list',$skin_list);
-
-		$mskin_list = $oModuleModel->getSkins($this->module_path, "m.skins");
-		Context::set('mskin_list', $mskin_list);
-
-		Context::set('module_info', $module_info);
-		$this->setTemplateFile('insert_client');
-	}*/
-/**
- * @brief ÆóÁö ¿¹Á¤ display the selected promotion admin information
- **/
-	/*function dispSvestudioAdminInsertClient() 
-	{
-		//$this->dispSvestudioAdminModuleInfo();
-		// get the layouts path
-		$oLayoutModel = getModel('layout');
-		$layout_list = $oLayoutModel->getLayoutList();
-		Context::set('layout_list', $layout_list);
-		$mobile_layout_list = $oLayoutModel->getLayoutList(0,"M");
-		Context::set('mlayout_list', $mobile_layout_list);
-
-		// get the skins path
-		$oModuleModel = getModel('module');
-		$skin_list = $oModuleModel->getSkins($this->module_path);
-		Context::set('skin_list',$skin_list);
-		$mskin_list = $oModuleModel->getSkins($this->module_path, "m.skins");
-		Context::set('mskin_list', $mskin_list);
-		$this->setTemplateFile('insert_client');
-	}*/
-
-/**
- * @brief ÆóÁö ¿¹Á¤ Delete Svestudio module
- */
-	/*function dispSvestudioAdminDelete()
-	{
-		$module_srl = Context::get('module_srl');
-		if(!$module_srl) 
-			return $this->dispContent();
-
-		$oModuleModel = getModel('module');
-		$columnList = array('module_srl', 'module', 'mid');
-		$module_info = $oModuleModel->getModuleInfoByModuleSrl($module_srl, $columnList);
-		Context::set('module_info',$module_info);
-		// Set a template file
-		$this->setTemplateFile('svestudio_delete');
-	}*/
 }

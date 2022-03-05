@@ -570,7 +570,6 @@ class svitemItemAdmin extends svitem
 				$oFileController->setFilesValid($this->_g_oNewItemHeader->item_srl);
 				$oArgs->thumb_file_srl = $oFileRst->get('file_srl');
 				unset($oFileRst);
-				unset($oFileController);
 			}
 			elseif( $this->_g_oNewItemHeader->thumbnail_image['size'] ) // excel bulk mode
 			{
@@ -588,6 +587,7 @@ class svitemItemAdmin extends svitem
 				echo 'no img->'.$oArgs->thumbnail_image['name'].'<BR>';
 				$oArgs->thumb_file_srl = 0;
 			}
+			unset($oFileController);
 		}
 		$oInsertRst = executeQuery('svitem.insertItem', $oArgs);
 		if(!$oInsertRst->toBool())

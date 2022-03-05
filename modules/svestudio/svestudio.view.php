@@ -26,7 +26,7 @@ class svestudioView extends svestudio
 				return $this->stop( 'msg_is_not_allowed' );
 		}
 
-		// È­¸é Ç¥½Ã¸¦ Çã¶ôÇÏ¸é svorder/svorder.order_update.phpÀÇ Á¢±Ù ±ÇÇÑ ÀÎ½ÄÀ» À§ÇÑ º¯¼ö ¼³Á¤
+		// í™”ë©´ í‘œì‹œë¥¼ í—ˆë½í•˜ë©´ svorder/svorder.order_update.phpì˜ ì ‘ê·¼ ê¶Œí•œ ì¸ì‹ì„ ìœ„í•œ ë³€ìˆ˜ ì„¤ì •
 		$oLoggedInfo->svestudio_permitted_order_mgr_member_srl = $oLoggedInfo->member_srl;
 
 		$sTemplatePath = sprintf("%sskins/%s/",$this->module_path, $this->module_info->skin);
@@ -60,7 +60,7 @@ class svestudioView extends svestudio
 		}	
 	}
 /**
- * @brief ÁÖ¹®¼­ ÀÔ·Â È­¸é
+ * @brief ì£¼ë¬¸ì„œ ì…ë ¥ í™”ë©´
  **/
 	public function dispSvestudioOrderManagement() 
 	{
@@ -82,7 +82,7 @@ class svestudioView extends svestudio
 		{
 			$search_key = Context::get( 'search_key' );
 			$search_value = Context::get( 'search_value' );
-			if( $search_key == 'nick_name' && $search_value == 'ºñÈ¸¿ø' )
+			if( $search_key == 'nick_name' && $search_value == 'ï¿½ï¿½È¸ï¿½ï¿½' )
 			{
 				$search_key = 'member_srl';
 				$search_value = 0;
@@ -131,7 +131,7 @@ class svestudioView extends svestudio
 		$this->setTemplateFile('ordermanagement');
 	}
 /**
- * @brief ¿ÜºÎ Æ®¸®°Å¿¡ ÀÇÇØ ÀÚµ¿ ½ÇÇàµÇ´Â ¸í·É¾î °ü¸®
+ * @brief ì™¸ë¶€ íŠ¸ë¦¬ê±°ì— ì˜í•´ ìë™ ì‹¤í–‰ë˜ëŠ” ëª…ë ¹ì–´ ê´€ë¦¬
  */
 	private function _procCrontab()
 	{
@@ -147,8 +147,7 @@ class svestudioView extends svestudio
 			'ED' => 2, # error detected
 		);
 		$oRespParam->a = null;
-		Context::setResponseMethod('JSON'); // display class ÀÛµ¿ Á¤Áö		
-
+		Context::setResponseMethod('JSON'); // display class ì‘ë™ ì •ì§€
 		require_once( _XE_PATH_.'modules/svestudio/sv_classes/svapi_crypt.php');
 		$oSvApiCrypt = new singleviewApiCrypt();
 		//echo 'secured crontab mode<BR><BR>';

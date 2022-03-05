@@ -92,7 +92,7 @@ class svestudioModel extends module
 		return $oModuleModel->getModuleConfig('svestudio');
 	}
 /**
- * @brief ./svestudio.admin.model.php::getMidConfig()¿Í µ¿ÀÏÇÑ ³»¿ëÀÌ¾î¾ß ÇÔ
+ * @brief ./svestudio.admin.model.php::getMidConfig()ì™€ ë™ì¼í•œ ë‚´ìš©ì´ì–´ì•¼ í•¨
  **/
 	public function getMidConfig($nModuleSrl)
 	{

@@ -324,6 +324,7 @@ class svestudioAdminModel extends svestudio
 		$aSourceMediumMtdTrs = [];
 		$aSourceMediumMtdConvRate = [];
 
+        $args = new stdClass();
 		foreach( $aDatePeriod as $sDate=>$PeriodVal )
 		{
 			$args->logdate = $sDate;
@@ -632,6 +633,7 @@ class svestudioAdminModel extends svestudio
 				}
 			}
 		}
+        unset($args);
 
 		arsort($aSourceMediumGrossCost);
 		// calculate roas and conv. %

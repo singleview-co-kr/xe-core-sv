@@ -102,7 +102,7 @@ class singleviewApi
 			$this->_g_oRespParam->a = array($this->_g_aMsg['FIN']);
 	}
 /**
- * @brief html tag, &nbsp;, new line Á¦°Å
+ * @brief html tag, &nbsp;, new line ì œê±°
  */
 	private function _cleanupMarkupStr($sStr)
 	{
@@ -110,7 +110,7 @@ class singleviewApi
 		return trim(preg_replace('/\s\s+/', ' ', $$sStr));
 	}
 /**
- * @brief °»½ÅÇÒ »õ±Û »ó¼¼ Á¤º¸ ÃßÃâ
+ * @brief ê°±ì‹ í•  ìƒˆê¸€ ìƒì„¸ ì •ë³´ ì¶”ì¶œ
  */
 	private function _getUpdatedDocInfo()
 	{
@@ -151,7 +151,7 @@ class singleviewApi
 			$this->_g_oRespParam->a = array($this->_g_aMsg['FIN']);
 	}
 /**
- * @briefw Àü¼ÛÇÒ »õ±Û, ´ñ±Û srl array ÃßÃâ
+ * @briefw ì „ì†¡í•  ìƒˆê¸€, ëŒ“ê¸€ srl array ì¶”ì¶œ
  */
 	private function _getUpdatedDocComSrls()
 	{

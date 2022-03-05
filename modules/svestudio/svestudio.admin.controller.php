@@ -15,14 +15,14 @@ class svestudioAdminController extends svestudio
 	{
 	}
 /**
- * @brief ./files/svestudio/ Æú´õ ºñ¿ì±â
+ * @brief ./files/svestudio/ í´ë” ë¹„ìš°ê¸°
  **/
 	/*private function _resetCache()
 	{
 		FileHandler::removeFilesInDir('./files/svestudio/');
 	}*/
 /**
- * @brief ¸ÅÃ¼ ¼º°ú¸¦ Ç¥½ÃÇÏ´Â CSV ·Î¿ì µ¥ÀÌÅÍ ´Ù¿î·Îµå 
+ * @brief  ë§¤ì²´ ì„±ê³¼ë¥¼ í‘œì‹œí•˜ëŠ” CSV ë¡œìš° ë°ì´í„° ë‹¤ìš´ë¡œ
  **/
 	public function procSvestudioAdminCSVDownload() 
 	{
@@ -119,22 +119,22 @@ class svestudioAdminController extends svestudio
 				
 			echo "\r\n";
 		}
-		Context::setResponseMethod('JSON'); // display class ÀÛµ¿ Á¤Áö
+		Context::setResponseMethod('JSON'); // display class ì‘ë™ ì •ì§€
 	}
 /**
- * @brief ¸ğµâ È¯°æ¼³Á¤°ª ¾²±â
+ * @brief ëª¨ë“ˆ í™˜ê²½ì„¤ì •ê°’ ì“°ê¸°
  **/
 	public function procSvestudioAdminInsertModInst() 
 	{
-		// module ¸ğµâÀÇ model/controller °´Ã¼ »ı¼º
+		// module ëª¨ë“ˆì˜ model/controller ê°ì²´ ìƒì„±
 		$oModuleController = &getController('module');
 		$oModuleModel = &getModel('module');
 
-		// °Ô½ÃÆÇ ¸ğµâÀÇ Á¤º¸ ¼³Á¤
+		// ê²Œì‹œíŒ ëª¨ë“ˆì˜ ì •ë³´ ì„¤ì •
 		$args = Context::getRequestVars();
 		$args->module = 'svestudio';
 
-		// module_srlÀÌ ³Ñ¾î¿À¸é ¿ø ¸ğµâÀÌ ÀÖ´ÂÁö È®ÀÎ
+		// module_srlì´ ë„˜ì–´ì˜¤ë©´ ì› ëª¨ë“ˆì´ ìˆëŠ”ì§€ í™•ì¸
 		if($args->module_srl) 
 		{
 			$module_info = $oModuleModel->getModuleInfoByModuleSrl($args->module_srl);
@@ -142,7 +142,7 @@ class svestudioAdminController extends svestudio
 				unset($args->module_srl);
 		}
 
-		// module_srlÀÇ °ª¿¡ µû¶ó insert/update
+		// module_srlì˜ ê°’ì— ë”°ë¼ insert/update
 		if(!$args->module_srl) 
 		{
 			$output = $oModuleController->insertModule($args);
@@ -164,7 +164,7 @@ class svestudioAdminController extends svestudio
 		$this->setRedirectUrl($returnUrl);
 	}
 /**
- * @brief ÃÊ´ë ±×·ìÀÇ ¸ğµâº° ±ÇÇÑ ¼³Á¤
+ * @brief ì´ˆëŒ€ ê·¸ë£¹ì˜ ëª¨ë“ˆë³„ ê¶Œí•œ ì„¤ì •
  **/
 	public function procSvestudioAdminGrantActByMid() 
 	{
@@ -189,6 +189,7 @@ class svestudioAdminController extends svestudio
 					$aPermittedActByMid[$sAct][$nGrpSrl] = 'permit';
 			}
 		}
+        $oArgs = new stdClass();
 		$oArgs->permitted_act_by_mid = serialize( $aPermittedActByMid );
 		$oArgs->module_srl = $oTempArgs->module_srl;
 //var_dump( $oArgs);
@@ -213,7 +214,7 @@ class svestudioAdminController extends svestudio
 	}
 /**
 * @brief update mid level config
-* procSvitemAdminInsertModInst ¿Í º´ÇÕÇØ¾ß ÇÔ
+* procSvitemAdminInsertModInst ì™€ ë³‘í•©í•´ì•¼ í•¨
 **/
 	private function _updateMidLevelConfig($oArgs)
 	{
@@ -238,7 +239,7 @@ echo '<BR><BR>';
 		return $oRst;
 	}
 /**
- * @brief ÃÊ´ë ±×·ì ¼³Á¤
+ * @brief ì´ˆëŒ€ ê·¸ë£¹ ì„¤ì •
  **/
 	public function procSvestudioAdminInvitedMemberGrp() 
 	{
@@ -267,9 +268,9 @@ echo '<BR><BR>';
 		}
 	}
 /**
- * @brief µ¥ÀÌÅÍ Ä³½¬ Áö¿ì±â
- * /svorder/ext_class/npay/npay_api.class.php::getLatestOrder()¿¡¼­ È£Ãâ
- * /svorder/ext_class/npay/npay_api.class.php::resetOrderInfo()¿¡¼­ È£Ãâ
+ * @brief ë°ì´í„° ìºì‰¬ ì§€ìš°ê¸°
+ * /svorder/ext_class/npay/npay_api.class.php::getLatestOrder()ì—ì„œ í˜¸ì¶œ
+ * /svorder/ext_class/npay/npay_api.class.php::resetOrderInfo()ì—ì„œ í˜¸ì¶œ
  **/
 	public function procSvestudioAdminRemoveCache() 
 	{
@@ -291,7 +292,7 @@ echo '<BR><BR>';
 		}
 	}
 /**
- * @brief ¸ğµâ È¯°æ¼³Á¤°ª ¾²±â
+ * @brief ëª¨ë“ˆ í™˜ê²½ì„¤ì •ê°’ ì“°ê¸°
  **/
 	public function procSvestudioAdminConfig() 
 	{

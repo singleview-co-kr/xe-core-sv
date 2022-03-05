@@ -10,7 +10,7 @@ class svestudio extends ModuleObject
 {
 	protected $_g_aSvshopModule = array( 'svcart', 'svcrm', 'svitem', 'svorder', 'svpg', 'svpromotion' );
 
-	const MID_TYPE_CRONTAB = '1'; // 0À¸·ÎÇÏ¸é mid config¿¡ ÀúÀåÀÌ ¾ÈµÊ
+	const MID_TYPE_CRONTAB = '1'; // 0ìœ¼ë¡œí•˜ë©´ mid configì— ì €ì¥ì´ ì•ˆë¨
 	const MID_TYPE_SHIPPING = '2'; 
 	protected $_g_aMidType = array(
 		svestudio::MID_TYPE_CRONTAB=>'crontab',
