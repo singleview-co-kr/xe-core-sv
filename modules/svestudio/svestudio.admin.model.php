@@ -24,9 +24,9 @@ class svestudioAdminModel extends svestudio
 		$this->_g_nDaysOfMonth = $this->_getDaysInMonth((int)date('m'), (int)date('Y'));
 	}
 /**
- * @brief 
+ * @brief  
  **/
-	public function getMidList($nPage)
+	public function getMidList($nPage=null)
 	{
 		$oModuleModel = &getModel('module');
 		$oArgs = new stdClass();
