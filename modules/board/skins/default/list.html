@@ -25,7 +25,7 @@
 		</thead>
 		<tbody cond="!$document_list && !$notice_list">
 			<tr>
-				<td colspan="{count($list_config)}"|cond="!$grant->manager" colspan="{count($list_config)+1}"|cond="$grant->manager">
+				<td colspan="{count((array)$list_config)}"|cond="!$grant->manager" colspan="{count((array)$list_config)+1}"|cond="$grant->manager">
 					<p style="text-align:center">{$lang->no_documents}</p>
 				</td>
 			</tr>
