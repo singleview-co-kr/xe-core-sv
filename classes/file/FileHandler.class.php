@@ -180,7 +180,7 @@ class FileHandler
 	 * @param string $target Path of target file
 	 * @return bool Returns TRUE on success or FALSE on failure.
 	 */
-	function rename($source, $target)
+	public static function rename($source, $target)
 	{
 		return @rename(self::getRealPath($source), self::getRealPath($target));
 	}
