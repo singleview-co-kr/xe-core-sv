@@ -52,6 +52,7 @@ modules/svpromotion/skins/Trendshop/
 addons/svauth
 addons/svtracker
 
+modules/multidomain
 modules/appstore
 modules/svmarket
 modules/svauth
