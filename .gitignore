@@ -55,6 +55,7 @@ addons/svtracker
 modules/multidomain
 modules/appstore
 modules/svmarket
+modules/svcollector
 modules/svauth
 modules/svdocs
 modules/svshortener

@@ -61,7 +61,7 @@ else
 	/**
 	 * Package type
 	 */
-	define('_XE_PACKAGE_', 'XE');
+	define('_XE_PACKAGE_', 'XE_SV');
 
 	/**
 	 * Location

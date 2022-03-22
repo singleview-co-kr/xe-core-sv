@@ -2061,7 +2061,7 @@ class Context
 	 * @param string $action act name
 	 * @return void
 	 */
-	function addSSLAction($action)
+	public static function addSSLAction($action)
 	{
 		$self = self::getInstance();
 
@@ -2085,7 +2085,7 @@ class Context
 	 * @param string $action act name
 	 * @return void
 	 */
-	function addSSLActions($action_array)
+	public static function addSSLActions($action_array)
 	{
 		$self = self::getInstance();
 

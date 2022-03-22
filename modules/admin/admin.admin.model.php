@@ -431,7 +431,7 @@ class adminAdminModel extends admin
 		}
 		$info['phpext'] = substr($info['phpext'], 1);
 
-		$info['module'] = '';
+		$info['xemodule'] = '';
 		$oModuleModel = getModel('module');
 		$module_list = $oModuleModel->getModuleList();
 		if($module_list) foreach($module_list as $module)
@@ -440,9 +440,9 @@ class adminAdminModel extends admin
 			{
 				continue;
 			}
-			$info['module'] .= '|' . $module->module;
+			$info['xemodule'] .= '|' . $module->module;
 		}
-		$info['module'] = substr($info['module'], 1);
+		$info['xemodule'] = substr($info['xemodule'], 1);
 
 		$info['addon'] = '';
 		$oAddonAdminModel = getAdminModel('addon');
