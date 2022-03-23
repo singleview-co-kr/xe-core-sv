@@ -411,7 +411,7 @@ class FileHandler
 	 * @param string $path Path of the target directory
 	 * @return void
 	 */
-	function removeBlankDir($path)
+	public static function removeBlankDir($path)
 	{
 		if(($path = self::isDir($path)) === FALSE)
 		{
