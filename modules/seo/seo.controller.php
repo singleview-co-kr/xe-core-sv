@@ -223,7 +223,7 @@ class seoController extends seo
 		if ($config->use_optimize_title == 'Y') Context::setBrowserTitle($piece->title);
 	}
 
-	function loadSeoInfoBeforeDisplay($aParam)
+	function loadSeoInfoBeforeDisplay($oParam)
 	{
 		if (Context::getResponseMethod() != 'HTML') return;
 		if (Context::get('module') == 'admin') return;
@@ -257,7 +257,6 @@ class seoController extends seo
 		$current_module_info = Context::get('current_module_info');
 		$site_module_info = Context::get('site_module_info');
 		$document_srl = Context::get('document_srl');
-		$is_article = false;
 		$single_image = false;
 		$is_index = ($current_module_info->module_srl == $site_module_info->module_srl) ? true : false;
 
@@ -281,20 +280,18 @@ class seoController extends seo
 				$piece->description = trim($mdoulePartConfig->meta_description);
 		}
 
-		//var_dump($aParam);
-		//echo '<BR><BR>';
-
 		// 문서 데이터 수집
-		if($aParam->bDocument) 
+		if($oParam->bDocument) 
 		{
-			if($aParam->sDisplay == 'Y') 
+			if($oParam->sDisplay == 'Y') 
 			{
 				$piece->document_title = $oParam->sTitle;
 				$piece->url = getFullUrl('', 'mid', $current_module_info->mid, 'document_srl',$document_srl);
 				$piece->type = 'article';
-				$piece->description = trim(str_replace('&nbsp;', ' ', $aParam->sOgDesc));
+				$piece->description = trim(str_replace('&nbsp;', ' ', $oParam->sOgDesc));
 				$piece->author = $oParam->sAuthor;
 				$tags = explode(',', $oParam->sTags);
+				
 				if (count((array)$tags)) $piece->tags = $tags;
 
 				$document_images = false;
@@ -310,8 +307,8 @@ class seoController extends seo
 				{
 					$image_ext = array('bmp', 'gif', 'jpg', 'jpeg', 'png');
 					$document_images = [];
-
 					foreach ($aFiles as $file) {
+											var_dump($file->isvalid);
 						if ($file->isvalid != 'Y') continue;
 
 						$ext = array_pop(explode('.', $file->uploaded_filename));
@@ -358,23 +355,22 @@ class seoController extends seo
 			$piece->image[] = $site_image;
 		}
 
-		$this->addLink('canonical', $piece->url);
-		$this->addMeta('keywords', $piece->keywords, 'name');
+		//$this->addLink('canonical', $piece->url);
+		//$this->addMeta('keywords', $piece->keywords, 'name');
 		$this->addMeta('description', $piece->description, 'name');
 
 		// Open Graph
-		$this->addMeta('og:locale', $locales[Context::getLangType()]);
+		//$this->addMeta('og:locale', $locales[Context::getLangType()]);
 		$this->addMeta('og:type', $piece->type);
-		$this->addMeta('og:url', $piece->url);
-		$this->addMeta('og:site_name', $config->site_name);
+		//$this->addMeta('og:url', $piece->url);
+		//$this->addMeta('og:site_name', $config->site_name);
 		$this->addMeta('og:title', $piece->title);
 		$this->addMeta('og:description', $piece->description);
-		if($is_article) {
-			if(Context::getLangType() !== $oDocument->getLangCode()) {
-				$this->addMeta('og:locale:alternate', $locales[$oDocument->getLangCode()]);
-			}
-			$this->addMeta('article:published_time', $oDocument->getRegdate('c'));
-			$this->addMeta('article:modified_time', $oDocument->getUpdate('c'));
+		if($oParam->bDocument) {
+			if($oParam->sRegdate)
+				$this->addMeta('article:published_time', $this->_getDT($oParam->sRegdate));
+			if($oParam->sUpdatetime)
+				$this->addMeta('article:modified_time', $this->_getDT($oParam->sUpdatetime));
 			foreach ($piece->tags as $tag) {
 				$this->addMeta('article:tag', $tag);
 			}
@@ -395,6 +391,16 @@ class seoController extends seo
 		$this->canonical_url = $piece->url;
 
 		if ($config->use_optimize_title == 'Y') Context::setBrowserTitle($piece->title);
+	}
+
+	private function _getDT($sYyyymmddhhmmss)
+	{
+		return $this->_getDatetime($sYyyymmddhhmmss, 'Y-m-d').'T'.$this->_getDatetime($sYyyymmddhhmmss, 'H:i:s').substr($GLOBALS['_time_zone'],0,3).':'.substr($GLOBALS['_time_zone'],3,2);
+	}
+	
+	private function _getDatetime($sYyyymmddhhmmss, $format = 'Y.m.d H:i:s')
+	{
+		return zdate($sYyyymmddhhmmss, $format);
 	}
 
 	function triggerAfterFileDeleteFile($data)

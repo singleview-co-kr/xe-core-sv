@@ -59,6 +59,12 @@ class seo extends ModuleObject
 	{
 		if (!$content) return;
 
+		foreach($this->SEO['meta'] as $nIdx=>$oProperty)
+		{
+			if($oProperty['property'] == $property && $oProperty['attr_name'] == $attr_name)
+				return;
+		}
+
 		$oModuleController = getController('module');
 		$oModuleController->replaceDefinedLangCode($content);
 		if (!in_array($property, array('og:url'))) {
