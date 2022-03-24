@@ -306,7 +306,7 @@ class seoController extends seo
 				$oFileModel = getModel('file');
 				$aFiles = $oFileModel->getFiles($document_srl);
 				unset($oFileModel);
-				if($document_images === false && count($aFiles)) 
+				if($document_images === false && count((array)$aFiles)) 
 				{
 					$image_ext = array('bmp', 'gif', 'jpg', 'jpeg', 'png');
 					$document_images = [];

@@ -25,55 +25,50 @@
 			<div class="col-md-3 left_col">
 				<div class="left_col scroll-view">
 					<div class="navbar nav_title" style="border: 0;">
-						<a href="{getUrl('','module','svshopmaster')}" class="site_title"><i class="fa fa-paw"></i> <span>{$svshopmaster_modinfo->title}</span></a>
+						<a href="{geturl('')}" class="site_title"><i class="fa fa-paw"></i> <span>{$layout_info->HEADER_TEXT}</span></a>
 					</div>
 					<div class="clearfix"></div>
 <!-- menu prile quick info -->
-					 <div class="profile">
-						<div class="profile_pic">
-							<img src="./layouts/gentellela/images/man-human-person-login-128.png" alt="..." class="img-circle profile_img">
-						</div>
-						<div class="profile_info">
-							<span>환영합니다!</span>
-							<h2>{$member_id}</h2>
-						</div>
-					</div>
+                            <div class="profile">
+                        <!--@if($is_logged)-->
+							<!-- after_login -->
+                                <div class="profile_pic">
+                                    <!--@if($logged_info->profile_image->src)-->
+                                    <img src="{$logged_info->profile_image->src}" alt="..." class="img-circle profile_img">
+                                    <!--@else-->
+                                    <img src="./layouts/gentellela/images/man-human-person-login-128.png" alt="..." class="img-circle profile_img">
+                                    <!--@end-->
+                                </div>
+                                <div class="profile_info">
+                                    <span>환영합니다!</span>
+                                    <h2>{$logged_info->nick_name}</h2>
+                                </div>
+							<!-- /after_login -->
+						<!--@else-->
+							<!-- before_login -->
+                                <div class="profile_pic">
+                                    <img src="./layouts/gentellela/images/man-human-person-login-128.png" alt="..." class="img-circle profile_img">
+                                </div>
+                                <div class="profile_info">
+                                    <span>환영합니다!</span>
+                                    <h2><a href="{getUrl('act', 'dispMemberLoginForm')}">{$lang->cmd_login}/{$lang->cmd_signup}</a></h2>
+                                </div>
+                        	<!-- /before_login -->
+						<!--@end-->
+                            </div>					 
 <!-- /menu prile quick info -->
 					<br/><br/><br/><br/><br/>
 <!-- sidebar menu -->
 					<div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
 						<div class="menu_section">
-							<h3>General</h3>
+							<h3></h3>
 							<ul class="nav side-menu">
-								<li><a><i class="fa fa-home"></i> 성과 관리 <span class="fa fa-chevron-down"></span></a>
-									<ul class="nav child_menu" style="display: none">
-										<li><a href="./index.php?module=svshopmaster&act=dispSvestudio" title="고객 관리">성과1</a></li>
-										<li><a href="./index.php?module=svshopmaster&act=dispSvestudio" title="프로모션 관리">성과2</a></li>
-										<li><a href="./index.php?module=svshopmaster&act=dispSvestudio" title="주문관리">성과3</a></li>
-										<li><a href="./index.php?module=svshopmaster&act=dispSvestudio" title="상품관리">성과4</a></li>
-										<li><a href="./index.php?module=svshopmaster&act=dispSvestudio" title="장바구니설정">성과5</a></li>
-										<!---li><a href="/index.php?module=svshopmaster&act=dispSvestudioAdminConfig" title="설정">설정</a></li--->
+                                <li loop="$GNB->list=>$key1,$val1">
+                                    <a><i class="fa fa-home"></i> {$val1['link']|noescape} <span class="fa fa-chevron-down"></span></a>
+                                    <ul class="nav child_menu" style="display: none">
+                                        <li loop="$val1['list']=>$key2,$val2"><a href="{$val2['href']}" target="_blank"|cond="$val2['open_window']=='Y'">{$val2['link']|noescape}</a></li>
 									</ul>
-								</li>
-								<!-- 메뉴 추가하면 ./tpl/js/custom.js에 펼침 코드 추가 --->
-								<li><a><i class="fa fa-edit"></i> 상점 관리 <span class="fa fa-chevron-down"></span></a>
-									<ul class="nav child_menu" style="display: none">
-										<li><a href="./index.php?module=svshopmaster&act=dispSvcrmAdminIndex" title="고객 관리">고객관계</a></li>
-										<li><a href="./index.php?module=svshopmaster&act=dispSvpromotionAdminIndex" title="프로모션 관리">프로모션</a></li>
-										<li><a href="./index.php?module=svshopmaster&act=dispSvorderAdminOrderManagement" title="주문관리">주문</a></li>
-										<li><a href="./index.php?module=svshopmaster&act=dispSvitemAdminModInstList" title="상품관리">상품</a></li>
-										<li><a href="./index.php?module=svshopmaster&act=dispSvcartAdminModInstList" title="장바구니설정">장바구니</a></li>
-										<li><a href="./index.php?module=svshopmaster&act=dispSvpgAdminTransactions" title="결제방식관리">결제방식</a></li>
-										<li><a href="./index.php?module=svshopmaster&act=dispSvestudioAdminModInstList" title="실행스튜디오관리">실행스튜디오</a></li>
-									</ul>
-								</li>
-							</ul>
-						</div>
-						<div class="menu_section">
-							<h3>Live On</h3>
-								<ul class="nav side-menu">
-									<li><a href="javascript:void(0)"><i class="fa fa-laptop"></i> Landing Page <span class="label label-success pull-right">Coming Soon</span></a>
-								</li>
+                                </li>
 							</ul>
 						</div>
 					</div>
@@ -100,11 +95,12 @@
 			<div class="top_nav">
 				<div class="nav_menu">
 					<nav class="" role="navigation">
-						<div class="nav toggle">
+                        <div class="nav toggle">
 							<a id="menu_toggle"><i class="fa fa-bars"></i></a>
 						</div>
 						<ul class="nav navbar-nav navbar-right">
-							<li class="">
+<!--@if($is_logged)-->
+                            <li class="">
 								<a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
 									<img src="./layouts/gentellela/images/img.jpg" alt="">John Doe<span class=" fa fa-angle-down"></span>
 								</a>
@@ -155,6 +151,17 @@
 									</li>
 								</ul>
 							</li>
+<!--@else-->
+                            <li class="">
+                                <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                    <img src="./layouts/gentellela/images/man-human-person-login-128.png" alt="">Guest<span class=" fa fa-angle-down"></span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-usermenu pull-right">
+                                    <li><a href="javascript:;">Help</a></li>
+                                    <li><a href="{getUrl('act', 'dispMemberLoginForm')}"><i class="fa fa-sign-out pull-right"></i> {$lang->cmd_login}/{$lang->cmd_signup}</a></li>
+                                </ul>
+                            </li>
+<!--@end-->
 						</ul>
 					</nav>
 				</div>
@@ -171,7 +178,7 @@
 <!-- footer content -->
 		<footer>
 			<div class="pull-right">
-				Svshopmaster v{$svshopmaster_modinfo->version} <a href="http://singleview.co.kr/?utm_source=svshopmaster&utm_medium=referral&utm_campaign=svshopmaster&utm_term=svshopmaster_credential"  target='_new'>Singleview.co.kr</a>, Skin Gentelella - Bootstrap Admin Template by <a href="https://colorlib.com" target='_new'>Colorlib</a>
+				XE-SV <a href="http://singleview.co.kr/?utm_source=svshopmaster&utm_medium=referral&utm_campaign=xe-sv-core&utm_term=xe-sv-core"  target='_new'>Singleview.co.kr</a>, Skin Gentelella - Bootstrap Admin Template by <a href="https://colorlib.com" target='_new'>Colorlib</a>
 			</div>
 			<div class="clearfix"></div>
 		</footer>
