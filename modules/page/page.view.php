@@ -48,6 +48,17 @@ class pageView extends page
 		// Variables used in the template Context:: set()
 		if($this->module_srl) Context::set('module_srl',$this->module_srl);
 
+		// Firt line of defense against RVE-2022-2.
+		foreach (Context::getRequestVars() as $key => $val)
+		{
+			if (preg_match('/[\{\}\(\)<>\$\'"]/', $key) || preg_match('/[\{\}\(\)<>\$\'"]/', $val))
+			{
+				$this->setError(-1);
+				$this->setMessage('msg_invalid_request');
+				return;
+			}
+		}
+
 		$page_type_name = strtolower($this->module_info->page_type);
 		$method = '_get' . ucfirst($page_type_name) . 'Content';
 		if(method_exists($this, $method)) $page_content = $this->{$method}();
@@ -186,28 +197,28 @@ class pageView extends page
 			if(file_exists($cache_file)) FileHandler::removeFile($cache_file);
 
 			// Read a target file and get content
-			ob_start();
-			include(FileHandler::getRealPath($target_file));
-			$content = ob_get_clean();
+			// show deactivated valnerable tag to prevent RVE-2022-2. No tag compile
+			$content = FileHandler::readFile($target_file);
+			$content = str_replace('<!--%import(', '&lt;!--%import(', $content);
+			$content = str_replace(')-->', ')--&gt;', $content);
+			$content = str_replace('<include target=', '&lt;include target&#x003d;', $content);
+			$content = str_replace('<?', '&lt;?', $content);
+			$content = str_replace('?>', '?&gt;', $content);
 			// Replace relative path to the absolute path 
 			$this->path = str_replace('\\', '/', realpath(dirname($target_file))) . '/';
-			$content = preg_replace_callback('/(target=|src=|href=|url\()("|\')?([^"\'\)]+)("|\'\))?/is',array($this,'_replacePath'),$content);
-			$content = preg_replace_callback('/(<!--%import\()(\")([^"]+)(\")/is',array($this,'_replacePath'),$content);
+			//$content = preg_replace_callback('/(target=|src=|href=|url\()("|\')?([^"\'\)]+)("|\'\))?/is',array($this,'_replacePath'),$content);
+			//$content = preg_replace_callback('/(<!--%import\()(\")([^"]+)(\")/is',array($this,'_replacePath'),$content);
 
 			FileHandler::writeFile($cache_file, $content);
 			// Include and then Return the result
 			if(!file_exists($cache_file)) return;
-			// Attempt to compile
-			$oTemplate = &TemplateHandler::getInstance();
-			$script = $oTemplate->compileDirect($filepath, $filename);
 
-			FileHandler::writeFile($cache_file, $script);
+			FileHandler::writeFile($cache_file, $content);
 		}
 
 		$__Context = &$GLOBALS['__Context__'];
 		$__Context->tpl_path = $filepath;
 
-		ob_start();
 		include($cache_file);
 
 		$contents = '';
