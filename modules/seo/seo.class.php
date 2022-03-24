@@ -93,40 +93,6 @@ class seo extends ModuleObject
 				}
 			}
 		}
-
-		// Google Analytics
-		if ($config->ga_id && !($config->ga_except_admin == 'Y' && $logged_info->is_admin == 'Y')) {
-			$gaq_push = array();
-			// $gaq_push[] = '_gaq.push([\'_setAccount\', \'' . $config->ga_id . '\']);';
-			$gaq_push[] = "ga('create', '{$config->ga_id}', 'auto');";
-			$canonical_url = str_replace(Context::get('request_uri'), '/', $this->canonical_url);
-			$gaq_push[] = "ga('send', 'pageview', '{$canonical_url}');";
-			$gaq_push = implode(PHP_EOL, $gaq_push);
-
-			$ga_script = <<< GASCRIPT
-<!-- Google Analytics -->
-<script>
-(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-{$gaq_push}
-</script>
-GASCRIPT;
-
-			Context::addHtmlHeader($ga_script . PHP_EOL);
-		}
-
-		// Naver Analytics
-		if ($config->na_id && !($config->na_except_admin == 'Y' && $logged_info->is_admin == 'Y')) {
-			$na_script = <<< NASCRIPT
-<!-- XEHub Analytics -->
-<script src="//wcs.naver.net/wcslog.js"></script>
-<script>if(!wcs_add){var wcs_add={};};wcs_add['wa']='{$config->na_id}';if(typeof wcs_do!="undefined"){wcs_do();}</script>
-NASCRIPT;
-			Context::addHtmlFooter($na_script . PHP_EOL);
-		}
 	}
 
 	function moduleInstall()

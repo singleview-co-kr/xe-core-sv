@@ -223,6 +223,180 @@ class seoController extends seo
 		if ($config->use_optimize_title == 'Y') Context::setBrowserTitle($piece->title);
 	}
 
+	function loadSeoInfoBeforeDisplay($aParam)
+	{
+		if (Context::getResponseMethod() != 'HTML') return;
+		if (Context::get('module') == 'admin') return;
+
+		require_once(_XE_PATH_ . 'libs/idna_convert/idna_convert.class.php');
+
+		$oCacheHandler = CacheHandler::getInstance('object', NULL, TRUE);
+
+		$locales = array(
+			'de' => 'de_DE',
+			'en' => 'en_US',
+			'es' => 'es_ES',
+			'fr' => 'fr_FR',
+			'ja' => 'ja_JP',
+			'jp' => 'ja_JP',
+			'ko' => 'ko_KR',
+			'mn' => 'mn_MN',
+			'ru' => 'ru_RU',
+			'tr' => 'tr_TR',
+			'vi' => 'vi_VN',
+			'zh-CN' => 'zh_CN',
+			'zh-TW' => 'zh_TW',
+		);
+
+		$oModuleModel = getModel('module');
+		$config = $this->getConfig();
+		$IDN = new idna_convert(array('idn_version' => 2008));
+		$request_uri = $IDN->encode(Context::get('request_uri'));
+
+		$logged_info = Context::get('logged_info');
+		$current_module_info = Context::get('current_module_info');
+		$site_module_info = Context::get('site_module_info');
+		$document_srl = Context::get('document_srl');
+		$is_article = false;
+		$single_image = false;
+		$is_index = ($current_module_info->module_srl == $site_module_info->module_srl) ? true : false;
+
+		$piece = new stdClass;
+		$piece->document_title = null;
+		$piece->type = 'website';
+		$piece->url = getFullUrl('');
+		$piece->title = Context::getBrowserTitle();
+		$piece->description = $config->site_description;
+		$piece->keywords = $config->site_keywords;
+		$piece->tags = [];
+		$piece->image = [];
+		$piece->author = null;
+
+		if(stristr($_SERVER['HTTP_USER_AGENT'], 'facebookexternalhit') != FALSE)
+			$single_image = true;
+		if($current_module_info->module_srl !== $site_module_info->module_srl)
+		{
+			$mdoulePartConfig = $oModuleModel->getModulePartConfig('seo', $current_module_info->module_srl);
+			if($mdoulePartConfig && isset($mdoulePartConfig->meta_description) && trim($mdoulePartConfig->meta_description)) 
+				$piece->description = trim($mdoulePartConfig->meta_description);
+		}
+
+		//var_dump($aParam);
+		//echo '<BR><BR>';
+
+		// 문서 데이터 수집
+		if($aParam->bDocument) 
+		{
+			if($aParam->sDisplay == 'Y') 
+			{
+				$piece->document_title = $oParam->sTitle;
+				$piece->url = getFullUrl('', 'mid', $current_module_info->mid, 'document_srl',$document_srl);
+				$piece->type = 'article';
+				$piece->description = trim(str_replace('&nbsp;', ' ', $aParam->sOgDesc));
+				$piece->author = $oParam->sAuthor;
+				$tags = explode(',', $oParam->sTags);
+				if (count((array)$tags)) $piece->tags = $tags;
+
+				$document_images = false;
+				if($oCacheHandler->isSupport()) {
+					$cache_key_document_images = 'seo:document_images:' . $document_srl;
+					$document_images = $oCacheHandler->get($cache_key_document_images);
+				}
+
+				$oFileModel = getModel('file');
+				$aFiles = $oFileModel->getFiles($document_srl);
+				unset($oFileModel);
+				if($document_images === false && count($aFiles)) 
+				{
+					$image_ext = array('bmp', 'gif', 'jpg', 'jpeg', 'png');
+					$document_images = [];
+
+					foreach ($aFiles as $file) {
+						if ($file->isvalid != 'Y') continue;
+
+						$ext = array_pop(explode('.', $file->uploaded_filename));
+
+						if (!in_array(strtolower($ext), $image_ext)) continue;
+						list($width, $height) = @getimagesize($file->uploaded_filename);
+						if($width < 100 && $height < 100) continue;
+
+						$image = array(
+							'filepath' => $file->uploaded_filename,
+							'width' => $width,
+							'height' => $height
+						);
+						if($file->cover_image === 'Y')
+							array_unshift($document_images, $image);
+						else
+							$document_images[] = $image;
+					}
+					if($oCacheHandler->isSupport())
+						$oCacheHandler->put($cache_key_document_images, $document_images);
+				}
+				if($document_images) 
+					$piece->image = $document_images;
+			} 
+			else
+				$piece->url = getFullUrl('', 'mid', $current_module_info->mid);
+		}
+		else 
+		{
+			if (!$is_index)
+			{
+				$page = (Context::get('page') > 1) ? Context::get('page') : null;
+				$piece->url = getNotEncodedFullUrl('mid', $current_module_info->mid, 'page',$page);
+			}
+		}
+		$piece->title = $this->getBrowserTitle($piece->document_title);
+
+		if($oCacheHandler->isSupport())
+		{
+			$cache_key = 'seo:site_image';
+			$site_image = $oCacheHandler->get($cache_key);
+			if($site_image)
+				$site_image['url'] = $config->site_image_url;
+			$piece->image[] = $site_image;
+		}
+
+		$this->addLink('canonical', $piece->url);
+		$this->addMeta('keywords', $piece->keywords, 'name');
+		$this->addMeta('description', $piece->description, 'name');
+
+		// Open Graph
+		$this->addMeta('og:locale', $locales[Context::getLangType()]);
+		$this->addMeta('og:type', $piece->type);
+		$this->addMeta('og:url', $piece->url);
+		$this->addMeta('og:site_name', $config->site_name);
+		$this->addMeta('og:title', $piece->title);
+		$this->addMeta('og:description', $piece->description);
+		if($is_article) {
+			if(Context::getLangType() !== $oDocument->getLangCode()) {
+				$this->addMeta('og:locale:alternate', $locales[$oDocument->getLangCode()]);
+			}
+			$this->addMeta('article:published_time', $oDocument->getRegdate('c'));
+			$this->addMeta('article:modified_time', $oDocument->getUpdate('c'));
+			foreach ($piece->tags as $tag) {
+				$this->addMeta('article:tag', $tag);
+			}
+		}
+
+		foreach ($piece->image as $img) {
+			if(!$img['url']) {
+				if(!$img['filepath']) continue;
+				$img['url'] = $request_uri . $img['filepath'];
+			}
+
+			$this->addMeta('og:image', $img['url']);
+			$this->addMeta('og:image:width', $img['width']);
+			$this->addMeta('og:image:height', $img['height']);
+			if($single_image) break;
+		}
+
+		$this->canonical_url = $piece->url;
+
+		if ($config->use_optimize_title == 'Y') Context::setBrowserTitle($piece->title);
+	}
+
 	function triggerAfterFileDeleteFile($data)
 	{
 		$document_srl = $data->upload_target_srl;

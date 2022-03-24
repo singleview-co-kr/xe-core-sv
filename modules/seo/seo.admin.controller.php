@@ -36,22 +36,6 @@ class seoAdminController extends seo
 					$oCacheHandler->put($cache_key, $site_image_dimension);
 				}
 			}
-		} elseif ($vars->setting_section == 'analytics') {
-			// analytics
-
-			// Google
-			$config->ga_id = trim($vars->ga_id);
-			$config->ga_except_admin = $vars->ga_except_admin;
-
-			// Naver
-			$config->na_id = trim($vars->na_id);
-			$config->na_except_admin = $vars->na_except_admin;
-		} elseif ($vars->setting_section == 'miscellaneous') {
-			// miscellaneous
-
-			// Facebook
-			$config->fb_app_id = trim($vars->fb_app_id);
-			$config->fb_admins = trim($vars->fb_admins);
 		}
 
 		$config->site_image_url = NULL;
