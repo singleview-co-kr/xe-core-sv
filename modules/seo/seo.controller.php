@@ -232,22 +232,6 @@ class seoController extends seo
 
 		$oCacheHandler = CacheHandler::getInstance('object', NULL, TRUE);
 
-		$locales = array(
-			'de' => 'de_DE',
-			'en' => 'en_US',
-			'es' => 'es_ES',
-			'fr' => 'fr_FR',
-			'ja' => 'ja_JP',
-			'jp' => 'ja_JP',
-			'ko' => 'ko_KR',
-			'mn' => 'mn_MN',
-			'ru' => 'ru_RU',
-			'tr' => 'tr_TR',
-			'vi' => 'vi_VN',
-			'zh-CN' => 'zh_CN',
-			'zh-TW' => 'zh_TW',
-		);
-
 		$oModuleModel = getModel('module');
 		$config = $this->getConfig();
 		$IDN = new idna_convert(array('idn_version' => 2008));
@@ -308,7 +292,6 @@ class seoController extends seo
 					$image_ext = array('bmp', 'gif', 'jpg', 'jpeg', 'png');
 					$document_images = [];
 					foreach ($aFiles as $file) {
-											var_dump($file->isvalid);
 						if ($file->isvalid != 'Y') continue;
 
 						$ext = array_pop(explode('.', $file->uploaded_filename));
