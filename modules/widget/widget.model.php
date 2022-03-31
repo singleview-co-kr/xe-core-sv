@@ -196,7 +196,8 @@ class widgetModel extends widget
 		$extra_var_groups = $xml_obj->extra_vars->group;
 		if(!$extra_var_groups) $extra_var_groups = $xml_obj->extra_vars;
 		if(!is_array($extra_var_groups)) $extra_var_groups = array($extra_var_groups);
-		foreach($extra_var_groups as $group)
+		$buff .= '$widget_info->extra_var = new stdClass;';
+        foreach($extra_var_groups as $group)
 		{
 			$extra_vars = $group->var;
 			if(!is_array($group->var)) $extra_vars = array($group->var);
@@ -206,7 +207,6 @@ class widgetModel extends widget
 				$extra_var_count = count($extra_vars);
 
 				$buff .= sprintf('$widget_info->extra_var_count = %s;', var_export($extra_var_count, true));
-				$buff .= '$widget_info->extra_var = new stdClass;';
 				for($i=0;$i<$extra_var_count;$i++)
 				{
 					unset($var);

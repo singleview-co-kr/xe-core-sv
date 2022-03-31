@@ -1,9 +1,9 @@
 XpressEngine on Apache + PHP8.0
 ============
 
-[![Build Status](https://travis-ci.org/xpressengine/xe-core.svg?branch=master)](https://travis-ci.org/xpressengine/xe-core)
+[![Build Status](https://travis-ci.org/singleview-co-kr/xe-core-sv.svg?branch=master)](https://travis-ci.org/xpressengine/xe-core)
 [![License](http://img.shields.io/badge/license-GNU%20LGPL-brightgreen.svg)](http://www.gnu.org/licenses/gpl.html)
-[![Latest release](http://img.shields.io/github/release/xpressengine/xe-core.svg)](https://github.com/xpressengine/xe-core/releases)
+[![Latest release](http://img.shields.io/github/release/singleview-co-kr/xe-core-sv.svg)](https://github.com/xpressengine/xe-core/releases)
 
 XpressEngine(XE)은 누구나 쉽고 편하고 자유롭게 콘텐츠를 발행을 할 수 있도록 하기 위한 CMS(Content Management System)입니다.
 오픈소스 라이선스로 누구나 사용 또는 개작할 수 있으며, 개방형 프로젝트로서 누구나 개발에 참여할 수 있습니다.
