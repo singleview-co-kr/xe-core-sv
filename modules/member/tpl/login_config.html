@@ -1,4 +1,5 @@
 <include target="header.html" />
+<h1>{$lang->title_login_config_basic}</h1>
 <form action="./" class="x_form-horizontal" ruleset="insertLoginConfig" method="post">
 	<input type="hidden" name="module" value="member" />
 	<input type="hidden" name="act" value="procMemberAdminInsertLoginConfig" />
@@ -62,3 +63,38 @@ jQuery(function($){
 	}).change();
 });
 </script>
+
+<h1>{$lang->title_login_config_naver}</h1>
+<form action="./" class="x_form-horizontal" ruleset="insertLoginConfig" method="post">
+	<input type="hidden" name="module" value="member" />
+	<input type="hidden" name="act" value="procMemberAdminInsertLoginConfig" />
+    <input type="hidden" name="mode" value="naver_login" />
+    <input type="hidden" name="naver_cb_mid" value="{$config->naver_cb_mid}" />  <!-- prevent duplicated mid -->
+	<input type="hidden" name="success_return_url" value="{getUrl('', 'module', 'admin', 'act', $act)}" />
+	<input type="hidden" name="xe_validator_id" value="modules/member/tpl/1" />
+	<div class="x_control-group">
+		<p class="x_control-label">{$lang->enable_naver_login}</p>
+		<div class="x_controls">
+			<label class="x_inline" for="enable_naver_login_yes"><input type="radio" name="enable_naver_login" id="enable_naver_login_yes" value="Y" checked="checked"|cond="$config->enable_naver_login == 'Y'" /> {$lang->cmd_yes}</label>
+			<label class="x_inline" for="enable_naver_login_no"><input type="radio" name="enable_naver_login" id="enable_naver_login_no" value="N" checked="checked"|cond="$config->enable_naver_login != 'Y'" /> {$lang->cmd_no}</label>
+		</div>
+	</div>
+    <div class="x_control-group">
+		<label class="x_control-label" for="call_back_url">{$lang->call_back_url}</label>
+		<div class="x_controls">
+			<a href="{$sServerRootPath}{$config->naver_cb_mid}" target="_new">{$sServerRootPath}{$config->naver_cb_mid}</a>
+			<a href="#call_back_url_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+			<p id="call_back_url_help" class="x_help-block" hidden>{$lang->about_call_back_url}</p>
+		</div>
+	</div>
+    <div class="x_control-group">
+		<label class="x_control-label" for="after_logout_url">{$lang->naver_client_id}</label>
+		<div class="x_controls">
+			<input type="text" id="naver_client_id" name="naver_client_id" value="{$config->naver_client_id}" />
+			<a href="#naver_client_id_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+			<p id="naver_client_id_help" class="x_help-block" hidden>{$lang->about_naver_client_id}</p>
+		</div>
+	</div>
+	<div class="x_clearfix btnArea">
+		<span class="x_pull-right"><input class="x_btn x_btn-primary" type="submit" value="{$lang->cmd_save}" /></span>
+	</div>

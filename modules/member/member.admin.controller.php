@@ -350,9 +350,79 @@ class memberAdminController extends member
 
 	public function procMemberAdminInsertLoginConfig()
 	{
+        $sMode = Context::get('mode');
+		switch($sMode)
+		{
+			case 'naver_login':
+				$oRst = $this->_procLoginConfigNaver();
+				break;
+			default:
+				$oRst = $this->_procLoginConfigBasic();
+		}
+        $oArgs = $oRst->get('oArgs');
 		$oModuleController = getController('module');
+		$oModuleController->updateModuleConfig('member', $oArgs);
+		unset($oModuleController);
+        unset($oRst);
+        unset($oArgs);
+		// default setting end
+		$this->setMessage('success_updated');
+		$returnUrl = Context::get('success_return_url') ? Context::get('success_return_url') : getNotEncodedUrl('', 'module', 'admin', 'act', 'dispMemberAdminLoginConfig');
+		$this->setRedirectUrl($returnUrl);
+	}
 
-		$args = Context::gets(
+	private function _procLoginConfigNaver()
+	{
+		$oArgs = Context::gets(
+			'enable_naver_login',
+            'naver_cb_mid',  // to prevent duplicated call back mid
+			'naver_client_id'
+		);
+		if(!$oArgs->enable_naver_login)
+			$oArgs->enable_naver_login = 'N';
+		if(!trim(strip_tags($oArgs->naver_client_id)))
+			$oArgs->naver_client_id = NULL;
+		
+		if($oArgs->enable_naver_login == 'Y')
+		{
+            $bCbMidCreation = FALSE;  // prevent duplicated call back mid
+            if(is_null($oArgs->naver_cb_mid))
+                $bCbMidCreation = TRUE;
+            else
+            {
+                $oModuleModel = getModel('module');
+                $oCbMid = $oModuleModel->getModuleInfoByMid($oArgs->naver_cb_mid);
+                if(is_array($oCbMid))  // returns array if not exists
+                    $bCbMidCreation = TRUE;
+                if($oCbMid->module != 'member' && $oCbMid->mid == $oArgs->naver_cb_mid)
+                    $bCbMidCreation = TRUE;
+                unset($oCbMid);
+                unset($oModuleModel);
+            }
+            if($bCbMidCreation)  // naver login call back mid insert
+            {
+                $sNaverCallbackMid = $this->_generateRandomString();
+                $oParam = new stdClass();
+                $oParam->module = 'member';
+                $oParam->mid = $sNaverCallbackMid;
+                $oParam->social_login_type = 'naver';
+                $oModuleController = getController('module');
+                $oRst = $oModuleController->insertModule($oParam);
+                if(!$oRst->toBool()) 
+                    return $output;
+                $oArgs->naver_cb_mid = $sNaverCallbackMid;
+                unset($oRst);
+                unset($oParam);
+            }
+		}
+        $oRst = new BaseObject();
+        $oRst->add('oArgs', $oArgs);
+		return $oRst;
+    }
+
+    private function _procLoginConfigBasic()
+	{
+		$oArgs = Context::gets(
 			'change_password_date',
 			'enable_login_fail_report',
 			'max_error_count',
@@ -360,28 +430,25 @@ class memberAdminController extends member
 			'after_login_url',
 			'after_logout_url'
 		);
+		if(!$oArgs->change_password_date)
+			$oArgs->change_password_date = 0;
+		if(!trim(strip_tags($oArgs->after_login_url)))
+			$oArgs->after_login_url = NULL;
+		if(!trim(strip_tags($oArgs->after_logout_url)))
+			$oArgs->after_logout_url = NULL;
+        $oRst = new BaseObject();
+        $oRst->add('oArgs', $oArgs);
+        return $oRst;
+    }
 
-		if(!$args->change_password_date)
-		{
-			$args->change_password_date = 0;
-		}
-
-		if(!trim(strip_tags($args->after_login_url)))
-		{
-			$args->after_login_url = NULL;
-		}
-		if(!trim(strip_tags($args->after_logout_url)))
-		{
-			$args->after_logout_url = NULL;
-		}
-
-		$output = $oModuleController->updateModuleConfig('member', $args);
-
-		// default setting end
-		$this->setMessage('success_updated');
-
-		$returnUrl = Context::get('success_return_url') ? Context::get('success_return_url') : getNotEncodedUrl('', 'module', 'admin', 'act', 'dispMemberAdminLoginConfig');
-		$this->setRedirectUrl($returnUrl);
+    private function _generateRandomString($length = 10) 
+	{
+		$characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+		$charactersLength = strlen($characters);
+		$randomString = '';
+		for($i = 0; $i < $length; $i++)
+			$randomString .= $characters[rand(0, $charactersLength - 1)];
+		return $randomString;
 	}
 
 	public function procMemberAdminInsertDesignConfig()

@@ -201,6 +201,8 @@ class memberAdminView extends member
 
 	public function dispMemberAdminLoginConfig()
 	{
+        $sServerRootPath = ($_SERVER['HTTPS'] == 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST']. getScriptPath();
+        Context::set('sServerRootPath', $sServerRootPath);
 		$this->setTemplateFile('login_config');
 	}
 

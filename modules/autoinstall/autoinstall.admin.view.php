@@ -398,112 +398,20 @@ class autoinstallAdminView extends autoinstall
 
 		$this->setTemplateFile('index');
 
-        $sTgtFilePath = _XE_PATH_.'files/ddd.pdf';
-
-        $url = 'http://192.168.0.37/xe-core-sv/?module=file&act=procFileDownload&file_srl=153&sid=4d17db965b284b372aabd35d78ba6aaa&module_srl=79';
-        # $url = 'http://192.168.0.37/xe-core-sv/index.php?act=procFileOutput&file_srl=153&file_key=f47b1200eec20fa2e6f15c4fe6664233';
-        //exec("wget -O ".$sTgtFilePath." '".$url."'");  // curl does not work act=procFileDownload is redirection
-        
-		// $params = array();
-		// $params["act"] = "getResourceapiLastupdate";
-		// $body = XmlGenerater::generate($params);
-		// $buff = FileHandler::getRemoteResource(_XE_DOWNLOAD_SERVER_, $body, 3, "POST", "application/xml");
-		// $xml_lUpdate = new XeXmlParser();
-		// $lUpdateDoc = $xml_lUpdate->parse($buff);
-		// $updateDate = $lUpdateDoc->response->updatedate->body;
-		// if(!$updateDate)
-		// {
-		// 	return $this->stop('msg_connection_fail');
-		// }
-
-		// $oModel = getModel('autoinstall');
-		// $item = $oModel->getLatestPackage();
-		// if(!$item || $item->updatedate < $updateDate || count($this->categories) < 1)
-		// {
-		// 	$oController = getAdminController('autoinstall');
-		// 	$oController->_updateinfo();
-
-		// 	if(!$_SESSION['__XE_EASYINSTALL_REDIRECT__'])
-		// 	{
-		// 		header('location: ' . getNotEncodedUrl('', 'module', 'admin', 'act', 'dispAutoinstallAdminIndex'));
-		// 		$_SESSION['__XE_EASYINSTALL_REDIRECT__'] = TRUE;
-		// 		return;
-		// 	}
-		// }
-		// unset($_SESSION['__XE_EASYINSTALL_REDIRECT__']);
-
-		// $page = Context::get('page');
-		// if(!$page)
-		// {
-		// 	$page = 1;
-		// }
-		// Context::set('page', $page);
-
-		// $order_type = Context::get('order_type');
-		// if(!in_array($order_type, array('asc', 'desc')))
-		// {
-		// 	$order_type = 'desc';
-		// }
-		// Context::set('order_type', $order_type);
-
-		// $order_target = Context::get('order_target');
-		// if(!in_array($order_target, array('newest', 'download', 'popular')))
-		// {
-		// 	$order_target = 'newest';
-		// }
-		// Context::set('order_target', $order_target);
-
-		// $search_keyword = Context::get('search_keyword');
-
-		// $childrenList = Context::get('childrenList');
-		// $category_srl = Context::get('category_srl');
-		// if($childrenList)
-		// {
-		// 	$params["category_srl"] = $childrenList;
-		// }
-		// else if($category_srl)
-		// {
-		// 	$params["category_srl"] = $category_srl;
-		// }
-
-		// $params["act"] = "getResourceapiPackagelist";
-		// $params["order_target"] = $order_target;
-		// $params["order_type"] = $order_type;
-		// $params["page"] = $page;
-		// if($search_keyword)
-		// {
-		// 	$params["search_keyword"] = $search_keyword;
-		// }
-		// $xmlDoc = XmlGenerater::getXmlDoc($params);
-		// if($xmlDoc && $xmlDoc->response->packagelist->item)
-		// {
-		// 	$item_list = $this->rearranges($xmlDoc->response->packagelist->item);
-		// 	Context::set('item_list', $item_list);
-		// 	$array = array('total_count', 'total_page', 'cur_page', 'page_count', 'first_page', 'last_page');
-		// 	$page_nav = $this->rearrange($xmlDoc->response->page_navigation, $array);
-		// 	$page_navigation = new PageHandler($page_nav->total_count, $page_nav->total_page, $page_nav->cur_page, 5);
-		// 	Context::set('page_navigation', $page_navigation);
-		// }
-
-		////////////////////////////////////////////
-		$ch = curl_init(); // 리소스 초기화
-		$url = _XE_SV_DOWNLOAD_SERVER_ . '?mode=checkdate';
-	  
-		// 옵션 설정
-		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		$buff = curl_exec($ch); // 데이터 요청 후 수신
-		curl_close($ch);  // 리소스 해제
-
+		$params = array();
+		$params["act"] = "getResourceapiLastupdate";
+		$body = XmlGenerater::generate($params);
+		$buff = FileHandler::getRemoteResource(_XE_DOWNLOAD_SERVER_, $body, 3, "POST", "application/xml");
 		$xml_lUpdate = new XeXmlParser();
 		$lUpdateDoc = $xml_lUpdate->parse($buff);
 		$updateDate = $lUpdateDoc->response->updatedate->body;
+
 		if(!$updateDate)
 		{
 			return $this->stop('msg_connection_fail');
 		}
 
-		$oModel = getModel('autoinstall');  //////////////////
+		$oModel = getModel('autoinstall');
 		$item = $oModel->getLatestPackage();
 		if(!$item || $item->updatedate < $updateDate || count($this->categories) < 1)
 		{
@@ -571,9 +479,6 @@ class autoinstallAdminView extends autoinstall
 			$page_navigation = new PageHandler($page_nav->total_count, $page_nav->total_page, $page_nav->cur_page, 5);
 			Context::set('page_navigation', $page_navigation);
 		}
-
-		//echo __FILE__.':'.__LINE__.'<BR>';
-		//exit;
 
 		$security = new Security();
 		$security->encodeHTML('package.', 'package.depends..', 'item_list..');
@@ -667,7 +572,6 @@ class autoinstallAdminView extends autoinstall
 			return $this->stop('msg_connection_fail');
 		}
 	}
-
 }
 /* End of file autoinstall.admin.view.php */
 /* Location: ./modules/autoinstall/autoinstall.admin.view.php */
