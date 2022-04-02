@@ -2397,7 +2397,10 @@
 		<value xml:lang="ko"><![CDATA[네이버 콜백 URL]]></value>
 	</item>
     <item name="about_call_back_url">
-		<value xml:lang="ko"><![CDATA[이 URL을 open API 개발자 센터에 입력하세요.]]></value>
+		<value xml:lang="ko"><![CDATA[이 URL을 <a href='https://developers.naver.com/apps/#/register?api=nvlogin' target='_new'>개발자 센터</a> 에 입력하세요.]]></value>
+	</item>
+	<item name="nvr_attr_list">
+		<value xml:lang="ko"><![CDATA[반드시 네이버 개발자 센터의 필수 수집 항목과 일치시켜야 합니다.]]></value>
 	</item>
     
 

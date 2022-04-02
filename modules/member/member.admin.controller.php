@@ -376,8 +376,19 @@ class memberAdminController extends member
 		$oArgs = Context::gets(
 			'enable_naver_login',
             'naver_cb_mid',  // to prevent duplicated call back mid
-			'naver_client_id'
+			'naver_client_id',
+			'nvr_attr_list'
 		);
+		if(count((array)$oArgs->nvr_attr_list))
+		{
+			$aNvrAttrList = [];
+			foreach($oArgs->nvr_attr_list as $nIdx=>$sKey)
+				$aNvrAttrList[$sKey] = TRUE;
+			$oArgs->nvr_attr_list = $aNvrAttrList;
+		}
+		else
+			$oArgs->nvr_attr_list = [];
+
 		if(!$oArgs->enable_naver_login)
 			$oArgs->enable_naver_login = 'N';
 		if(!trim(strip_tags($oArgs->naver_client_id)))

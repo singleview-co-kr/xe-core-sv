@@ -54,7 +54,25 @@ class memberView extends member
 			$this->setLayoutPath($layout_info->path);
 		}
 	}
-
+    /**
+	 * display social login callback page
+	 * it always load default
+	 * @return void
+	 */
+	function dispMemberSocialLoginCb()
+	{
+		if($this->module_info->social_login_type == 'naver')
+		{
+			$this->setServerRootPath();
+			Context::set('naver_client_id', $this->member_config->naver_client_id);
+            Context::set('naver_cb_mid', $this->member_config->naver_cb_mid);
+			Context::set('nvr_mandatory_attr_list', $this->member_config->nvr_attr_list);
+			$sCallbackSkin = 'callback_naver';
+		}
+        $sTemplatePath = sprintf('%sskins/default', $this->module_path);
+        $this->setTemplatePath($sTemplatePath);
+		$this->setTemplateFile($sCallbackSkin);
+	}
 	/**
 	 * @brief Display member information
 	 */
@@ -433,6 +451,13 @@ class memberView extends member
 			Context::set('referer_url', htmlspecialchars($_SERVER['HTTP_REFERER'], ENT_COMPAT | ENT_HTML401, 'UTF-8', false));
 
 		// Set a template file
+        //echo __FILE__.':'.__LINE__.'<BR>';
+        $this->setServerRootPath();
+        
+        // concentrate on $oSocialLoginInfo
+		Context::set('enable_naver_login', $this->member_config->enable_naver_login);
+        Context::set('naver_client_id', $this->member_config->naver_client_id);
+        Context::set('naver_cb_mid', $this->member_config->naver_cb_mid);
 		$this->setTemplateFile('login_form');
 	}
 

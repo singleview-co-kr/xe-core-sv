@@ -65,7 +65,6 @@ class memberAdminView extends member
 
 		$this->setTemplatePath($this->module_path.'tpl');
 	}
-
 	/**
 	 * display member list
 	 *
@@ -201,8 +200,14 @@ class memberAdminView extends member
 
 	public function dispMemberAdminLoginConfig()
 	{
-        $sServerRootPath = ($_SERVER['HTTPS'] == 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST']. getScriptPath();
-        Context::set('sServerRootPath', $sServerRootPath);
+		$this->setServerRootPath();
+		$aNaverCallbackAttr = array( // 'id'=>'네이버아이디',  // system attrs
+									 // 'email'=>'이메일',  // mandatory attrs
+									'mobile'=>'핸드폰번호', 
+									'birthday'=>'생일', 'birthyear'=>'생년', 'gender'=>'성별', 
+									'name'=>'실명', 'nickname'=>'별명', 
+									'age'=>'연령대', 'profile_image'=>'프로필이미지');
+		Context::set('aNaverCallbackAttr', $aNaverCallbackAttr);
 		$this->setTemplateFile('login_config');
 	}
 

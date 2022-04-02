@@ -35,6 +35,7 @@
 		<permission action="dispMemberSpammer" target="manager" />
 	</permissions>
 	<actions>
+        <action name="dispMemberSocialLoginCb" type="view" index="true"/>
 		<action name="dispMemberInfo" type="view" standalone="true" meta-noindex="true" />
 		<action name="dispMemberSignUpForm" type="view" standalone="true" meta-noindex="true" />
 		<action name="dispMemberModifyEmailAddress" type="view" standalone="true" meta-noindex="true" />
@@ -89,7 +90,7 @@
 		<action name="procMemberSpammerManage" type="controller" standalone="true" />
 
 		<!-- admin -->
-		<action name="dispMemberAdminList" type="view" index="true" admin_index="true" menu_name="userList" menu_index="true"/>
+		<action name="dispMemberAdminList" type="view" admin_index="true" menu_name="userList" menu_index="true"/>
 		<action name="dispMemberAdminConfig" type="view" menu_name="userSetting" menu_index="true" />
 		<action name="dispMemberAdminSignUpConfig" type="view" menu_name="userSetting" />
 		<action name="dispMemberAdminLoginConfig" type="view" menu_name="userSetting" />

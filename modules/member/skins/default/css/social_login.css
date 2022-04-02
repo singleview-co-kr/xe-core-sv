@@ -1,0 +1,16 @@
+@charset "utf-8";
+/* 소셜 로그인 CSS */
+.social_login { position:relative; padding:10px 0px 0px 0px; margin:20px 0px 0px 0px; border-top:1px solid #a9a9a9; text-align:right; }
+.social_login .social_label { height:35px; float:left; line-height:35px; font-size:16px; font-weight:bold; display:inline-block; }
+.social_login .btn_social_login { width:33px; height:33px; border:1px solid #ccc; display:inline-block; }
+.social_login .btn_social_login span { display:none; }
+.social_login #naverIdLogin_loginButton { background:url(../images/icon_social_login.png) no-repeat -37px 0px; }
+.social_login #btn_kakao_login { background:url(../images/icon_social_login.png) no-repeat right 0px; }
+
+.social_login #btn_facebook_login { background:url(../images/icon_social_login.png) no-repeat -73px 0px; }
+.social_login #btn_twitter_login { background:url(../images/icon_social_login.png) no-repeat -110px 0px; }
+.social_login #btn_google_login { background:url(../images/icon_social_login.png) no-repeat -147px 0px; }
+
+#social_login_loading { position:fixed; top:0px; left:0px; width:100%; height:100%; display:none; z-index:999; }
+#social_login_loading .loading_bg { position:absolute; top:0px; left:0px; width:100%; height:100%; background:#fff; opacity: 0.7; filter: alpha(opacity=70); z-index:999; }
+#social_login_loading img { position:absolute; top:50%; left:50%; margin-top:-64px; margin-left:-64px; display:inline-block; }

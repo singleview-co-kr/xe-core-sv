@@ -95,6 +95,19 @@ jQuery(function($){
 			<p id="naver_client_id_help" class="x_help-block" hidden>{$lang->about_naver_client_id}</p>
 		</div>
 	</div>
+	<div class="x_control-group">
+		<label class="x_control-label">{$lang->nvr_attr_list}</label>
+		<div class="x_controls">
+			<label for="group_email" class="x_inline">
+				<input type="checkbox" name="nvr_attr_list[]" value="email" id="group_email" checked="checked" disabled/>
+				이메일
+			</label>
+			<label for="group_{$key}" class="x_inline" loop="$aNaverCallbackAttr => $key,$title">
+				<input type="checkbox" name="nvr_attr_list[]" value="{$key}" id="group_{$key}" checked="checked"|cond="$config->nvr_attr_list[$key]" />
+				{$title}
+			</label>
+		</div>
+	</div>
 	<div class="x_clearfix btnArea">
 		<span class="x_pull-right"><input class="x_btn x_btn-primary" type="submit" value="{$lang->cmd_save}" /></span>
 	</div>

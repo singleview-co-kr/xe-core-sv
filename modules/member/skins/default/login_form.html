@@ -1,5 +1,6 @@
 <include target="./common_header.html" />
-<load target="filter/openid_login.xml" />
+<load target="./css/social_login.css" />
+
 <div class="signin">
 	<div class="login-header">
 		<h1><i class="icon-user"></i> {$lang->cmd_login}</h1>
@@ -8,6 +9,15 @@
 		<div cond="$XE_VALIDATOR_MESSAGE && $XE_VALIDATOR_ID == 'modules/member/skins'" class="message {$XE_VALIDATOR_MESSAGE_TYPE}">
 			<p>{$XE_VALIDATOR_MESSAGE}</p>
 		</div>
+<block cond="$enable_naver_login">
+        <div class="social_login" cond="!$logged_info">
+            <span class="social_label">소셜 {$lang->cmd_login}</span>
+    <block cond="$naver_client_id && $naver_cb_mid">
+            <a class="btn_social_login" id="naverIdLogin_loginButton" href="javascript:void(0)"><span>Naver Login</span></a>
+            
+    </block>
+        </div>
+</block>        
 		<form ruleset="@login" action="{getUrl('', 'act', 'procMemberLogin')}" method="post" id="fo_member_login">
 			<input type="hidden" name="success_return_url" value="{$referer_url}" />
 			<input type="hidden" name="act" value="procMemberLogin" />
@@ -30,13 +40,14 @@
 				</div>
 			</fieldset>
 		</form>
-	</div>
+    </div>
 	<div class="login-footer">
 		<a href="{getUrl('act','dispMemberFindAccount')}">{$lang->cmd_find_member_account}</a>
 		|
 		<a href="{getUrl('act','dispMemberSignUpForm')}">{$lang->cmd_signup}</a>
 	</div>
 </div>
+
 <script>
 jQuery(function($){
 	var keep_msg = $('#warning');
@@ -50,4 +61,20 @@ jQuery(function($){
 	});
 });
 </script>
+
+<block cond="$naver_client_id && $naver_cb_mid">
+<!-- 네이버 스크립트 -->
+<script src="https://static.nid.naver.com/js/naveridlogin_js_sdk_2.0.2.js" charset="utf-8"></script>
+<script>
+var naverLogin = new naver.LoginWithNaverId(
+    {
+        clientId: "{$naver_client_id}", //내 애플리케이션 정보에 cliendId를 입력해줍니다.
+        callbackUrl: "{$sServerRootPath}{$naver_cb_mid}", // 내 애플리케이션 API설정의 Callback URL 을 입력해줍니다.
+        isPopup: false,
+        callbackHandle: true
+    }
+);	
+naverLogin.init();
+</script>
+</block>
 <include target="./common_footer.html" />

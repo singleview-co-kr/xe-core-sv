@@ -511,6 +511,11 @@ class member extends ModuleObject {
 		}
 		return $this->recordLoginError($error, $message);
 	}
+    protected function setServerRootPath()
+	{
+		$sServerRootPath = ($_SERVER['HTTPS'] == 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST']. getScriptPath();
+        Context::set('sServerRootPath', $sServerRootPath);
+	}
 }
 /* End of file member.class.php */
 /* Location: ./modules/member/member.class.php */
