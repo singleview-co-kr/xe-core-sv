@@ -56,6 +56,8 @@
 		<action name="dispMemberSpammer" type="view" standalone="true" meta-noindex="true" />
 		<action name="getApiGroups" type="model" standalone="true" />
 
+        <action name="procMemberSocialloginValidation" type="controller" />
+
 		<action name="procMemberLogin" type="controller" ruleset="@login" standalone="true" />
 		<action name="procMemberLogout" type="controller" standalone="true" />
 		<action name="procMemberCheckValue" type="controller" standalone="true" />

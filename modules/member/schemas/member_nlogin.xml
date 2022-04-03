@@ -1,0 +1,6 @@
+<table name="member_nlogin">
+    <column name="naver_user_id" type="varchar" size="65" notnull="notnull" primary_key="primary_key" />
+    <column name="email_address" type="varchar" size="250" notnull="notnull" unique="unique_email_address" />
+    <column name="regdate" type="date" index="idx_regdate" />
+    <column name="extra_vars" type="text" />
+</table>

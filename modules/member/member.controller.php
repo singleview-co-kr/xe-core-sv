@@ -295,6 +295,84 @@ class memberController extends member
 		}
 	}
 
+    /**
+     * @brief validate social login
+     **/
+	function procMemberSocialloginValidation()
+	{
+        $sLoginType = trim(Context::get('login_type'));
+        if($sLoginType != 'naverLogin')
+        {
+            $this->setMessage('invalid_social_login_type');
+            return new BaseObject(-1, 'invalid_social_login_type');
+        }
+
+		$sNloginId = trim(Context::get('nlogin_id'));  // 64 chars
+		if(!$sNloginId)
+        {
+            $this->setMessage('msg_invalid_nlogin_id');
+            return new BaseObject(-1, 'msg_invalid_nlogin_id');
+        }
+        Context::set('nlogin_id', NULL);
+
+        // 기존 nlogin 기록 조회
+        
+
+        $sNloginEmail = trim(Context::get('nlogin_email'));
+        if(!$sNloginEmail)
+        {
+            $this->setMessage('msg_invalid_nlogin_email');
+            return new BaseObject(-1, 'msg_invalid_nlogin_email');
+        }
+        Context::set('nlogin_email', NULL);
+		
+        $sNloginEmail = 'test@test.co.kr';
+        $sUserId = str_replace('@', '', $sNloginEmail);
+        $sUserId = str_replace('.', '', $sUserId);
+
+        $sPassword = substr($sNloginId, 0, 9);
+        $sTmpUserName = 'n_member';
+        $sTmpNickName = $sTmpUserName.$this->generateRandomString(3);
+
+        Context::set('email_address', $sNloginEmail);
+        Context::set('user_id', 'n'.$sUserId);
+        Context::set('password', $sPassword);
+        Context::set('user_name', $sTmpUserName);
+        Context::set('nick_name', $sTmpNickName);
+        Context::set('find_account_question', 1);
+        Context::set('birthday_ui', '1999-01-01');
+        Context::set('find_account_answer', 'n');
+        Context::set('allow_mailing', 'N');
+        Context::set('allow_message', 'Y');
+            
+        $this->procMemberInsert();
+
+        $nMemberSrl = $this->get('member_srl');
+		$sRstMsg = $this->getMessage();
+
+        if($nMemberSrl && $sRstMsg == '등록했습니다.')
+        {
+            debugPrint('nlogin info add');
+
+        }
+        else
+            debugPrint('member add failure');
+		
+		// 모듈 설정 정보에서 svauth plugin 입력되어 있으면 svauth 호출
+		// $nSvauthPluginSrl = (int)$oDocInfo->svauth_plugin_srl;
+		// if( $nSvauthPluginSrl )
+		// {
+		// 	Context::set('plugin_srl', $nSvauthPluginSrl);
+		// 	$oSvauthController = &getController('svauth');
+		// 	$output = $oSvauthController->procSvauthSetAuthCode($nModuleSrl);
+		// 	if(!$output->toBool()) 
+		// 		return new BaseObject(-1, $output->message);
+		// 	$this->setMessage($output->message );
+		// }
+		// else
+		// 	$this->setMessage('no_svauth_plugin_defined');
+	}
+
 	/**
 	 * Join Membership
 	 *
@@ -341,7 +419,6 @@ class memberController extends member
 		$args->allow_message = Context::get('allow_message');
 
 		if($args->password1) $args->password = $args->password1;
-
 		// check password strength
 		if(!$oMemberModel->checkPasswordStrength($args->password, $config->password_strength))
 		{
@@ -384,8 +461,8 @@ class memberController extends member
 			}
 		}
 		$output = $this->insertMember($args);
-		if(!$output->toBool()) return $output;
-
+        if(!$output->toBool()) return $output;
+        
 		// insert ProfileImage, ImageName, ImageMark
 		$profile_image = Context::get('profile_image');
 		if(is_uploaded_file($profile_image['tmp_name']))

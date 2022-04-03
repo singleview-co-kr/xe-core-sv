@@ -1,5 +1,5 @@
 <!-- http://192.168.0.37/xe-core-sv/bWUuCYS7wb#access_token=AAAAOIrdyOs6ui3XDv0XJ_Ztzo_QAiU7piW1lA8VbYq7MKLo1WqQBcD9duGOdbQufZGPrM67LNr44aPHW3Eeo7rbNew&state=5e25d114-842c-40f8-a99a-e2520731f73f&token_type=bearer&expires_in=3600 -->
-<!-- http://192.168.0.37/xe-core-sv/bWUuCYS7wb#access_token=AAAAOIrdyOs6ui3XDv0XJ_Ztzo_QAiU7piW1lA8VbYq7MKLo1WqQBcD9duGOdbQufZGPrM67LNr44aPHW3Eeo7rbNew&state=5e25d114-842c-40f8-a99a-e2520731f73f&token_type=bearer&expires_in=3600 -->
+<!-- http://192.168.0.37/xe-core-sv/bWUuCYS7wb#access_token=AAAAOIRM2r2hHX8gAMpDznuphkoB0v3TJ0d2cTpsAQiz_czk_F-70RaeEPpJOKweHuTrqvoYfa5eUjXMkbYHq_RTSQE&state=5e25d114-842c-40f8-a99a-e2520731f73f&token_type=bearer&expires_in=3600-->
 <!-- https://tyrannocoding.tistory.com/60 -->
 <script>
 var bValidApprach = false;
@@ -21,9 +21,10 @@ if(hash_string.length > 99)
 <!-- 네이버 스크립트 -->
 <script src="https://static.nid.naver.com/js/naveridlogin_js_sdk_2.0.2.js" charset="utf-8"></script>
 <div id='nvr_id_rst'></div>
-<button onclick="naverLogin.reprompt();">reprompt</button>
+<button onclick="naverLogin.reprompt();">reprompt</button><BR>
+<button onclick="validateMemberInfo();">register</button>
 <script>
-console.log(bValidApprach);
+// console.log(bValidApprach);
 // if(bValidApprach)
 // {
     var naverLogin = new naver.LoginWithNaverId(
@@ -37,33 +38,34 @@ console.log(bValidApprach);
     naverLogin.init();
 // }
 
+// console.log(naverLogin.accessToken.accessToken);
 window.addEventListener('load', function () {
     // if(bValidApprach)
     // {
         naverLogin.getLoginStatus(function (status) {
         // console.log(status);
-            if(status) 
+            if(status)
             {
-                var id = naverLogin.user.getId();
-                var email = naverLogin.user.getEmail();
-                var mobile = naverLogin.user.getMobile();
-                var birthday = naverLogin.user.getBirthday();
-                var birthyear = naverLogin.user.getBirthyear();
-                var gender = naverLogin.user.getGender();
-                var name = naverLogin.user.getName();
-                var nickname = naverLogin.user.getNickName();
-                var age = naverLogin.user.getAge(); // 필수로 설정할것을 받아와 아래처럼 조건문을 줍니다.
-                var profile_image = naverLogin.user.getProfileImage();
+                var id = naverLogin.user.getId();  // 이용자 식별자 : 64자 이내로 구성된 BASE64 형식의 문자열 (2021년 5월 1일 이후 생성된 애플리케이션부터 적용. 기존 INT64 규격의 숫자)
+                var email = naverLogin.user.getEmail();  // 이메일 주소 : 이메일 규격의 문자열
+                var mobile = naverLogin.user.getMobile();  // 휴대전화번호 : 대쉬(-)를 포함한 휴대전화번호 문자열
+                var birthday = naverLogin.user.getBirthday();  // 생일 : 월-일 (MM-DD) 형태의 문자열
+                var birthyear = naverLogin.user.getBirthyear();  // 출생연도 : 연(YYYY) 형태의 문자열
+                var gender = naverLogin.user.getGender();  // 성별 : M/F (남성/여성) 으로 표된 문자
+                var name = naverLogin.user.getName();  // 이름 : 10자 이내로 구성된 문자열
+                var nickname = naverLogin.user.getNickName();  // 닉네임 : 20자 이내로 구성된 문자열
+                var age = naverLogin.user.getAge();  // 연령대 : 연령 구간에 따라 0-9 / 10-19 / 20-29 / 30-39 / 40-49 / 50-59 / 60- 으로 표현된 문자열
+                var profile_image = naverLogin.user.getProfileImage();  // 프로필 이미지 : 255자 이내로 구성된 URL 형태의 문자열
 
-                sRst = 'age: ' + age + '<br>';
+                sRst = 'id: ' + id + '<br>';
+                sRst += 'email: ' + email + '<br>';
+                sRst += 'mobile: ' + mobile + '<br>';
                 sRst += 'birthday: ' + birthday + '<br>';
                 sRst += 'birthyear: ' + birthyear + '<br>';
-                sRst += 'email: ' + email + '<br>';
                 sRst += 'gender: ' + gender + '<br>';
-                sRst += 'id: ' + id + '<br>';
-                sRst += 'mobile: ' + mobile + '<br>';
                 sRst += 'name: ' + name + '<br>';
                 sRst += 'nickname: ' + nickname + '<br>';
+                sRst += 'age: ' + age + '<br>';
                 sRst += 'profile_image: ' + profile_image + '<br>';
                 document.getElementById('nvr_id_rst').innerHTML = sRst;
                 
@@ -143,7 +145,6 @@ window.addEventListener('load', function () {
                     return;
                 }
     </block>
-                
             } 
             else
             {
@@ -162,10 +163,38 @@ window.addEventListener('load', function () {
 function naver_relogin()
 {
     // 재인증 -> 다시 네이버 로그인
-    // https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=QnKxnvLvWCxQhBS_D1j1&state=sv_revalidate&redirect_uri=http://192.168.0.37/xe-core-sv/bWUuCYS7wb&auth_type=reauthenticate
-    // 정보 재요청
-    // window.location.href = "https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id={$naver_client_id}&state=sv_reask&redirect_uri={$sServerRootPath}{$naver_cb_mid}&auth_type=reprompt";
+    // window.location.href = "https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id={$naver_client_id}&state=sv_revalidate&redirect_uri={$sServerRootPath}{$naver_cb_mid}&auth_type=reauthenticate
 }
+
+
+function validateMemberInfo()
+{
+	// var sApplicantPhoneNumber = jQuery('#applicant_phone_number').val();
+	// sApplicantPhoneNumber = sApplicantPhoneNumber.trim(); 
+	// if( sApplicantPhoneNumber.length == 0 )
+	// {
+	// 	alert('연락처를 입력해 주세요.');
+	// 	return;
+	// }
+
+	// _disableBtn( '#get_authcode' );
+
+	// var nModuleSrl = jQuery('#module_srl').val();
+	var params = new Array();
+	params['login_type'] = 'naverLogin';
+    params['nlogin_id'] = naverLogin.user.getId();
+	params['nlogin_email'] = naverLogin.user.getEmail();
+	var respons = ['success'];
+	exec_xml('member', 'procMemberSocialloginValidation', params, function(ret_obj) {
+        console.log(ret_obj);
+		// if( ret_obj['message'] )
+		// 	alert(ret_obj['message']);
+
+		// if( ret_obj['success'] == -1 )
+		// 	_activateBtn();
+	},respons);
+}
+
 var testPopUp;
 function openPopUp() {
     testPopUp= window.open("https://nid.naver.com/nidlogin.logout", "_blank", "toolbar=yes,scrollbars=yes,resizable=yes,width=1,height=1");
