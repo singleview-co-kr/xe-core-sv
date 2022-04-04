@@ -306,6 +306,7 @@ class memberController extends member
             $this->setMessage('invalid_social_login_type');
             return new BaseObject(-1, 'invalid_social_login_type');
         }
+		Context::set('login_type', NULL);
 
 		$sNloginId = trim(Context::get('nlogin_id'));  // 64 chars
 		if(!$sNloginId)
@@ -314,63 +315,90 @@ class memberController extends member
             return new BaseObject(-1, 'msg_invalid_nlogin_id');
         }
         Context::set('nlogin_id', NULL);
+		$sPassword = substr($sNloginId, 0, 9);
 
         // 기존 nlogin 기록 조회
-        
+		$oNloginArgs = new stdClass();
+		$oNloginArgs->naver_user_id = $sNloginId;
+		$oRst = executeQuery('member.getMemberSrlByNloginId', $oNloginArgs);
+		if(!$oRst->toBool())
+			return new BaseObject(-1, 'msg_weird_error_while_nlogin_proc');
+        unset($oNloginArgs);
+		if(is_null($oRst->data->member_srl))  // register new
+		{
+			$sNloginEmail = trim(Context::get('nlogin_email'));
+			if(!$sNloginEmail)
+			{
+				$this->setMessage('msg_invalid_nlogin_email');
+				return new BaseObject(-1, 'msg_invalid_nlogin_email');
+			}
+			Context::set('nlogin_email', NULL);
+			
+			$sNloginEmail = 'test@test.co.kr'; //////////////////
+			$sUserId = str_replace('@', '', $sNloginEmail);
+			$sUserId = str_replace('.', '', $sUserId);
+			$sTmpUserName = 'naver';
+			$sTmpNickName = $sTmpUserName.'_'.$this->generateRandomString(3);
 
-        $sNloginEmail = trim(Context::get('nlogin_email'));
-        if(!$sNloginEmail)
-        {
-            $this->setMessage('msg_invalid_nlogin_email');
-            return new BaseObject(-1, 'msg_invalid_nlogin_email');
-        }
-        Context::set('nlogin_email', NULL);
-		
-        $sNloginEmail = 'test@test.co.kr';
-        $sUserId = str_replace('@', '', $sNloginEmail);
-        $sUserId = str_replace('.', '', $sUserId);
-
-        $sPassword = substr($sNloginId, 0, 9);
-        $sTmpUserName = 'n_member';
-        $sTmpNickName = $sTmpUserName.$this->generateRandomString(3);
-
-        Context::set('email_address', $sNloginEmail);
-        Context::set('user_id', 'n'.$sUserId);
-        Context::set('password', $sPassword);
-        Context::set('user_name', $sTmpUserName);
-        Context::set('nick_name', $sTmpNickName);
-        Context::set('find_account_question', 1);
-        Context::set('birthday_ui', '1999-01-01');
-        Context::set('find_account_answer', 'n');
-        Context::set('allow_mailing', 'N');
-        Context::set('allow_message', 'Y');
-            
-        $this->procMemberInsert();
-
-        $nMemberSrl = $this->get('member_srl');
-		$sRstMsg = $this->getMessage();
-
-        if($nMemberSrl && $sRstMsg == '등록했습니다.')
-        {
-            debugPrint('nlogin info add');
-
-        }
-        else
-            debugPrint('member add failure');
-		
-		// 모듈 설정 정보에서 svauth plugin 입력되어 있으면 svauth 호출
-		// $nSvauthPluginSrl = (int)$oDocInfo->svauth_plugin_srl;
-		// if( $nSvauthPluginSrl )
-		// {
-		// 	Context::set('plugin_srl', $nSvauthPluginSrl);
-		// 	$oSvauthController = &getController('svauth');
-		// 	$output = $oSvauthController->procSvauthSetAuthCode($nModuleSrl);
-		// 	if(!$output->toBool()) 
-		// 		return new BaseObject(-1, $output->message);
-		// 	$this->setMessage($output->message );
-		// }
-		// else
-		// 	$this->setMessage('no_svauth_plugin_defined');
+			Context::set('email_address', $sNloginEmail);
+			Context::set('user_id', 'n'.$sUserId);
+			Context::set('password', $sPassword);
+			Context::set('user_name', $sTmpUserName);
+			Context::set('nick_name', $sTmpNickName);
+			Context::set('find_account_question', 1);
+			Context::set('birthday_ui', '1999-01-01');
+			Context::set('find_account_answer', 'n');
+			Context::set('allow_mailing', 'N');
+			Context::set('allow_message', 'Y');
+				
+			$this->procMemberInsert();
+			$nMemberSrl = $this->get('member_srl');
+			$sRstMsg = $this->getMessage();
+			if($nMemberSrl && $sRstMsg == '등록했습니다.')
+			{
+				debugPrint('nlogin info add');
+				$oNloginArgs = new stdClass();
+				$oNloginArgs->naver_user_id = $sNloginId;
+				$oNloginArgs->member_srl = $nMemberSrl;
+				$oRst = executeQuery('member.insertNlogin', $oNloginArgs);
+				if(!$oRst->toBool())
+					return new BaseObject(-1, 'msg_weird_error_while_nlogin_proc');
+				unset($oNloginArgs);
+				unset($oRst);
+			}
+			else
+				debugPrint('member add failure');
+		}
+		else  // get old member login
+		{
+			$oMemberModel = getModel('member');
+			$aColumnList = array('member_srl', 'user_id', 'email_address');
+			$oMemberInfo = $oMemberModel->getMemberInfoByMemberSrl($oRst->data->member_srl, 0, $aColumnList);
+			$sEmailAddress = $oMemberInfo->email_address;  // email
+			$sUserId = $oMemberInfo->user_id;  // pw
+			unset($oMemberInfo);
+			$oConfig = $oMemberModel->getMemberConfig();
+			// Log-in
+			if($oConfig->enable_confirm != 'Y')
+			{
+				if($oConfig->identifier == 'email_address')
+					$oLoginRst = $this->doLogin($sEmailAddress);
+				else
+					$oLoginRst = $this->doLogin($sUserId);
+				if(!$oLoginRst->toBool()) 
+				{
+					if($oLoginRst->error == -9)
+						$oLoginRst->error = -11;
+					return $this->setRedirectUrl(getUrl('', 'act', 'dispMemberLoginForm'), $oLoginRst);
+				}
+				unset($oLoginRst);
+			}
+			unset($oMemberModel);
+			unset($oConfig);
+			// debugPrint($oLoginRst);
+		}
+		unset($oRst);
+		$this->setMessage('nlogin_succeed');
 	}
 
 	/**

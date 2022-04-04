@@ -1,0 +1,11 @@
+<query id="getNloginById" action="select">
+    <tables>
+        <table name="member_nlogin" />
+    </tables>
+    <columns>
+        <column name="member_srl" />
+    </columns>
+    <conditions>
+        <condition operation="equal" column="naver_user_id" var="naver_user_id" notnull="notnull" />
+    </conditions>
+</query>

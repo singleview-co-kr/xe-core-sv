@@ -166,20 +166,8 @@ function naver_relogin()
     // window.location.href = "https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id={$naver_client_id}&state=sv_revalidate&redirect_uri={$sServerRootPath}{$naver_cb_mid}&auth_type=reauthenticate
 }
 
-
 function validateMemberInfo()
 {
-	// var sApplicantPhoneNumber = jQuery('#applicant_phone_number').val();
-	// sApplicantPhoneNumber = sApplicantPhoneNumber.trim(); 
-	// if( sApplicantPhoneNumber.length == 0 )
-	// {
-	// 	alert('연락처를 입력해 주세요.');
-	// 	return;
-	// }
-
-	// _disableBtn( '#get_authcode' );
-
-	// var nModuleSrl = jQuery('#module_srl').val();
 	var params = new Array();
 	params['login_type'] = 'naverLogin';
     params['nlogin_id'] = naverLogin.user.getId();
@@ -187,11 +175,8 @@ function validateMemberInfo()
 	var respons = ['success'];
 	exec_xml('member', 'procMemberSocialloginValidation', params, function(ret_obj) {
         console.log(ret_obj);
-		// if( ret_obj['message'] )
-		// 	alert(ret_obj['message']);
-
-		// if( ret_obj['success'] == -1 )
-		// 	_activateBtn();
+		if(ret_obj['message'] == 'nlogin_succeed')
+            window.location.href = '{$sServerRootPath}';
 	},respons);
 }
 
