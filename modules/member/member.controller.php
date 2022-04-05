@@ -358,9 +358,22 @@ class memberController extends member
 			if($nMemberSrl && $sRstMsg == '등록했습니다.')
 			{
 				debugPrint('nlogin info add');
+				$oNloginInfo = new stdClass();
+				$oNloginInfo->email = trim(Context::get('nlogin_email'));
+				$oNloginInfo->mobile = trim(Context::get('nlogin_mobile'));
+				$oNloginInfo->birthday = trim(Context::get('nlogin_birthday'));
+				$oNloginInfo->birthyear = trim(Context::get('nlogin_birthyear'));
+				$oNloginInfo->gender = trim(Context::get('nlogin_gender'));
+				$oNloginInfo->name = trim(Context::get('nlogin_name'));
+				$oNloginInfo->nickname = trim(Context::get('nlogin_nickname'));
+				$oNloginInfo->age = trim(Context::get('nlogin_age'));
+				$oNloginInfo->profile_image = trim(Context::get('nlogin_profile_image'));
+
 				$oNloginArgs = new stdClass();
 				$oNloginArgs->naver_user_id = $sNloginId;
 				$oNloginArgs->member_srl = $nMemberSrl;
+				$oNloginArgs->extra_vars = serialize($oNloginInfo);
+				unset($oNloginInfo);
 				$oRst = executeQuery('member.insertNlogin', $oNloginArgs);
 				if(!$oRst->toBool())
 					return new BaseObject(-1, 'msg_weird_error_while_nlogin_proc');
@@ -368,15 +381,18 @@ class memberController extends member
 				unset($oRst);
 			}
 			else
-				debugPrint('member add failure');
+			{
+				debugPrint('msg_weird_error_while_nlogin_proc');
+				return new BaseObject(-1, 'msg_weird_error_while_nlogin_proc');
+			}
 		}
 		else  // get old member login
 		{
 			$oMemberModel = getModel('member');
 			$aColumnList = array('member_srl', 'user_id', 'email_address');
 			$oMemberInfo = $oMemberModel->getMemberInfoByMemberSrl($oRst->data->member_srl, 0, $aColumnList);
-			$sEmailAddress = $oMemberInfo->email_address;  // email
-			$sUserId = $oMemberInfo->user_id;  // pw
+			$sEmailAddress = $oMemberInfo->email_address;
+			$sUserId = $oMemberInfo->user_id;
 			unset($oMemberInfo);
 			$oConfig = $oMemberModel->getMemberConfig();
 			// Log-in
@@ -396,7 +412,6 @@ class memberController extends member
 			}
 			unset($oMemberModel);
 			unset($oConfig);
-			// debugPrint($oLoginRst);
 		}
 		unset($oRst);
 		$this->setMessage('nlogin_succeed');
@@ -492,7 +507,6 @@ class memberController extends member
 				$args->{$val} = preg_replace('/[\pZ\pC]+/u', '', html_entity_decode($args->{$val}));
 			}
 		}
-		var_dump($args);
 		$output = $this->insertMember($args);
         if(!$output->toBool()) return $output;
         
@@ -2323,10 +2337,6 @@ class memberController extends member
 
 		$oDB = &DB::getInstance();
 		$oDB->begin();
-
-		
-		var_dump($args);
-
 
 		$output = executeQuery('member.insertMember', $args);
 		if(!$output->toBool())

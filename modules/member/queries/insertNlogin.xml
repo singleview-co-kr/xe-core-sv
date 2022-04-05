@@ -5,7 +5,7 @@
     <columns>
         <column name="naver_user_id" var="naver_user_id" notnull="notnull" />
         <column name="member_srl" var="member_srl" filter="number" notnull="notnull" />
-        <column name="regdate" var="regdate" default="curdate()" />
         <column name="extra_vars" var="extra_vars" />
+        <column name="regdate" var="regdate" default="curdate()" />
     </columns>
 </query>

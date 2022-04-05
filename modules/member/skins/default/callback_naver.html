@@ -172,6 +172,15 @@ function validateMemberInfo()
 	params['login_type'] = 'naverLogin';
     params['nlogin_id'] = naverLogin.user.getId();
 	params['nlogin_email'] = naverLogin.user.getEmail();
+    params['nlogin_mobile'] = naverLogin.user.getMobile();
+    params['nlogin_birthday'] = naverLogin.user.getBirthday();
+    params['nlogin_birthyear'] = naverLogin.user.getBirthyear();
+    params['nlogin_gender'] = naverLogin.user.getGender();
+    params['nlogin_name'] = naverLogin.user.getName();
+    params['nlogin_nickname'] = naverLogin.user.getNickName();
+    params['nlogin_age'] = naverLogin.user.getAge();
+    params['nlogin_profile_image'] = naverLogin.user.getProfileImage();
+
 	var respons = ['success'];
 	exec_xml('member', 'procMemberSocialloginValidation', params, function(ret_obj) {
         console.log(ret_obj);
