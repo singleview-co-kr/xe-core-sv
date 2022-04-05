@@ -339,7 +339,8 @@ class memberController extends member
 			$sUserId = str_replace('.', '', $sUserId);
 			$sTmpUserName = 'naver';
 			$sTmpNickName = $sTmpUserName.'_'.$this->generateRandomString(3);
-
+			
+			Context::set('social_login_referral_code', member::REFERRER_NAVER);
 			Context::set('email_address', $sNloginEmail);
 			Context::set('user_id', 'n'.$sUserId);
 			Context::set('password', $sPassword);
@@ -434,6 +435,9 @@ class memberController extends member
 		}
 
 		$args = new stdClass;
+		$sReferral = Context::get('social_login_referral_code');
+		if($sReferral) $args->referral = $sReferral;
+
 		foreach($getVars as $val)
 		{
 			$args->{$val} = Context::get($val);
@@ -488,6 +492,7 @@ class memberController extends member
 				$args->{$val} = preg_replace('/[\pZ\pC]+/u', '', html_entity_decode($args->{$val}));
 			}
 		}
+		var_dump($args);
 		$output = $this->insertMember($args);
         if(!$output->toBool()) return $output;
         
@@ -2319,6 +2324,10 @@ class memberController extends member
 		$oDB = &DB::getInstance();
 		$oDB->begin();
 
+		
+		var_dump($args);
+
+
 		$output = executeQuery('member.insertMember', $args);
 		if(!$output->toBool())
 		{
@@ -2664,7 +2673,7 @@ class memberController extends member
 		// Bringing the user's information
 		if(!$this->memberInfo || $this->memberInfo->member_srl != $member_srl || !isset($this->memberInfo->is_admin))
 		{
-			$columnList = array('member_srl', 'is_admin');
+			$columnList = array('member_srl', 'referral', 'is_admin');
 			$this->memberInfo = $oMemberModel->getMemberInfoByMemberSrl($member_srl, 0, $columnList);
 		}
 		if(!$this->memberInfo) return new BaseObject(-1, 'msg_not_exists_member');
@@ -2673,6 +2682,21 @@ class memberController extends member
 
 		$oDB = &DB::getInstance();
 		$oDB->begin();
+
+		$oArgs = new stdClass();
+		$oArgs->member_srl = $member_srl;
+		// Delete social login related
+		if($this->memberInfo->referral == member::REFERRER_NAVER)
+		{
+			$oRst = executeQuery('member.deleteNloginInfo', $oArgs);
+			if(!$oRst->toBool())
+			{
+				$oRst->rollback();
+				return $oRst;
+			}
+		}
+		unset($oArgs);
+		unset($oRst);
 
 		$args = new stdClass();
 		$args->member_srl = $member_srl;

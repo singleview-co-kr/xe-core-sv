@@ -13,6 +13,20 @@ class member extends ModuleObject {
 	 */
 	var $useSha1 = false;
 
+    const REFERRER_LOCALHOST = '0';
+    const REFERRER_NAVER = '1';
+    const REFERRER_KAKAO = '2';
+    const REFERRER_GOOGLE = '3';
+    const REFERRER_FACEBOOK = '4';
+    const REFERRER_TWITTER = '5';
+    protected $_g_aRegisterReferral = array(
+		member::REFERRER_LOCALHOST=>'localhost', 
+		member::REFERRER_NAVER=>'naver', 
+		member::REFERRER_KAKAO=>'kakao',
+		member::REFERRER_GOOGLE=>'google',
+		member::REFERRER_FACEBOOK=>'facebook',
+		member::REFERRER_TWITTER=>'twitter');
+
 	/**
 	 * constructor
 	 *
@@ -183,7 +197,7 @@ class member extends ModuleObject {
 		$oDB = &DB::getInstance();
 		$oModuleModel = getModel('module');
 		$oModuleController = getController('module');
-		$version_update_id = implode('.', array(__CLASS__, __XE_VERSION__, 'updated'));
+		$version_update_id = 'member.1.11.6.updated';
 		if($oModuleModel->needUpdate($version_update_id))
 		{
 			// check member directory (11/08/2007 added)
@@ -248,6 +262,14 @@ class member extends ModuleObject {
 
 			$oModuleController->insertUpdatedLog($version_update_id);
 		}
+        $sVersionUpdateId = implode('.', array(__CLASS__, '1.8.0', 'updated'));
+		if($oModuleModel->needUpdate($sVersionUpdateId))
+		{
+			$bAct = $oDB->isColumnExists("member", "referral");
+			if(!$bAct) 
+                return true;
+            $oModuleController->insertUpdatedLog($sVersionUpdateId);
+        }
 
 		if(!is_readable('./files/ruleset/insertMember.xml')) return true;
 		if(!is_readable('./files/ruleset/login.xml')) return true;
@@ -270,7 +292,8 @@ class member extends ModuleObject {
 		$oModuleController = getController('module');
 		$oMemberAdminController = getAdminController('member');
 		$config = $oModuleModel->getModuleConfig('member');
-		$version_update_id = implode('.', array(__CLASS__, __XE_VERSION__, 'updated'));
+		// $version_update_id = implode('.', array(__CLASS__, __XE_VERSION__, 'updated'));
+        $version_update_id = 'member.1.11.6.updated';
 		if($oModuleModel->needUpdate($version_update_id))
 		{
 			// Check member directory
@@ -406,6 +429,17 @@ class member extends ModuleObject {
 
 			$oModuleController->insertUpdatedLog($version_update_id);
 		}
+
+        $sVersionUpdateId = implode('.', array(__CLASS__, '1.8.0', 'updated'));
+		if($oModuleModel->needUpdate($sVersionUpdateId))
+		{
+            if(!$oDB->isColumnExists("member", "referral"))  // tag social login referrence
+            {
+                $oDB->addColumn("member", "referral", "char", 1, '0', true);
+                $oDB->addIndex("member","idx_referral", "referral",false);
+            }
+            $oModuleController->insertUpdatedLog($sVersionUpdateId);
+        }
 
 		FileHandler::makeDir('./files/ruleset');
 		if(!is_readable('./files/ruleset/insertMember.xml'))

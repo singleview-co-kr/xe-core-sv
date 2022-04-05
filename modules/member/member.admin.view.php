@@ -108,6 +108,8 @@ class memberAdminView extends member
 				}
 			}
 		}
+
+		Context::set('aRegisterReferral', $this->_g_aRegisterReferral);
 		Context::set('total_count', $output->total_count);
 		Context::set('total_page', $output->total_page);
 		Context::set('page', $output->page);

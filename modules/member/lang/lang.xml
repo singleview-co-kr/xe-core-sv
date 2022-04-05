@@ -2403,6 +2403,7 @@
 		<value xml:lang="ko"><![CDATA[반드시 네이버 개발자 센터의 필수 수집 항목과 일치시켜야 합니다.]]></value>
 	</item>
     
+	
 
 
 	<item name="change_password_date">
@@ -2661,6 +2662,9 @@
 		<value xml:lang="jp"><![CDATA[メール]]></value>
 		<value xml:lang="zh-TW"><![CDATA[電子郵件]]></value>
 		<value xml:lang="zh-CN"><![CDATA[电子邮件]]></value>
+	</item>
+	<item name="referral">
+		<value xml:lang="ko"><![CDATA[가입출처]]></value>
 	</item>
 	<item name="add_prohibited_id">
 		<value xml:lang="ko"><![CDATA[금지 아이디 추가]]></value>

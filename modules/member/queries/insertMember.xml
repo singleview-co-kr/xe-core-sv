@@ -4,6 +4,7 @@
     </tables>
     <columns>
         <column name="member_srl" var="member_srl" filter="number" notnull="notnull" />
+        <column name="referral" var="referral" default="0" />
         <column name="user_id" var="user_id" filter="userid" notnull="notnull" />
         <column name="email_address" var="email_address" filter="email" notnull="notnull" />
         <column name="password" var="password" notnull="notnull" />
