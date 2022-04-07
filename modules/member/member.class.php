@@ -26,6 +26,14 @@ class member extends ModuleObject {
 		member::REFERRER_GOOGLE=>'google',
 		member::REFERRER_FACEBOOK=>'facebook',
 		member::REFERRER_TWITTER=>'twitter');
+    
+    protected $_g_aNaverCallbackAttr = array( 
+        // 'id'=>'네이버아이디',  // system attrs
+        // 'email'=>'이메일주소',  // mandatory attrs
+        'mobile'=>'휴대전화번호', 
+        'birthyear'=>'출생연도', 'birthday'=>'생일', 'gender'=>'성별', 
+        'name'=>'실명', 'nickname'=>'별명', 
+        'age'=>'연령대', 'profile_image'=>'프로필사진');
 
 	/**
 	 * constructor
@@ -266,6 +274,7 @@ class member extends ModuleObject {
 		if($oModuleModel->needUpdate($sVersionUpdateId))
 		{
 			$bAct = $oDB->isColumnExists("member", "referral");
+            $bAct = $oDB->isColumnExists("member", "mobile");
 			if(!$bAct) 
                 return true;
             $oModuleController->insertUpdatedLog($sVersionUpdateId);
@@ -437,6 +446,11 @@ class member extends ModuleObject {
             {
                 $oDB->addColumn("member", "referral", "char", 1, '0', true);
                 $oDB->addIndex("member","idx_referral", "referral",false);
+            }
+            if(!$oDB->isColumnExists("member", "mobile"))  // tag social login referrence
+            {
+                $oDB->addColumn("member", "mobile", "char", 12, NULL, true);
+                $oDB->addIndex("member","idx_mobile", "mobile", false);
             }
             $oModuleController->insertUpdatedLog($sVersionUpdateId);
         }

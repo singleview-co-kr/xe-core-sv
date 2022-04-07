@@ -29,7 +29,7 @@ class memberAdminController extends member
 			return new BaseObject(-1, 'msg_invalid_request');
 		}
 
-		$args = Context::gets('member_srl','email_address','find_account_answer', 'allow_mailing','allow_message','denied','is_admin','description','group_srl_list','limit_date');
+		$args = Context::gets('member_srl','email_address','mobile','find_account_answer', 'allow_mailing','allow_message','denied','is_admin','description','group_srl_list','limit_date');
 		$oMemberModel = &getModel ('member');
 		$config = $oMemberModel->getMemberConfig();
 		$getVars = array();
@@ -83,7 +83,7 @@ class memberAdminController extends member
 		}
 
 		// remove whitespace
-		$checkInfos = array('user_id', 'user_name', 'nick_name', 'email_address');
+		$checkInfos = array('user_id', 'mobile', 'user_name', 'nick_name', 'email_address');
 		foreach($checkInfos as $val)
 		{
 			if(isset($args->{$val}))
@@ -261,6 +261,7 @@ class memberAdminController extends member
 		$signupForm = array();
 		$items = array(
 			'user_id',
+			'mobile',
 			'password',
 			'user_name',
 			'nick_name',
@@ -379,16 +380,69 @@ class memberAdminController extends member
 			'naver_client_id',
 			'nvr_attr_list'
 		);
+		$bUsernameToggle = FALSE;
+		$bBirthdayToggle = FALSE;
+		$bGenderToggle = FALSE;
 		if(count((array)$oArgs->nvr_attr_list))
 		{
 			$aNvrAttrList = [];
 			foreach($oArgs->nvr_attr_list as $nIdx=>$sKey)
+			{
+				if($sKey == 'name')
+					$bUsernameToggle = TRUE;
+				elseif($sKey == 'birthday')
+					$bBirthdayToggle = TRUE;
+				elseif($sKey == 'gender')
+					$bGenderToggle = TRUE;
 				$aNvrAttrList[$sKey] = TRUE;
+			}
 			$oArgs->nvr_attr_list = $aNvrAttrList;
 		}
 		else
 			$oArgs->nvr_attr_list = [];
-
+		
+		// begin - member default var toggle
+		$oModuleModel = getModel('module');
+		$oMemberModuleConfig = $oModuleModel->getModuleConfig('member');
+		foreach($oMemberModuleConfig->signupForm as $nIdx=>$oVal)
+		{
+			if($oVal->name == 'user_name' && $bUsernameToggle)
+			{
+				$oVal->required = TRUE;
+				$oVal->isUse = TRUE;
+			}
+			elseif($oVal->name == 'birthday' && $bBirthdayToggle)
+			{
+				$oVal->required = TRUE;
+				$oVal->isUse = TRUE;
+			}
+		}
+		unset($oModuleModel);
+		$oModuleController = getController('module');
+		$oModuleController->updateModuleConfig('member', $oMemberModuleConfig);
+		unset($oModuleController);
+		unset($oMemberModuleConfig);
+		// end - member default var toggle
+		// begin - append member extra var [gender] if not exist
+		if($bGenderToggle)
+		{
+			Context::set('column_type', 'select');
+			Context::set('column_name', 'gender');
+			Context::set('column_title', '성별');
+			Context::set('default_value', '남'.PHP_EOL.'여');
+			Context::set('required', 'Y');
+			Context::set('description', NULL);
+			$oMemberAdminController = getAdminController('member');
+			$oMemberAdminController->procMemberAdminInsertJoinForm();
+			unset($oMemberAdminController);
+			$this->setRedirectUrl(NULL);
+			Context::set('column_type', NULL);
+			Context::set('column_name', NULL);
+			Context::set('column_title', NULL);
+			Context::set('default_value', NULL);
+			Context::set('required', NULL);
+		}
+		// end - append member extra var [gender] if not exist
 		if(!$oArgs->enable_naver_login)
 			$oArgs->enable_naver_login = 'N';
 		if(!trim(strip_tags($oArgs->naver_client_id)))
@@ -497,7 +551,7 @@ class memberAdminController extends member
 		// Get join form list which is additionally set
 		$extendItems = $oMemberModel->getJoinFormList();
 
-		$items = array('user_id', 'password', 'user_name', 'nick_name', 'email_address', 'find_account_question', 'homepage', 'blog', 'birthday', 'signature', 'profile_image', 'image_name', 'image_mark');
+		$items = array('user_id', 'mobile', 'password', 'user_name', 'nick_name', 'email_address', 'find_account_question', 'homepage', 'blog', 'birthday', 'signature', 'profile_image', 'image_name', 'image_mark');
 		$mustRequireds = array('email_address', 'nick_name','password', 'find_account_question');
 		$orgRequireds = array('email_address', 'password', 'find_account_question', 'user_id', 'nick_name', 'user_name');
 		$orgUse = array('email_address', 'password', 'find_account_question', 'user_id', 'nick_name', 'user_name', 'homepage', 'blog', 'birthday');
@@ -787,7 +841,6 @@ class memberAdminController extends member
 			}
 		}
 		// Fix if member_join_form_srl exists. Add if not exists.
-		$isInsert;
 		if(!$args->member_join_form_srl)
 		{
 			$isInsert = true;

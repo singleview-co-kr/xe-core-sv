@@ -337,37 +337,67 @@ class memberController extends member
 			$sNloginEmail = 'test@test.co.kr'; //////////////////
 			$sUserId = str_replace('@', '', $sNloginEmail);
 			$sUserId = str_replace('.', '', $sUserId);
-			$sTmpUserName = 'naver';
-			$sTmpNickName = $sTmpUserName.'_'.$this->generateRandomString(3);
+            
+            $sNloginName = trim(Context::get('nlogin_name'));
+            if(!$sNloginName)
+			    $sNloginName = 'naver';
+            $sNloginNickname = trim(Context::get('nlogin_nickname'));
+            if(!$sNloginNickname)
+			    $sNloginNickname = $sNloginName.'_'.$this->generateRandomString(3);
+            $sNloginBirthyear = trim(Context::get('nlogin_birthyear'));
+            if(!$sNloginBirthyear)
+			    $sNloginBirthyear = '1900';
+            $sNloginBirthday = trim(Context::get('nlogin_birthday'));
+            if(!$sNloginBirthday)
+			    $sNloginBirthday = '00-00';
 			
 			Context::set('social_login_referral_code', member::REFERRER_NAVER);
 			Context::set('email_address', $sNloginEmail);
 			Context::set('user_id', 'n'.$sUserId);
 			Context::set('password', $sPassword);
-			Context::set('user_name', $sTmpUserName);
-			Context::set('nick_name', $sTmpNickName);
-			Context::set('find_account_question', 1);
-			Context::set('birthday_ui', '1999-01-01');
-			Context::set('find_account_answer', 'n');
-			Context::set('allow_mailing', 'N');
+			Context::set('nick_name', $sNloginNickname);
+            Context::set('find_account_question', 1);
+            Context::set('find_account_answer', 'n');
+            Context::set('allow_mailing', 'N');
 			Context::set('allow_message', 'Y');
-				
+            // extra vars related
+            Context::set('user_name', $sNloginName);
+			Context::set('birthday_ui', $sNloginBirthyear.'-'.$sNloginBirthday);
+            $sNloginMobile = trim(Context::get('nlogin_mobile'));
+            if($sNloginMobile)
+                Context::set('mobile', $sNloginMobile);
+            // nlogin_profile_image  not yet implemented
+            // $sNloginProfileImage = trim(Context::get('nlogin_profile_image'));
+            // $sNloginGender = trim(Context::get('gender'));  // no touch gender; additional extra vars
+            // $sNloginAge = trim(Context::get('nlogin_age'));
+            
+            // begin - prevent to register member.extra_vars table
+            Context::set('nlogin_email', null);
+            Context::set('nlogin_mobile', null);
+            Context::set('nlogin_birthday', null);
+            Context::set('nlogin_birthyear', null);
+            // Context::set('nlogin_gender', null);
+            Context::set('nlogin_name', null);
+            Context::set('nlogin_nickname', null);
+            Context::set('nlogin_age', null);
+            Context::set('nlogin_profile_image', null);
+            // end - prevent to register member.extra_vars table
+
 			$this->procMemberInsert();
 			$nMemberSrl = $this->get('member_srl');
 			$sRstMsg = $this->getMessage();
 			if($nMemberSrl && $sRstMsg == '등록했습니다.')
 			{
-				debugPrint('nlogin info add');
 				$oNloginInfo = new stdClass();
-				$oNloginInfo->email = trim(Context::get('nlogin_email'));
-				$oNloginInfo->mobile = trim(Context::get('nlogin_mobile'));
-				$oNloginInfo->birthday = trim(Context::get('nlogin_birthday'));
-				$oNloginInfo->birthyear = trim(Context::get('nlogin_birthyear'));
-				$oNloginInfo->gender = trim(Context::get('nlogin_gender'));
-				$oNloginInfo->name = trim(Context::get('nlogin_name'));
-				$oNloginInfo->nickname = trim(Context::get('nlogin_nickname'));
-				$oNloginInfo->age = trim(Context::get('nlogin_age'));
-				$oNloginInfo->profile_image = trim(Context::get('nlogin_profile_image'));
+				$oNloginInfo->email = $sNloginEmail;
+				$oNloginInfo->mobile = $sNloginMobile;
+				$oNloginInfo->birthday = $sNloginBirthday;
+				$oNloginInfo->birthyear = $sNloginBirthyear;
+				$oNloginInfo->gender = $sNloginGender;
+				$oNloginInfo->name = $sNloginName;
+				$oNloginInfo->nickname = $sNloginNickname;
+				$oNloginInfo->age = $sNloginAge;
+				$oNloginInfo->profile_image = $sNloginProfileImage;
 
 				$oNloginArgs = new stdClass();
 				$oNloginArgs->naver_user_id = $sNloginId;
@@ -382,7 +412,7 @@ class memberController extends member
 			}
 			else
 			{
-				debugPrint('msg_weird_error_while_nlogin_proc');
+				// debugPrint('msg_weird_error_while_nlogin_proc');
 				return new BaseObject(-1, 'msg_weird_error_while_nlogin_proc');
 			}
 		}
@@ -450,8 +480,8 @@ class memberController extends member
 		}
 
 		$args = new stdClass;
-		$sReferral = Context::get('social_login_referral_code');
-		if($sReferral) $args->referral = $sReferral;
+        // tag login referral
+		if($sReferral) $args->referral = Context::get('social_login_referral_code');
 
 		foreach($getVars as $val)
 		{
@@ -2262,6 +2292,7 @@ class memberController extends member
 
 		// Sanitize user ID, username, nickname, homepage, blog
 		$args->user_id = htmlspecialchars($args->user_id, ENT_COMPAT | ENT_HTML401, 'UTF-8', false);
+        $args->mobile = htmlspecialchars($args->mobile, ENT_COMPAT | ENT_HTML401, 'UTF-8', false);
 		$args->user_name = htmlspecialchars($args->user_name, ENT_COMPAT | ENT_HTML401, 'UTF-8', false);
 		$args->nick_name = htmlspecialchars($args->nick_name, ENT_COMPAT | ENT_HTML401, 'UTF-8', false);
 		$args->homepage = htmlspecialchars($args->homepage, ENT_COMPAT | ENT_HTML401, 'UTF-8', false);
@@ -2334,6 +2365,8 @@ class memberController extends member
 
 		if(!$args->user_id) $args->user_id = 't'.$args->member_srl;
 		if(!$args->user_name) $args->user_name = $args->member_srl;
+        // standardize mobile number
+		if($args->mobile) $args->mobile = str_replace('-', '', $args->mobile);
 
 		$oDB = &DB::getInstance();
 		$oDB->begin();
@@ -2454,7 +2487,8 @@ class memberController extends member
 
 		// Sanitize user ID, username, nickname, homepage, blog
 		if($args->user_id) $args->user_id = htmlspecialchars($args->user_id, ENT_COMPAT | ENT_HTML401, 'UTF-8', false);
-		$args->user_name = htmlspecialchars($args->user_name, ENT_COMPAT | ENT_HTML401, 'UTF-8', false);
+		$args->mobile = htmlspecialchars($args->mobile, ENT_COMPAT | ENT_HTML401, 'UTF-8', false);
+        $args->user_name = htmlspecialchars($args->user_name, ENT_COMPAT | ENT_HTML401, 'UTF-8', false);
 		$args->nick_name = htmlspecialchars($args->nick_name, ENT_COMPAT | ENT_HTML401, 'UTF-8', false);
 		$args->homepage = htmlspecialchars($args->homepage, ENT_COMPAT | ENT_HTML401, 'UTF-8', false);
 		$args->blog = htmlspecialchars($args->blog, ENT_COMPAT | ENT_HTML401, 'UTF-8', false);
@@ -2560,7 +2594,8 @@ class memberController extends member
 		if(!$args->nick_name) $args->nick_name = $orgMemberInfo->nick_name;
 		if(!isset($args->description)) $args->description = $orgMemberInfo->description;
 		if(!$args->birthday) $args->birthday = '';
-
+        // standardize mobile number
+		if($args->mobile) $args->mobile = str_replace('-', '', $args->mobile);
 		$output = executeQuery('member.updateMember', $args);
 
 		if(!$output->toBool())

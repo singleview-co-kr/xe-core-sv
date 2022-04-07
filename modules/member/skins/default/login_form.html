@@ -6,18 +6,11 @@
 		<h1><i class="icon-user"></i> {$lang->cmd_login}</h1>
 	</div>
 	<div class="login-body">
+        
 		<div cond="$XE_VALIDATOR_MESSAGE && $XE_VALIDATOR_ID == 'modules/member/skins'" class="message {$XE_VALIDATOR_MESSAGE_TYPE}">
 			<p>{$XE_VALIDATOR_MESSAGE}</p>
 		</div>
-<block cond="$enable_naver_login">
-        <div class="social_login" cond="!$logged_info">
-            <span class="social_label">소셜 {$lang->cmd_login}</span>
-    <block cond="$naver_client_id && $naver_cb_mid">
-            <a class="btn_social_login" id="naverIdLogin_loginButton" href="javascript:void(0)"><span>Naver Login</span></a>
-            
-    </block>
-        </div>
-</block>        
+      
 		<form ruleset="@login" action="{getUrl('', 'act', 'procMemberLogin')}" method="post" id="fo_member_login">
 			<input type="hidden" name="success_return_url" value="{$referer_url}" />
 			<input type="hidden" name="act" value="procMemberLogin" />
@@ -40,7 +33,17 @@
 				</div>
 			</fieldset>
 		</form>
+        <block cond="$enable_naver_login">
+            <div class="social_login" cond="!$logged_info">
+                <span class="social_label">소셜 {$lang->cmd_login}</span>
+        <block cond="$naver_client_id && $naver_cb_mid">
+                <a class="btn_social_login" id="naverIdLogin_loginButton" href="javascript:void(0)"><span>Naver Login</span></a>
+                
+        </block>
+            </div>
+    </block>  
     </div>
+    
 	<div class="login-footer">
 		<a href="{getUrl('act','dispMemberFindAccount')}">{$lang->cmd_find_member_account}</a>
 		|

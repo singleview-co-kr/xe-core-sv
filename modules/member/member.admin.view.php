@@ -203,13 +203,7 @@ class memberAdminView extends member
 	public function dispMemberAdminLoginConfig()
 	{
 		$this->setServerRootPath();
-		$aNaverCallbackAttr = array( // 'id'=>'네이버아이디',  // system attrs
-									 // 'email'=>'이메일',  // mandatory attrs
-									'mobile'=>'핸드폰번호', 
-									'birthday'=>'생일', 'birthyear'=>'생년', 'gender'=>'성별', 
-									'name'=>'실명', 'nickname'=>'별명', 
-									'age'=>'연령대', 'profile_image'=>'프로필이미지');
-		Context::set('aNaverCallbackAttr', $aNaverCallbackAttr);
+		Context::set('aNaverCallbackAttr', $this->_g_aNaverCallbackAttr);
 		$this->setTemplateFile('login_config');
 	}
 
@@ -389,6 +383,7 @@ class memberAdminView extends member
 		$identifierForm->name = $member_config->identifier;
 		$identifierForm->value = $memberInfo->{$member_config->identifier};
 		Context::set('identifierForm', $identifierForm);
+        Context::set('aRegisterReferral', $this->_g_aRegisterReferral);
 		$this->setTemplateFile('insert_member');
 	}
 

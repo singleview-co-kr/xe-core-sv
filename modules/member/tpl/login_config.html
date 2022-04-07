@@ -82,7 +82,7 @@ jQuery(function($){
     <div class="x_control-group">
 		<label class="x_control-label" for="call_back_url">{$lang->call_back_url}</label>
 		<div class="x_controls">
-			<a href="{$sServerRootPath}{$config->naver_cb_mid}" target="_new">{$sServerRootPath}{$config->naver_cb_mid}</a>
+			<a cond="$config->naver_cb_mid" href="{$sServerRootPath}{$config->naver_cb_mid}" target="_new">{$sServerRootPath}{$config->naver_cb_mid}</a>
 			<a href="#call_back_url_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
 			<p id="call_back_url_help" class="x_help-block" hidden>{$lang->about_call_back_url}</p>
 		</div>
@@ -106,6 +106,8 @@ jQuery(function($){
 				<input type="checkbox" name="nvr_attr_list[]" value="{$key}" id="group_{$key}" checked="checked"|cond="$config->nvr_attr_list[$key]" />
 				{$title}
 			</label>
+            <a href="#nvr_attr_list_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+			<p id="nvr_attr_list_help" class="x_help-block" hidden>{$lang->about_nvr_attr_list}</p>
 		</div>
 	</div>
 	<div class="x_clearfix btnArea">

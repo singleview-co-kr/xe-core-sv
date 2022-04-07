@@ -175,7 +175,11 @@ function validateMemberInfo()
     params['nlogin_mobile'] = naverLogin.user.getMobile();
     params['nlogin_birthday'] = naverLogin.user.getBirthday();
     params['nlogin_birthyear'] = naverLogin.user.getBirthyear();
-    params['nlogin_gender'] = naverLogin.user.getGender();
+    var sGender = naverLogin.user.getGender();
+    if(sGender == 'M')
+        params['gender'] = '남';  // should transpass to core directly
+    else if(sGender == 'F')
+        params['gender'] = '여';  // should transpass to core directly
     params['nlogin_name'] = naverLogin.user.getName();
     params['nlogin_nickname'] = naverLogin.user.getNickName();
     params['nlogin_age'] = naverLogin.user.getAge();
