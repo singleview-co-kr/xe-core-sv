@@ -245,21 +245,17 @@ class memberAdminController extends member
 		$list_order = Context::get('list_order');
 		$usable_list = Context::get('usable_list');
 		$all_args = Context::getRequestVars();
-
 		$args->limit_day = (int)$args->limit_day;
 		if($args->redirect_url)
 		{
 			$oModuleModel = getModel('module');
 			$redirectModuleInfo = $oModuleModel->getModuleInfoByModuleSrl($args->redirect_url, array('mid'));
-
 			if(!$redirectModuleInfo)
 			{
 				return new BaseObject('-1', 'msg_exist_selected_module');
 			}
-
 			$args->redirect_url = Context::getDefaultUrl().$redirectModuleInfo->mid;
 		}
-
 		$args->profile_image = $args->profile_image ? 'Y' : 'N';
 		$args->image_name = $args->image_name ? 'Y' : 'N';
 		$args->image_mark = $args->image_mark ? 'Y' : 'N';
@@ -304,6 +300,7 @@ class memberAdminController extends member
 			$signupItem->required = ($all_args->{$key} == 'required') || $signupItem->mustRequired || $signupItem->isIdentifier;
 			$signupItem->isUse = in_array($key, $usable_list) || $signupItem->required;
 			$signupItem->isPublic = ($all_args->{'is_'.$key.'_public'} == 'Y' && $signupItem->isUse) ? 'Y' : 'N';
+			$signupItem->isReadonly = ($all_args->{'is_'.$key.'_readonly'} == 'Y' && $signupItem->isUse) ? 'Y' : 'N';
 
 			if($signupItem->imageType)
 			{
@@ -322,18 +319,18 @@ class memberAdminController extends member
 				$signupItem->title = $extendItem->column_title;
 				$signupItem->description = $extendItem->description;
 
-				// check usable value change, required/option
-				if($signupItem->isUse != ($extendItem->is_active == 'Y') || $signupItem->required != ($extendItem->required == 'Y'))
+				// check usable value change, required/option/readonly
+				if($signupItem->isUse != ($extendItem->is_active == 'Y') || $signupItem->required != ($extendItem->required == 'Y') ||
+					$signupItem->isReadonly != $extendItem->is_readonly)
 				{
 					unset($update_args);
 					$update_args = new stdClass;
 					$update_args->member_join_form_srl = $extendItem->member_join_form_srl;
 					$update_args->is_active = $signupItem->isUse?'Y':'N';
 					$update_args->required = $signupItem->required?'Y':'N';
-
+					$update_args->is_readonly = $signupItem->isReadonly=='Y'?'Y':'N';
 					$update_output = executeQuery('member.updateJoinForm', $update_args);
 				}
-
 				unset($extendItem);
 			}
 			$signupForm[] = $signupItem;

@@ -275,6 +275,7 @@ class member extends ModuleObject {
 		{
 			$bAct = $oDB->isColumnExists("member", "referral");
             $bAct = $oDB->isColumnExists("member", "mobile");
+            $bAct = $oDB->isColumnExists("member_join_form", "is_readonly");
 			if(!$bAct) 
                 return true;
             $oModuleController->insertUpdatedLog($sVersionUpdateId);
@@ -449,9 +450,11 @@ class member extends ModuleObject {
             }
             if(!$oDB->isColumnExists("member", "mobile"))  // tag social login referrence
             {
-                $oDB->addColumn("member", "mobile", "char", 12, NULL, true);
+                $oDB->addColumn("member", "mobile", "char", 12, NULL);
                 $oDB->addIndex("member","idx_mobile", "mobile", false);
             }
+            if(!$oDB->isColumnExists("member_join_form", "is_readonly"))  // readonly field
+                $oDB->addColumn("member_join_form", "is_readonly", "char", 1, 'N');
             $oModuleController->insertUpdatedLog($sVersionUpdateId);
         }
 

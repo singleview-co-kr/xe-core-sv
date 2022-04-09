@@ -2537,6 +2537,12 @@
 		<value xml:lang="zh-TW"><![CDATA[選填]]></value>
 		<value xml:lang="zh-CN"><![CDATA[选填]]></value>
 	</item>
+	<item name="cmd_readonly">
+		<value xml:lang="ko"><![CDATA[읽기전용]]></value>
+	</item>
+	<item name="about_readonly">
+		<value xml:lang="ko"><![CDATA[공란이면 사용자 입력 가능하지만, 입력되면 수정 불가합니다.]]></value>
+	</item>
 	<item name="cmd_image_max_width">
 		<value xml:lang="ko"><![CDATA[너비 제한]]></value>
 		<value xml:lang="en"><![CDATA[Max Width]]></value>

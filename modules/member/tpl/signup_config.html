@@ -76,12 +76,21 @@
 							</div>
 						</th>
 						<th scope="col" class="nowr">{$lang->cmd_required}/{$lang->cmd_optional}</th>
+                        <th scope="col" class="nowr" style="text-align:center">{$lang->cmd_readonly}
+                            [<a href="#helpReadonly" data-toggle>?</a>]
+							<div class="layer x_alert x_alert-info" id="helpReadonly">
+								<p>{$lang->about_readonly}</p>
+							</div>
+                        </th>
 						<th scope="col" class="desc" style="text-align:center">{$lang->description}</th>
 						<th scope="col" class="nowr" style="text-align:center">{$lang->cmd_edit}</th>
 					</tr>
 				</thead>
 				<tbody class="uDrag">
-					{@ $fixed_public_list = array('nick_name', 'find_account_question', 'password', 'email_address')}
+					{@ 
+                        $fixed_public_list = array('nick_name', 'find_account_question', 'password', 'email_address');
+                        $fixed_readonly_list = array('nick_name', 'find_account_question', 'password', 'email_address');
+                    }
 					<!--@foreach($config->signupForm as $item)-->
 					<!--@if($item->isIdentifier)-->
 					<tr class="sticky">
@@ -98,6 +107,7 @@
 							<label for="{$item->name}_re" class="x_inline"><input type="radio" id="{$item->name}_re" name="{$item->name}" value="requierd" checked="checked" disabled="disabled" /> {$lang->cmd_required}</label>
 							<label for="{$item->name}_op" class="x_inline"><input type="radio" id="{$item->name}_op" name="{$item->name}" value="option" disabled="disabled" /> {$lang->cmd_optional}</label>
 						</td>
+                        <td style="text-align:center"><input type="checkbox" name="is_{$item->name}_readonly" value="Y" checked="checked"|cond="$item->isReadonly == 'Y'" disabled="disabled"|cond="in_array($item->name, $fixed_readonly_list) || !$item->isUse" /></td>
 						<td class="desc">&nbsp;</td>
 						<td style="text-align:center">&nbsp;</td>
 					</tr>
@@ -139,6 +149,7 @@
 								//]]></script>
 							</div>
 						</td>
+                        <td style="text-align:center"><input type="checkbox" name="is_{$item->name}_readonly" value="Y" checked="checked"|cond="$item->isReadonly == 'Y'" disabled="disabled"|cond="in_array($item->name, $fixed_readonly_list) || !$item->isUse" /></td>
 						<td class="desc">&nbsp;</td>
 						<td style="text-align:center">&nbsp;</td>
 					</tr>
@@ -159,6 +170,7 @@
 							<label for="{$item->name}_re" class="x_inline"><input type="radio" id="{$item->name}_re" name="{$item->name}" value="required" checked="checked"|cond="$item->required" disabled="disabled"|cond="!$item->isUse"/> {$lang->cmd_required}</label>
 							<label for="{$item->name}_op" class="x_inline"><input type="radio" id="{$item->name}_op" name="{$item->name}" value="option" checked="checked"|cond="$item->isUse && !$item->required" disabled="disabled"|cond="!$item->isUse" /> {$lang->cmd_optional}</label>
 						</td>
+                        <td style="text-align:center"><input type="checkbox" name="is_{$item->name}_readonly" value="Y" checked="checked"|cond="$item->isReadonly == 'Y'" disabled="disabled"|cond="in_array($item->name, $fixed_readonly_list) || !$item->isUse" /></td>
 						<td class="desc" title="{$item->description}">{$item->description}</td>
 						<td id="{$item->member_join_form_srl}" class="nowr" style="text-align:center"><a href="#userDefine" class="modalAnchor _extendFormEdit">{$lang->cmd_edit}</a> <i>|</i> <a href="#" class="_extendFormDelete">{$lang->cmd_delete}</a></td>
 					</tr>

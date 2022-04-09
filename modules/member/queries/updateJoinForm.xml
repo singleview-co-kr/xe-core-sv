@@ -9,6 +9,7 @@
         <column name="required" var="required" default="N" />
         <column name="default_value" var="default_value" />
         <column name="is_active" var="is_active" default="N" />
+        <column name="is_readonly" var="is_readonly" default="N" />
         <column name="description" var="description" />
     </columns>
     <conditions>

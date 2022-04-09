@@ -428,6 +428,7 @@ class memberAdminView extends member
 		{
 			if(!$formInfo->isUse)continue;
 
+			$sReadonly = '';
 			// 회원 본인이 아닌 경우 입력 폼 제거
 			if($formInfo->name == 'find_account_question' && $memberInfo['member_srl'] !== $logged_info->member_srl)
 			{
@@ -452,6 +453,9 @@ class memberAdminView extends member
 
 			if($formInfo->isDefaultForm)
 			{
+				if($formInfo->isReadonly=='Y' && $memberInfo[$formInfo->name])
+					$sReadonly = 'DISABLED';
+
 				if($formInfo->imageType)
 				{
 					$formTag->type = 'image';
@@ -544,10 +548,11 @@ class memberAdminView extends member
 					else
 					{
 						$formTag->type = 'text';
-						$inputTag = sprintf('<input type="text" name="%s" id="%s" value="%s" />',
+						$inputTag = sprintf('<input type="text" name="%s" id="%s" value="%s" %s/>',
 							$formInfo->name,
 							$formInfo->name,
-							$memberInfo[$formInfo->name]);
+							$memberInfo[$formInfo->name],
+							$sReadonly);
 					}
 				}//end isDefaultForm
 				else
@@ -555,11 +560,12 @@ class memberAdminView extends member
 					$extendForm = $extend_form_list[$formInfo->member_join_form_srl];
 					$replace = array('column_name' => $extendForm->column_name, 'value' => $extendForm->value);
 					$extentionReplace = array();
-
+					if($formInfo->isReadonly=='Y' && $extendForm->value)
+						$sReadonly = 'DISABLED';
 					$formTag->type = $extendForm->column_type;
 					if($extendForm->column_type == 'text')
 					{
-						$template = '<input type="text" name="%column_name%" id="%column_name%" value="%value%" />';
+						$template = '<input type="text" name="%column_name%" id="%column_name%" value="%value%" '.$sReadonly.'/>';
 					}
 					else if($extendForm->column_type == 'homepage')
 					{
@@ -609,7 +615,7 @@ class memberAdminView extends member
 							{
 								if($extendForm->value == $v)$checked = 'checked="checked"';
 								else $checked = '';
-								$optionTag[] = '<label><input type="radio" name="%column_name%" value="'.$v.'" '.$checked.' /> '.$v.'</label>';
+								$optionTag[] = '<label><input type="radio" name="%column_name%" value="'.$v.'" '.$checked.' '.$sReadonly.'/> '.$v.'</label>';
 							}
 							$template = sprintf($template, implode('', $optionTag));
 						}
