@@ -575,6 +575,13 @@
 		<value xml:lang="tr"><![CDATA[Üyelik Sözleşmesi]]></value>
 		<value xml:lang="vi"><![CDATA[Quy định sử dụng]]></value>
 	</item>
+    <item name="privacy_usage">
+		<value xml:lang="ko"><![CDATA[개인정보 처리방침]]></value>
+	</item>
+    <item name="privacy_shr">
+		<value xml:lang="ko"><![CDATA[개인정보 제공방침]]></value>
+	</item>
+    
 	<item name="accept_agreement">
 		<value xml:lang="ko"><![CDATA[약관동의]]></value>
 		<value xml:lang="en"><![CDATA[Agree]]></value>
@@ -924,6 +931,9 @@
 		<value xml:lang="es"><![CDATA[Registrar]]></value>
 		<value xml:lang="tr"><![CDATA[Kaydol]]></value>
 		<value xml:lang="vi"><![CDATA[Đăng kí]]></value>
+	</item>
+	<item name="cmd_agreement">
+		<value xml:lang="ko"><![CDATA[가입약관]]></value>
 	</item>
 	<item name="cmd_site_signup">
 		<value xml:lang="ko"><![CDATA[가입]]></value>
@@ -1631,6 +1641,15 @@
 		<value xml:lang="es"><![CDATA[Usted primero debe aceptar el acuerdo]]></value>
 		<value xml:lang="tr"><![CDATA[Sözleşmeyi kabul etmeniz gerekmektedir]]></value>
 		<value xml:lang="vi"><![CDATA[Bạn phải đồng ý với điều khoản sử dụng của chúng tôi.]]></value>
+	</item>
+	<item name="msg_accept_agreement">
+		<value xml:lang="ko"><![CDATA[약관에 동의해야 합니다.]]></value>
+	</item>
+	<item name="msg_accept_privacy_usage">
+		<value xml:lang="ko"><![CDATA[개인정보 처리 방침에 동의해야 합니다.]]></value>
+	</item>
+	<item name="msg_accept_privacy_shr">
+		<value xml:lang="ko"><![CDATA[개인정보 제공 방침에 동의해야 합니다.]]></value>
 	</item>
 	<item name="msg_user_denied">
 		<value xml:lang="ko"><![CDATA[입력한 아이디의 사용이 중지 되었습니다.]]></value>

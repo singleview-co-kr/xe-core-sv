@@ -1,0 +1,53 @@
+<include target="header.html" />
+<load target="../../editor/tpl/js/editor_module_config.js" />
+
+<form action="./" class="x_form-horizontal" method="post">
+	<input type="hidden" name="module" value="member" />
+	<input type="hidden" name="act" value="procMemberAdminInsertAgreementConfig" />
+	<input type="hidden" name="success_return_url" value="{getUrl('act', $act)}" />
+    <input cond="$term_type=='agreement'||$term_type==''" type="hidden" name="agreement" value="{$config->agreement}" />
+    <input cond="$term_type=='privacy_usage'" type="hidden" name="agreement" value="{$config->privacy_usage}" />
+    <input cond="$term_type=='privacy_shr'" type="hidden" name="agreement" value="{$config->privacy_shr}" />
+	<input type="hidden" name="xe_validator_id" value="modules/member/tpl/1" />
+	<div class="x_control-group">
+        <label class="x_control-label" for="ua_type">편집할 약관 선택</label>
+        <div class="x_controls">
+            <label for="term_type"><input type="radio" name="term_type" id="term_type" value="agreement" checked="checked"|cond="$term_type=='agreement'||$term_type==''" />{$lang->agreement}</label>
+            <label for="term_type"><input type="radio" name="term_type" id="term_type" value="privacy_usage" checked="checked"|cond="$term_type=='privacy_usage'" />{$lang->privacy_usage}</label>
+            <label for="term_type"><input type="radio" name="term_type" id="term_type" value="privacy_shr" checked="checked"|cond="$term_type=='privacy_shr'" />{$lang->privacy_shr}</label>
+        </div>
+        <div class="x_controls">
+            {$editor|noescape}
+<style scoped>
+#smart_content,
+#smart_content>.tool{clear:none !important}
+</style>            
+        </div>
+    </div>
+	</section>
+	<div class="x_clearfix btnArea">
+		<span class="x_pull-right"><input class="x_btn x_btn-primary" type="submit" value="{$lang->cmd_save}" /></span>
+	</div>
+</form>
+
+<script>
+// radio change 이벤트
+jQuery("input[name=term_type]").change(function() {
+    var sTermType = jQuery(this).val();
+
+    switch(sTermType)
+    {
+        case 'agreement':
+        case 'privacy_usage':
+        case 'privacy_shr':
+            break;
+        default:
+            sTermType = 'mob';
+    }
+    var sProtocol = jQuery(location).attr('protocol');
+    var sHostname = jQuery(location).attr('hostname');
+    var sPathname = jQuery(location).attr('pathname');
+    var sFullUri = sProtocol + '//' + sHostname + sPathname + '?module=admin&act=dispMemberAdminAgreementConfig&term_type=' + sTermType;
+    location.href=sFullUri;
+});
+</script>

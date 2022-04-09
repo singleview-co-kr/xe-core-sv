@@ -19,7 +19,7 @@
     <description xml:lang="zh-TW">對會員進行管理與相關設置的模組。</description>
     <description xml:lang="tr">Bu modül üyeleri yönetmek/yapılandırmak için kullanılır</description>
     <version>1.8.0</version>
-    <date>2022-04-05</date>
+    <date>2022-04-09</date>
     <category>member</category>
 
     <author email_address="developers@xpressengine.com" link="https://www.xehub.io">

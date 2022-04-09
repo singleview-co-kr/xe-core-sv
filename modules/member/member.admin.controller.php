@@ -204,6 +204,28 @@ class memberAdminController extends member
 		$returnUrl = Context::get('success_return_url') ? Context::get('success_return_url') : getNotEncodedUrl('', 'module', 'admin', 'act', 'dispMemberAdminDefaultConfig');
 		$this->setRedirectUrl($returnUrl);
 	}
+	
+	public function procMemberAdminInsertAgreementConfig()
+	{
+		$oArgs = Context::gets(
+			'term_type',
+			'agreement');
+		if(!in_array($oArgs->term_type, ['agreement', 'privacy_usage', 'privacy_shr']))
+		{
+			$this->setMessage('update_failed');
+			$returnUrl = Context::get('success_return_url') ? Context::get('success_return_url') : getNotEncodedUrl('', 'module', 'admin', 'act', 'dispMemberAdminAgreementConfig');
+			$this->setRedirectUrl($returnUrl);
+		}
+		$sAgreementFile = _XE_PATH_.'files/member_extra_info/'.$oArgs->term_type.'_' . Context::get('lang_type') . '.txt';
+		// check agreement value exist
+		if(!trim(strip_tags($oArgs->agreement)))
+			FileHandler::removeFile($sAgreementFile);
+		else
+			FileHandler::writeFile($sAgreementFile, $oArgs->agreement);
+		$this->setMessage('success_updated');
+		$returnUrl = Context::get('success_return_url') ? Context::get('success_return_url') : getNotEncodedUrl('', 'module', 'admin', 'act', 'dispMemberAdminAgreementConfig', 'term_type', $oArgs->term_type);
+		$this->setRedirectUrl($returnUrl);
+	}
 
 	public function procMemberAdminInsertSignupConfig()
 	{
@@ -213,7 +235,6 @@ class memberAdminController extends member
 		$args = Context::gets(
 			'limit_day',
 			'limit_day_description',
-			'agreement',
 			'redirect_url',
 			'profile_image', 'profile_image_max_width', 'profile_image_max_height', 'profile_image_max_filesize',
 			'image_name', 'image_name_max_width', 'image_name_max_height', 'image_name_max_filesize',
@@ -226,13 +247,6 @@ class memberAdminController extends member
 		$all_args = Context::getRequestVars();
 
 		$args->limit_day = (int)$args->limit_day;
-		if(!trim(strip_tags($args->agreement)))
-		{
-			$agreement_file = _XE_PATH_.'files/member_extra_info/agreement_' . Context::get('lang_type') . '.txt';
-			FileHandler::removeFile($agreement_file);
-			$args->agreement = NULL;
-		}
-
 		if($args->redirect_url)
 		{
 			$oModuleModel = getModel('module');
@@ -330,16 +344,6 @@ class memberAdminController extends member
 		$this->_createSignupRuleset($signupForm, $args->agreement);
 		$this->_createLoginRuleset($args->identifier);
 		$this->_createFindAccountByQuestion($args->identifier);
-
-		// check agreement value exist
-		if($args->agreement)
-		{
-			$agreement_file = _XE_PATH_.'files/member_extra_info/agreement_' . Context::get('lang_type') . '.txt';
-			$output = FileHandler::writeFile($agreement_file, $args->agreement);
-
-			unset($args->agreement);
-		}
-
 		$output = $oModuleController->updateModuleConfig('member', $args);
 
 		// default setting end

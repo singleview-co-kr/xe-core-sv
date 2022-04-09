@@ -11,8 +11,9 @@
 		<input type="hidden" name="act" value="procMemberInsert" />
 		<input type="hidden" name="xe_validator_id" value="modules/member/skins" />
 		<input type="hidden" name="success_return_url" value="{getUrl('act','dispMemberInfo')}" />
-		<div class="agreement" cond="$member_config->agreement">
-			<div class="text">
+		<div class="agreement" cond="$member_config->agreement || $member_config->privacy_usage || $member_config->privacy_shr">
+<block cond="$member_config->agreement">
+            <div class="text">
 				{$member_config->agreement|noescape}
 			</div>
 			<div class="confirm">
@@ -21,7 +22,32 @@
 					{$lang->about_accept_agreement}
 				</label>
 			</div>
-		</div>
+</block>
+<block cond="$member_config->privacy_usage">
+            <BR>
+            <div class="text">
+				{$member_config->privacy_usage|noescape}
+			</div>
+			<div class="confirm">
+				<label for="accept_privacy_usage">
+					<input type="checkbox" name="accept_privacy_usage" value="Y" id="accept_privacy_usage" />
+					{$lang->about_accept_agreement}
+				</label>
+			</div>
+</block>
+<block cond="$member_config->privacy_shr">
+            <BR>
+            <div class="text">
+				{$member_config->privacy_shr|noescape}
+			</div>
+			<div class="confirm">
+				<label for="accept_privacy_shr">
+					<input type="checkbox" name="accept_privacy_shr" value="Y" id="accept_privacy_shr" />
+					{$lang->about_accept_agreement}
+				</label>
+			</div>
+</block>
+        </div>
 		<div class="control-group">
 			<label for="{$identifierForm->name}" class="control-label"><em style="color:red">*</em> {$identifierForm->title}</label>
 			<div class="controls">

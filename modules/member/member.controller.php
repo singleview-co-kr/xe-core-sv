@@ -465,6 +465,10 @@ class memberController extends member
 		if($config->enable_join != 'Y') return $this->stop ('msg_signup_disabled');
 		// Check if the user accept the license terms (only if terms exist)
 		if($config->agreement && Context::get('accept_agreement')!='Y') return $this->stop('msg_accept_agreement');
+        if($config->privacy_usage && Context::get('accept_privacy_usage')!='Y') return $this->stop('msg_accept_privacy_usage');
+        if($config->privacy_shr && Context::get('accept_privacy_shr')!='Y') return $this->stop('msg_accept_privacy_shr');
+
+        
 
 		// Extract the necessary information in advance
 		$getVars = array();

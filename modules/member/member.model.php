@@ -50,7 +50,9 @@ class memberModel extends member
 		}
 
 		// Get terms of user
-		$config->agreement = memberModel::_getAgreement();
+		$config->agreement = $this->_getAgreement();
+		$config->privacy_usage = $this->_getAgreement('privacy_usage');
+		$config->privacy_shr = $this->_getAgreement('privacy_shr');
 
 		if(!$config->webmaster_name) $config->webmaster_name = 'webmaster';
 
@@ -82,31 +84,36 @@ class memberModel extends member
 		return $config;
 	}
 
-	function _getAgreement()
+	function _getAgreement($sTarget=NULL)
 	{
-		$agreement_file = _XE_PATH_.'files/member_extra_info/agreement_' . Context::get('lang_type') . '.txt';
+		switch($sTarget)
+		{
+			case 'privacy_usage':
+			case 'privacy_shr':
+				break;
+			default:
+				$sTarget = 'agreement';
+		}
+		$agreement_file = _XE_PATH_.'files/member_extra_info/'.$sTarget.'_' . Context::get('lang_type') . '.txt';
 		if(is_readable($agreement_file))
 		{
 			return FileHandler::readFile($agreement_file);
 		}
-
 		$db_info = Context::getDBInfo();
-		$agreement_file = _XE_PATH_.'files/member_extra_info/agreement_' . $db_info->lang_type . '.txt';
+		$agreement_file = _XE_PATH_.'files/member_extra_info/'.$sTarget.'_' . $db_info->lang_type . '.txt';
 		if(is_readable($agreement_file))
 		{
 			return FileHandler::readFile($agreement_file);
 		}
-
 		$lang_selected = Context::loadLangSelected();
 		foreach($lang_selected as $key => $val)
 		{
-			$agreement_file = _XE_PATH_.'files/member_extra_info/agreement_' . $key . '.txt';
+			$agreement_file = _XE_PATH_.'files/member_extra_info/'.$sTarget.'_' . $key . '.txt';
 			if(is_readable($agreement_file))
 			{
 				return FileHandler::readFile($agreement_file);
 			}
 		}
-
 		return null;
 	}
 
