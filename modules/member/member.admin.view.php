@@ -200,7 +200,7 @@ class memberAdminView extends member
 		// get denied NickName List
 		$deniedNickNames = $oMemberModel->getDeniedNickNames();
 		Context::set('deniedNickNames', $deniedNickNames);
-			$oSecurity->encodeHTML('deniedNickNames..nick_name');
+		$oSecurity->encodeHTML('deniedNickNames..nick_name');
 		$this->setTemplateFile('signup_config');
 	}
 
@@ -454,7 +454,7 @@ class memberAdminView extends member
 			if($formInfo->isDefaultForm)
 			{
 				if($formInfo->isReadonly=='Y' && $memberInfo[$formInfo->name])
-					$sReadonly = 'DISABLED';
+					$sReadonly = 'READONLY';
 
 				if($formInfo->imageType)
 				{
@@ -501,10 +501,15 @@ class memberAdminView extends member
 					else if($formInfo->name == 'birthday')
 					{
 						$formTag->type = 'date';
-						$inputTag = sprintf('<input type="hidden" name="birthday" id="date_birthday" value="%s" /><input type="text" placeholder="YYYY-MM-DD" name="birthday_ui" class="inputDate" id="birthday" value="%s" readonly="readonly" /> <input type="button" value="%s" class="btn dateRemover" />',
-							$memberInfo['birthday'],
-							zdate($memberInfo['birthday'], 'Y-m-d', false),
-							$lang->cmd_delete);
+						if($sReadonly == 'READONLY')
+							$inputTag = sprintf('<input type="hidden" name="birthday" id="date_birthday" value="%s" /><input type="text" placeholder="YYYY-MM-DD" name="birthday_ui" class="inputDate" id="birthday" value="%s" readonly="readonly" DISABLED/>',
+								$memberInfo['birthday'],
+								zdate($memberInfo['birthday'], 'Y-m-d', false));
+						else
+							$inputTag = sprintf('<input type="hidden" name="birthday" id="date_birthday" value="%s" /><input type="text" placeholder="YYYY-MM-DD" name="birthday_ui" class="inputDate" id="birthday" value="%s" readonly="readonly"/> <input type="button" value="%s" class="btn dateRemover" />',
+								$memberInfo['birthday'],
+								zdate($memberInfo['birthday'], 'Y-m-d', false),
+								$lang->cmd_delete);
 					}
 					else if($formInfo->name == 'find_account_question')
 					{
@@ -538,12 +543,12 @@ class memberAdminView extends member
 					else if($formInfo->name == 'homepage')
 					{
 						$formTag->type = 'url';
-						$inputTag = '<input type="url" name="homepage" id="homepage" value="'.$memberInfo['homepage'].'" />';
+						$inputTag = '<input type="url" name="homepage" id="homepage" value="'.$memberInfo['homepage'].'" '.$sReadonly.'/>';
 					}
 					else if($formInfo->name == 'blog')
 					{
 						$formTag->type = 'url';
-						$inputTag = '<input type="url" name="blog" id="blog" value="'.$memberInfo['blog'].'" />';
+						$inputTag = '<input type="url" name="blog" id="blog" value="'.$memberInfo['blog'].'" '.$sReadonly.'/>';
 					}
 					else
 					{
@@ -561,7 +566,7 @@ class memberAdminView extends member
 					$replace = array('column_name' => $extendForm->column_name, 'value' => $extendForm->value);
 					$extentionReplace = array();
 					if($formInfo->isReadonly=='Y' && $extendForm->value)
-						$sReadonly = 'DISABLED';
+						$sReadonly = 'READONLY';
 					$formTag->type = $extendForm->column_type;
 					if($extendForm->column_type == 'text')
 					{
@@ -569,22 +574,22 @@ class memberAdminView extends member
 					}
 					else if($extendForm->column_type == 'homepage')
 					{
-						$template = '<input type="url" name="%column_name%" id="%column_name%" value="%value%" />';
+						$template = '<input type="url" name="%column_name%" id="%column_name%" value="%value%" '.$sReadonly.'/>';
 					}
 					else if($extendForm->column_type == 'email_address')
 					{
-						$template = '<input type="email" name="%column_name%" id="%column_name%" value="%value%" />';
+						$template = '<input type="email" name="%column_name%" id="%column_name%" value="%value%" '.$sReadonly.'/>';
 					}
 					else if($extendForm->column_type == 'tel')
 					{
 						$extentionReplace = array('tel_0' => $extendForm->value[0],
 							'tel_1' => $extendForm->value[1],
 							'tel_2' => $extendForm->value[2]);
-						$template = '<input type="tel" name="%column_name%[]" id="%column_name%" value="%tel_0%" size="4" maxlength="4" style="width:30px" title="First Number" /> - <input type="tel" name="%column_name%[]" value="%tel_1%" size="4" maxlength="4" style="width:35px" title="Second Number" /> - <input type="tel" name="%column_name%[]" value="%tel_2%" size="4" maxlength="4" style="width:35px" title="Third Number" />';
+						$template = '<input type="tel" name="%column_name%[]" id="%column_name%" value="%tel_0%" size="4" maxlength="4" style="width:30px" title="First Number" '.$sReadonly.'/> - <input type="tel" name="%column_name%[]" value="%tel_1%" size="4" maxlength="4" style="width:35px" title="Second Number" '.$sReadonly.'/> - <input type="tel" name="%column_name%[]" value="%tel_2%" size="4" maxlength="4" style="width:35px" title="Third Number" '.$sReadonly.'/>';
 					}
 					else if($extendForm->column_type == 'textarea')
 					{
-						$template = '<textarea name="%column_name%" id="%column_name%" rows="4" cols="42">%value%</textarea>';
+						$template = '<textarea name="%column_name%" id="%column_name%" rows="4" cols="42" '.$sReadonly.'>%value%</textarea>';
 					}
 					else if($extendForm->column_type == 'checkbox')
 					{
@@ -594,12 +599,27 @@ class memberAdminView extends member
 							$template = '<div style="padding-top:5px">%s</div>';
 							$__i = 0;
 							$optionTag = array();
-							foreach($extendForm->default_value as $v)
+							if($sReadonly == 'READONLY')
 							{
-								$checked = '';
-								if(is_array($extendForm->value) && in_array($v, $extendForm->value))$checked = 'checked="checked"';
-								$optionTag[] = '<label for="%column_name%'.$__i.'"><input type="checkbox" id="%column_name%'.$__i.'" name="%column_name%[]" value="'.$v.'" '.$checked.' /> '.$v.'</label>';
-								$__i++;
+								foreach($extendForm->default_value as $v)
+								{
+									$checked = '';
+									if(is_array($extendForm->value) && in_array($v, $extendForm->value))
+									{
+										$optionTag[] = '<label for="%column_name%'.$__i.'"><input type="hidden" id="%column_name%'.$__i.'" name="%column_name%[]" value="'.$v.'" /> '.$v.'</label>';
+										$__i++;
+									}
+								}
+							}
+							else
+							{
+								foreach($extendForm->default_value as $v)
+								{
+									$checked = '';
+									if(is_array($extendForm->value) && in_array($v, $extendForm->value))$checked = 'checked="checked"';
+									$optionTag[] = '<label for="%column_name%'.$__i.'"><input type="checkbox" id="%column_name%'.$__i.'" name="%column_name%[]" value="'.$v.'" '.$checked.' /> '.$v.'</label>';
+									$__i++;
+								}
 							}
 							$template = sprintf($template, implode('', $optionTag));
 						}
@@ -611,11 +631,25 @@ class memberAdminView extends member
 						{
 							$template = '<div style="padding-top:5px">%s</div>';
 							$optionTag = array();
-							foreach($extendForm->default_value as $v)
+							if($sReadonly == 'READONLY')
 							{
-								if($extendForm->value == $v)$checked = 'checked="checked"';
-								else $checked = '';
-								$optionTag[] = '<label><input type="radio" name="%column_name%" value="'.$v.'" '.$checked.' '.$sReadonly.'/> '.$v.'</label>';
+								foreach($extendForm->default_value as $v)
+								{
+									if($extendForm->value == $v)
+									{
+										$checked = 'checked="checked"';
+										$optionTag[] = '<label><input type="radio" name="%column_name%" value="'.$v.'" '.$checked.' /> '.$v.'</label>';
+									}
+								}
+							}
+							else
+							{
+								foreach($extendForm->default_value as $v)
+								{
+									if($extendForm->value == $v)$checked = 'checked="checked"';
+									else $checked = '';
+									$optionTag[] = '<label><input type="radio" name="%column_name%" value="'.$v.'" '.$checked.' /> '.$v.'</label>';
+								}
 							}
 							$template = sprintf($template, implode('', $optionTag));
 						}
@@ -627,11 +661,25 @@ class memberAdminView extends member
 						$optionTag[] = sprintf('<option value="">%s</option>', $lang->cmd_select);
 						if($extendForm->default_value)
 						{
-							foreach($extendForm->default_value as $v)
+							if($sReadonly == 'READONLY')
 							{
-								if($v == $extendForm->value) $selected = 'selected="selected"';
-								else $selected = '';
-								$optionTag[] = sprintf('<option value="%s" %s >%s</option>', $v, $selected, $v);
+								foreach($extendForm->default_value as $v)
+								{
+									if($v == $extendForm->value) 
+									{
+										$selected = 'selected="selected"';
+										$optionTag[] = sprintf('<option value="%s" %s >%s</option>', $v, $selected, $v);
+									}
+								}
+							}
+							else
+							{
+								foreach($extendForm->default_value as $v)
+								{
+									if($v == $extendForm->value) $selected = 'selected="selected"';
+									else $selected = '';
+									$optionTag[] = sprintf('<option value="%s" %s >%s</option>', $v, $selected, $v);
+								}
 							}
 						}
 						$template = sprintf($template, implode('', $optionTag));
@@ -644,14 +692,13 @@ class memberAdminView extends member
 							$template = $krzipModel->getKrzipCodeSearchHtml($extendForm->column_name, $extendForm->value);
 						}
 					}
-					else if($extendForm->column_type == 'jp_zip')
-					{
-						$template = '<input type="text" name="%column_name%" id="%column_name%" value="%value%" />';
-					}
 					else if($extendForm->column_type == 'date')
 					{
 						$extentionReplace = array('date' => zdate($extendForm->value, 'Y-m-d'), 'cmd_delete' => $lang->cmd_delete);
-						$template = '<input type="hidden" name="%column_name%" id="date_%column_name%" value="%value%" /><input type="text" placeholder="YYYY-MM-DD" class="inputDate" value="%date%" readonly="readonly" /> <input type="button" value="%cmd_delete%" class="btn dateRemover" />';
+						if($sReadonly == 'READONLY')
+							$template = '<input type="hidden" name="%column_name%" id="date_%column_name%" value="%value%" /><input type="text" placeholder="YYYY-MM-DD" class="inputDate" value="%date%" readonly="readonly" DISABLED/>';
+						else
+							$template = '<input type="hidden" name="%column_name%" id="date_%column_name%" value="%value%" /><input type="text" placeholder="YYYY-MM-DD" class="inputDate" value="%date%" readonly="readonly" /> <input type="button" value="%cmd_delete%" class="btn dateRemover" />';
 					}
 
 					$replace = array_merge($extentionReplace, $replace);
