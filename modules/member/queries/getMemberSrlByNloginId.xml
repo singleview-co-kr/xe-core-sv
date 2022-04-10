@@ -4,6 +4,7 @@
     </tables>
     <columns>
         <column name="member_srl" />
+        <column name="extra_vars" />
     </columns>
     <conditions>
         <condition operation="equal" column="naver_user_id" var="naver_user_id" notnull="notnull" />

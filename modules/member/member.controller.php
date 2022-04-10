@@ -307,108 +307,96 @@ class memberController extends member
             return new BaseObject(-1, 'invalid_social_login_type');
         }
 		Context::set('login_type', NULL);
+        $oNloginInfo = new stdClass();
+        $oNloginInfo->naver_user_id = trim(Context::get('nlogin_id'));  // 64 chars
+        $oNloginInfo->email = trim(Context::get('nlogin_email'));
+        $oNloginInfo->mobile = trim(Context::get('nlogin_mobile'));
+        $oNloginInfo->birthday = trim(Context::get('nlogin_birthday'));
+        $oNloginInfo->birthyear = trim(Context::get('nlogin_birthyear'));
+        $oNloginInfo->gender = trim(Context::get('gender')); 
+        $oNloginInfo->name = trim(Context::get('nlogin_name'));
+        $oNloginInfo->nickname = trim(Context::get('nlogin_nickname'));
+        $oNloginInfo->age = trim(Context::get('nlogin_age'));
+        $oNloginInfo->profile_image = trim(Context::get('nlogin_profile_image'));
+        // nlogin_profile_image  not yet implemented
+        
+        // begin - prevent to register member.extra_vars table
+        Context::set('nlogin_id', NULL);
+        Context::set('nlogin_email', null);
+        Context::set('nlogin_mobile', null);
+        Context::set('nlogin_birthday', null);
+        Context::set('nlogin_birthyear', null);
+        // Context::set('gender', null);  // no touch gender; additional extra vars
+        Context::set('nlogin_name', null);
+        Context::set('nlogin_nickname', null);
+        Context::set('nlogin_age', null);
+        Context::set('nlogin_profile_image', null);
+        // end - prevent to register member.extra_vars table
 
-		$sNloginId = trim(Context::get('nlogin_id'));  // 64 chars
-		if(!$sNloginId)
+        if(!$oNloginInfo->naver_user_id)
         {
             $this->setMessage('msg_invalid_nlogin_id');
             return new BaseObject(-1, 'msg_invalid_nlogin_id');
         }
-        Context::set('nlogin_id', NULL);
-		$sPassword = substr($sNloginId, 0, 9);
+        $sPassword = substr($oNloginInfo->naver_user_id, 0, 9);
 
         // 기존 nlogin 기록 조회
 		$oNloginArgs = new stdClass();
-		$oNloginArgs->naver_user_id = $sNloginId;
-		$oRst = executeQuery('member.getMemberSrlByNloginId', $oNloginArgs);
-		if(!$oRst->toBool())
+		$oNloginArgs->naver_user_id = $oNloginInfo->naver_user_id;
+		$oOldNloginRst = executeQuery('member.getMemberSrlByNloginId', $oNloginArgs);
+		if(!$oOldNloginRst->toBool())
 			return new BaseObject(-1, 'msg_weird_error_while_nlogin_proc');
         unset($oNloginArgs);
-		if(is_null($oRst->data->member_srl))  // register new
+		if(is_null($oOldNloginRst->data->member_srl))  // register new
 		{
-			$sNloginEmail = trim(Context::get('nlogin_email'));
-			if(!$sNloginEmail)
+            if(!$oNloginInfo->email)
 			{
 				$this->setMessage('msg_invalid_nlogin_email');
 				return new BaseObject(-1, 'msg_invalid_nlogin_email');
 			}
 			Context::set('nlogin_email', NULL);
-			
-			$sNloginEmail = 'test@test.co.kr'; //////////////////
-			$sUserId = str_replace('@', '', $sNloginEmail);
+            $oNloginInfo->email = 'test@test.co.kr'; //////////////////
+			$sUserId = str_replace('@', '', $oNloginInfo->email);
 			$sUserId = str_replace('.', '', $sUserId);
             
-            $sNloginName = trim(Context::get('nlogin_name'));
-            if(!$sNloginName)
-			    $sNloginName = 'naver';
-            $sNloginNickname = trim(Context::get('nlogin_nickname'));
-            if(!$sNloginNickname)
-			    $sNloginNickname = $sNloginName.'_'.$this->generateRandomString(3);
-            $sNloginBirthyear = trim(Context::get('nlogin_birthyear'));
-            if(!$sNloginBirthyear)
-			    $sNloginBirthyear = '1900';
-            $sNloginBirthday = trim(Context::get('nlogin_birthday'));
-            if(!$sNloginBirthday)
-			    $sNloginBirthday = '00-00';
+            if(!$oNloginInfo->name)
+			    $oNloginInfo->name = 'naver';
+            if(!$oNloginInfo->nickname)
+			    $oNloginInfo->nickname = $oNloginInfo->nickname.'_'.$this->generateRandomString(3);
+            if(!$oNloginInfo->birthyear)
+			    $oNloginInfo->birthyear = '1900';
+            if(!$oNloginInfo->birthday)
+			    $oNloginInfo->birthday = '00-00';
 			
 			Context::set('social_login_referral_code', member::REFERRER_NAVER);
-			Context::set('email_address', $sNloginEmail);
+			Context::set('email_address', $oNloginInfo->email);
 			Context::set('user_id', 'n'.$sUserId);
 			Context::set('password', $sPassword);
-			Context::set('nick_name', $sNloginNickname);
+			Context::set('nick_name', $oNloginInfo->nickname);
             Context::set('find_account_question', 1);
             Context::set('find_account_answer', 'n');
             Context::set('allow_mailing', 'N');
 			Context::set('allow_message', 'Y');
             // extra vars related
-            Context::set('user_name', $sNloginName);
-			Context::set('birthday_ui', $sNloginBirthyear.'-'.$sNloginBirthday);
-            $sNloginMobile = trim(Context::get('nlogin_mobile'));
-            if($sNloginMobile)
-                Context::set('mobile', $sNloginMobile);
-            // nlogin_profile_image  not yet implemented
-            // $sNloginProfileImage = trim(Context::get('nlogin_profile_image'));
-            // $sNloginGender = trim(Context::get('gender'));  // no touch gender; additional extra vars
-            // $sNloginAge = trim(Context::get('nlogin_age'));
-            
-            // begin - prevent to register member.extra_vars table
-            Context::set('nlogin_email', null);
-            Context::set('nlogin_mobile', null);
-            Context::set('nlogin_birthday', null);
-            Context::set('nlogin_birthyear', null);
-            // Context::set('nlogin_gender', null);
-            Context::set('nlogin_name', null);
-            Context::set('nlogin_nickname', null);
-            Context::set('nlogin_age', null);
-            Context::set('nlogin_profile_image', null);
-            // end - prevent to register member.extra_vars table
+            Context::set('user_name', $oNloginInfo->name);
+			Context::set('birthday_ui', $oNloginInfo->birthyear.'-'.$oNloginInfo->birthday);
+            if($oNloginInfo->mobile)
+                Context::set('mobile', $oNloginInfo->mobile);
 
 			$this->procMemberInsert();
 			$nMemberSrl = $this->get('member_srl');
 			$sRstMsg = $this->getMessage();
 			if($nMemberSrl && $sRstMsg == '등록했습니다.')
 			{
-				$oNloginInfo = new stdClass();
-				$oNloginInfo->email = $sNloginEmail;
-				$oNloginInfo->mobile = $sNloginMobile;
-				$oNloginInfo->birthday = $sNloginBirthday;
-				$oNloginInfo->birthyear = $sNloginBirthyear;
-				$oNloginInfo->gender = $sNloginGender;
-				$oNloginInfo->name = $sNloginName;
-				$oNloginInfo->nickname = $sNloginNickname;
-				$oNloginInfo->age = $sNloginAge;
-				$oNloginInfo->profile_image = $sNloginProfileImage;
-
 				$oNloginArgs = new stdClass();
-				$oNloginArgs->naver_user_id = $sNloginId;
+				$oNloginArgs->naver_user_id = $oNloginInfo->naver_user_id;
 				$oNloginArgs->member_srl = $nMemberSrl;
 				$oNloginArgs->extra_vars = serialize($oNloginInfo);
-				unset($oNloginInfo);
-				$oRst = executeQuery('member.insertNlogin', $oNloginArgs);
-				if(!$oRst->toBool())
+				$oInsertRst = executeQuery('member.insertNlogin', $oNloginArgs);
+				if(!$oInsertRst->toBool())
 					return new BaseObject(-1, 'msg_weird_error_while_nlogin_proc');
 				unset($oNloginArgs);
-				unset($oRst);
+				unset($oInsertRst);
 			}
 			else
 			{
@@ -418,15 +406,73 @@ class memberController extends member
 		}
 		else  // get old member login
 		{
+            // begin - follow update
+            $oOldNloginInfo = unserialize($oOldNloginRst->data->extra_vars);
+            // naver_user_id와 email은 변경되도 무시함
+            if($oNloginInfo->mobile != $oOldNloginInfo->mobile ||
+                $oNloginInfo->birthday != $oOldNloginInfo->birthday ||
+                $oNloginInfo->birthyear != $oOldNloginInfo->birthyear ||
+                $oNloginInfo->gender != $oOldNloginInfo->gender ||
+                $oNloginInfo->name != $oOldNloginInfo->name ||
+                $oNloginInfo->nickname != $oOldNloginInfo->nickname ||
+                $oNloginInfo->age != $oOldNloginInfo->age ||
+                $oNloginInfo->profile_image != $oOldNloginInfo->profile_image)
+            {
+                // begin - member table update
+                $oOldNloginInfo->email = 'test@test.co.kr'; //////////////////
+                $sUserId = str_replace('@', '', $oNloginInfo->email);
+                $sUserId = str_replace('.', '', $sUserId);
+                if(!$oNloginInfo->name)
+                    $oNloginInfo->name = 'naver';
+                if(!$oNloginInfo->nickname)
+                    $oNloginInfo->nickname = $oNloginInfo->nickname.'_'.$this->generateRandomString(3);
+                if(!$oNloginInfo->birthyear)
+                    $oNloginInfo->birthyear = '1900';
+                if(!$oNloginInfo->birthday)
+                    $oNloginInfo->birthday = '00-00';
+                Context::set('email_address', $oOldNloginInfo->email);
+                Context::set('user_id', 'n'.$sUserId);
+                Context::set('password', $sPassword);
+                Context::set('nick_name', $oNloginInfo->nickname);
+                Context::set('find_account_question', 1);
+                Context::set('find_account_answer', 'n');
+                Context::set('allow_mailing', 'N');
+                Context::set('allow_message', 'Y');
+                // extra vars related
+                Context::set('user_name', $oNloginInfo->name);
+                Context::set('birthday_ui', $oNloginInfo->birthyear.'-'.$oNloginInfo->birthday);
+                if($oNloginInfo->mobile)
+                    Context::set('mobile', $oNloginInfo->mobile);
+                // allow member modification
+                $_SESSION['rechecked_password_step'] = 'INPUT_DATA';
+                $this->procMemberModifyInfo();
+                $nMemberSrl = $this->get('member_srl');
+                $sRstMsg = $this->getMessage();
+                // end - member table update
+                if($nMemberSrl && $sRstMsg == '수정했습니다.')
+                {
+                    // begin - member_nlogin table update
+                    $oNloginArgs = new stdClass();
+                    $oNloginArgs->member_srl = $nMemberSrl;
+                    $oNloginArgs->extra_vars = serialize($oNloginInfo);
+                    $oUpdateRst = executeQuery('member.updateNlogin', $oNloginArgs);
+                    if(!$oUpdateRst->toBool())
+                    	return new BaseObject(-1, 'msg_weird_error_while_nlogin_proc');
+                    unset($oNloginArgs);
+                    unset($oUpdateRst);
+                    // end - member_nlogin table update
+                }
+            }
+            // begin - follow update
 			$oMemberModel = getModel('member');
 			$aColumnList = array('member_srl', 'user_id', 'email_address');
-			$oMemberInfo = $oMemberModel->getMemberInfoByMemberSrl($oRst->data->member_srl, 0, $aColumnList);
+			$oMemberInfo = $oMemberModel->getMemberInfoByMemberSrl($oOldNloginRst->data->member_srl, 0, $aColumnList);
 			$sEmailAddress = $oMemberInfo->email_address;
 			$sUserId = $oMemberInfo->user_id;
 			unset($oMemberInfo);
 			$oConfig = $oMemberModel->getMemberConfig();
 			// Log-in
-			if($oConfig->enable_confirm != 'Y')
+			if($oConfig->enable_confirm != 'Y')  // 메일 인증 사용
 			{
 				if($oConfig->identifier == 'email_address')
 					$oLoginRst = $this->doLogin($sEmailAddress);
@@ -443,7 +489,8 @@ class memberController extends member
 			unset($oMemberModel);
 			unset($oConfig);
 		}
-		unset($oRst);
+		unset($oOldNloginRst);
+        unset($oNloginInfo);
 		$this->setMessage('nlogin_succeed');
 	}
 
@@ -468,8 +515,6 @@ class memberController extends member
         if($config->privacy_usage && Context::get('accept_privacy_usage')!='Y') return $this->stop('msg_accept_privacy_usage');
         if($config->privacy_shr && Context::get('accept_privacy_shr')!='Y') return $this->stop('msg_accept_privacy_shr');
 
-        
-
 		// Extract the necessary information in advance
 		$getVars = array();
 		if($config->signupForm)
@@ -485,7 +530,9 @@ class memberController extends member
 
 		$args = new stdClass;
         // tag login referral
-		if($sReferral) $args->referral = Context::get('social_login_referral_code');
+        $sReferral = Context::get('social_login_referral_code');
+		if($sReferral) 
+            $args->referral = $sReferral;  // Context::get('social_login_referral_code');
 
 		foreach($getVars as $val)
 		{
@@ -691,7 +738,7 @@ class memberController extends member
 			return $this->stop('msg_not_logged');
 		}
 
-		if($_SESSION['rechecked_password_step'] != 'INPUT_DATA')
+        if($_SESSION['rechecked_password_step'] != 'INPUT_DATA')
 		{
 			return $this->stop('msg_invalid_request');
 		}

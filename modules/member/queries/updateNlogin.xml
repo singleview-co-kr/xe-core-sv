@@ -1,0 +1,11 @@
+<query id="updateNlogin" action="update">
+    <tables>
+        <table name="member_nlogin" />
+    </tables>
+    <columns>
+        <column name="extra_vars" var="extra_vars" notnull="notnull" />
+    </columns>
+    <conditions>
+        <condition operation="equal" column="member_srl" var="member_srl" notnull="notnull" filter="number" />
+    </conditions>
+</query>
