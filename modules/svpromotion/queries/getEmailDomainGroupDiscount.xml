@@ -1,8 +1,0 @@
-<query id="getEmailDomainGroupDiscount" action="select">
-	<tables>
-        <table name="svpromotion_member_email_domain_group" />
-	</tables>
-	<columns>
-		<column name="*" />
-	</columns>
-</query>
