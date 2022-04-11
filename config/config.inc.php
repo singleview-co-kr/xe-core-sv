@@ -86,8 +86,7 @@ else
     /**
 	 * Location site singleview
 	 */
-	// define('_XE_SV_DOWNLOAD_SERVER_', 'http://singleview.co.kr/appstore/');
-    define('_XE_SV_DOWNLOAD_SERVER_', 'http://192.168.0.37/appstore/');
+	define('_XE_SV_DOWNLOAD_SERVER_', 'http://singleview.co.kr/appstore/');
 
 }
 
