@@ -355,10 +355,8 @@ class memberController extends member
 				return new BaseObject(-1, 'msg_invalid_nlogin_email');
 			}
 			Context::set('nlogin_email', NULL);
-            $oNloginInfo->email = 'test@test.co.kr'; //////////////////
 			$sUserId = str_replace('@', '', $oNloginInfo->email);
 			$sUserId = str_replace('.', '', $sUserId);
-            
             if(!$oNloginInfo->name)
 			    $oNloginInfo->name = 'naver';
             if(!$oNloginInfo->nickname)
@@ -416,7 +414,6 @@ class memberController extends member
                 $oNloginInfo->profile_image != $oOldNloginInfo->profile_image)
             {
                 // begin - member table update
-                $oOldNloginInfo->email = 'test@test.co.kr'; //////////////////
                 $sUserId = str_replace('@', '', $oNloginInfo->email);
                 $sUserId = str_replace('.', '', $sUserId);
                 if(!$oNloginInfo->name)
