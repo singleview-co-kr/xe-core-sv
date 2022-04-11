@@ -69,9 +69,10 @@ class memberView extends member
 			Context::set('nvr_mandatory_attr_list', $this->member_config->nvr_attr_list);
 			$sCallbackSkin = 'callback_naver';
 		}
-        $sTemplatePath = sprintf('%sskins/default', $this->module_path);
-        $this->setTemplatePath($sTemplatePath);
-		$this->setTemplateFile($sCallbackSkin);
+        // $sTemplatePath = sprintf('%sskins/default', $this->module_path);
+        // $this->setTemplatePath($sTemplatePath);
+		// $this->setTemplateFile($sCallbackSkin);
+        $this->setTemplateFile($sCallbackSkin);
 	}
 	/**
 	 * @brief Display member information

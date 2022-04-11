@@ -399,10 +399,7 @@ class memberController extends member
 				unset($oInsertRst);
 			}
 			else
-			{
-				// debugPrint('msg_weird_error_while_nlogin_proc');
 				return new BaseObject(-1, 'msg_weird_error_while_nlogin_proc');
-			}
 		}
 		else  // get old member login
 		{
@@ -491,6 +488,11 @@ class memberController extends member
 		}
 		unset($oOldNloginRst);
         unset($oNloginInfo);
+		$oModuleModel = getModel('module');
+		$oConfig = $oModuleModel->getModuleConfig('member');
+		$this->add('redirect_url', $oConfig->redirect_url);
+		unset($oConfig);
+        unset($oModuleModel);
 		$this->setMessage('nlogin_succeed');
 	}
 

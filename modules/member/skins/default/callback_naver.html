@@ -20,9 +20,90 @@ if(hash_string.length > 99)
 
 <!-- 네이버 스크립트 -->
 <script src="https://static.nid.naver.com/js/naveridlogin_js_sdk_2.0.2.js" charset="utf-8"></script>
-<div id='nvr_id_rst'></div>
-<button onclick="naverLogin.reprompt();">reprompt</button><BR>
-<button onclick="validateMemberInfo();">register</button>
+
+<!---div id='nvr_id_rst'></div--->
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+      <div class="x_panel">
+        <div class="x_title">
+          <h2>네이버 아이디 로그인 <small>네이버에서 제공받은 정보입니다.</small></h2>
+          <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+          <br />
+          <form id="demo-form2" data-parsley-validate class="form-horizontal form-label-left">
+
+            <div class="form-group">
+              <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">이메일 <span class="required">*</span>
+              </label>
+              <div class="col-md-6 col-sm-6 col-xs-12">
+                <input type="text" id="nlogin_email" class="form-control col-md-7 col-xs-12" readonly>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name">핸드폰번호 <span class="required">*</span>
+              </label>
+              <div class="col-md-6 col-sm-6 col-xs-12">
+                <input type="text" id="nlogin_mobile" class="form-control col-md-7 col-xs-12" readonly>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="middle-name" class="control-label col-md-3 col-sm-3 col-xs-12">생년</label>
+              <div class="col-md-6 col-sm-6 col-xs-12">
+                <input type="text" id="nlogin_birthyr" class="form-control col-md-7 col-xs-12" readonly>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="middle-name" class="control-label col-md-3 col-sm-3 col-xs-12">생일</label>
+              <div class="col-md-6 col-sm-6 col-xs-12">
+                <input type="text" id="nlogin_birthday" class="form-control col-md-7 col-xs-12" readonly>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="middle-name" class="control-label col-md-3 col-sm-3 col-xs-12">성별</label>
+              <div class="col-md-6 col-sm-6 col-xs-12">
+                <input type="text" id="nlogin_gender" class="form-control col-md-7 col-xs-12" readonly>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="middle-name" class="control-label col-md-3 col-sm-3 col-xs-12">이름</label>
+              <div class="col-md-6 col-sm-6 col-xs-12">
+                <input type="text" id="nlogin_name" class="form-control col-md-7 col-xs-12" readonly>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="middle-name" class="control-label col-md-3 col-sm-3 col-xs-12">별명</label>
+              <div class="col-md-6 col-sm-6 col-xs-12">
+                <input type="text" id="nlogin_nickname" class="form-control col-md-7 col-xs-12" readonly>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="middle-name" class="control-label col-md-3 col-sm-3 col-xs-12">연령대</label>
+              <div class="col-md-6 col-sm-6 col-xs-12">
+                <input type="text" id="nlogin_age" class="form-control col-md-7 col-xs-12" readonly>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="middle-name" class="control-label col-md-3 col-sm-3 col-xs-12">프로필 이미지 URL</label>
+              <div class="col-md-6 col-sm-6 col-xs-12">
+                <input type="text" id="nlogin_profile_image" class="form-control col-md-7 col-xs-12" readonly>
+              </div>
+            </div>
+            <div class="ln_solid"></div>
+            <div class="form-group">
+              <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+                <button type="button" class="btn" onclick="window.location.href = '{$sServerRootPath}';">거부</button>
+                <button type="button" class="btn btn-primary" onclick="naverLogin.reprompt();">제공 정보 변경</button>
+                <button type="button" class="btn btn-success" onclick="validateMemberInfo();">가입</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+<!-- <button onclick="naverLogin.reprompt();">reprompt</button><BR>
+<button onclick="validateMemberInfo();">register</button> -->
 <script>
 // console.log(bValidApprach);
 // if(bValidApprach)
@@ -58,16 +139,26 @@ window.addEventListener('load', function () {
                 var profile_image = naverLogin.user.getProfileImage();  // 프로필 이미지 : 255자 이내로 구성된 URL 형태의 문자열
 
                 sRst = 'id: ' + id + '<br>';
+                $('#nlogin_email').val(email);
                 sRst += 'email: ' + email + '<br>';
+                $('#nlogin_mobile').val(mobile);
                 sRst += 'mobile: ' + mobile + '<br>';
-                sRst += 'birthday: ' + birthday + '<br>';
-                sRst += 'birthyear: ' + birthyear + '<br>';
-                sRst += 'gender: ' + gender + '<br>';
-                sRst += 'name: ' + name + '<br>';
-                sRst += 'nickname: ' + nickname + '<br>';
-                sRst += 'age: ' + age + '<br>';
-                sRst += 'profile_image: ' + profile_image + '<br>';
-                document.getElementById('nvr_id_rst').innerHTML = sRst;
+                $('#nlogin_birthyr').val(birthyear);
+                $('#nlogin_birthday').val(birthday);
+                $('#nlogin_gender').val(gender);
+                $('#nlogin_name').val(name);
+                $('#nlogin_nickname').val(nickname);
+                $('#nlogin_age').val(age);
+                $('#nlogin_profile_image').val(profile_image);
+                
+                // sRst += 'birthday: ' + birthday + '<br>';
+                // sRst += 'birthyear: ' + birthyear + '<br>';
+                // sRst += 'gender: ' + gender + '<br>';
+                // sRst += 'name: ' + name + '<br>';
+                // sRst += 'nickname: ' + nickname + '<br>';
+                // sRst += 'age: ' + age + '<br>';
+                // sRst += 'profile_image: ' + profile_image + '<br>';
+                // document.getElementById('nvr_id_rst').innerHTML = sRst;
                 
                 if(id == undefined || id == null) 
                 {
@@ -188,7 +279,7 @@ function validateMemberInfo()
 	var respons = ['success'];
 	exec_xml('member', 'procMemberSocialloginValidation', params, function(ret_obj) {
         console.log(ret_obj);
-		if(ret_obj['message'] == 'nlogin_succeed')
+		if(ret_obj['message'] == 'nlogin_succeed')  // if redirect_url not defined
             window.location.href = '{$sServerRootPath}';
 	},respons);
 }
