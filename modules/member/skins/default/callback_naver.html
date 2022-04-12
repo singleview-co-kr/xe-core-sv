@@ -1,9 +1,9 @@
-<!-- http://192.168.0.37/xe-core-sv/bWUuCYS7wb#access_token=AAAAOIrdyOs6ui3XDv0XJ_Ztzo_QAiU7piW1lA8VbYq7MKLo1WqQBcD9duGOdbQufZGPrM67LNr44aPHW3Eeo7rbNew&state=5e25d114-842c-40f8-a99a-e2520731f73f&token_type=bearer&expires_in=3600 -->
-<!-- http://192.168.0.37/xe-core-sv/bWUuCYS7wb#access_token=AAAAOIRM2r2hHX8gAMpDznuphkoB0v3TJ0d2cTpsAQiz_czk_F-70RaeEPpJOKweHuTrqvoYfa5eUjXMkbYHq_RTSQE&state=5e25d114-842c-40f8-a99a-e2520731f73f&token_type=bearer&expires_in=3600-->
 <!-- https://tyrannocoding.tistory.com/60 -->
+<!-- 네이버 스크립트 -->
+<script src="https://static.nid.naver.com/js/naveridlogin_js_sdk_2.0.2.js" charset="utf-8"></script>
+
 <script>
 var bValidApprach = false;
-var naver_redirect_uri = "{$redirect_uri}";
 //hash(#)가 있고 'access_token'이 있을 때, XE로그인 설정
 var hash_string = window.location.hash;
 if(hash_string.length > 99)
@@ -14,12 +14,7 @@ if(hash_string.length > 99)
     if(access_token.length > 85)
         bValidApprach = true;
 }
-
-// http://192.168.0.37/xe-core-sv/bWUuCYS7wb?code=F6se5y9Kup5rOL02tw&state=sv_reask  정보 재요청 상황
 </script>
-
-<!-- 네이버 스크립트 -->
-<script src="https://static.nid.naver.com/js/naveridlogin_js_sdk_2.0.2.js" charset="utf-8"></script>
 
 <!---div id='nvr_id_rst'></div--->
 <div class="row">
@@ -93,8 +88,8 @@ if(hash_string.length > 99)
             <div class="form-group">
               <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
                 <button type="button" class="btn" onclick="window.location.href = '{$sServerRootPath}';">거부</button>
-                <button type="button" class="btn btn-primary" onclick="naverLogin.reprompt();">제공 정보 변경</button>
-                <button type="button" class="btn btn-success" onclick="validateMemberInfo();">가입</button>
+                <button type="button" class="btn btn-primary" onclick="naver_reprompt();">제공 정보 변경</button>
+                <button type="button" class="btn btn-success" onclick="validateMemberInfo();">로그인하기</button>
               </div>
             </div>
           </form>
@@ -102,154 +97,131 @@ if(hash_string.length > 99)
       </div>
     </div>
   </div>
-<!-- <button onclick="naverLogin.reprompt();">reprompt</button><BR>
-<button onclick="validateMemberInfo();">register</button> -->
 <script>
-// console.log(bValidApprach);
-// if(bValidApprach)
-// {
-    var naverLogin = new naver.LoginWithNaverId(
-        {
-            clientId: "{$naver_client_id}", //내 애플리케이션 정보에 cliendId를 입력해줍니다.
-            callbackUrl: "{$sServerRootPath}{$naver_cb_mid}", // 내 애플리케이션 API설정의 Callback URL 을 입력해줍니다.
-            isPopup: false,
-            callbackHandle: true
-        }
-    );
-    naverLogin.init();
-// }
+var naverLogin = new naver.LoginWithNaverId(
+    {
+        clientId: "{$naver_client_id}", //내 애플리케이션 정보에 cliendId를 입력해줍니다.
+        callbackUrl: "{$sServerRootPath}{$naver_cb_mid}", // 내 애플리케이션 API설정의 Callback URL 을 입력해줍니다.
+        isPopup: false,
+        callbackHandle: true
+    }
+);
+naverLogin.init();
 
 // console.log(naverLogin.accessToken.accessToken);
 window.addEventListener('load', function () {
-    // if(bValidApprach)
-    // {
-        naverLogin.getLoginStatus(function (status) {
-        // console.log(status);
-            if(status)
+    naverLogin.getLoginStatus(function (status) {
+        if(status)
+        {
+            var id = naverLogin.user.getId();  // 이용자 식별자 : 64자 이내로 구성된 BASE64 형식의 문자열 (2021년 5월 1일 이후 생성된 애플리케이션부터 적용. 기존 INT64 규격의 숫자)
+            var email = naverLogin.user.getEmail();  // 이메일 주소 : 이메일 규격의 문자열
+            var mobile = naverLogin.user.getMobile();  // 휴대전화번호 : 대쉬(-)를 포함한 휴대전화번호 문자열
+            var birthday = naverLogin.user.getBirthday();  // 생일 : 월-일 (MM-DD) 형태의 문자열
+            var birthyear = naverLogin.user.getBirthyear();  // 출생연도 : 연(YYYY) 형태의 문자열
+            var gender = naverLogin.user.getGender();  // 성별 : M/F (남성/여성) 으로 표된 문자
+            var name = naverLogin.user.getName();  // 이름 : 10자 이내로 구성된 문자열
+            var nickname = naverLogin.user.getNickName();  // 닉네임 : 20자 이내로 구성된 문자열
+            var age = naverLogin.user.getAge();  // 연령대 : 연령 구간에 따라 0-9 / 10-19 / 20-29 / 30-39 / 40-49 / 50-59 / 60- 으로 표현된 문자열
+            var profile_image = naverLogin.user.getProfileImage();  // 프로필 이미지 : 255자 이내로 구성된 URL 형태의 문자열
+            if(id == undefined || id == null) 
             {
-                var id = naverLogin.user.getId();  // 이용자 식별자 : 64자 이내로 구성된 BASE64 형식의 문자열 (2021년 5월 1일 이후 생성된 애플리케이션부터 적용. 기존 INT64 규격의 숫자)
-                var email = naverLogin.user.getEmail();  // 이메일 주소 : 이메일 규격의 문자열
-                var mobile = naverLogin.user.getMobile();  // 휴대전화번호 : 대쉬(-)를 포함한 휴대전화번호 문자열
-                var birthday = naverLogin.user.getBirthday();  // 생일 : 월-일 (MM-DD) 형태의 문자열
-                var birthyear = naverLogin.user.getBirthyear();  // 출생연도 : 연(YYYY) 형태의 문자열
-                var gender = naverLogin.user.getGender();  // 성별 : M/F (남성/여성) 으로 표된 문자
-                var name = naverLogin.user.getName();  // 이름 : 10자 이내로 구성된 문자열
-                var nickname = naverLogin.user.getNickName();  // 닉네임 : 20자 이내로 구성된 문자열
-                var age = naverLogin.user.getAge();  // 연령대 : 연령 구간에 따라 0-9 / 10-19 / 20-29 / 30-39 / 40-49 / 50-59 / 60- 으로 표현된 문자열
-                var profile_image = naverLogin.user.getProfileImage();  // 프로필 이미지 : 255자 이내로 구성된 URL 형태의 문자열
-
-                sRst = 'id: ' + id + '<br>';
-                $('#nlogin_email').val(email);
-                sRst += 'email: ' + email + '<br>';
-                $('#nlogin_mobile').val(mobile);
-                sRst += 'mobile: ' + mobile + '<br>';
-                $('#nlogin_birthyr').val(birthyear);
-                $('#nlogin_birthday').val(birthday);
-                $('#nlogin_gender').val(gender);
-                $('#nlogin_name').val(name);
-                $('#nlogin_nickname').val(nickname);
-                $('#nlogin_age').val(age);
-                $('#nlogin_profile_image').val(profile_image);
-                
-                // sRst += 'birthday: ' + birthday + '<br>';
-                // sRst += 'birthyear: ' + birthyear + '<br>';
-                // sRst += 'gender: ' + gender + '<br>';
-                // sRst += 'name: ' + name + '<br>';
-                // sRst += 'nickname: ' + nickname + '<br>';
-                // sRst += 'age: ' + age + '<br>';
-                // sRst += 'profile_image: ' + profile_image + '<br>';
-                // document.getElementById('nvr_id_rst').innerHTML = sRst;
-                
-                if(id == undefined || id == null) 
-                {
-                    alert("네이버 고유 ID는 필수정보입니다. 다시 시도해 주세요.");
-                    naverLogin.reprompt();
-                    return;
-                }
-                if(email == undefined || email == null) 
-                {
-                    alert("이메일은 필수정보입니다. 정보제공을 동의해주세요.");
-                    naverLogin.reprompt();
-                    return;
-                }
-    <block cond="$nvr_mandatory_attr_list['mobile']">
-                if(mobile == undefined || mobile == null) 
-                {
-                    alert("핸드폰 번호는 필수정보입니다. 정보제공을 동의해주세요.");
-                    naverLogin.reprompt();
-                    return;
-                }
-    </block>
-    <block cond="$nvr_mandatory_attr_list['birthday']">
-                if(birthday == undefined || birthday == null) 
-                {
-                    alert("생일은 필수정보입니다. 정보제공을 동의해주세요.");
-                    naverLogin.reprompt();
-                    return;
-                }
-    </block>
-    <block cond="$nvr_mandatory_attr_list['birthyear']">
-                if(birthyear == undefined || birthyear == null) 
-                {
-                    alert("생년은 필수정보입니다. 정보제공을 동의해주세요.");
-                    naverLogin.reprompt();
-                    return;
-                }
-    </block>
-    <block cond="$nvr_mandatory_attr_list['gender']">
-                if(gender == undefined || gender == null) 
-                {
-                    alert("성별은 필수정보입니다. 정보제공을 동의해주세요.");
-                    naverLogin.reprompt();
-                    return;
-                }
-    </block>
-    <block cond="$nvr_mandatory_attr_list['name']">
-                if(name == undefined || name == null) 
-                {
-                    alert("실명은 필수정보입니다. 정보제공을 동의해주세요.");
-                    naverLogin.reprompt();
-                    return;
-                }
-    </block>
-    <block cond="$nvr_mandatory_attr_list['nickname']">
-                if(nickname == undefined || nickname == null) 
-                {
-                    alert("별명은 필수정보입니다. 정보제공을 동의해주세요.");
-                    naverLogin.reprompt();
-                    return;
-                }
-    </block>
-    <block cond="$nvr_mandatory_attr_list['age']">
-                if(age == undefined || age == null) 
-                {
-                    alert("연령대는 필수정보입니다. 정보제공을 동의해주세요.");
-                    naverLogin.reprompt();
-                    return;
-                }
-    </block>
-    <block cond="$nvr_mandatory_attr_list['profile_image']">
-                if(profile_image == undefined || profile_image == null) 
-                {
-                    alert("프로필 이미지는 필수정보입니다. 정보제공을 동의해주세요.");
-                    naverLogin.reprompt();
-                    return;
-                }
-    </block>
-            } 
-            else
-            {
-                document.getElementById('nvr_id_rst').innerHTML = "네이버 서버와 통신 이상인 것 같습니다. 잠시 후에 재시도해주세요.";
+                alert("네이버 고유 ID는 필수정보입니다. 다시 시도해 주세요.");
+                naverLogin.reprompt();
                 return;
             }
-        });
-    // }
-    // else
-    // {
-    //     document.getElementById('nvr_id_rst').innerHTML = "비정상 접근입니다.";
-    //     return;
-    // }
+            if(email == undefined || email == null) 
+            {
+                alert("이메일은 필수정보입니다. 정보제공을 동의해주세요.");
+                naverLogin.reprompt();
+                return;
+            }
+<block cond="$nvr_mandatory_attr_list['mobile']">
+            if(mobile == undefined || mobile == null) 
+            {
+                alert("핸드폰 번호는 필수정보입니다. 정보제공을 동의해주세요.");
+                naverLogin.reprompt();
+                return;
+            }
+</block>
+<block cond="$nvr_mandatory_attr_list['birthday']">
+            if(birthday == undefined || birthday == null) 
+            {
+                alert("생일은 필수정보입니다. 정보제공을 동의해주세요.");
+                naverLogin.reprompt();
+                return;
+            }
+</block>
+<block cond="$nvr_mandatory_attr_list['birthyear']">
+            if(birthyear == undefined || birthyear == null) 
+            {
+                alert("생년은 필수정보입니다. 정보제공을 동의해주세요.");
+                naverLogin.reprompt();
+                return;
+            }
+</block>
+<block cond="$nvr_mandatory_attr_list['gender']">
+            if(gender == undefined || gender == null) 
+            {
+                alert("성별은 필수정보입니다. 정보제공을 동의해주세요.");
+                naverLogin.reprompt();
+                return;
+            }
+</block>
+<block cond="$nvr_mandatory_attr_list['name']">
+            if(name == undefined || name == null) 
+            {
+                alert("실명은 필수정보입니다. 정보제공을 동의해주세요.");
+                naverLogin.reprompt();
+                return;
+            }
+</block>
+<block cond="$nvr_mandatory_attr_list['nickname']">
+            if(nickname == undefined || nickname == null) 
+            {
+                alert("별명은 필수정보입니다. 정보제공을 동의해주세요.");
+                naverLogin.reprompt();
+                return;
+            }
+</block>
+<block cond="$nvr_mandatory_attr_list['age']">
+            if(age == undefined || age == null) 
+            {
+                alert("연령대는 필수정보입니다. 정보제공을 동의해주세요.");
+                naverLogin.reprompt();
+                return;
+            }
+</block>
+<block cond="$nvr_mandatory_attr_list['profile_image']">
+            if(profile_image == undefined || profile_image == null) 
+            {
+                alert("프로필 이미지는 필수정보입니다. 정보제공을 동의해주세요.");
+                naverLogin.reprompt();
+                return;
+            }
+</block>
+            $('#nlogin_email').val(email);
+            $('#nlogin_mobile').val(mobile);
+            $('#nlogin_birthyr').val(birthyear);
+            $('#nlogin_birthday').val(birthday);
+            $('#nlogin_gender').val(gender);
+            $('#nlogin_name').val(name);
+            $('#nlogin_nickname').val(nickname);
+            $('#nlogin_age').val(age);
+            $('#nlogin_profile_image').val(profile_image);
+        } 
+        else
+        {
+            document.getElementById('nvr_id_rst').innerHTML = "네이버 서버와 통신 이상인 것 같습니다. 잠시 후에 재시도해주세요.";
+            return;
+        }
+    });
 });
+
+function naver_reprompt()
+{
+    if(bValidApprach)
+        naverLogin.reprompt();
+}
 
 function naver_relogin()
 {
@@ -259,6 +231,8 @@ function naver_relogin()
 
 function validateMemberInfo()
 {
+    if(!bValidApprach)
+        return;
 	var params = new Array();
 	params['login_type'] = 'naverLogin';
     params['nlogin_id'] = naverLogin.user.getId();

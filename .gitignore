@@ -40,15 +40,6 @@ layouts/xet_fullpage_sv/
 layouts/xet_plus/
 layouts/xet_sense_nt/
 
-modules/svcart/m.skins/trendshop/
-modules/svcart/skins/Trendshop/
-modules/svitem/m.skins/trendshop/
-modules/svitem/skins/TrendshopA_sv/
-modules/svitem/skins/TrendshopS_sv/
-modules/svorder/m.skins/trendshop/
-modules/svorder/skins/Trendshop/
-modules/svpromotion/skins/Trendshop/
-
 addons/svauth
 addons/svtracker
 
@@ -59,4 +50,3 @@ modules/svcollector
 modules/svauth
 modules/svdocs
 modules/svshortener
-modules/svitem/skins/plain

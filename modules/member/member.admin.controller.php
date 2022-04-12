@@ -472,6 +472,7 @@ class memberAdminController extends member
                 $oParam->module = 'member';
                 $oParam->mid = $sNaverCallbackMid;
                 $oParam->social_login_type = 'naver';
+                $oParam->browser_title = '네이버 로그인 콜백 페이지';
                 $oModuleController = getController('module');
                 $oRst = $oModuleController->insertModule($oParam);
                 if(!$oRst->toBool()) 
