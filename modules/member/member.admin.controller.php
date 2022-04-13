@@ -869,7 +869,7 @@ class memberAdminController extends member
 
 		$oMemberModel = getModel('member');
 		$config = $oMemberModel->getMemberConfig();
-		unset($config->agreement);
+		// unset($config->agreement);
 
 		if($isInsert)
 		{
@@ -885,6 +885,8 @@ class memberAdminController extends member
 				}
 			}
 		}
+        // create Ruleset
+		$this->_createSignupRuleset($config->signupForm, $config->agreement);
 		$oModuleController = getController('module');
 		$output = $oModuleController->updateModuleConfig('member', $config);
 
@@ -905,8 +907,7 @@ class memberAdminController extends member
 
 		$oMemberModel = getModel('member');
 		$config = $oMemberModel->getMemberConfig();
-		unset($config->agreement);
-
+		// unset($config->agreement);
 		foreach($config->signupForm as $key=>$val)
 		{
 			if($val->member_join_form_srl == $member_join_form_srl)
@@ -915,6 +916,8 @@ class memberAdminController extends member
 				break;
 			}
 		}
+        // create Ruleset
+		$this->_createSignupRuleset($config->signupForm, $config->agreement);
 		$oModuleController = getController('module');
 		$output = $oModuleController->updateModuleConfig('member', $config);
 	}
