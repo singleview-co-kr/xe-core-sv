@@ -228,6 +228,12 @@ class memberView extends member
 		$formTags = $oMemberAdminView->_getMemberInputTag($member_info);
 		Context::set('formTags', $formTags);
 
+		$oModuleModel = &getModel('module');
+		$oSvauthConfig = $oModuleModel->getModuleConfig('svauth');
+		$nCertifyPluginSrl = $oSvauthConfig->plugin_srl;
+		Context::set('nCertifyPluginSrl', $nCertifyPluginSrl);
+		unset($oModuleModel);
+
 		global $lang;
 		$identifierForm = new stdClass();
 		$identifierForm->title = $lang->{$member_config->identifier};

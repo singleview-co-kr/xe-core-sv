@@ -707,8 +707,31 @@ class memberAdminView extends member
 					if($extendForm->description)
 						$inputTag .= '<p class="help-block">'.$extendForm->description.'</p>';
 				}
-				$formTag->inputTag = $inputTag;
-				$formTags[] = $formTag;
+
+				if($formTag->name == 'mobile')
+				{
+					$oSvauthModel = getClass('svauth');
+					if(isset($oSvauthModel))
+					{
+						$inputTag .= "<input type='button' id='get_authcode' name='get_authcode' value='인증번호 받기' onClick='getAuthCode();'>";
+						$sExtraInputTag = "<input type='text' id='authcode' name='authcode' placeholder='인증번호'>";
+					}
+					$formTag->inputTag = $inputTag;
+					$formTags[] = $formTag;
+					if(isset($oSvauthModel))
+					{
+						$oExtraFormTag = new stdClass();
+						$oExtraFormTag->title = '인증번호';
+						$oExtraFormTag->inputTag = "<input type='text' id='authcode' name='authcode' placeholder='인증번호'>";;
+						$formTags[] = $oExtraFormTag;
+					}
+					unset($oSvauthModel);
+				}
+				else
+				{
+					$formTag->inputTag = $inputTag;
+					$formTags[] = $formTag;
+				}
 		}
 		return $formTags;
 	}

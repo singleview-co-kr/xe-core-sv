@@ -1128,6 +1128,9 @@
 		<value xml:lang="tr"><![CDATA[Kayıt Formu]]></value>
 		<value xml:lang="vi"><![CDATA[Quản lý mẫu đăng kí]]></value>
 	</item>
+    <item name="cmd_sms_auth_plugin">
+		<value xml:lang="ko"><![CDATA[SMS 인증 플러그인]]></value>
+	</item>
 	<item name="cmd_view_own_document">
 		<value xml:lang="ko"><![CDATA[작성 글 보기]]></value>
 		<value xml:lang="en"><![CDATA[Written Articles]]></value>

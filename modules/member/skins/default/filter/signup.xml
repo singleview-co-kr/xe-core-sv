@@ -11,8 +11,8 @@
     </form>
     <parameter>
         <param name="accept_agreement" target="accept_agreement" />
-        <param name="privacy_usage" target="privacy_usage" />
-        <param name="privacy_shr" target="privacy_shr" />
+        <param name="accept_privacy_usage" target="accept_privacy_usage" />
+        <param name="accept_privacy_shr" target="accept_privacy_shr" />
         <param name="member_srl" target="member_srl" />
         <param name="user_id" target="user_id" />
         <param name="password" target="password1" />
