@@ -581,7 +581,6 @@
     <item name="privacy_shr">
 		<value xml:lang="ko"><![CDATA[개인정보 제공방침]]></value>
 	</item>
-    
 	<item name="accept_agreement">
 		<value xml:lang="ko"><![CDATA[약관동의]]></value>
 		<value xml:lang="en"><![CDATA[Agree]]></value>
@@ -594,6 +593,13 @@
 		<value xml:lang="tr"><![CDATA[Kabul Et]]></value>
 		<value xml:lang="vi"><![CDATA[Đồng ý]]></value>
 	</item>
+    <item name="accept_privacy_usage">
+		<value xml:lang="ko"><![CDATA[개인정보처리 동의]]></value>
+	</item>
+    <item name="accept_privacy_shr">
+		<value xml:lang="ko"><![CDATA[개인정보제공 동의]]></value>
+	</item>
+
 	<item name="member_info">
 		<value xml:lang="ko"><![CDATA[회원 정보]]></value>
 		<value xml:lang="en"><![CDATA[User Info]]></value>

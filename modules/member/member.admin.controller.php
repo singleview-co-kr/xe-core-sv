@@ -156,7 +156,6 @@ class memberAdminController extends member
 		$this->setMessage("success_deleted");
 	}
 
-
 	public function procMemberAdminInsertDefaultConfig()
 	{
 		$args = Context::gets(
@@ -222,7 +221,24 @@ class memberAdminController extends member
 			FileHandler::removeFile($sAgreementFile);
 		else
 			FileHandler::writeFile($sAgreementFile, $oArgs->agreement);
-		$this->setMessage('success_updated');
+		
+        $oMemberModel = getModel('member');
+        $oConfig = $oMemberModel->getMemberConfig();
+        foreach($oConfig->signupForm as $key=>$val)
+        {
+            if($val->member_join_form_srl == $signupItem->member_join_form_srl)
+                $oConfig->signupForm[$key] = $signupItem;
+        }
+        $oTerms = new stdClass();
+        $oTerms->agreement = $oConfig->agreement;
+        $oTerms->privacy_usage = $oConfig->privacy_usage;
+        $oTerms->privacy_shr = $oConfig->privacy_shr;
+        // create Ruleset
+		$this->_createSignupRuleset($oConfig->signupForm, $oTerms);
+        unset($oTerms);
+        unset($oConfig);
+        unset($oMemberModel);
+        $this->setMessage('success_updated');
 		$returnUrl = Context::get('success_return_url') ? Context::get('success_return_url') : getNotEncodedUrl('', 'module', 'admin', 'act', 'dispMemberAdminAgreementConfig', 'term_type', $oArgs->term_type);
 		$this->setRedirectUrl($returnUrl);
 	}
@@ -231,7 +247,6 @@ class memberAdminController extends member
 	{
 		$oMemberModel = getModel('member');
 		$oModuleController = getController('module');
-
 		$args = Context::gets(
 			'limit_day',
 			'limit_day_description',
@@ -287,7 +302,6 @@ class memberAdminController extends member
 		);
 		$mustRequireds = array('email_address', 'nick_name', 'password', 'find_account_question');
 		$extendItems = $oMemberModel->getJoinFormList();
-
 		foreach($list_order as $key)
 		{
 			$signupItem = new stdClass();
@@ -337,15 +351,24 @@ class memberAdminController extends member
 		}
 		$args->signupForm = $signupForm;
 
-		// create Ruleset
-		$this->_createSignupRuleset($signupForm, $args->agreement);
 		$this->_createLoginRuleset($args->identifier);
 		$this->_createFindAccountByQuestion($args->identifier);
 		$output = $oModuleController->updateModuleConfig('member', $args);
 
+        $oMemberModel = getModel('member');
+		$oConfig = $oMemberModel->getMemberConfig();
+        $oTerms = new stdClass();
+        $oTerms->agreement = $oConfig->agreement;
+        $oTerms->privacy_usage = $oConfig->privacy_usage;
+        $oTerms->privacy_shr = $oConfig->privacy_shr;
+        // create Ruleset
+		$this->_createSignupRuleset($signupForm, $oTerms);
+        unset($oTerms);
+        unset($oConfig);
+        unset($oMemberModel);
+
 		// default setting end
 		$this->setMessage('success_updated');
-
 		$returnUrl = Context::get('success_return_url') ? Context::get('success_return_url') : getNotEncodedUrl('', 'module', 'admin', 'act', 'dispMemberAdminSignUpConfig');
 		$this->setRedirectUrl($returnUrl);
 	}
@@ -618,7 +641,7 @@ class memberAdminController extends member
 	 * @param string $agreement
 	 * @return void
 	 */
-	function _createSignupRuleset($signupForm, $agreement = null){
+	function _createSignupRuleset($signupForm, $oTermsConf){
 		$xml_file = './files/ruleset/insertMember.xml';
 		$buff = '<?xml version="1.0" encoding="utf-8"?>' . PHP_EOL.
 			'<ruleset version="1.5.0">' . PHP_EOL.
@@ -627,12 +650,13 @@ class memberAdminController extends member
 			'<fields>' . PHP_EOL . '%s' . PHP_EOL . '</fields>' . PHP_EOL.
 			'</ruleset>';
 
-		$fields = array();
-
-		if ($agreement)
-		{
+		$fields = [];
+		if($oTermsConf->agreement)
 			$fields[] = '<field name="accept_agreement"><if test="$act == \'procMemberInsert\'" attr="required" value="true" /></field>';
-		}
+        if($oTermsConf->privacy_usage)
+			$fields[] = '<field name="accept_privacy_usage"><if test="$act == \'procMemberInsert\'" attr="required" value="true" /></field>';
+        if($oTermsConf->privacy_shr)
+			$fields[] = '<field name="accept_privacy_shr"><if test="$act == \'procMemberInsert\'" attr="required" value="true" /></field>';
 		foreach($signupForm as $formInfo)
 		{
 			if($formInfo->required || $formInfo->mustRequired)
@@ -885,8 +909,13 @@ class memberAdminController extends member
 				}
 			}
 		}
+        $oTerms = new stdClass();
+        $oTerms->agreement = $oConfig->agreement;
+        $oTerms->privacy_usage = $oConfig->privacy_usage;
+        $oTerms->privacy_shr = $oConfig->privacy_shr;
         // create Ruleset
-		$this->_createSignupRuleset($config->signupForm, $config->agreement);
+		$this->_createSignupRuleset($config->signupForm, $oTerms);
+        unset($oTerms);
 		$oModuleController = getController('module');
 		$output = $oModuleController->updateModuleConfig('member', $config);
 
@@ -916,8 +945,13 @@ class memberAdminController extends member
 				break;
 			}
 		}
+        $oTerms = new stdClass();
+        $oTerms->agreement = $oConfig->agreement;
+        $oTerms->privacy_usage = $oConfig->privacy_usage;
+        $oTerms->privacy_shr = $oConfig->privacy_shr;
         // create Ruleset
-		$this->_createSignupRuleset($config->signupForm, $config->agreement);
+		$this->_createSignupRuleset($config->signupForm, $oTerms);
+        unset($oTerms);
 		$oModuleController = getController('module');
 		$output = $oModuleController->updateModuleConfig('member', $config);
 	}

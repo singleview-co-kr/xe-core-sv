@@ -266,7 +266,6 @@ class memberController extends member
 		// Check if logged-in
 		$logged_info = Context::get('logged_info');
 
-
 		switch($name)
 		{
 			case 'user_id' :
@@ -319,7 +318,6 @@ class memberController extends member
         $oNloginInfo->age = trim(Context::get('nlogin_age'));
         $oNloginInfo->profile_image = trim(Context::get('nlogin_profile_image'));
         // nlogin_profile_image  not yet implemented
-        
         // begin - prevent to register member.extra_vars table
         Context::set('nlogin_id', NULL);
         Context::set('nlogin_email', null);
@@ -332,7 +330,6 @@ class memberController extends member
         Context::set('nlogin_age', null);
         Context::set('nlogin_profile_image', null);
         // end - prevent to register member.extra_vars table
-
         if(!$oNloginInfo->naver_user_id)
         {
             $this->setMessage('msg_invalid_nlogin_id');
@@ -365,7 +362,6 @@ class memberController extends member
 			    $oNloginInfo->birthyear = '1900';
             if(!$oNloginInfo->birthday)
 			    $oNloginInfo->birthday = '00-00';
-			
 			Context::set('social_login_referral_code', member::REFERRER_NAVER);
 			Context::set('email_address', $oNloginInfo->email);
 			Context::set('user_id', 'n'.$sUserId);
