@@ -529,6 +529,16 @@ class memberController extends member
 		if($sReferral) 
             $args->referral = $sReferral;  // Context::get('social_login_referral_code');
 
+		if(in_array('mobile', $getVars))  // 핸드폰 번호 SMS 인증 정보 검사
+		{
+			if($this->isMemberMobilePhoneAuthMode())
+			{
+				$sAuthcode = Context::get('authcode');
+				if($sAuthcode) 
+					$args->authcode = $sAuthcode;
+			}
+		}
+
 		foreach($getVars as $val)
 		{
 			$args->{$val} = Context::get($val);
@@ -583,6 +593,7 @@ class memberController extends member
 				$args->{$val} = preg_replace('/[\pZ\pC]+/u', '', html_entity_decode($args->{$val}));
 			}
 		}
+		
 		$output = $this->insertMember($args);
         if(!$output->toBool()) return $output;
         

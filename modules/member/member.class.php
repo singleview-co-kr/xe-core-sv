@@ -576,6 +576,31 @@ class member extends ModuleObject {
 		$sServerRootPath = ($_SERVER['HTTPS'] == 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST']. getScriptPath();
         Context::set('sServerRootPath', $sServerRootPath);
 	}
+	protected function isMemberMobilePhoneAuthMode() 
+	{
+		$bAuthMode = FALSE;
+		$oSvauthClass = getClass('svauth');
+		if(isset($oSvauthClass))
+		{
+			$oModuleModel = getModel('module');
+			$oSvauthConfig = $oModuleModel->getModuleConfig('svauth');
+			$nPluginSrl = (int)$oSvauthConfig->plugin_srl;
+			if($nPluginSrl)
+			{
+				$oSvauthModel = getModel('svauth');
+				$oMemberRegistrationPluginInfo = $oSvauthModel->getPlugin($nPluginSrl);
+				if($oMemberRegistrationPluginInfo->_g_oPluginInfo->plugin == 'sv_sms')
+				{
+					$bAuthMode = TRUE;
+				}
+				unset($oMemberRegistrationPluginInfo);
+				unset($oSvauthModel);
+			}
+			unset($oSvauthConfig);
+			unset($oModuleModel);
+		}
+		return $bAuthMode;
+	}
 }
 /* End of file member.class.php */
 /* Location: ./modules/member/member.class.php */

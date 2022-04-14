@@ -123,26 +123,17 @@ function getAuthCode()
 		alert('연락처를 입력해 주세요.');
 		return;
 	}
-	//_disableBtn( '#get_authcode' );
-	var nModuleSrl = 111; //jQuery('#module_srl').val();
-	var nSvPluginSrl = '{$nCertifyPluginSrl}';
-	if(!nSvPluginSrl)
-	{
-		alert('인증이 필요하지 않습니다.');
-		return;
-	}
+	_disableBtn( '#get_authcode' );
 	var params = new Array();
-	params['module_srl'] = nModuleSrl;
-	params['plugin_srl'] = nSvPluginSrl;
 	params['phone_number'] = sMobileNumber;
 	var respons = ['success'];
-	exec_xml('svauth', 'procSvauthSetAuthCode', params, function(ret_obj) {
+	exec_xml('svauth', 'procSvauthSetAuthCodeMemberAjax', params, function(ret_obj) {
 		if( ret_obj['message'] )
 			alert(ret_obj['message']);
 
 		if( ret_obj['success'] == -1 )
 			_activateBtn();
-	},respons);
+	}, respons);
 }
 
 function _disableBtn(sBtnId)

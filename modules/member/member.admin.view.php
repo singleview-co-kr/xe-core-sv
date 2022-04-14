@@ -423,6 +423,10 @@ class memberAdminView extends member
 
 		$formTags = array();
 		global $lang;
+		
+		$bSispMemberSignUpForm = FALSE;
+		if(trim(Context::get('act')) == 'dispMemberSignUpForm')
+			$bSispMemberSignUpForm = TRUE;
 
 		foreach($member_config->signupForm as $no=>$formInfo)
 		{
@@ -708,24 +712,24 @@ class memberAdminView extends member
 						$inputTag .= '<p class="help-block">'.$extendForm->description.'</p>';
 				}
 
-				if($formTag->name == 'mobile')
+				if($formTag->name == 'mobile' && $bSispMemberSignUpForm)
 				{
-					$oSvauthModel = getClass('svauth');
-					if(isset($oSvauthModel))
+					$bMobileAuthInput = FALSE;
+					if($this->isMemberMobilePhoneAuthMode())
 					{
+						$bMobileAuthInput = TRUE;
 						$inputTag .= "<input type='button' id='get_authcode' name='get_authcode' value='인증번호 받기' onClick='getAuthCode();'>";
-						$sExtraInputTag = "<input type='text' id='authcode' name='authcode' placeholder='인증번호'>";
 					}
 					$formTag->inputTag = $inputTag;
 					$formTags[] = $formTag;
-					if(isset($oSvauthModel))
+					if($bMobileAuthInput)
 					{
 						$oExtraFormTag = new stdClass();
 						$oExtraFormTag->title = '인증번호';
 						$oExtraFormTag->inputTag = "<input type='text' id='authcode' name='authcode' placeholder='인증번호'>";;
 						$formTags[] = $oExtraFormTag;
 					}
-					unset($oSvauthModel);
+					unset($oSvauthClass);
 				}
 				else
 				{
