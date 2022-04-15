@@ -273,10 +273,10 @@ class member extends ModuleObject {
         $sVersionUpdateId = implode('.', array(__CLASS__, '1.8.0', 'updated'));
 		if($oModuleModel->needUpdate($sVersionUpdateId))
 		{
-			$bAct = $oDB->isColumnExists("member", "referral");
-            $bAct = $oDB->isColumnExists("member", "mobile");
-            $bAct = $oDB->isColumnExists("member_join_form", "is_readonly");
-			if(!$bAct) 
+            $bAct = $oDB->isColumnExists("member", "referral");
+            $bAct &= $oDB->isColumnExists("member", "mobile");
+            $bAct &= $oDB->isColumnExists("member_join_form", "is_readonly");
+            if(!$bAct)
                 return true;
             $oModuleController->insertUpdatedLog($sVersionUpdateId);
         }
@@ -302,7 +302,6 @@ class member extends ModuleObject {
 		$oModuleController = getController('module');
 		$oMemberAdminController = getAdminController('member');
 		$config = $oModuleModel->getModuleConfig('member');
-		// $version_update_id = implode('.', array(__CLASS__, __XE_VERSION__, 'updated'));
         $version_update_id = 'member.1.11.6.updated';
 		if($oModuleModel->needUpdate($version_update_id))
 		{
@@ -439,7 +438,6 @@ class member extends ModuleObject {
 
 			$oModuleController->insertUpdatedLog($version_update_id);
 		}
-
         $sVersionUpdateId = implode('.', array(__CLASS__, '1.8.0', 'updated'));
 		if($oModuleModel->needUpdate($sVersionUpdateId))
 		{
@@ -453,6 +451,35 @@ class member extends ModuleObject {
                 $oDB->addColumn("member", "mobile", "char", 12, NULL);
                 $oDB->addIndex("member","idx_mobile", "mobile", false);
             }
+            // begin - add mobile attr on signup config
+            $oConfig = $oModuleModel->getModuleConfig('member');
+            $bMobileAppend = TRUE;
+            foreach($oConfig->signupForm as $oForm)
+            {
+                if($oForm->name == 'mobile')
+                {
+                    $bMobileAppend = TRUE;
+                    break;
+                }
+            }
+            if($bMobileAppend)
+            {
+                $oForm = new stdClass();
+                $oForm->isIdentifier = FALSE;
+                $oForm->isDefaultForm = TRUE;
+                $oForm->name = 'mobile';
+                $oForm->title = '모바일';
+                $oForm->mustRequired = FALSE;
+                $oForm->imageType = FALSE;
+                $oForm->required = FALSE;
+                $oForm->isUse = FALSE;
+                $oForm->isPublic = 'N';
+                $oForm->isReadonly = 'N';
+                $oConfig->signupForm[] = $oForm;
+                $oModuleController->updateModuleConfig('member', $oConfig);
+            }
+            unset($oConfig);
+            // end - add mobile attr on signup config
             if(!$oDB->isColumnExists("member_join_form", "is_readonly"))  // readonly field
                 $oDB->addColumn("member_join_form", "is_readonly", "char", 1, 'N');
             $oModuleController->insertUpdatedLog($sVersionUpdateId);

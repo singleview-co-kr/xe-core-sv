@@ -499,7 +499,7 @@ class memberAdminController extends member
                 $oModuleController = getController('module');
                 $oRst = $oModuleController->insertModule($oParam);
                 if(!$oRst->toBool()) 
-                    return $output;
+                    return $oRst;
                 $oArgs->naver_cb_mid = $sNaverCallbackMid;
                 unset($oRst);
                 unset($oParam);
