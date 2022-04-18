@@ -1131,6 +1131,9 @@
     <item name="cmd_sms_auth_plugin">
 		<value xml:lang="ko"><![CDATA[SMS 인증 플러그인]]></value>
 	</item>
+    <item name="about_sms_auth_plugin">
+		<value xml:lang="ko"><![CDATA[회원 가입 시 SMS 인증 플러그인은 <a href='./index.php?module=admin&act=dispSvauthAdminDefaultSetting'>svauth 모듈</a>에서 설정하세요.]]></value>
+	</item>
 	<item name="cmd_view_own_document">
 		<value xml:lang="ko"><![CDATA[작성 글 보기]]></value>
 		<value xml:lang="en"><![CDATA[Written Articles]]></value>

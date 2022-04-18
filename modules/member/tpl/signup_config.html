@@ -185,11 +185,10 @@
 		</div>
 	</div>
     <div class="x_control-group">
-		<label class="x_control-label" for="redirect_url">{$lang->cmd_sms_auth_plugin}</label>
+		<label class="x_control-label" for="after_login_url">{$lang->cmd_sms_auth_plugin}</label>
 		<div class="x_controls">
-			<input class="module_search" type="text" name="redirect_url" value="{$config->redirect_url}" />
-			<button type="button" class="__redirect_url_btn x_btn" cond="$config->redirect_url">{$lang->delete}</button>
-			<p class="x_help-inline">{$lang->about_redirect_url}</p>
+			<input type="text" value="{$sSmsAuthPluginTitle}" disabled/>
+			<p class="x_help-inline">{$lang->about_sms_auth_plugin}</p>
 		</div>
 	</div>
 	</section>

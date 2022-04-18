@@ -33,7 +33,7 @@ class memberAdminView extends member
 	 *
 	 * @return void
 	 */
-	function init() 
+	function init()
 	{
 		$oMemberModel = getModel('member');
 		$this->memberConfig = $oMemberModel->getMemberConfig();
@@ -186,6 +186,30 @@ class memberAdminView extends member
 				break;
 			}
 		}
+
+        // begin - check SMS auth plugin exist
+        $oModuleModel = getModel('module');
+        $oConfig = $oModuleModel->getModuleConfig('svauth');
+        $sSmsAuthPluginTitle = null;
+        if($oConfig->plugin_srl)
+        {
+            $oSvauthAdminModel = getAdminModel('svauth');
+            $oAuthPlugin = $oSvauthAdminModel->getPluginList();
+            foreach($oAuthPlugin as $nIdx=>$oPlugin)
+            {
+                if($oPlugin->plugin_srl == $oConfig->plugin_srl)
+                {
+                    $sSmsAuthPluginTitle = $oPlugin->title;
+                    break;
+                }
+            }
+            unset($oAuthPlugin);
+            unset($oSvauthAdminModel);
+        }
+        unset($oConfig);
+        unset($oModuleModel);
+        Context::set('sSmsAuthPluginTitle', $sSmsAuthPluginTitle);
+        // end - check SMS auth plugin exist
 
 		$oSecurity = new Security();
 		if($userIdInfo->isUse)
