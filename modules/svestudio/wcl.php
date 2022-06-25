@@ -125,7 +125,8 @@ class singleviewApi
 			$aDocInfoToTransmit = $oMysql->executeQuery('getDocDetailBySrl', $aRequestedDocSrl);
 			$sTitle = $this->_cleanupMarkupStr($aDocInfoToTransmit[0]['title']);
 			$sContent = $this->_cleanupMarkupStr($aDocInfoToTransmit[0]['content']);
-			$aDocInfo[] = array('document_srl' => $aDocInfoToTransmit[0]['document_srl'], 
+			$aDocInfo[] = array('document_srl' => $aDocInfoToTransmit[0]['document_srl'],
+								'module_srl' => $aDocInfoToTransmit[0]['module_srl'], 
 								'title' => $sTitle, 'content' => $sContent, 
 								'regdate' => $aDocInfoToTransmit[0]['regdate'], 
 								'last_update' => $aDocInfoToTransmit[0]['last_update'] );

@@ -8,7 +8,7 @@ class singleviewMsgProtocol
 		'LMKL' => 4, # let me know latest data
 		'IWSY' => 5, # I will send you
 		'ALD' => 6, # add latest data
-		# 'MTG' => 7, # more to go
+		'ERR' => 7, # error
 		# 'IHND' => 8, # i have new data
 		'IWWFY' => 9, # i will wait for you
 		'IHNI' => 10, # i have no idea

@@ -3,8 +3,8 @@
 	<title xml:lang="ko">싱글뷰 실행 스튜디오</title>
 	<title xml:lang="en">Singleview Execution Studio</title>
 	<description xml:lang="ko">광고주 쇼핑몰의 효율을 감시하고 개선안을 제안합니다..</description>
-	<version>2.1.8</version>
-	<date>2021-09-17</date>
+	<version>2.1.11</version>
+	<date>2022-05-08</date>
 	<category>service</category>
 	<author email_address="root@singleview.co.kr" link="http://singleview.co.kr">
         <name xml:lang="ko">Singleview.co.kr</name>

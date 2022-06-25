@@ -1,3 +1,3 @@
-SELECT `document_srl`, `title`, `content`, `regdate`, `last_update`
+SELECT `document_srl`, `module_srl`, `title`, `content`, `regdate`, `last_update`
 FROM `documents`
 WHERE `document_srl` = ?
