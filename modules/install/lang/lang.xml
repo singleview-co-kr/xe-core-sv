@@ -703,9 +703,9 @@
 		<value xml:lang="jp"><![CDATA[短縮アドレスを使用できません。ウェブサーバー担当者に <strong>rewrite_mod</strong>サポート可否を確認してください。]]></value>
 	</item>
 	<item name="about_nginx_rewrite">
-		<value xml:lang="ko"><![CDATA[Nginx를 사용할 경우, 짧은 주소를 사용하기 위하여 rewrite 설정이 필요합니다. 설정방법은 <a href="https://github.com/xpressengine/xe-core/wiki/Nginx-rewite-%EC%84%A4%EC%A0%95%ED%95%98%EA%B8%B0" target="_blank"><strong>여기</strong></a>를 참고하세요.]]></value>
-		<value xml:lang="en"><![CDATA[For using "Friendly URL" feature at Nginx, need to configure rewrites at Nginx. show  <a href="https://github.com/xpressengine/xe-core/wiki/Nginx-rewite-%EC%84%A4%EC%A0%95%ED%95%98%EA%B8%B0" target="_blank"><strong>here</strong></a>.]]></value>
-		<value xml:lang="jp"><![CDATA[Nginxを使用する場合、短縮アクセスを使用するためにrewrite設定が必要です。設定方法は<a href="https://github.com/xpressengine/xe-core/wiki/Nginx-rewite-%EC%84%A4%EC%A0%95%ED%95%98%EA%B8%B0" target="_blank"><strong>여기</strong></a>を参考ください。]]></value>
+		<value xml:lang="ko"><![CDATA[Nginx를 사용할 경우, 짧은 주소를 사용하기 위하여 rewrite 설정이 필요합니다. 설정방법은 <a href="https://github.com/singleview-co-kr/xe-core-sv/issues/2" target="_blank"><strong>여기</strong></a>를 참고하세요.]]></value>
+		<value xml:lang="en"><![CDATA[For using "Friendly URL" feature at Nginx, need to configure rewrites at Nginx. show  <a href="https://github.com/singleview-co-kr/xe-core-sv/issues/2" target="_blank"><strong>here</strong></a>.]]></value>
+		<value xml:lang="jp"><![CDATA[Nginxを使用する場合、短縮アクセスを使用するためにrewrite設定が必要です。設定方法は<a href="https://github.com/singleview-co-kr/xe-core-sv/issues/2" target="_blank"><strong>여기</strong></a>を参考ください。]]></value>
 	</item>
 	<item name="time_zone">
 		<value xml:lang="ko"><![CDATA[표준 시간대]]></value>

@@ -548,28 +548,28 @@ class DBMysqli_innodb extends DBMysql
 			}
 		}
 
-		if(count($primary_list))
+		if(count((array)$primary_list))
 		{
-			$column_schema[] = sprintf("primary key (%s)", '`' . implode($primary_list, '`,`') . '`');
+			$column_schema[] = sprintf("primary key (%s)", '`' . implode('`,`', $primary_list) . '`');
 		}
 
-		if(count($unique_list))
+		if(count((array)$unique_list))
 		{
 			foreach($unique_list as $key => $val)
 			{
-				$column_schema[] = sprintf("unique %s (%s)", $key, '`' . implode($val, '`,`') . '`');
+				$column_schema[] = sprintf("unique %s (%s)", $key, '`' . implode('`,`', $val) . '`');
 			}
 		}
 
-		if(count($index_list))
+		if(count((array)$index_list))
 		{
 			foreach($index_list as $key => $val)
 			{
-				$column_schema[] = sprintf("index %s (%s)", $key, '`' . implode($val, '`,`') . '`');
+				$column_schema[] = sprintf("index %s (%s)", $key, '`' . implode('`,`', $val) . '`');
 			}
 		}
 
-		$schema = sprintf('create table `%s` (%s%s) %s;', $this->addQuotes($table_name), "\n", implode($column_schema, ",\n"), "ENGINE = INNODB CHARACTER SET utf8 COLLATE utf8_general_ci");
+		$schema = sprintf('create table `%s` (%s%s) %s;', $this->addQuotes($table_name), "\n", implode(",\n", $column_schema), "ENGINE = INNODB CHARACTER SET utf8 COLLATE utf8_general_ci");
 
 		$output = $this->_query($schema);
 		if(!$output)

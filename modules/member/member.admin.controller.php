@@ -641,7 +641,7 @@ class memberAdminController extends member
 	 * @param string $agreement
 	 * @return void
 	 */
-	function _createSignupRuleset($signupForm, $oTermsConf){
+	function _createSignupRuleset($signupForm, $oTermsConf=null){
 		$xml_file = './files/ruleset/insertMember.xml';
 		$buff = '<?xml version="1.0" encoding="utf-8"?>' . PHP_EOL.
 			'<ruleset version="1.5.0">' . PHP_EOL.
