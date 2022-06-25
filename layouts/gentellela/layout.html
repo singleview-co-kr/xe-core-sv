@@ -76,7 +76,7 @@
 <!-- /sidebar menu -->
 <!-- /menu footer buttons -->
 					<div class="sidebar-footer hidden-small">
-						<a data-toggle="tooltip" data-placement="top" title="XE Settings" href='?module=admin'>
+						<a data-toggle="tooltip" data-placement="top" title="XE Settings" <!--@if($logged_info->is_admin=='Y')-->href='?module=admin'"<!--@end-->>
 							<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
 						</a>
 						<a data-toggle="tooltip" data-placement="top" title="FullScreen">
@@ -85,7 +85,7 @@
 						<a data-toggle="tooltip" data-placement="top" title="Lock">
 							<span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>
 						</a>
-						<a data-toggle="tooltip" data-placement="top" title="Logout" href="{getUrl('act','dispMemberLogout')}">
+						<a data-toggle="tooltip" data-placement="top" title="Logout" <!--@if($is_logged)-->href="{getUrl('act','dispMemberLogout')}"<!--@end-->>
 							<span class="glyphicon glyphicon-off" aria-hidden="true"></span>
 						</a>
 					</div>
