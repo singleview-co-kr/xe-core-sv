@@ -977,7 +977,7 @@ class moduleController extends module
 		}
 
 		getDestroyXeVars($obj);
-		if(!$obj || !count($obj)) return new BaseObject();
+		if(!$obj || !count((array)$obj)) return new BaseObject();
 
 		$args = new stdClass;
 		$args->module_srl = $module_srl;

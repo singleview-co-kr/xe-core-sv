@@ -324,7 +324,7 @@ class memberModel extends member
 		if(!$member_srl) return;
 
 		//columnList size zero... get full member info
-		if(!$GLOBALS['__member_info__'][$member_srl] || count($columnList) == 0)
+		if(!$GLOBALS['__member_info__'][$member_srl] || count((array)$columnList) == 0)
 		{
 			$GLOBALS['__member_info__'][$member_srl] = false;
 

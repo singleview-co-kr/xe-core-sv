@@ -177,7 +177,7 @@ class Mobile
 	 *
 	 * @return bool TRUE for tablet, and FALSE for else.
 	 */
-	function isMobilePadCheckByAgent()
+	static function isMobilePadCheckByAgent()
 	{
 		static $UACheck;
 		if(isset($UACheck))
