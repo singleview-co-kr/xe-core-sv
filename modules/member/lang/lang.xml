@@ -2885,4 +2885,10 @@
 		<value xml:lang="en"><![CDATA[Allow transparent background on resized image (PNG only)]]></value>
 		<value xml:lang="jp"><![CDATA[サイズ変更した画像に透明な背景を許可します。(PNG only)]]></value>
 	</item>
+	<item name="terms_be_shown_and_required">
+		<value xml:lang="ko"><![CDATA[회원 가입 양식에 표시되고 필수 선택해야 함]]></value>
+	</item>
+	<item name="terms_be_hidden">
+		<value xml:lang="ko"><![CDATA[회원 가입 양식에 표시되지 않음]]></value>
+	</item>
 </lang>

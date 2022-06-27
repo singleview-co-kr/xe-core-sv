@@ -94,13 +94,15 @@ class memberModel extends member
 			default:
 				$sTarget = 'agreement';
 		}
-		$agreement_file = _XE_PATH_.'files/member_extra_info/'.$sTarget.'_' . Context::get('lang_type') . '.txt';
+
+		$sAgreementDir = _XE_PATH_.'files/member_extra_info/terms_agreement';
+		$agreement_file = $sAgreementDir.'/'.$sTarget.'_' . Context::get('lang_type') . '.txt';
 		if(is_readable($agreement_file))
 		{
 			return FileHandler::readFile($agreement_file);
 		}
 		$db_info = Context::getDBInfo();
-		$agreement_file = _XE_PATH_.'files/member_extra_info/'.$sTarget.'_' . $db_info->lang_type . '.txt';
+		$agreement_file = $sAgreementDir.'/'.$sTarget.'_' . $db_info->lang_type . '.txt';
 		if(is_readable($agreement_file))
 		{
 			return FileHandler::readFile($agreement_file);
@@ -108,7 +110,7 @@ class memberModel extends member
 		$lang_selected = Context::loadLangSelected();
 		foreach($lang_selected as $key => $val)
 		{
-			$agreement_file = _XE_PATH_.'files/member_extra_info/'.$sTarget.'_' . $key . '.txt';
+			$agreement_file = $sAgreementDir.'/'.$sTarget.'_' . $key . '.txt';
 			if(is_readable($agreement_file))
 			{
 				return FileHandler::readFile($agreement_file);

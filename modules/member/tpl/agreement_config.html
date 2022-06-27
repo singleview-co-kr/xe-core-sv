@@ -12,9 +12,9 @@
 	<div class="x_control-group">
         <label class="x_control-label" for="ua_type">편집할 약관 선택</label>
         <div class="x_controls">
-            <label for="term_type"><input type="radio" name="term_type" id="term_type" value="agreement" checked="checked"|cond="$term_type=='agreement'||$term_type==''" />{$lang->agreement}</label>
-            <label for="term_type"><input type="radio" name="term_type" id="term_type" value="privacy_usage" checked="checked"|cond="$term_type=='privacy_usage'" />{$lang->privacy_usage}</label>
-            <label for="term_type"><input type="radio" name="term_type" id="term_type" value="privacy_shr" checked="checked"|cond="$term_type=='privacy_shr'" />{$lang->privacy_shr}</label>
+            <label for="term_type"><input type="radio" name="term_type" id="term_type" value="agreement" checked="checked"|cond="$term_type=='agreement'||$term_type==''" />{$lang->agreement} ({$agreement_status})</label>
+            <label for="term_type"><input type="radio" name="term_type" id="term_type" value="privacy_usage" checked="checked"|cond="$term_type=='privacy_usage'" />{$lang->privacy_usage} ({$privacy_usage_status})</label>
+            <label for="term_type"><input type="radio" name="term_type" id="term_type" value="privacy_shr" checked="checked"|cond="$term_type=='privacy_shr'" />{$lang->privacy_shr} ({$privacy_shr_status})</label>
         </div>
         <div class="x_controls">
             {$editor|noescape}

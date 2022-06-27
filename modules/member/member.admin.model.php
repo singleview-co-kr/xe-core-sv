@@ -288,7 +288,6 @@ class memberAdminModel extends member
 
 		$this->add('tpl', str_replace("\n"," ",$tpl));
 	}
-
 	/**
 	 * check allowed target ip address when  login for admin. 
 	 *
@@ -302,6 +301,47 @@ class memberAdminModel extends member
 		if(!is_array($admin_ip_list)) $admin_ip_list = explode(',',$admin_ip_list);
 		if(!count($admin_ip_list) || IpFilter::filter($admin_ip_list)) return true;
 		else return false;
+	}
+	/**
+	 * get default terms and agreement or modified one
+	 *
+	 * @return terms and agreement
+	 */
+	function getPrivacyTerm($sTermType)
+	{
+		switch($sTermType)
+		{
+			case 'agreement':
+			case 'privacy_usage':
+			case 'privacy_shr':
+				break;
+			default:
+				return null;
+		}
+		$sAgreementDir = _XE_PATH_.'files/member_extra_info/terms_agreement';
+		$sTermsFile = $sAgreementDir.'/'.$sTermType.'_'.Context::get('lang_type').'.txt';
+		if(is_readable($sTermsFile))
+			return nl2br(FileHandler::readFile($sTermsFile));
+
+		$oDbInfo = Context::getDBInfo();
+		$sTermsFile = $sAgreementDir.'/'.$sTermType.'_'.$oDbInfo->lang_type.'.txt';
+		unset($oDbInfo);
+		if(is_readable($sTermsFile))
+			return nl2br(FileHandler::readFile($sTermsFile));
+
+		$lang_selected = Context::loadLangSelected();
+		foreach($lang_selected as $key => $val)
+		{
+			$sTermsFile = $sAgreementDir.'/'.$nModuleSrl.'_'.$sTermType.'_'.$key.'.txt';
+			if(is_readable($sTermsFile))
+				return nl2br(FileHandler::readFile($sTermsFile));
+		}
+		
+		// 최종 실패할 경우 기본 약관 출력
+		$sTermsFile = _XE_PATH_.'modules/member/tpl/'.$sTermType.'_template.txt';
+		if(is_readable($sTermsFile))
+			return nl2br(FileHandler::readFile($sTermsFile));
+		return null;
 	}
 }
 /* End of file member.admin.model.php */

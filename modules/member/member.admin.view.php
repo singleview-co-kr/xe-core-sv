@@ -139,6 +139,36 @@ class memberAdminView extends member
 	
 	public function dispMemberAdminAgreementConfig()
 	{
+		$oConfig = &Context::get('config');
+		$oMemberAdminModel = &getAdminModel('member');
+
+		$sTermsShownRequired = Context::getLang('terms_be_shown_and_required');
+		$sTermsHidden = Context::getLang('terms_be_hidden');
+		if(is_null($oConfig->agreement))
+		{
+			$oConfig->agreement = $oMemberAdminModel->getPrivacyTerm('agreement');
+			Context::set('agreement_status', $sTermsHidden);
+		}
+		else
+			Context::set('agreement_status', $sTermsShownRequired);
+
+		if(is_null($oConfig->privacy_usage))
+		{
+			$oConfig->privacy_usage = $oMemberAdminModel->getPrivacyTerm('privacy_usage');
+			Context::set('privacy_usage_status', $sTermsHidden);
+		}
+		else
+			Context::set('privacy_usage_status', $sTermsShownRequired);
+
+		if(is_null($oConfig->privacy_shr))
+		{
+			$oConfig->privacy_shr = $oMemberAdminModel->getPrivacyTerm('privacy_shr');
+			Context::set('privacy_shr_status', $sTermsHidden);
+		}
+		else
+			Context::set('privacy_shr_status', $sTermsShownRequired);
+		unset($oMemberAdminModel);
+
 		// retrieve skins of editor
 		$oEditorModel = getModel('editor');
 		Context::set('editor_skin_list', $oEditorModel->getEditorSkinList());

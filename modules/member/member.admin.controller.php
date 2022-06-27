@@ -215,7 +215,12 @@ class memberAdminController extends member
 			$returnUrl = Context::get('success_return_url') ? Context::get('success_return_url') : getNotEncodedUrl('', 'module', 'admin', 'act', 'dispMemberAdminAgreementConfig');
 			$this->setRedirectUrl($returnUrl);
 		}
-		$sAgreementFile = _XE_PATH_.'files/member_extra_info/'.$oArgs->term_type.'_' . Context::get('lang_type') . '.txt';
+		// make dir if not exists
+		$sAgreementDir = _XE_PATH_.'files/member_extra_info/terms_agreement';
+		if(!FileHandler::isDir($sAgreementDir))
+			FileHandler::makeDir($sAgreementDir);
+
+		$sAgreementFile = $sAgreementDir.'/'.$oArgs->term_type.'_' . Context::get('lang_type') . '.txt';
 		// check agreement value exist
 		if(!trim(strip_tags($oArgs->agreement)))
 			FileHandler::removeFile($sAgreementFile);
