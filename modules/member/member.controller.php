@@ -2349,7 +2349,29 @@ class memberController extends member
 
 		// Sanitize user ID, username, nickname, homepage, blog
 		$args->user_id = htmlspecialchars($args->user_id, ENT_COMPAT | ENT_HTML401, 'UTF-8', false);
-        $args->mobile = htmlspecialchars($args->mobile, ENT_COMPAT | ENT_HTML401, 'UTF-8', false);
+		$args->mobile = htmlspecialchars($args->mobile, ENT_COMPAT | ENT_HTML401, 'UTF-8', false);
+		// begin - check mobile value duplication if mobile attr used
+		$bMobileDuplicationCheck = false;
+		foreach($config->signupForm as $nIdx=>$oAttr)
+		{
+			if($oAttr->name == 'mobile')
+			{
+				$bMobileDuplicationCheck = $oAttr->isUse;
+				break;
+			}
+		}
+		if($bMobileDuplicationCheck && strlen($args->mobile)) // allow duplication for blank mobile value
+		{
+			$oTmpArgs = new stdClass();
+			$oTmpArgs->mobile = $args->mobile;
+			$oRst = executeQueryArray('member.getMemberInfoByMobile', $oTmpArgs);
+			unset($oTmpArgs);
+			if(!$oRst->toBool())
+				return $oRst;
+			if(count($oRst->data))
+				return new BaseObject(-1,'msg_exists_email_address');
+		}
+		// end - check mobile value duplication if mobile attr used
 		$args->user_name = htmlspecialchars($args->user_name, ENT_COMPAT | ENT_HTML401, 'UTF-8', false);
 		$args->nick_name = htmlspecialchars($args->nick_name, ENT_COMPAT | ENT_HTML401, 'UTF-8', false);
 		$args->homepage = htmlspecialchars($args->homepage, ENT_COMPAT | ENT_HTML401, 'UTF-8', false);
