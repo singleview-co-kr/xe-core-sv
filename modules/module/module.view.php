@@ -91,6 +91,8 @@ class moduleView extends module
 			$obj = new stdClass();
 			$obj->module_srl = $val->module_srl;
 			$obj->browser_title = $val->browser_title;
+			if(is_null($mid_list[$module]))
+				$mid_list[$module] = new stdClass();
 			$mid_list[$module]->list[$category][$val->mid] = $obj;
 
 			if(!$selected_module) $selected_module = $module;

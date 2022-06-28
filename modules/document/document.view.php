@@ -99,7 +99,7 @@ class documentView extends document
 
 		$oModuleModel = getModel('module');
 		// The combination of module categories list and the list of modules
-		if(count($module_list)>1) Context::set('module_list', $module_categories);
+		if(count((array)$module_list)>1) Context::set('module_list', $module_categories);
 
 		$module_srl=Context::get('module_srl');
 		Context::set('module_srl',$module_srl);
