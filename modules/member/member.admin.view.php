@@ -140,10 +140,9 @@ class memberAdminView extends member
 	public function dispMemberAdminAgreementConfig()
 	{
 		$oConfig = &Context::get('config');
-		$oMemberAdminModel = &getAdminModel('member');
-
 		$sTermsShownRequired = Context::getLang('terms_be_shown_and_required');
 		$sTermsHidden = Context::getLang('terms_be_hidden');
+		$oMemberAdminModel = &getAdminModel('member');
 		if(is_null($oConfig->agreement))
 		{
 			$oConfig->agreement = $oMemberAdminModel->getPrivacyTerm('agreement');

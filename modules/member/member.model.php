@@ -50,9 +50,9 @@ class memberModel extends member
 		}
 
 		// Get terms of user
-		$config->agreement = $this->_getAgreement();
-		$config->privacy_usage = $this->_getAgreement('privacy_usage');
-		$config->privacy_shr = $this->_getAgreement('privacy_shr');
+		$config->agreement = $this->getAgreement();
+		$config->privacy_usage = $this->getAgreement('privacy_usage');
+		$config->privacy_shr = $this->getAgreement('privacy_shr');
 
 		if(!$config->webmaster_name) $config->webmaster_name = 'webmaster';
 
@@ -84,7 +84,7 @@ class memberModel extends member
 		return $config;
 	}
 
-	function _getAgreement($sTarget=NULL)
+	function getAgreement($sTarget=NULL)
 	{
 		switch($sTarget)
 		{

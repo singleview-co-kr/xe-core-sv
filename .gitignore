@@ -41,6 +41,7 @@ layouts/xet_plus/
 layouts/xet_sense_nt/
 
 modules/board/skins/sketchbook5_php8/
+modules/board/skins/sketchbook5_php8_qna_gift/
 
 addons/svauth
 addons/svtracker
