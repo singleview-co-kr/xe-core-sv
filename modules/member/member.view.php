@@ -440,6 +440,7 @@ class memberView extends member
 		$oMemberModel = getModel('member');
 		$config = $this->member_config;
 		Context::set('identifier', $config->identifier);
+		Context::set('enable_join', $config->enable_join);
 
 		$XE_VALIDATOR_MESSAGE = Context::get('XE_VALIDATOR_MESSAGE');
 		$XE_VALIDATOR_ERROR = Context::get('XE_VALIDATOR_ERROR');

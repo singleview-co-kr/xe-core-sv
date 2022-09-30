@@ -38,13 +38,12 @@
                 <span class="social_label">소셜 {$lang->cmd_login}</span>
         <block cond="$naver_client_id && $naver_cb_mid">
                 <a class="btn_social_login" id="naverIdLogin_loginButton" href="javascript:void(0)"><span>Naver Login</span></a>
-                
         </block>
             </div>
     </block>  
     </div>
     
-	<div class="login-footer">
+	<div class="login-footer" cond="$enable_join=='Y'">
 		<a href="{getUrl('act','dispMemberFindAccount')}">{$lang->cmd_find_member_account}</a>
 		|
 		<a href="{getUrl('act','dispMemberSignUpForm')}">{$lang->cmd_signup}</a>
