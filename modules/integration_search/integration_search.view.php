@@ -25,6 +25,18 @@ class integration_searchView extends integration_search
 	 */
 	function init()
 	{
+		// Check permissions
+		if(!$this->grant->access) return new BaseObject(-1,'msg_not_permitted');
+		
+		$oModuleModel = getModel('module');
+		$oConfig = $oModuleModel->getModuleConfig('integration_search');
+		unset($oModuleModel);
+		if(!$oConfig) $oConfig = new stdClass;
+		if(!$oConfig->skin)	$oConfig->skin = 'default';
+		$template_path = sprintf('%sskins/%s', $this->module_path, $oConfig->skin);
+		// Template path
+		unset($oConfig);
+		$this->setTemplatePath($template_path);
 	}
 
 	/**
@@ -34,35 +46,10 @@ class integration_searchView extends integration_search
 	 */
 	function IS()
 	{
-		$oFile = getClass('file');
 		$oModuleModel = getModel('module');
-		$logged_info = Context::get('logged_info');
-
-		// Check permissions
-		if(!$this->grant->access) return new BaseObject(-1,'msg_not_permitted');
-
 		$config = $oModuleModel->getModuleConfig('integration_search');
-		if(!$config) $config = new stdClass;
-		if(!$config->skin)
-		{
-			$config->skin = 'default';
-			$template_path = sprintf('%sskins/%s', $this->module_path, $config->skin);
-		}
-		else
-		{
-			//check theme
-			$config_parse = explode('|@|', $config->skin);
-			if (count($config_parse) > 1)
-			{
-				$template_path = sprintf('./themes/%s/modules/integration_search/', $config_parse[0]);
-			}
-			else
-			{
-				$template_path = sprintf('%sskins/%s', $this->module_path, $config->skin);
-			}
-		}
-		// Template path
-		$this->setTemplatePath($template_path);
+		unset($oModuleModel);
+
 		$skin_vars = ($config->skin_vars) ? unserialize($config->skin_vars) : new stdClass;
 		Context::set('module_info', $skin_vars);
 

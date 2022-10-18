@@ -9,42 +9,85 @@
 	<input type="hidden" name="act" value="procIntegration_searchAdminInsertConfig" />
 	<input type="hidden" name="module" value="admin" />
 	<input type="hidden" name="xe_validator_id" value="modules/integration_search/tpl/index/1" />
+	<section class="section">
+		<h1>{$lang->subtitle_primary}</h1>
 
-	<div class="x_control-group">
-		<label for="sample_code" class="x_control-label">{$lang->sample_code}</label>
-		<div class="x_controls" style="margin-right:14px">
-			<textarea id="sample_code" readonly style="width:100%;height:100px;cursor:text;font-family:'Courier New', Courier, monospace">{$sample_code}</textarea>
-			<p class="x_help-block">{$lang->about_sample_code}</p>
+		<div class="x_control-group">
+			<label for="sample_code" class="x_control-label">{$lang->sample_code}</label>
+			<div class="x_controls" style="margin-right:14px">
+				<textarea id="sample_code" readonly style="width:100%;height:100px;cursor:text;font-family:'Courier New', Courier, monospace">{$sample_code}</textarea>
+				<p class="x_help-block">{$lang->about_sample_code}</p>
+			</div>
 		</div>
-	</div>
-	<div class="x_control-group">
-		<label for="skin" class="x_control-label">{$lang->skin}</label>
-		<div class="x_controls">
-			<select name="skin" id="skin">
-				<option loop="$skin_list => $key, $val"  value="{$key}" selected="selected"|cond="$config->skin == $key">{$val->title}</option>
-			</select>
-			<p class="x_help-inline">{$lang->about_skin}</p>
+		<div class="x_control-group">
+			<label class="x_control-label" for="layout_srl">{$lang->layout}</label>
+			<div class="x_controls">
+				<select name="layout_srl" id="layout_srl">
+					<option value="0">{$lang->notuse}</option>
+					<option loop="$layout_list => $key, $val" value="{$val->layout_srl}" selected="selected"|cond="$config->layout_srl== $val->layout_srl">{$val->title} ({$val->layout})</option>
+				</select>
+				<a href="#layout_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="layout_help" class="x_help-block" hidden>{$lang->about_layout}</p>
+			</div>
 		</div>
-	</div>
-	<div class="x_control-group">
-		<label class="x_control-label">{$lang->target}</label>
-		<div class="x_controls">
-			<select name="target">
-				<option value="include">{$lang->include_search_target}</option>
-				<option value="exclude" selected="selected"|cond="$config->target=='exclude'">{$lang->exclude_search_target}</option>
-			</select>
+		<div class="x_control-group">
+			<label for="skin" class="x_control-label">{$lang->skin}</label>
+			<div class="x_controls">
+				<select name="skin" id="skin">
+					<option loop="$skin_list => $key, $val"  value="{$key}" selected="selected"|cond="$config->skin == $key">{$val->title}</option>
+				</select>
+				<p class="x_help-inline">{$lang->about_skin}</p>
+			</div>
+		</div>
+		<div class="x_control-group">
+			<label class="x_control-label">{$lang->target}</label>
+			<div class="x_controls">
+				<select name="target">
+					<option value="include">{$lang->include_search_target}</option>
+					<option value="exclude" selected="selected"|cond="$config->target=='exclude'">{$lang->exclude_search_target}</option>
+				</select>
 
-			<input type="hidden" name="target_module_srl" id="target_module_srl" value="{$config->target_module_srl}" />
-			<select class="modulelist_selected" size="8" multiple="multiple" style="display:block;vertical-align:top;margin:5px 0"></select>
-			<a href="#" id="__module_srl_list_target_module_srl" class="x_btn moduleTrigger" data-multiple="true" style="margin:0 -5px 0 0;border-radius:2px 0 0 0px">{$lang->cmd_add}</a>
-			<button type="button" class="x_btn modulelist_del" style="border-radius:0 2px 2px 0">{$lang->cmd_delete}</button>
-			<p class="x_help-block"><strong>{$lang->about_target_module}</strong></p>
-			<script>
-				xe.registerApp(new xe.ModuleListManager('target_module_srl'));
-			</script>
+				<input type="hidden" name="target_module_srl" id="target_module_srl" value="{$config->target_module_srl}" />
+				<select class="modulelist_selected" size="8" multiple="multiple" style="display:block;vertical-align:top;margin:5px 0"></select>
+				<a href="#" id="__module_srl_list_target_module_srl" class="x_btn moduleTrigger" data-multiple="true" style="margin:0 -5px 0 0;border-radius:2px 0 0 0px">{$lang->cmd_add}</a>
+				<button type="button" class="x_btn modulelist_del" style="border-radius:0 2px 2px 0">{$lang->cmd_delete}</button>
+				<p class="x_help-block"><strong>{$lang->about_target_module}</strong></p>
+				<script>
+					xe.registerApp(new xe.ModuleListManager('target_module_srl'));
+				</script>
+			</div>
 		</div>
-	</div>
-
+	</section>
+	<section class="section">
+		<h1>{$lang->mobile_settings}</h1>
+		<div class="x_control-group">
+			<label class="x_control-label">{$lang->mobile_view}</label>
+			<div class="x_controls">
+				<label class="x_inline" for="use_mobile"><input type="checkbox" name="use_mobile" id="use_mobile" value="Y" checked="checked"|cond="$module_info->use_mobile == 'Y'" /> {$lang->about_mobile_view}</label>
+			</div>
+		</div>
+		<div class="x_control-group">
+			<label class="x_control-label" for="mlayout_srl">{$lang->mobile_layout}</label>
+			<div class="x_controls">
+				<select name="mlayout_srl" id="mlayout_srl">
+					<option value="0">{$lang->notuse}</option>
+					<option loop="$mlayout_list => $key, $val" value="{$val->layout_srl}" selected="selected"|cond="$config->mlayout_srl== $val->layout_srl">{$val->title} ({$val->layout})</option>
+				</select>
+				<a href="#mobile_layout_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="mobile_layout_help" class="x_help-block" hidden>{$lang->about_layout}</p>
+			</div>
+		</div>
+		<div class="x_control-group">
+			<label class="x_control-label" for="mskin">{$lang->mobile_skin}</label>
+			<div class="x_controls">
+				<select name="mskin" id="mskin">
+					<option loop="$mskin_list=> $key, $val" value="{$key}" selected="selected"|cond="$config->mskin== $key">{$val->title}</option>
+				</select>
+				<a href="#mobile_skin_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="mobile_skin_help" class="x_help-block" hidden>{$lang->about_skin}</p>
+			</div>
+		</div>
+	</section>
 	<div class="btnArea">
 		<button class="x_btn x_btn-primary" type="submit">{$lang->cmd_registration}</button>
 	</div>
