@@ -22,7 +22,7 @@
 			<div class="fl"><input name="keep_signed" type="checkbox" value="Y" id="autoLogin" /> <label for="autoLogin">{$lang->keep_signed}</label></div>
 			<div class="fr"><button type="submit" class="bn dark">{$lang->cmd_login}</button></div>
 		</div>
-		<ul class="hp">
+		<ul class="hp" cond="$member_config->enable_join=='Y'">
 			<li><a href="{getUrl('','act','dispMemberFindAccount')}"><span>{$lang->cmd_find_member_account}</span></a></li>
 			<li><a href="{getUrl('','act','dispMemberSignUpForm')}"><span>{$lang->cmd_signup}</span></a></li>
 		</ul>

@@ -34,7 +34,7 @@
 						<p>{$lang->about_keep_warning}</p>
 					</div>
 					<input type="submit" value="{$lang->cmd_login}" class="bn dark" />
-					<ul class="hp">
+					<ul class="hp" cond="!$is_logged && $member_config->enable_join=='Y'">
 						<li><a href="{getUrl('','act','dispMemberFindAccount')}"><span>{$lang->cmd_find_member_account}</span></a></li>
 						<li><a href="{getUrl('','act','dispMemberSignUpForm')}"><span>{$lang->cmd_signup}</span></a></li>
 					</ul>

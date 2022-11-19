@@ -12,7 +12,7 @@
 	<div class="login-body">
 		<p><a href="{getUrl('', 'act', 'dispMemberLoginForm')}">{$lang->cmd_login}</a></p>
 	</div>
-	<div class="login-footer">
+	<div class="login-footer" cond="!$is_logged && $member_config->enable_join=='Y'">
 		<a href="{getUrl('', 'act', 'dispMemberFindAccount')}">{$lang->cmd_find_member_account}</a>
 		<span class="bar">|</span>
 		<a href="{getUrl('', 'act', 'dispMemberSignUpForm')}">{$lang->cmd_signup}</a>
