@@ -30,7 +30,7 @@ class krzipModel extends krzip
     {
         // 배열 키를 정리한다
         
-        $values = array_map('trim', array_values($values));
+        $values = array_map('trim', array_values((array)$values));
         
         // Postcodify 또는 새 krzip 모듈의 포맷을 인식한다
         
