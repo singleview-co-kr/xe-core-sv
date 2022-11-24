@@ -79,6 +79,10 @@ class memberAdminModel extends member
 					if($search_keyword) $search_keyword = str_replace(' ','%',$search_keyword);
 					$args->s_email_address = $search_keyword;
 					break;
+				case 'mobile' :
+					if($search_keyword) $search_keyword = str_replace(' ','%',$search_keyword);
+					$args->s_mobile = $search_keyword;
+					break;
 				case 'regdate' :
 					$args->s_regdate = preg_replace("/[^0-9]/","",$search_keyword);
 					break;

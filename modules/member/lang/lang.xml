@@ -797,6 +797,9 @@
 			<value xml:lang="tr"><![CDATA[E-posta Adresi]]></value>
 			<value xml:lang="vi"><![CDATA[Địa chỉ Email]]></value>
 		</item>
+		<item name="mobile">
+			<value xml:lang="ko"><![CDATA[모바일]]></value>
+		</item>
 		<item name="regdate">
 			<value xml:lang="ko"><![CDATA[가입일시]]></value>
 			<value xml:lang="en"><![CDATA[Sign up Date]]></value>
