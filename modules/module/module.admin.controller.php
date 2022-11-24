@@ -300,6 +300,8 @@ class moduleAdminController extends module
 		$xml_info = $oModuleModel->getModuleActionXML($module_info->module);
 
 		$grant_list = $xml_info->grant;
+		if(!$grant_list)
+			$grant_list = new stdClass();
 
 		$grant_list->access = new stdClass();
 		$grant_list->access->default = 'guest';
