@@ -26,30 +26,17 @@ composer.lock
 install.config.php
 
 layouts/plain
-layouts/TrendshopA_sv/
-layouts/TrendshopS_sv/
+layouts/Trendshop*
 layouts/jquerymobile/
 layouts/kpi_dashboard/
 layouts/singleskushop/
 layouts/svcheckout_layout/
-layouts/xet_avenir_sv/
-layouts/xet_branding_nt/
-layouts/xet_fullpage/
-layouts/xet_fullpage_nt/
-layouts/xet_fullpage_sv/
-layouts/xet_plus/
-layouts/xet_sense_nt/
+layouts/xet_*
 
-modules/board/skins/sketchbook5_php8/
-modules/board/skins/sketchbook5_php8_qna_gift/
+modules/board/skins/sketchbook5*
 
-addons/svauth
-addons/svtracker
+addons/sv*
 
 modules/multidomain
 modules/appstore
-modules/svmarket
-modules/svcollector
-modules/svauth
-modules/svdocs
-modules/svshortener
+modules/sv*
