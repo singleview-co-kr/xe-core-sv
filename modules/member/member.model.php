@@ -319,6 +319,21 @@ class memberModel extends member
 	}
 
 	/**
+	 * @brief Return member information with mobile
+	 */
+	function getMemberInfoByMobile($sMobile)
+	{
+		if(!$sMobile) return;
+		$oArgs = new stdClass();
+		$oArgs->mobile = $sMobile;
+		$oRst = executeQuery('member.getMemberInfoByMobile', $oArgs);
+		unset($oArgs);
+		if(!$oRst->toBool()) return $oRst;
+		if(!$oRst->data) return;
+		return $this->arrangeMemberInfo($oRst->data);
+	}
+
+	/**
 	 * @brief Return member information with member_srl
 	 */
 	function getMemberInfoByMemberSrl($member_srl, $site_srl = 0, $columnList = array())

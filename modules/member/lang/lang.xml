@@ -1527,6 +1527,9 @@
 		<value xml:lang="tr"><![CDATA[Bu mail adresi zaten kullanımda. Lütfen başka bir mail adresi deneyiniz.]]></value>
 		<value xml:lang="vi"><![CDATA[Email này đã có người sử dụng. Xin vui lòng thử lại với Email khác!]]></value>
 	</item>
+	<item name="msg_exists_mobile">
+		<value xml:lang="ko"><![CDATA[이미 존재하는 핸드폰 번호입니다. 다른 핸드폰 번호를 입력해주세요.]]></value>
+	</item>
 	<item name="msg_exists_nick_name">
 		<value xml:lang="ko"><![CDATA[이미 존재하는 닉네임입니다. 다른 닉네임을 입력해주세요.]]></value>
 		<value xml:lang="en"><![CDATA[This nickname already exists. Please try another one.]]></value>
