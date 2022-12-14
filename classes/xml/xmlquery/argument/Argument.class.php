@@ -322,7 +322,9 @@ class Argument
 					break;
 				case 'userid' :
 				case 'user_id' :
-					if(!preg_match('/^[a-zA-Z]+([_0-9a-zA-Z]+)*$/is', $val))
+					// 네이버 아이디 정책: 5~20자의 영문 소문자, 숫자와 특수기호(_),(-)만 사용 가능합니다.
+					// if(!preg_match('/^[a-zA-Z]+([_0-9a-zA-Z]+)*$/is', $val))
+					if(!preg_match('/^[0-9a-zA-Z]+([-_0-9a-zA-Z]+)*$/is', $val))  // /common/js/xml_js_filter.js와 연동
 					{
 						$this->isValid = FALSE;
 						$this->errorMessage = new BaseObject(-1, sprintf($lang->filter->invalid_userid, $lang->{$key} ? $lang->{$key} : $key));

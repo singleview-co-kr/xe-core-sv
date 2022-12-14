@@ -87,7 +87,9 @@ class Validator
 		// predefined rules
 		$this->addRule(array(
 			'email' => '/^[\w-]+((?:\.|\+|\~)[\w-]+)*@[\w-]+(\.[\w-]+)+$/',
-			'userid' => '/^[a-z]+[\w-]*[a-z0-9_]+$/i',
+			// 'userid' => '/^[a-z]+[\w-]*[a-z0-9_]+$/i',
+			// 네이버 아이디 정책: 5~20자의 영문 소문자, 숫자와 특수기호(_),(-)만 사용 가능합니다.
+			'userid' => '/^[0-9a-zA-Z]+([-_0-9a-zA-Z]+)*$/i',
 			'url' => '/^(https?|ftp|mms):\/\/[0-9a-z-]+(\.[_0-9a-z-]+)+(:\d+)?/',
 			'alpha' => '/^[a-z]*$/i',
 			'alpha_number' => '/^[a-z][a-z0-9_]*$/i',

@@ -3273,7 +3273,9 @@ var show_waiting_message = true;
 			this.cast('ADD_RULE', ['email_address', regEmail]);
 
 			// userid
-			var regUserid = /^[a-z]+[\w-]*[a-z0-9_]+$/i;
+			// var regUserid = /^[a-z]+[\w-]*[a-z0-9_]+$/i;
+			// 네이버 아이디 정책: 5~20자의 영문 소문자, 숫자와 특수기호(_),(-)만 사용 가능합니다.
+			var regUserid = /^[0-9a-zA-Z]+([-_0-9a-zA-Z]+)*$/i;   // /class/xml/xmlquery/argument/Argument.class.php와 연동
 			this.cast('ADD_RULE', ['userid', regUserid]);
 			this.cast('ADD_RULE', ['user_id', regUserid]);
 

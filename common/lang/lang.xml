@@ -3625,32 +3625,10 @@
 			<value xml:lang="mn"><![CDATA[%s-ын хэлбэрийг буруу оруулсан байна.(Жнь: developers@xpressengine.com)]]></value>
 		</item>
 		<item name="invalid_userid">
-			<value xml:lang="ko"><![CDATA[%s의 값은 영문, 숫자, _만 가능하며 첫 글자는 영문이어야 합니다.]]></value>
-			<value xml:lang="en"><![CDATA[The %s field allows only alphabets, numbers and underscore(_). The first letter should be an alaphabet.]]></value>
-			<value xml:lang="jp"><![CDATA[%sの形式が正しくありません。半角の英数字と記号「_」を組み合わせて入力してください。頭文字は半角英文字でなければなりません。]]></value>
-			<value xml:lang="zh-CN"><![CDATA[%s只能用英文，数字和 _，首个字符必须是英文字母。]]></value>
-			<value xml:lang="zh-TW"><![CDATA[%s只允許使用英文，數字和底線，開頭必須是英文。]]></value>
-			<value xml:lang="fr"><![CDATA[La format de %s n'est pas convenable. Toutes les lettres devraient se composer des alphabets, des chiffres ou du soulignage(_) Et la première lettre doit être un de l'alphabet.]]></value>
-			<value xml:lang="de"><![CDATA[% s ist ungültig. Alle Werte sollten aus Alphatbet, Zahlen oder Unterstrich(_) und der erste Buchstabe sollte Alphabet.]]></value>
-			<value xml:lang="ru"><![CDATA[The format of %s is invalid. All values should consist of alphabets, numbers or underscore(_) and the first letter should be alphabet]]></value>
-			<value xml:lang="es"><![CDATA[Formato inválido en el %s. Sólo pueden introducir los alfabetos o los dígitos númericos o el guión bajo(_). Además, el primer valor sólo puede ser una letra de alfabeto]]></value>
-			<value xml:lang="tr"><![CDATA[%s bicimi gecersiz. Tum de?erler alfabe harfleri, sayılar veya alttire(_)'den olu?malı ve ilk karakter bir harf olmalıdır.]]></value>
-			<value xml:lang="vi"><![CDATA[Định dạng của %s Không hợp lệ. Giá trị hợp lệ bao gồm các kí tự từ a-z, các chữ số và dấu gạch dưới(_).]]></value>
-			<value xml:lang="mn"><![CDATA[%s-ын хэлбэр буруу байна. . Латин vсэг, тоо болон '_'-р оруулж болох бeгeeд эхлэл нь vсэг байх шаардлагатай. ]]></value>
+			<value xml:lang="ko"><![CDATA[%s의 값은 첫 글자는 소문자 영문 혹은 숫자이어야 하고 소문자 영문, 숫자, 특수기호(_),(-)만 가능합니다.]]></value>
 		</item>
 		<item name="invalid_user_id">
-			<value xml:lang="ko"><![CDATA[%s의 값은 영문, 숫자, _만 가능하며 첫 글자는 영문이어야 합니다.]]></value>
-			<value xml:lang="en"><![CDATA[The %s field allows only alphabets, numbers and underscore(_). The first letter should be an alaphabet.]]></value>
-			<value xml:lang="jp"><![CDATA[%sの形式が正しくありません。半角の英数字と記号「_」を組み合わせて入力してください。頭文字は半角英文字でなければなりません。]]></value>
-			<value xml:lang="zh-CN"><![CDATA[%s只能用英文，数字和 _，首个字符必须是英文字母。]]></value>
-			<value xml:lang="zh-TW"><![CDATA[%s只允許使用英文，數字和底線，開頭必須是英文。]]></value>
-			<value xml:lang="fr"><![CDATA[La format de %s n'est pas convenable. Toutes les lettres devraient se composer des alphabets, des chiffres ou du soulignage(_) Et la première lettre doit être un de l'alphabet.]]></value>
-			<value xml:lang="de"><![CDATA[% s ist ungültig. Alle Werte sollten aus Alphatbet, Zahlen oder Unterstrich(_) und der erste Buchstabe sollte Alphabet.]]></value>
-			<value xml:lang="ru"><![CDATA[The format of %s is invalid. All values should consist of alphabets, numbers or underscore(_) and the first letter should be alphabet]]></value>
-			<value xml:lang="es"><![CDATA[Formato inválido en el %s. Sólo pueden introducir los alfabetos o los dígitos númericos o el guión bajo(_). Además, el primer valor sólo puede ser una letra de alfabeto]]></value>
-			<value xml:lang="tr"><![CDATA[%s biçimi geçersiz. Tüm değerler alfabe harfleri, sayılar veya alttire(_)'den oluşmalı ve ilk karakter bir harf olmalıdır.]]></value>
-			<value xml:lang="vi"><![CDATA[Định dạng của %s Không hợp lệ. Giá trị hợp lệ bao gồm các kí tự từ a-z, các chữ số và dấu gạch dưới(_).]]></value>
-			<value xml:lang="mn"><![CDATA[%s-ын хэлбэр буруу байна. . Латин vсэг, тоо болон '_'-р оруулж болох бeгeeд эхлэл нь vсэг байх шаардлагатай. ]]></value>
+			<value xml:lang="ko"><![CDATA[%s의 값은 첫 글자는 소문자 영문 혹은 숫자이어야 하고 소문자 영문, 숫자, 특수기호(_),(-)만 가능합니다.]]></value>
 		</item>
 		<item name="invalid_homepage">
 			<value xml:lang="ko"><![CDATA[%s의 형식이 잘못되었습니다.(예: http://www.xpressengine.com/)]]></value>
