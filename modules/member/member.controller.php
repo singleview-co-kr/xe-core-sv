@@ -2369,7 +2369,7 @@ class memberController extends member
 			if(!$oRst->toBool())
 				return $oRst;
 			if(count($oRst->data))
-				return new BaseObject(-1,'msg_exists_email_address');
+				return new BaseObject(-1,'msg_exists_mobile');
 		}
 		// end - check mobile value duplication if mobile attr used
 		$args->user_name = htmlspecialchars($args->user_name, ENT_COMPAT | ENT_HTML401, 'UTF-8', false);
