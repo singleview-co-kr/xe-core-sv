@@ -366,7 +366,8 @@ class documentModel extends document
 		$args->category_srl= $obj->category_srl;
 		$output = executeQueryArray('document.getNoticeList', $args, $columnList);
 		if(!$output->toBool()||!$output->data) return;
-
+		
+		$result = new stdClass();
 		foreach($output->data as $key => $val)
 		{
 			$document_srl = $val->document_srl;
