@@ -121,9 +121,80 @@ class pageView extends page
 			$templatePath = ($this->module_path.'skins/default');
 		}
 
-		$page_content = $oTemplate->compile($templatePath, 'content');
+		// begin - set $layout_info for a page module skin
+		// Check if nLayoutSrl exists for the module
+		if(Mobile::isFromMobilePhone())
+			$nLayoutSrl = $this->module_info->mlayout_srl;
+		else
+			$nLayoutSrl = $this->module_info->layout_srl;
+		// if nLayoutSrl is rollback by module, set default layout
+		if($nLayoutSrl == -1)
+		{
+			$viewType = (Mobile::isFromMobilePhone()) ? 'M' : 'P';
+			$oLayoutAdminModel = getAdminModel('layout');
+			$nLayoutSrl = $oLayoutAdminModel->getSiteDefaultLayout($viewType, $this->module_info->site_srl);
+			unset($oLayoutAdminModel);
+		}
+		if($nLayoutSrl && !$this->getLayoutFile())
+		{
+			// If nLayoutSrl exists, get information of the layout, and set the location of layout_path/ layout_file
+			$oLayoutModel = getModel('layout');
+			$oLayoutInfo = $oLayoutModel->getLayout($nLayoutSrl);
+			unset($oLayoutModel);
+			if($oLayoutInfo)
+			{
+				// Set menus into context
+				if($oLayoutInfo->menu_count)
+				{
+					foreach($oLayoutInfo->menu as $menu_id => $menu)
+					{
+						// set default menu set(included home menu)
+						if(!$menu->menu_srl || $menu->menu_srl == -1)
+						{
+							$oMenuAdminController = getAdminController('menu');
+							$homeMenuCacheFile = $oMenuAdminController->getHomeMenuCacheFile();
+							if(FileHandler::exists($homeMenuCacheFile))
+								include($homeMenuCacheFile);
 
-		return $page_content;
+							if(!$menu->menu_srl)
+							{
+								$menu->xml_file = str_replace('.xml.php', $homeMenuSrl . '.xml.php', $menu->xml_file);
+								$menu->php_file = str_replace('.php', $homeMenuSrl . '.php', $menu->php_file);
+								$oLayoutInfo->menu->{$menu_id}->menu_srl = $homeMenuSrl;
+							}
+							else
+							{
+								$menu->xml_file = str_replace($menu->menu_srl, $homeMenuSrl, $menu->xml_file);
+								$menu->php_file = str_replace($menu->menu_srl, $homeMenuSrl, $menu->php_file);
+							}
+						}
+						$php_file = FileHandler::exists($menu->php_file);
+						if($php_file)
+							include($php_file);
+						Context::set($menu_id, $menu);
+					}
+				}
+				// Set layout information into context
+				Context::set('layout_info', $oLayoutInfo);
+				unset($oLayoutInfo);
+			}
+		}
+		$isLayoutDrop = Context::get('isLayoutDrop');
+		if($isLayoutDrop)
+		{
+			$kind = stripos($this->act, 'admin') !== FALSE ? 'admin' : '';
+			if($kind == 'admin')
+			{
+				$oModule->setLayoutFile('popup_layout');
+			}
+			else
+			{
+				$oModule->setLayoutPath('common/tpl');
+				$oModule->setLayoutFile('default_layout');
+			}
+		}
+		// end - set $layout_info for a page module skin
+		return $oTemplate->compile($templatePath, 'content');
 	}
 
 	function _getOutsideContent()
