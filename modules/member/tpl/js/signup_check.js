@@ -50,3 +50,44 @@ function completeMemberCheckValue(ret_obj, response_tags, field) {
 function removeMemberCheckValueOutput(dummy, obj) {
     dummy.style.display = "none";
 }
+
+var _g_$oBtn;
+
+// 핸드폰 번호 인증
+function getAuthCode()
+{
+	var sMobileNumber = jQuery('#mobile').val().trim();
+	if(sMobileNumber.length == 0)
+	{
+		alert('연락처를 입력해 주세요.');
+		return;
+	}
+	_disableBtn( '#get_authcode' );
+	var params = new Array();
+	params['phone_number'] = sMobileNumber;
+	var respons = ['success'];
+	exec_xml('svauth', 'procSvauthSetAuthCodeMemberAjax', params, function(ret_obj) {
+		if( ret_obj['message'] )
+			alert(ret_obj['message']);
+
+		if( ret_obj['success'] == -1 )
+			_activateBtn();
+	}, respons);
+}
+
+function _disableBtn(sBtnId)
+{
+	_g_$oBtn = jQuery(sBtnId);
+	_g_$oBtn.prop('disabled', true);
+	_g_$oBtn.css('background-color','#323232');
+	_g_$oBtn.css('color','#b0b0b0');
+	_g_$oBtn.css('border','1px solid #323232');
+}
+
+function _activateBtn()
+{
+	_g_$oBtn.prop('disabled', false);
+	_g_$oBtn.css('background-color','#ed1c24');
+	_g_$oBtn.css('color','#fff');
+	_g_$oBtn.css('border','1px solid #ed1c24');
+}
