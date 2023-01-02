@@ -1,0 +1,14 @@
+<query id="insertAuthMobile" action="insert">
+    <tables>
+        <table name="member_auth_mobile" />
+    </tables>
+    <columns>
+        <column name="member_srl" var="member_srl" filter="number" notnull="notnull" />
+        <column name="user_id" var="user_id" notnull="notnull" />
+        <column name="auth_key" var="auth_key" notnull="notnull" minlength="40" maxlength="40" />
+		<column name="sms_phrase" var="sms_phrase" notnull="notnull" minlength="6" maxlength="6" />
+        <column name="mobile" var="mobile" notnull="notnull" minlength="10" maxlength="11" />
+        <column name="is_register" var="is_register" default="N" />
+        <column name="regdate" default="curdate()" />
+    </columns>
+</query>

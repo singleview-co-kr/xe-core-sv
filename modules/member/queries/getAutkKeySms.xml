@@ -1,0 +1,17 @@
+<query id="getAutkKeySms" action="select">
+    <tables>
+        <table name="member_auth_mobile" />
+    </tables>
+    <columns>
+		<column name="auth_key" />
+		<column name="member_srl" />
+		<column name="user_id" />
+		<column name="mobile" />
+		<column name="sms_phrase" />
+		<column name="is_register" />
+		<column name="regdate" />
+    </columns>
+    <conditions>
+        <condition operation="equal" column="auth_key" var="auth_key" notnull="notnull" />
+    </conditions>
+</query>

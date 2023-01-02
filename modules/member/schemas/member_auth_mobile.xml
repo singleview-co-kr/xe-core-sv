@@ -1,0 +1,9 @@
+<table name="member_auth_mobile">
+    <column name="auth_key" type="varchar" size="40" notnull="notnull" unique="unique_key" />
+    <column name="member_srl" type="number" size="11" notnull="notnull" unique="unique_key" />
+    <column name="user_id" type="varchar" size="80" notnull="notnull" />
+	<column name="mobile" type="char" size="11" notnull="notnull" />
+    <column name="sms_phrase" type="char" size="6" notnull="notnull" />
+    <column name="is_register" type="char" size="1" default="N" />
+    <column name="regdate" type="date" index="idx_regdate" />
+</table>

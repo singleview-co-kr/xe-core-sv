@@ -66,6 +66,7 @@
 		<action name="procMemberModifyInfoBefore" type="controller" ruleset="recheckedPassword" standalone="true" />
 		<action name="procMemberModifyInfo" type="controller" ruleset="@insertMember" standalone="true" />
 		<action name="procMemberModifyPassword" type="controller" ruleset="modifyPassword" standalone="true" />
+		<action name="procMemberModifyPasswordAjax" type="controller" />
 		<action name="procMemberLeave" type="controller" ruleset="leaveMember" standalone="true" />
 		<action name="procMemberInsertProfileImage" type="controller" ruleset="insertProfileImage" standalone="true" />
 		<action name="procMemberInsertImageName" type="controller" ruleset="insertImageName" standalone="true" />
@@ -82,6 +83,7 @@
 		<action name="procMemberDeleteSavedDocument" type="controller" standalone="true" />
 
 		<action name="procMemberFindAccount" type="controller" method="GET|POST" ruleset="findAccount" standalone="true" />
+		<action name="procMemberRequestSmsAuthAjax" type="controller" method="GET|POST" ruleset="resetPwByMobile" standalone="true" />
 		<action name="procMemberFindAccountByQuestion" type="controller" method="GET|POST" standalone="true" />
 		<action name="procMemberAuthAccount" type="controller" method="GET|POST" standalone="true" />
 		<action name="procMemberAuthEmailAddress" type="controller" method="GET|POST" standalone="true" />
@@ -106,6 +108,7 @@
 		<action name="getMemberAdminColorset" type="model" />
 		<action name="getMemberAdminInsertJoinForm" type="model" />
 		<action name="getMemberAdminIPCheck" type="model" />
+		<action name="getSmsAuthValdationAjax" type="model" />
 
 		<action name="procMemberAdminInsert" type="controller" ruleset="insertAdminMember" />
 		<action name="procMemberAdminDelete" type="controller" />

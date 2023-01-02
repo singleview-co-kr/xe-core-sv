@@ -1042,6 +1042,46 @@ class memberModel extends member
 		return $GLOBALS['__member_info__']['signature'][$member_srl];
 	}
 
+	public function getSmsAuthKey($sSmsAuthKey)
+	{
+		$oArgs = new stdClass;
+		$oArgs->auth_key = $sSmsAuthKey;
+		$oRst = executeQuery('member.getAutkKeySms', $oArgs);
+		unset($oArgs);
+		return $oRst;
+	}
+
+	/**
+	 * @brief validate SMS auth key via AJAX
+	 * align with procMemberModifyPasswordAjax()
+	 * @return bool
+	 */
+	public function getSmsAuthValdationAjax()
+	{
+		$sSmsAuthKey = Context::get('auth_key');
+		$nMemberSrl = (int)Context::get('member_srl');
+		$sMobile = Context::get('mobile');
+		$sSmsPhrase = Context::get('sms_phrase');
+		if(!$sSmsAuthKey || !$nMemberSrl || !$sMobile || !$sSmsPhrase)
+			return new BaseObject(-1, '잘못된 요청입니다.');
+		
+		$oRst = $this->getSmsAuthKey($sSmsAuthKey);
+		if(!$oRst->toBool())
+			return $oRst;
+
+		if($oRst->data->auth_key == $sSmsAuthKey && $oRst->data->member_srl == $nMemberSrl 
+			&& $oRst->data->mobile == $sMobile && $oRst->data->sms_phrase == $sSmsPhrase)
+		{
+			$this->add('isValid', 1);
+		}
+		else
+			$this->add('isValid', 0);
+
+		if($oRst->data->is_register == 'Y')
+			$this->add('isValid', 0);
+		return new BaseObject();
+	}
+
 	/**
 	 * @brief Compare plain text password to the password saved in DB
 	 * @param string $hashed_password The hash that was saved in DB

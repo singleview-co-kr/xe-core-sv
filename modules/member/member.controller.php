@@ -1306,6 +1306,120 @@ class memberController extends member
 		}
 		return new BaseObject(0,'success');
 	}
+	/**
+	 * @brief 인증난수 생성
+	 **/
+	private function _getRandNumber($e)
+	{
+		if( is_null( $e ) )
+			$e = 5;
+
+		for($i=0;$i<$e;$i++)
+			 $rand=$rand.rand(0,9); 
+		return $rand;
+	}
+
+	/**
+	 * reset request sms auth phrase to reset pw by mobile no
+	 *
+	 * @return BaseObject
+	 */
+	function procMemberRequestSmsAuthAjax()
+	{
+		$sUserId = Context::get('user_id');
+		if(!$sUserId) 
+			return new BaseObject(-1, 'msg_invalid_request');
+		$sMobile = Context::get('mobile');
+		if(!$sMobile) 
+			return new BaseObject(-1, 'msg_invalid_request');
+
+		$oMemberModel = getModel('member');
+		//$oModuleModel = getModel('module');
+
+		// Get information of the member by user_id
+		//$columnList = array('denied', 'member_srl', 'user_id', 'user_name', 'email_address', 'nick_name');
+		$oMemberInfo = $oMemberModel->getMemberInfoByUserId($sUserId);
+		if(!$oMemberInfo) 
+			return new BaseObject(-1, 'msg_user_id_not_exists');
+
+		// Check if possible to find member's ID and password
+		if($oMemberInfo->denied == 'Y')
+			return new BaseObject(-1, 'msg_user_not_confirmed');
+
+		if($sMobile != $oMemberInfo->mobile)
+			return new BaseObject(-1, 'msg_invalid_mobile_no');
+
+		// Insert data into the authentication DB
+		$oPassword = new Password();
+		$sAuthKey = $oPassword->createSecureSalt(40);
+		unset($oPassword);
+
+		// SMS 전송
+		$sSmsPharase = $this->_getRandNumber(6);
+
+		$oArgs = new stdClass();
+		$oArgs->user_id = $oMemberInfo->user_id;
+		$oArgs->member_srl = $oMemberInfo->member_srl;
+		$oArgs->auth_key = $sAuthKey;
+		$oArgs->sms_phrase = $sSmsPharase;
+		$oArgs->mobile = $oMemberInfo->mobile;
+		$oArgs->is_register = 'N';
+		$oRst = executeQuery('member.insertAuthMobile', $oArgs);
+		unset($oArgs);
+		if(!$oRst->toBool()) 
+			return $oRst;
+
+		$this->add('isValid', 1);
+		$this->add('nMemberSrl', $oMemberInfo->member_srl);
+		$this->add('sAuthKey', $sAuthKey);
+	}
+	/**
+	 * Change the user password after SMS authentication via Ajax
+	 * align with getSmsAuthValdationAjax()
+	 * @return 
+	 */
+	public function procMemberModifyPasswordAjax()
+	{
+		$sSmsAuthKey = Context::get('auth_key');
+		$nMemberSrl = (int)Context::get('member_srl');
+		$sMobile = Context::get('mobile');
+		$sSmsPhrase = Context::get('sms_phrase');
+		$sPassword = trim(Context::get('new_password'));
+		
+		$oMemberModel = getModel('member');
+		$oRst = $oMemberModel->getSmsAuthKey($sSmsAuthKey);
+		unset($oMemberModel);
+		if(!$oRst->toBool())
+			return $oRst;
+		if($oRst->data->is_register == 'Y')
+			return new BaseObject(-1, '만료된 요청입니다.');
+		if($oRst->data->auth_key != $sSmsAuthKey || $oRst->data->member_srl != $nMemberSrl 
+			|| $oRst->data->mobile != $sMobile || $oRst->data->sms_phrase != $sSmsPhrase || !strlen($sPassword))
+			return new BaseObject(-1, '잘못된 접근입니다.');
+		unset($oRst);
+
+		$oArgs = new stdClass;
+		$oArgs->member_srl = $nMemberSrl;
+		$oArgs->password = $sPassword;
+		$oRst = $this->updateMemberPassword($oArgs);
+		unset($oArgs);
+		if(!$oRst->toBool()) 
+			return $oRst;
+		unset($oRst);
+
+		// 인증 SMS 정보 무효화
+		$oArgs = new stdClass();
+		$oArgs->auth_key = $sSmsAuthKey;
+		$oArgs->is_register = 'Y';
+		$oRst = executeQuery('member.updateAuthMobileRegistered', $oArgs);
+		unset($oArgs);
+		if(!$oRst->toBool()) 
+			return $oRst;
+
+		$this->add('isChanged', 1);
+		$this->setMessage('success_updated');
+		return new BaseObject();
+	}
 
 	/**
 	 * Find ID/Password

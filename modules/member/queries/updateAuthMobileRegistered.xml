@@ -1,0 +1,11 @@
+<query id="updateAuthMobileRegistered" action="update">
+    <tables>
+        <table name="member_auth_mobile" />
+    </tables>
+    <columns>
+        <column name="is_register" var="is_register" notnull="notnull" />
+    </columns>
+    <conditions>
+        <condition operation="equal" column="auth_key" var="auth_key" notnull="notnull" />
+    </conditions>
+</query>

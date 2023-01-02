@@ -1,0 +1,90 @@
+function requestSmsAuth(){
+	sUserId = $('#user_id').val();
+	sMobile = $('#mobile').val();
+	console.log(sUserId);
+	if(sUserId.length && sMobile.length)
+	{
+		var params = new Array();
+		params['user_id'] = sUserId;
+		params['mobile'] = sMobile;
+		var response = ['isValid', 'nMemberSrl', 'sAuthKey'];
+		exec_xml('member', 'procMemberRequestSmsAuthAjax', params, function(ret_obj) {
+			if(ret_obj['message'] == 'success')
+			{
+				if(ret_obj['isValid'] == 1){
+					alert('인증 번호를 전송했습니다.');
+					$('#member_srl').val(ret_obj['nMemberSrl']);
+					$('#auth_key').val(ret_obj['sAuthKey']);
+				}else{
+					alert('잘못된 요청입니다.');
+				}
+			}
+		}, response);
+	}
+}
+
+function validateSmsAuth(){
+	sAuthKey = $('#auth_key').val();
+	nMemberSrl = $('#member_srl').val();
+	sMobile = $('#mobile').val();
+	sSmsPhrase = $('#sms_phrase').val();
+// console.log(sAuthKey, nMemberSrl, sMobile, sSmsPhrase);
+	if(sAuthKey.length && nMemberSrl && sMobile.length && sSmsPhrase.length)
+	{
+		var params = new Array();
+		params['auth_key'] = sAuthKey;
+		params['member_srl'] = nMemberSrl;
+		params['mobile'] = sMobile;
+		params['sms_phrase'] = sSmsPhrase;
+		var response = ['isValid'];
+		exec_xml('member', 'getSmsAuthValdationAjax', params, function(ret_obj) {
+			if(ret_obj['message'] == 'success')
+			{
+				if(ret_obj['isValid'] == 1){
+					jQuery('#reset_password').slideToggle('slow', function(){});
+				}else{
+					alert('만료된 요청입니다.');
+				}
+			}
+		}, response);
+	}
+}
+
+function changePassword(){
+	sPassword1 = $('#password_1').val();
+	sPassword2 = $('#password_2').val();
+	if(sPassword1 != sPassword2)
+	{
+		alert('패스워드가 일치하지 않습니다.');
+		return;
+	}
+
+	sAuthKey = $('#auth_key').val();
+	nMemberSrl = $('#member_srl').val();
+	sMobile = $('#mobile').val();
+	sSmsPhrase = $('#sms_phrase').val();
+	if(sAuthKey.length && nMemberSrl && sMobile.length && sSmsPhrase && sPassword1)
+	{
+		var params = new Array();
+		params['auth_key'] = sAuthKey;
+		params['member_srl'] = nMemberSrl;
+		params['mobile'] = sMobile;
+		params['sms_phrase'] = sSmsPhrase;
+		params['new_password'] = sPassword1;
+		var response = ['isChanged'];
+		exec_xml('member', 'procMemberModifyPasswordAjax', params, function(ret_obj) {
+			if(ret_obj['message'] == 'success')
+			{
+				if(ret_obj['isChanged'] == 1){
+					jQuery('#reset_password').slideToggle('slow', function(){});
+					$('#password_1').val('');
+					$('#password_2').val('');
+					$('#sms_phrase').val('');
+					alert('비밀번호가 변경되었습니다.');
+				}else{
+					alert('비밀번호를 변경할 수 없습니다.');
+				}
+			}
+		}, response);
+	}
+}

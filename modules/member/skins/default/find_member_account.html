@@ -1,5 +1,37 @@
 <include target="./common_header.html" />
 <load target="filter/find_member_account.xml" />
+
+<script src="/modules/member/tpl/js/mobile_change_password.js"></script>
+<section>
+	<h1>{$lang->cmd_reset_pw_with_mobile}</h1>
+	<p>{$lang->about_reset_pw_with_mobile}</p>
+		<span class="input-append">
+			<input type="hidden" name="auth_key" id="auth_key" value="" />
+			<input type="hidden" name="member_srl" id="member_srl" value="" />  
+			<input type="text" name="user_id" id="user_id" required placeholder="{$lang->user_id}" title="{$lang->user_id}" value="root" /> 
+			<input type="text" name="mobile" id="mobile" required placeholder="{$lang->mobile}" title="{$lang->mobile}" value="01031755222" /> 
+			<input type="button" class="btn btn-inverse" onClick="requestSmsAuth();" value="{$lang->cmd_request_auth_sms}" />
+		</span>
+	</form>
+</section>
+<section>
+	<p>{$lang->cmd_input_auth_sms}</p>
+	<span class="input-append">
+		<input type="text" name="sms_phrase" id="sms_phrase" placeholder="{$lang->sms_phrase}" title="{$lang->sms_phrase}" value="" /> 
+		<input type="button" class="btn btn-inverse" onClick="validateSmsAuth();" value="{$lang->cmd_confirm_auth_sms}" />
+	</span>
+</section>
+
+<div id='reset_password' STYLE='margin:0; padding:0; border:none; display: none;'>
+<section>
+	<span class="input-append">
+		<input type="password" name="password_1" id="password_1" placeholder="{$lang->password}" title="{$lang->password}" value="" /> 
+		<input type="password" name="password_2" id="password_2" placeholder="{$lang->password3}" title="{$lang->password3}" value="" /> 
+		<input type="button" class="btn btn-inverse" onClick="changePassword();" value="{$lang->cmd_modify_member_password}" />
+	</span>
+</section>
+</div>
+<hr>
 <section>
 	<h1>{$lang->cmd_find_member_account_with_email}</h1>
 	<p>{$lang->about_find_member_account}</p>
