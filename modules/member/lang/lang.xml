@@ -1347,9 +1347,6 @@
 	<item name="msg_auth_mail_sent">
 		<value xml:lang="ko"><![CDATA[%s 메일로 인증 정보를 담은 메일이 발송되었습니다. 메일을 확인하세요.]]></value>
 	</item>
-	<item name="msg_auth_sms_sent">
-		<value xml:lang="ko"><![CDATA[%s 번호로 인증 문자를 발송했습니다. 문자를 확인하세요.]]></value>
-	</item>
 	<item name="cmd_input_auth_sms">
 		<value xml:lang="ko"><![CDATA[인증 번호를 입력하세요.]]></value>
 	</item>

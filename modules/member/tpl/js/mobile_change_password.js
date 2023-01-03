@@ -93,3 +93,43 @@ function changePassword(){
 		}, response);
 	}
 }
+
+function onlyNumberCheck(obj){
+	if(isNull(obj.value)) return; 
+	if(!isInteger(obj.value)){
+		var alertMsg  = "정수 숫자만 입력하실 수 있습니다.\n\n";
+			alertMsg += "입력범위 : 0 ~ 9\n";
+			alertMsg += "입력예시 : 011, 2003, 1234567890, etc.";
+		alert(alertMsg);
+		obj.value = "";
+
+	}
+}
+
+function isInteger(objValue)
+{
+	var bool = true;
+	if(objValue == null || objValue == "")
+		bool = false;
+	else
+	{
+		for (var i=0; i<objValue.length; i++)
+		{
+			ch = objValue.charCodeAt(i);
+				if(!(ch >= 0x30 && ch <= 0x39))
+				{
+					bool = false;
+					break;
+				}
+		}
+	}
+	return bool;
+}
+
+function isNull(str){
+	str = $.trim(str);
+	if(str == null || str == 'undefined' || str.length == 0) { 
+		return true; 
+	}
+	return false;
+}

@@ -10,7 +10,7 @@
 			<input type="hidden" name="auth_key" id="auth_key" value="" />
 			<input type="hidden" name="member_srl" id="member_srl" value="" />  
 			<input type="text" name="user_id_sms" id="user_id_sms" required placeholder="{$lang->user_id}" title="{$lang->user_id}" /> 
-			<input type="text" name="mobile" id="mobile" required placeholder="{$lang->mobile}" title="{$lang->mobile}" /> 
+			<input type="text" name="mobile" id="mobile" required placeholder="{$lang->mobile}" title="{$lang->mobile}" onkeyup="onlyNumberCheck(this)" /> 
 			<input type="button" class="btn btn-inverse" onClick="requestSmsAuth();" value="{$lang->cmd_request_auth_sms}" />
 		</span>
 	</form>
