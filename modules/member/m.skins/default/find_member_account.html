@@ -1,4 +1,55 @@
 <load target="css/msignup.css" />
+<block cond="$sSmsAuthPluginTitle">
+    <script src="/modules/member/tpl/js/mobile_change_password.js"></script>
+    <div class="hx h2"><h2>{$lang->cmd_reset_pw_with_mobile}</h2></div>
+	<p style="margin:3px 10px;color:#666">{$lang->about_reset_pw_with_mobile}</p>
+    <form action="./" class="ff">
+        <input type="hidden" name="auth_key" id="auth_key" value="" />
+        <input type="hidden" name="member_srl" id="member_srl" value="" />  
+        <ul>
+            <li>
+                <label for="user_id_sms">{$lang->user_id}</label>
+                <input type="text" name="user_id_sms" id="user_id_sms" required placeholder="{$lang->user_id}" title="{$lang->user_id}" />
+            </li>
+            <li>
+                <label for="mobile">{$lang->mobile}</label>
+                <input type="text" name="mobile" id="mobile" required placeholder="{$lang->mobile}" title="{$lang->mobile}" /> 
+            </li>
+        </ul>
+        <div class="bna">
+            <input type="button" class="btn dark" style="background: -webkit-linear-gradient(top,#7e7c78,#5c5b58); background-color: #777; color:#fff" onClick="requestSmsAuth();" value="{$lang->cmd_request_auth_sms}" />
+        </div>
+    </form>
+
+    <form action="./" class="ff">
+        <ul>
+            <li>
+                <label for="sms_phrase">{$lang->sms_phrase}</label>
+                <input type="text" name="sms_phrase" id="sms_phrase" placeholder="{$lang->sms_phrase}" title="{$lang->sms_phrase}" /> 
+            </li>
+        </ul>
+        <div class="bna">
+            <input type="button" class="btn dark" style="background: -webkit-linear-gradient(top,#7e7c78,#5c5b58); background-color: #777; color:#fff" onClick="validateSmsAuth();" value="{$lang->cmd_confirm_auth_sms}" />
+        </div>
+    </form>
+
+    <form action="./" class="ff" id='reset_password' STYLE='display: none;'>
+        <ul>
+            <li>
+                <label for="password_1">{$lang->password}</label>
+                <input type="password" name="password_1" id="password_1" placeholder="{$lang->password}" title="{$lang->password}" /> 
+            </li>
+            <li>
+                <label for="password_2">{$lang->password3}</label>
+                <input type="password" name="password_2" id="password_2" placeholder="{$lang->password3}" title="{$lang->password3}" /> 
+            </li>
+        </ul>
+        <div class="bna">
+            <input type="button" class="btn dark" style="background: -webkit-linear-gradient(top,#7e7c78,#5c5b58); background-color: #777; color:#fff" onClick="changePassword();" value="{$lang->cmd_modify_member_password}" />
+        </div>
+    </form>
+</block>
+
 <div class="hx h2"><h2>{$lang->cmd_find_member_account_with_email}</h2></div>
 <div cond="$XE_VALIDATOR_MESSAGE && $XE_VALIDATOR_ID == 'modules/member/m.skin/default/find_member_account/1'" class="message {$XE_VALIDATOR_MESSAGE_TYPE}">
 	<p>{$XE_VALIDATOR_MESSAGE}</p>

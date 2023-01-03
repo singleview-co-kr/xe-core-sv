@@ -1197,6 +1197,33 @@ class memberModel extends member
 		}
 		return $groupSrl;
 	}
+    /**
+	 * @brief check SMS auth plugin exist
+	 */
+    public function getSvauthPluginTitle()
+	{
+        $oModuleModel = getModel('module');
+        $oConfig = $oModuleModel->getModuleConfig('svauth');
+        $sSmsAuthPluginTitle = null;
+        if($oConfig->plugin_srl)
+        {
+            $oSvauthAdminModel = getAdminModel('svauth');
+            $oAuthPlugin = $oSvauthAdminModel->getPluginList();
+            foreach($oAuthPlugin as $nIdx=>$oPlugin)
+            {
+                if($oPlugin->plugin_srl == $oConfig->plugin_srl)
+                {
+                    $sSmsAuthPluginTitle = $oPlugin->title;
+                    break;
+                }
+            }
+            unset($oAuthPlugin);
+            unset($oSvauthAdminModel);
+        }
+        unset($oConfig);
+        unset($oModuleModel);
+        return $sSmsAuthPluginTitle;
+    }
 }
 /* End of file member.model.php */
 /* Location: ./modules/member/member.model.php */

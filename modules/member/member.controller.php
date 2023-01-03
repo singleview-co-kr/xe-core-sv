@@ -1307,19 +1307,6 @@ class memberController extends member
 		return new BaseObject(0,'success');
 	}
 	/**
-	 * @brief 인증난수 생성
-	 **/
-	private function _getRandNumber($e)
-	{
-		if( is_null( $e ) )
-			$e = 5;
-
-		for($i=0;$i<$e;$i++)
-			 $rand=$rand.rand(0,9); 
-		return $rand;
-	}
-
-	/**
 	 * reset request sms auth phrase to reset pw by mobile no
 	 *
 	 * @return BaseObject
@@ -1334,18 +1321,14 @@ class memberController extends member
 			return new BaseObject(-1, 'msg_invalid_request');
 
 		$oMemberModel = getModel('member');
-		//$oModuleModel = getModel('module');
-
 		// Get information of the member by user_id
-		//$columnList = array('denied', 'member_srl', 'user_id', 'user_name', 'email_address', 'nick_name');
 		$oMemberInfo = $oMemberModel->getMemberInfoByUserId($sUserId);
+        unset($oMemberModel);
 		if(!$oMemberInfo) 
 			return new BaseObject(-1, 'msg_user_id_not_exists');
-
 		// Check if possible to find member's ID and password
 		if($oMemberInfo->denied == 'Y')
 			return new BaseObject(-1, 'msg_user_not_confirmed');
-
 		if($sMobile != $oMemberInfo->mobile)
 			return new BaseObject(-1, 'msg_invalid_mobile_no');
 
@@ -1355,7 +1338,14 @@ class memberController extends member
 		unset($oPassword);
 
 		// SMS 전송
-		$sSmsPharase = $this->_getRandNumber(6);
+        Context::set('phone_number', $oMemberInfo->mobile);
+        $oSvauthController = &getController('svauth');
+        $oRst = $oSvauthController->procSvauthSetSmsAuthCodeMemberPwmodify();
+        unset($oSvauthController);
+        if(!$oRst->toBool()) 
+            return new BaseObject(-1, $oRst->message);
+		$sSmsPharase = $oRst->get('keystr');
+        unset($oRst);
 
 		$oArgs = new stdClass();
 		$oArgs->user_id = $oMemberInfo->user_id;

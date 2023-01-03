@@ -555,11 +555,17 @@ class memberView extends member
 	 */
 	function dispMemberFindAccount()
 	{
-		if(Context::get('is_logged')) return $this->stop('already_logged');
+		if(Context::get('is_logged'))
+            return $this->stop('already_logged');
 
 		$config = $this->member_config;
-
 		Context::set('identifier', $config->identifier);
+
+        // begin - check SMS auth plugin exist
+        $oMemberModel = getModel('member');
+        $sSmsAuthPluginTitle = $oMemberModel->getSvauthPluginTitle();
+        Context::set('sSmsAuthPluginTitle', $sSmsAuthPluginTitle);
+        // end - check SMS auth plugin exist
 
 		$this->setTemplateFile('find_member_account');
 	}

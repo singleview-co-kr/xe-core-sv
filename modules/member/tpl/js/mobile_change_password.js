@@ -1,7 +1,8 @@
 function requestSmsAuth(){
-	sUserId = $('#user_id').val();
+	sUserId = $('#user_id_sms').val();
 	sMobile = $('#mobile').val();
 	console.log(sUserId);
+    console.log(sMobile);
 	if(sUserId.length && sMobile.length)
 	{
 		var params = new Array();
@@ -77,6 +78,10 @@ function changePassword(){
 			{
 				if(ret_obj['isChanged'] == 1){
 					jQuery('#reset_password').slideToggle('slow', function(){});
+                    $('#user_id_sms').val('');
+                    $('#mobile').val('');
+                    $('#auth_key').val('');
+                    $('#member_srl').val('');
 					$('#password_1').val('');
 					$('#password_2').val('');
 					$('#sms_phrase').val('');
