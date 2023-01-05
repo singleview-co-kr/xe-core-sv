@@ -1,6 +1,42 @@
 <load target="css/msignup.css" />
 <block cond="$sSmsAuthPluginTitle">
     <script src="/modules/member/tpl/js/mobile_change_password.js"></script>
+    <div class="hx h2"><h2>{$lang->cmd_find_id_with_mobile}</h2></div>
+	<p style="margin:3px 10px;color:#666">{$lang->about_find_id_with_mobile}</p>
+    <form action="./" class="ff">
+        <input type="hidden" name="auth_key" id="auth_key" value="" />
+        <input type="hidden" name="member_srl" id="member_srl" value="" />  
+        <ul>
+            <li>
+                <label for="user_name_sms">{$lang->user_id}</label>
+                <input type="text" name="user_name_sms" id="user_name_sms" required placeholder="{$lang->user_name}" title="{$lang->user_name}" />
+            </li>
+            <li>
+                <label for="mobile_user_id">{$lang->mobile}</label>
+                <input type="text" name="mobile_user_id" id="mobile_user_id" required placeholder="{$lang->mobile}" title="{$lang->mobile}" onkeyup="onlyNumberCheck(this)" /> 
+            </li>
+        </ul>
+        <div class="bna">
+            <input type="button" class="btn dark" style="background: -webkit-linear-gradient(top,#7e7c78,#5c5b58); background-color: #777; color:#fff" onClick="requestSmsAuth('find_id');" value="{$lang->cmd_request_auth_sms}" />
+        </div>
+    </form>
+    <form action="./" class="ff">
+        <ul>
+            <li>
+                <label for="sms_phrase_user_id">{$lang->sms_phrase}</label>
+                <input type="text" name="sms_phrase_user_id" id="sms_phrase_user_id" placeholder="{$lang->sms_phrase}" title="{$lang->sms_phrase}" /> 
+            </li>
+        </ul>
+        <div class="bna">
+            <input type="button" class="btn dark" style="background: -webkit-linear-gradient(top,#7e7c78,#5c5b58); background-color: #777; color:#fff" onClick="validateSmsAuth('find_id');" value="{$lang->cmd_confirm_auth_sms}" />
+        </div>
+    </form>
+    <form action="./" class="ff" id='reveal_user_id' STYLE='display: none;'>
+        <div class="bna">
+            귀하의 회원 아이디는 <b id="user_id_revealed"></b> 입니다.
+        </div>
+    </form>
+
     <div class="hx h2"><h2>{$lang->cmd_reset_pw_with_mobile}</h2></div>
 	<p style="margin:3px 10px;color:#666">{$lang->about_reset_pw_with_mobile}</p>
     <form action="./" class="ff">
@@ -12,27 +48,25 @@
                 <input type="text" name="user_id_sms" id="user_id_sms" required placeholder="{$lang->user_id}" title="{$lang->user_id}" />
             </li>
             <li>
-                <label for="mobile">{$lang->mobile}</label>
-                <input type="text" name="mobile" id="mobile" required placeholder="{$lang->mobile}" title="{$lang->mobile}" onkeyup="onlyNumberCheck(this)" /> 
+                <label for="mobile_pw_rst">{$lang->mobile}</label>
+                <input type="text" name="mobile_pw_rst" id="mobile_pw_rst" required placeholder="{$lang->mobile}" title="{$lang->mobile}" onkeyup="onlyNumberCheck(this)" /> 
             </li>
         </ul>
         <div class="bna">
-            <input type="button" class="btn dark" style="background: -webkit-linear-gradient(top,#7e7c78,#5c5b58); background-color: #777; color:#fff" onClick="requestSmsAuth();" value="{$lang->cmd_request_auth_sms}" />
+            <input type="button" class="btn dark" style="background: -webkit-linear-gradient(top,#7e7c78,#5c5b58); background-color: #777; color:#fff" onClick="requestSmsAuth('reset_pw');" value="{$lang->cmd_request_auth_sms}" />
         </div>
     </form>
-
     <form action="./" class="ff">
         <ul>
             <li>
-                <label for="sms_phrase">{$lang->sms_phrase}</label>
-                <input type="text" name="sms_phrase" id="sms_phrase" placeholder="{$lang->sms_phrase}" title="{$lang->sms_phrase}" /> 
+                <label for="sms_phrase_pw_rst">{$lang->sms_phrase}</label>
+                <input type="text" name="sms_phrase_pw_rst" id="sms_phrase_pw_rst" placeholder="{$lang->sms_phrase}" title="{$lang->sms_phrase}" /> 
             </li>
         </ul>
         <div class="bna">
-            <input type="button" class="btn dark" style="background: -webkit-linear-gradient(top,#7e7c78,#5c5b58); background-color: #777; color:#fff" onClick="validateSmsAuth();" value="{$lang->cmd_confirm_auth_sms}" />
+            <input type="button" class="btn dark" style="background: -webkit-linear-gradient(top,#7e7c78,#5c5b58); background-color: #777; color:#fff" onClick="validateSmsAuth('reset_pw');" value="{$lang->cmd_confirm_auth_sms}" />
         </div>
     </form>
-
     <form action="./" class="ff" id='reset_password' STYLE='display: none;'>
         <ul>
             <li>

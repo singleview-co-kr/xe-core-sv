@@ -1062,7 +1062,8 @@ class memberModel extends member
 		$nMemberSrl = (int)Context::get('member_srl');
 		$sMobile = Context::get('mobile');
 		$sSmsPhrase = Context::get('sms_phrase');
-		if(!$sSmsAuthKey || !$nMemberSrl || !$sMobile || !$sSmsPhrase)
+        $sReqMode = Context::get('req_mode');
+		if(!$sSmsAuthKey || !$nMemberSrl || !$sMobile || !$sSmsPhrase || !$sReqMode)
 			return new BaseObject(-1, '잘못된 요청입니다.');
 		
 		$oRst = $this->getSmsAuthKey($sSmsAuthKey);
@@ -1073,9 +1074,15 @@ class memberModel extends member
 			&& $oRst->data->mobile == $sMobile && $oRst->data->sms_phrase == $sSmsPhrase)
 		{
 			$this->add('isValid', 1);
+            if($sReqMode == 'find_id')
+            {
+                $oMemberInfo = $this->getMemberInfoByMemberSrl($nMemberSrl);
+                $this->add('user_id', $oMemberInfo->user_id);
+                unset($oMemberInfo);
+            }
 		}
 		else
-			$this->add('isValid', 0);
+            $this->add('isValid', 0);
 
 		if($oRst->data->is_register == 'Y')
 			$this->add('isValid', 0);

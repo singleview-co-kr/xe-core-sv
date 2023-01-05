@@ -1313,24 +1313,37 @@ class memberController extends member
 	 */
 	function procMemberRequestSmsAuthAjax()
 	{
-		$sUserId = Context::get('user_id');
-		if(!$sUserId) 
-			return new BaseObject(-1, 'msg_invalid_request');
 		$sMobile = Context::get('mobile');
 		if(!$sMobile) 
 			return new BaseObject(-1, 'msg_invalid_request');
+        $sReqMode = Context::get('req_mode');
+        if(!$sReqMode) 
+			return new BaseObject(-1, 'msg_invalid_request');
 
+        // Get information of the member by mobile_no
 		$oMemberModel = getModel('member');
-		// Get information of the member by user_id
-		$oMemberInfo = $oMemberModel->getMemberInfoByUserId($sUserId);
+        $oMemberInfo = $oMemberModel->getMemberInfoByMobile($sMobile);
         unset($oMemberModel);
-		if(!$oMemberInfo) 
+        if(!$oMemberInfo) 
 			return new BaseObject(-1, 'msg_user_id_not_exists');
-		// Check if possible to find member's ID and password
-		if($oMemberInfo->denied == 'Y')
+        if($oMemberInfo->denied == 'Y')
 			return new BaseObject(-1, 'msg_user_not_confirmed');
-		if($sMobile != $oMemberInfo->mobile)
-			return new BaseObject(-1, 'msg_invalid_mobile_no');
+        if($sReqMode == 'find_id')
+        {
+            $sUserName = Context::get('user_name');
+            if(!$sUserName) 
+                return new BaseObject(-1, 'msg_invalid_request');
+            if($sUserName != $oMemberInfo->user_name)
+			    return new BaseObject(-1, 'msg_invalid_mobile_no');
+        }
+        elseif($sReqMode == 'reset_pw')
+        {
+            $sUserId = Context::get('user_id');
+            if(!$sUserId) 
+                return new BaseObject(-1, 'msg_invalid_request');
+            if($sUserId != $oMemberInfo->user_id)
+			    return new BaseObject(-1, 'msg_invalid_mobile_no');
+        }
 
 		// Insert data into the authentication DB
 		$oPassword = new Password();
@@ -1340,7 +1353,7 @@ class memberController extends member
 		// SMS 전송
         Context::set('phone_number', $oMemberInfo->mobile);
         $oSvauthController = &getController('svauth');
-        $oRst = $oSvauthController->procSvauthSetSmsAuthCodeMemberPwmodify();
+        $oRst = $oSvauthController->procSvauthSetSmsAuthCodeMemberInquiry();
         unset($oSvauthController);
         if(!$oRst->toBool()) 
             return new BaseObject(-1, $oRst->message);
@@ -1410,7 +1423,6 @@ class memberController extends member
 		$this->setMessage('success_updated');
 		return new BaseObject();
 	}
-
 	/**
 	 * Find ID/Password
 	 *

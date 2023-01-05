@@ -1030,6 +1030,14 @@
 		<value xml:lang="jp"><![CDATA[Eメールアドレスでアカウントを探す]]></value>
 		<value xml:lang="zh-CN"><![CDATA[使用邮箱地址找回用户名/密码]]></value>
 	</item>
+    
+    <item name="cmd_find_id_with_mobile">
+		<value xml:lang="ko"><![CDATA[이름과 핸드폰 번호로 아이디 찾기]]></value>
+	</item>
+    <item name="about_find_id_with_mobile">
+		<value xml:lang="ko"><![CDATA[회원 정보에 등록된 이름과 핸드폰 번호로 아이디를 조회합니다.]]></value>
+	</item>
+    
 	<item name="cmd_reset_pw_with_mobile">
 		<value xml:lang="ko"><![CDATA[아이디와 핸드폰 번호로 비밀번호 변경하기]]></value>
 	</item>

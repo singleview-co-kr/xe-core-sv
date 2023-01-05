@@ -4,22 +4,47 @@
 <block cond="$sSmsAuthPluginTitle">
 <script src="/modules/member/tpl/js/mobile_change_password.js"></script>
 <section>
-	<h1>{$lang->cmd_reset_pw_with_mobile}</h1>
-	<p>{$lang->about_reset_pw_with_mobile}</p>
+	<h1>{$lang->cmd_find_id_with_mobile}</h1>
+	<p>{$lang->about_find_id_with_mobile}</p>
 		<span class="input-append">
 			<input type="hidden" name="auth_key" id="auth_key" value="" />
 			<input type="hidden" name="member_srl" id="member_srl" value="" />  
-			<input type="text" name="user_id_sms" id="user_id_sms" required placeholder="{$lang->user_id}" title="{$lang->user_id}" /> 
-			<input type="text" name="mobile" id="mobile" required placeholder="{$lang->mobile}" title="{$lang->mobile}" onkeyup="onlyNumberCheck(this)" /> 
-			<input type="button" class="btn btn-inverse" onClick="requestSmsAuth();" value="{$lang->cmd_request_auth_sms}" />
+			<input type="text" name="user_name_sms" id="user_name_sms" required placeholder="{$lang->user_name}" title="{$lang->user_name}" /> 
+			<input type="text" name="mobile_user_id" id="mobile_user_id" required placeholder="{$lang->mobile}" title="{$lang->mobile}" onkeyup="onlyNumberCheck(this)" /> 
+			<input type="button" class="btn btn-inverse" onClick="requestSmsAuth('find_id');" value="{$lang->cmd_request_auth_sms}" />
 		</span>
 	</form>
 </section>
 <section>
 	<p>{$lang->cmd_input_auth_sms}</p>
 	<span class="input-append">
-		<input type="text" name="sms_phrase" id="sms_phrase" placeholder="{$lang->sms_phrase}" title="{$lang->sms_phrase}" /> 
-		<input type="button" class="btn btn-inverse" onClick="validateSmsAuth();" value="{$lang->cmd_confirm_auth_sms}" />
+		<input type="text" name="sms_phrase_user_id" id="sms_phrase_user_id" placeholder="{$lang->sms_phrase}" title="{$lang->sms_phrase}" /> 
+		<input type="button" class="btn btn-inverse" onClick="validateSmsAuth('find_id');" value="{$lang->cmd_confirm_auth_sms}" />
+	</span>
+</section>
+<div id='reveal_user_id' STYLE='margin:0; padding:0; border:none; display: none;'>
+<section>
+	<h1>귀하의 회원 아이디는 <b id="user_id_revealed"></b> 입니다.</h1>
+</section>
+</div>
+<hr>
+<section>
+	<h1>{$lang->cmd_reset_pw_with_mobile}</h1>
+	<p>{$lang->about_reset_pw_with_mobile}</p>
+		<span class="input-append">
+			<input type="hidden" name="auth_key" id="auth_key" value="" />
+			<input type="hidden" name="member_srl" id="member_srl" value="" />  
+			<input type="text" name="user_id_sms" id="user_id_sms" required placeholder="{$lang->user_id}" title="{$lang->user_id}" /> 
+			<input type="text" name="mobile_pw_rst" id="mobile_pw_rst" required placeholder="{$lang->mobile}" title="{$lang->mobile}" onkeyup="onlyNumberCheck(this)" /> 
+			<input type="button" class="btn btn-inverse" onClick="requestSmsAuth('reset_pw');" value="{$lang->cmd_request_auth_sms}" />
+		</span>
+	</form>
+</section>
+<section>
+	<p>{$lang->cmd_input_auth_sms}</p>
+	<span class="input-append">
+		<input type="text" name="sms_phrase_pw_rst" id="sms_phrase_pw_rst" placeholder="{$lang->sms_phrase}" title="{$lang->sms_phrase}" /> 
+		<input type="button" class="btn btn-inverse" onClick="validateSmsAuth('reset_pw');" value="{$lang->cmd_confirm_auth_sms}" />
 	</span>
 </section>
 
