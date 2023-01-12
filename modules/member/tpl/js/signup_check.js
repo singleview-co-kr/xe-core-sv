@@ -62,6 +62,13 @@ function getAuthCode()
 		alert('연락처를 입력해 주세요.');
 		return;
 	}
+
+	const oReg = new RegExp('^[0-9]+$');
+	if(!oReg.test(sMobileNumber)){
+		alert('숫자만 입력해 주세요.');
+		return;
+	}
+
 	_disableBtn( '#get_authcode' );
 	var params = new Array();
 	params['phone_number'] = sMobileNumber;
