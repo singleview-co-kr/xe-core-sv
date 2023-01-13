@@ -51,6 +51,30 @@ function removeMemberCheckValueOutput(dummy, obj) {
     dummy.style.display = "none";
 }
 
+const oReg = new RegExp('^[0-9]+$');
+
+$(document).ready(function() {
+	$('#mobile').blur(function (e) {
+		var sMobileNumber = jQuery('#mobile').val().trim();
+		if(sMobileNumber.length){
+			if(!oReg.test(sMobileNumber)){
+				alert('핸드폰 번호에 숫자만 입력해 주세요.');
+				return;
+			}
+		}
+		
+	});
+	$('#authcode').blur(function (e) {
+		var sAuthCode = jQuery('#authcode').val().trim();
+		if(sAuthCode.length){
+			if(!oReg.test(sAuthCode)){
+				alert('인증번호에 숫자만 입력해 주세요.');
+				return;
+			}
+		}
+	});   
+});
+
 var _g_$oBtn;
 
 // 핸드폰 번호 인증
@@ -63,13 +87,12 @@ function getAuthCode()
 		return;
 	}
 
-	const oReg = new RegExp('^[0-9]+$');
 	if(!oReg.test(sMobileNumber)){
-		alert('숫자만 입력해 주세요.');
+		alert('핸드폰 번호에 숫자만 입력해 주세요.');
 		return;
 	}
 
-	_disableBtn( '#get_authcode' );
+	_disableBtn('#get_authcode');
 	var params = new Array();
 	params['phone_number'] = sMobileNumber;
 	var respons = ['success'];
