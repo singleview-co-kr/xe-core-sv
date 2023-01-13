@@ -206,7 +206,7 @@ if ($called_position == 'before_module_proc')
 		{
 			$tmp_content = preg_replace('/[\x00-\x1F\x7F]/', '', html_entity_decode($_content));
 			$dom = new DOMDocument;
-			@$dom = DOMDocument::loadHTML('<?xml encoding="utf-8" ?>' . $tmp_content);
+			$dom->loadHTML('<?xml encoding="utf-8" ?>' . $tmp_content);
 			$links = $dom->getElementsByTagName('a');
 			if (count($links))
 			{

@@ -4,8 +4,8 @@
 	<description>
 		Spambot 방지 애드온 - 회원가입, 글쓰기, 댓글작성에 적용.
     </description>
-    <version>2.8</version>
-    <date>2019-08-10</date>
+    <version>2.8.1</version>
+    <date>2023-01-13</date>
     <author email_address="" link="http://chungfamily.woweb.net/">
         <name xml:lang="ko">KSChung</name>
     </author>
