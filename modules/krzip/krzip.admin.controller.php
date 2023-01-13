@@ -1,5 +1,4 @@
 <?php
-
 class krzipAdminController extends krzip
 {
     public function init()
@@ -21,14 +20,26 @@ class krzipAdminController extends krzip
             'krzip_postcode_format',
             'krzip_server_request_format',
             'krzip_require_exact_query',
-            'krzip_use_full_jibeon'
+            'krzip_use_full_jibeon',
+			'kakaokrzip_display_postcode',
+			'kakaokrzip_display_address',
+			'kakaokrzip_display_details',
+			'kakaokrzip_display_extra_info',
+			'kakaokrzip_display_jibeon_address'
         );
-        
+
         if (!$args->krzip_display_postcode) $args->krzip_display_postcode = 'N';
         if (!$args->krzip_display_address) $args->krzip_display_address = 'N';
         if (!$args->krzip_display_details) $args->krzip_display_details = 'N';
         if (!$args->krzip_display_extra_info) $args->krzip_display_extra_info = 'N';
         if (!$args->krzip_display_jibeon_address) $args->krzip_display_jibeon_address = 'N';
+
+		if (!$args->kakaokrzip_display_postcode) $args->kakaokrzip_display_postcode = 'N';
+        if (!$args->kakaokrzip_display_address) $args->kakaokrzip_display_address = 'N';
+        if (!$args->kakaokrzip_display_details) $args->kakaokrzip_display_details = 'N';
+        if (!$args->kakaokrzip_display_extra_info) $args->kakaokrzip_display_extra_info = 'N';
+        if (!$args->kakaokrzip_display_jibeon_address) $args->kakaokrzip_display_jibeon_address = 'N';
+
         
         $oModuleController = getController('module');
         $output = $oModuleController->insertModuleConfig('krzip', $args);

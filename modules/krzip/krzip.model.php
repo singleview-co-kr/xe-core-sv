@@ -186,19 +186,22 @@ class krzipModel extends krzip
         
         $values = $this->convertDataFormat($values);
         
-		///////////////////////////////////////////////////////////////////
 		////////// kakao 주소 검색 선택 기능 추가 - 시작 20200903 /////////
 		if($config->krzip_address_format === 'kakaokrzip' )
 		{
 			$oKrzipConfig = new stdClass();
 			$oKrzipConfig->column_name = $column_name;
 			$oKrzipConfig->values = $values;
+			$oKrzipConfig->display_postcode = $config->kakaokrzip_display_postcode;
+			$oKrzipConfig->display_address = $config->kakaokrzip_display_address;
+			$oKrzipConfig->display_details = $config->kakaokrzip_display_details;
+			$oKrzipConfig->display_extra_info = $config->kakaokrzip_display_extra_info;
+			$oKrzipConfig->display_jibeon_address = $config->kakaokrzip_display_jibeon_address;
 			Context::set('krzip', $oKrzipConfig);
 			$oTemplate = &TemplateHandler::getInstance();
 			return $oTemplate->compile($this->module_path.'tpl', 'kakao_search');
 		}
 		////////// kakao 주소 검색 선택 기능 추가 - 끝 20200903 /////////
-		///////////////////////////////////////////////////////////////////
 		
 		if ($config->krzip_address_format === 'newkrzip' && strlen($values[4]) > 0)
         {
