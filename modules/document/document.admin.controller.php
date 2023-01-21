@@ -629,7 +629,7 @@ class documentAdminController extends document
 			return new BaseObject(-1,'msg_invalid_request');
 
 		$oDocumentController = getController('document');
-		$oRst = $oDocumentController->secureDocumentExtraKeys($nModuleSrl, $nVarIdx, $sBeginYyyymmdd, $sEndYyyymmdd);
+		$oRst = $oDocumentController->secureDocumentExtraVars($nModuleSrl, $nVarIdx, $sBeginYyyymmdd, $sEndYyyymmdd);
 		unset($oDocumentController);
 		if(!$oRst->toBool()) 
 			return $oRst;

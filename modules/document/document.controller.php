@@ -950,95 +950,6 @@ class documentController extends document
 		return $output;
 	}
 	/**
-	 * @brief mask multibyte string
-	 * param 원본문자열, 마스킹하지 않는 전단부 글자수, 마스킹하지 않는 후단부 글자수, 마스킹 마크 최대 표시수, 마스킹마크
-	 * echo _maskMbString('abc12234pro', 3, 2); => abc******ro
-	 */	
-	private function _maskMbString($str, $len1, $len2=0, $limit=0, $mark='*')
-	{
-		$arr_str = preg_split("//u", $str, -1, PREG_SPLIT_NO_EMPTY);
-		$str_len = count($arr_str);
-
-		$len1 = abs($len1);
-		$len2 = abs($len2);
-		if($str_len <= ($len1 + $len2))
-			return $str;
-
-		$str_head = '';
-		$str_body = '';
-		$str_tail = '';
-
-		$str_head = join('', array_slice($arr_str, 0, $len1));
-		if($len2 > 0)
-			$str_tail = join('', array_slice($arr_str, $len2 * -1));
-
-		$arr_body = array_slice($arr_str, $len1, ($str_len - $len1 - $len2));
-
-		if(!empty($arr_body)) 
-		{
-			$len_body = count($arr_body);
-			$limit = abs($limit);
-			if($limit > 0 && $len_body > $limit)
-				$len_body = $limit;
-
-			$str_body = str_pad('', $len_body, $mark);
-		}
-		return $str_head.$str_body.$str_tail;
-	}
-	/**
-	 * Secure personal private from an extra variable of the documents
-	 * @param int $module_srl
-	 * @param int $var_idx
-	 * @return BaseObject
-	 */
-	function secureDocumentExtraKeys($nModuleSrl, $nVarIdx, $sBeginYyyymmdd, $sEndYyyymmdd)
-	{
-		if(!$nModuleSrl || !$nVarIdx) 
-			return new BaseObject(-1,'msg_invalid_request');
-		$oArg = new stdClass();
-		$oArg->module_srl = $nModuleSrl;
-		$oArg->var_idx = $nVarIdx;
-		$oArg->begin_yyyymmdd = $sBeginYyyymmdd.'000001';
-		$oArg->end_yyyymmdd = $sEndYyyymmdd.'235959';
-		$oRst = executeQueryArray('document.getDocumentListWithExtraVarsPeriod', $oArg);
-		unset($oArg);
-		if(!count($oRst->data))
-			return new BaseObject();
-
-		foreach($oRst->data as $_ => $oSingleExtraVar)
-		{
-			if(strpos($oSingleExtraVar->value, '|@|'))
-			{
-				$aVal = explode('|@|', $oSingleExtraVar->value);
-				$nCnt = count($aVal);
-				if($nCnt == 3)  // maybe cell phone info
-					$aVal[2] = '*';
-				elseif($nCnt == 4 || $nCnt == 5)  // maybe addr info
-				{
-					for($i = 2; $i <= $nCnt; $i++)
-						$aVal[$i] = '*';
-				}
-				$oSingleExtraVar->value = implode('|@|', $aVal);
-			}
-			else  // maybe cell phone info
-				$oSingleExtraVar->value = $this->_maskMbString($oSingleExtraVar->value, 3, 3);
-		}
-		$oArg = new stdClass();
-		foreach($oRst->data as $_ => $oSingleExtraVar)
-		{
-			$oArg->module_srl = $oSingleExtraVar->module_srl;
-			$oArg->document_srl = $oSingleExtraVar->document_srl;
-			$oArg->var_idx = $oSingleExtraVar->var_idx;
-			$oArg->value = $oSingleExtraVar->value;
-			$oRst = executeQuery('document.updateDocumentExtraVar', $oArg);
-			if(!$oRst->toBool())
-				return $oRst;
-		}
-		unset($oArg);
-		unset($oRst);
-		return new BaseObject();
-	}
-	/**
 	 * Remove the extra variables of the documents
 	 * @param int $module_srl
 	 * @param int $var_idx
@@ -1125,6 +1036,96 @@ class documentController extends document
 		$obj->eid = $eid;
 
 		executeQuery('document.insertDocumentExtraVar', $obj);
+	}
+
+	/**
+	 * @brief mask multibyte string
+	 * param 원본문자열, 마스킹하지 않는 전단부 글자수, 마스킹하지 않는 후단부 글자수, 마스킹 마크 최대 표시수, 마스킹마크
+	 * echo _maskMbString('abc12234pro', 3, 2); => abc******ro
+	 */	
+	private function _maskMbString($str, $len1, $len2=0, $limit=0, $mark='*')
+	{
+		$arr_str = preg_split("//u", $str, -1, PREG_SPLIT_NO_EMPTY);
+		$str_len = count($arr_str);
+
+		$len1 = abs($len1);
+		$len2 = abs($len2);
+		if($str_len <= ($len1 + $len2))
+			return $str;
+
+		$str_head = '';
+		$str_body = '';
+		$str_tail = '';
+
+		$str_head = join('', array_slice($arr_str, 0, $len1));
+		if($len2 > 0)
+			$str_tail = join('', array_slice($arr_str, $len2 * -1));
+
+		$arr_body = array_slice($arr_str, $len1, ($str_len - $len1 - $len2));
+
+		if(!empty($arr_body)) 
+		{
+			$len_body = count($arr_body);
+			$limit = abs($limit);
+			if($limit > 0 && $len_body > $limit)
+				$len_body = $limit;
+
+			$str_body = str_pad('', $len_body, $mark);
+		}
+		return $str_head.$str_body.$str_tail;
+	}
+	/**
+	 * Secure personal private from an extra variable of the documents
+	 * @param int $module_srl
+	 * @param int $var_idx
+	 * @return BaseObject
+	 */
+	function secureDocumentExtraVars($nModuleSrl, $nVarIdx, $sBeginYyyymmdd, $sEndYyyymmdd)
+	{
+		if(!$nModuleSrl || !$nVarIdx) 
+			return new BaseObject(-1,'msg_invalid_request');
+		$oArg = new stdClass();
+		$oArg->module_srl = $nModuleSrl;
+		$oArg->var_idx = $nVarIdx;
+		$oArg->begin_yyyymmdd = $sBeginYyyymmdd.'000001';
+		$oArg->end_yyyymmdd = $sEndYyyymmdd.'235959';
+		$oRst = executeQueryArray('document.getDocumentListWithExtraVarsPeriod', $oArg);
+		unset($oArg);
+		if(!count($oRst->data))
+			return new BaseObject();
+
+		foreach($oRst->data as $_ => $oSingleExtraVar)
+		{
+			if(strpos($oSingleExtraVar->value, '|@|'))
+			{
+				$aVal = explode('|@|', $oSingleExtraVar->value);
+				$nCnt = count($aVal);
+				if($nCnt == 3)  // maybe cell phone info
+					$aVal[2] = '*';
+				elseif($nCnt == 4 || $nCnt == 5)  // maybe addr info
+				{
+					for($i = 2; $i <= $nCnt; $i++)
+						$aVal[$i] = '*';
+				}
+				$oSingleExtraVar->value = implode('|@|', $aVal);
+			}
+			else  // maybe cell phone info
+				$oSingleExtraVar->value = $this->_maskMbString($oSingleExtraVar->value, 3, 3);
+		}
+		$oArg = new stdClass();
+		foreach($oRst->data as $_ => $oSingleExtraVar)
+		{
+			$oArg->module_srl = $oSingleExtraVar->module_srl;
+			$oArg->document_srl = $oSingleExtraVar->document_srl;
+			$oArg->var_idx = $oSingleExtraVar->var_idx;
+			$oArg->value = $oSingleExtraVar->value;
+			$oRst = executeQuery('document.updateDocumentExtraVar', $oArg);
+			if(!$oRst->toBool())
+				return $oRst;
+		}
+		unset($oArg);
+		unset($oRst);
+		return new BaseObject();
 	}
 
 	/**

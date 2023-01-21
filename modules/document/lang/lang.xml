@@ -903,4 +903,22 @@
 	<item name="success_masked">
 		<value xml:lang="ko"><![CDATA[개인정보를 마스킹했습니다.]]></value>
 	</item>
+	<item name="secure_private_info">
+		<value xml:lang="ko"><![CDATA[이 변수의 개인 정보 보호]]></value>
+	</item>
+	<item name="begin_yyyymmdd_mask">
+		<value xml:lang="ko"><![CDATA[마스킹 시작 YYYYMMDD]]></value>
+	</item>
+	<item name="about_begin_yyyymmdd_mask">
+		<value xml:lang="ko"><![CDATA[YYYYMMDD일 이후의 개인 정보를 마스킹하여 보호합니다.]]></value>
+	</item>
+	<item name="end_yyyymmdd_mask">
+		<value xml:lang="ko"><![CDATA[마스킹 종료 YYYYMMDD]]></value>
+	</item>
+	<item name="about_end_yyyymmdd_mask">
+		<value xml:lang="ko"><![CDATA[YYYYMMDD일 이전의 개인 정보를 마스킹하여 보호합니다.]]></value>
+	</item>
+	<item name="cmd_mask">
+		<value xml:lang="ko"><![CDATA[마스킹 하기]]></value>
+	</item>
 </lang>
