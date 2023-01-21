@@ -84,6 +84,41 @@
 		</form>
 	</section>
 
+	<section class="section">
+		<h1>이 변수의 개인 정보 보호</h1>
+		<form action="./" method="post" class="x_form-horizontal">
+			<input type="hidden" name="module" value="document" />
+			<input type="hidden" name="act" value="procDocumentAdminSecureExtraVar" />
+			<input type="hidden" name="module_srl" value="{$module_srl}" />
+			<input type="hidden" name="var_idx" value="{$selected_var_idx}" />
+			<input type="hidden" name="success_return_url" value="{getUrl('type', '')}" />
+			<input type="hidden" name="xe_validator_id" value="modules/document/tpl/extra_keys/1" />
+
+			<div class="x_control-group">
+				<label class="x_control-label" for="begin_yyyymmdd">마스킹 시작 YYYYMMDD</label>
+				<div class="x_controls">
+					<input type="text" name="begin_yyyymmdd" id="begin_yyyymmdd" value="{date('Ymd',strtotime('-37 day'))}" placeholder="YYYYMMDD" />
+					<p class="x_help-inline">YYYYMMDD일 이후의 개인 정보를 마스킹하여 보호합니다.</p>
+				</div>
+			</div>
+			<div class="x_control-group">
+				<label class="x_control-label" for="end_yyyymmdd">마스킹 종료 YYYYMMDD</label>
+				<div class="x_controls">
+					<input type="text" name="end_yyyymmdd" id="end_yyyymmdd" value="{date('Ymd',strtotime('-7 day'))}" placeholder="YYYYMMDD" />
+					<p class="x_help-inline">YYYYMMDD일 이전의 개인 정보를 마스킹하여 보호합니다.</p>
+				</div>
+			</div>
+
+			<div class="x_clearfix btnArea">
+				<div class="x_pull-left">
+					<a class="x_btn" href="{getUrl('type','','selected_var_idx','')}">{$lang->cmd_back}</a>
+				</div>
+				<div class="x_pull-right">
+					<button type="submit" class="x_btn x_btn-primary">마스킹 하기</button>
+				</div>
+			</div>
+		</form>
+	</section>
 <!--@else-->
 
 <section class="section">

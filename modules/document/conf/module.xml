@@ -20,6 +20,7 @@
 		<permission action="dispDocumentAdminList" target="manager" />
 		<permission action="procDocumentInsertModuleConfig" target="manager" />
 		<permission action="procDocumentAdminInsertExtraVar" target="manager" />
+		<permission action="procDocumentAdminSecureExtraVar" target="manager" />
 		<permission action="procDocumentAdminDeleteExtraVar" target="manager" />
 	</permissions>
 	<actions>
@@ -63,6 +64,7 @@
 		<action name="procDocumentAdminDeleteAlias" type="controller" ruleset="deleteAlias" />
 
 		<action name="procDocumentAdminInsertExtraVar" type="controller" ruleset="insertExtraVar" />
+		<action name="procDocumentAdminSecureExtraVar" type="controller" />
 		<action name="procDocumentAdminDeleteExtraVar" type="controller" />
 		<action name="procDocumentAdminMoveExtraVar" type="controller" />
 

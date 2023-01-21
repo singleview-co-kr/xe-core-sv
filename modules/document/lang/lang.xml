@@ -900,4 +900,7 @@
 		<value xml:lang="jp"><![CDATA[タイトルがないドキュメントです。]]></value>
 		<value xml:lang="zh-TW"><![CDATA[此文章無標題。]]></value>
 	</item>
+	<item name="success_masked">
+		<value xml:lang="ko"><![CDATA[개인정보를 마스킹했습니다.]]></value>
+	</item>
 </lang>

@@ -610,6 +610,35 @@ class documentAdminController extends document
 	}
 
 	/**
+	 * Secure personal private from an extra variable of the module
+	 * @return void|object
+	 */
+	function procDocumentAdminSecureExtraVar()
+	{
+		$nModuleSrl = Context::get('module_srl');
+		$nVarIdx = Context::get('var_idx');
+		if(!$nModuleSrl || !$nVarIdx) 
+			return new BaseObject(-1,'msg_invalid_request');
+
+		$sBeginYyyymmdd = Context::get('begin_yyyymmdd');
+		$sEndYyyymmdd = Context::get('end_yyyymmdd');
+
+		if(!$sBeginYyyymmdd || !$sEndYyyymmdd) 
+			return new BaseObject(-1,'msg_invalid_request');
+		if((int)$sBeginYyyymmdd > (int)$sEndYyyymmdd)
+			return new BaseObject(-1,'msg_invalid_request');
+
+		$oDocumentController = getController('document');
+		$oRst = $oDocumentController->secureDocumentExtraKeys($nModuleSrl, $nVarIdx, $sBeginYyyymmdd, $sEndYyyymmdd);
+		unset($oDocumentController);
+		if(!$oRst->toBool()) 
+			return $oRst;
+		$this->setMessage('success_masked');
+		$sReturnUrl = Context::get('success_return_url') ? Context::get('success_return_url') : getNotEncodedUrl('', 'module', 'admin', 'act', 'dispDocumentAdminAlias', 'document_srl', $args->document_srl);
+		$this->setRedirectUrl($sReturnUrl);
+	}
+
+	/**
 	 * Delete extra variables of the module
 	 * @return void|object
 	 */
