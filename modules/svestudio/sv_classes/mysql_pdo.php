@@ -68,7 +68,7 @@ class svMysqlPdo
 	{
 		$sSqlFileAbsPath = _XE_PATH_.'modules/svestudio/sv_queries/'.$sSqlFilename.'.php';
 		if(is_readable($sSqlFileAbsPath))
-			require_once($sSqlFileAbsPath);
+			require($sSqlFileAbsPath);
 		// $sSql is in $sSqlFileAbsPath.php
 		$aSqlRst = $this->__preProcSqlStmt($sSqlFilename, $sSql);
 		$sQueryType = $aSqlRst[0];

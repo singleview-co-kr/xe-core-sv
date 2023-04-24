@@ -27,6 +27,7 @@ class singleviewApi
 	var $_g_oReceivedParams = null;
 	var $_g_oRespParam = null;
 	var $_g_aIgonreMemberSrl = null;
+	var $_g_aAllowModuleSrl = null;
 /**
  * @brief
  */
@@ -62,10 +63,15 @@ class singleviewApi
 		if(is_readable($sConfigPath))
 			require_once($sConfigPath);
 
-		if( isset($aWclConfig['ignore_member_srl'] ))
+		if(isset($aWclConfig['ignore_member_srl']))
 			$this->aIgonreMemberSrl = $aWclConfig['ignore_member_srl'];
 		else
 			$this->aIgonreMemberSrl = [];
+
+		if(isset($aWclConfig['allow_module_srl']))
+			$this->_g_aAllowModuleSrl = $aWclConfig['allow_module_srl'];
+		else
+			$this->_g_aAllowModuleSrl = [];
 
 		$oSvApiCrypt = new singleviewApiOpenSsl();
 		$this->_g_oReceivedParams = $oSvApiCrypt->translateMsgCode($_POST['@v']);
@@ -106,8 +112,8 @@ class singleviewApi
  */
 	private function _cleanupMarkupStr($sStr)
 	{
-		$$sStr = strip_tags(html_entity_decode($sStr));
-		return trim(preg_replace('/\s\s+/', ' ', $$sStr));
+		$sStr = strip_tags(html_entity_decode($sStr));
+		return trim(preg_replace('/\s\s+/', ' ', $sStr));
 	}
 /**
  * @brief 갱신할 새글 상세 정보 추출
@@ -123,13 +129,19 @@ class singleviewApi
 		{
 			$aRequestedDocSrl = array($nDocSrl);
 			$aDocInfoToTransmit = $oMysql->executeQuery('getDocDetailBySrl', $aRequestedDocSrl);
+			$aComParam = array($aDocInfoToTransmit[0]['document_srl'], $this->aIgonreMemberSrl);
+			$aComInfoToTransmit = $oMysql->executeDynamicQuery('getCommentByDocSrl', $aComParam);
+			unset($aComParam);
 			$sTitle = $this->_cleanupMarkupStr($aDocInfoToTransmit[0]['title']);
 			$sContent = $this->_cleanupMarkupStr($aDocInfoToTransmit[0]['content']);
-			$aDocInfo[] = array('document_srl' => $aDocInfoToTransmit[0]['document_srl'],
+			$sAnswer = $this->_cleanupMarkupStr($aComInfoToTransmit[0]['content']);
+			$aDocInfo[] = array('document_srl' => $aDocInfoToTransmit[0]['document_srl'], 
 								'module_srl' => $aDocInfoToTransmit[0]['module_srl'], 
-								'title' => $sTitle, 'content' => $sContent, 
+								'title' => $sTitle, 'content' => $sContent,
+								'answer' => $sAnswer, 
 								'regdate' => $aDocInfoToTransmit[0]['regdate'], 
 								'last_update' => $aDocInfoToTransmit[0]['last_update'] );
+			unset($aComInfoToTransmit);
 			unset($aDocInfoToTransmit);
 		}
 		if(count($aDocInfo))
@@ -142,7 +154,7 @@ class singleviewApi
  */
 	private function _checkLatest()
 	{
-		$aSyncList = $this->_getUpdatedDocComSrls();
+		$aSyncList = $this->_getUpdatedDocSrls();
 		if( $aSyncList['aDocSrls'] != 'na' || $aSyncList['aComSrls'] != 'na' )
 		{
 			$this->_g_oRespParam->a = array($this->_g_aMsg['ALD']);
@@ -152,19 +164,17 @@ class singleviewApi
 			$this->_g_oRespParam->a = array($this->_g_aMsg['FIN']);
 	}
 /**
- * @briefw 전송할 새글, 댓글 srl array 추출
+ * @briefw 전송할 새글 srl array 추출
  */
-	private function _getUpdatedDocComSrls()
+	private function _getUpdatedDocSrls()
 	{
 		# init rst arrray
 		$aRst = Array('aDocSrls'=>'na','aComSrls'=>'na');
 		$sBeginYyyymmddhhmmss = $this->_g_oReceivedParams->d->s_begin_date.'000000';
 		$sEndYyyymmddhhmmss = $this->_g_oReceivedParams->d->s_end_date.'235959';
-		$aParam = array($sBeginYyyymmddhhmmss, $sEndYyyymmddhhmmss, $this->aIgonreMemberSrl);
+		$aParam = array($sBeginYyyymmddhhmmss, $sEndYyyymmddhhmmss, $this->aIgonreMemberSrl, $this->_g_aAllowModuleSrl);
 		$oMysql = new svMysqlPdo($this->_g_oDbInfo);
-		
-		$aDocsToSync = $oMysql->executeDynamicQuery('getUpdatedDocSrlsByMemberSrl', $aParam);
-		//var_Dump(count($aDocsToSync));
+		$aDocsToSync = $oMysql->executeDynamicQuery('getUpdatedDocSrlsByMemberModuleSrl', $aParam);
 		if(count($aDocsToSync))
 		{
 			$aDocSrls = [];
@@ -173,16 +183,6 @@ class singleviewApi
 			$aRst['aDocSrls'] = $aDocSrls;
 		}
 		unset($aDocsToSync);
-		$aComsToSync = $oMysql->executeDynamicQuery('getUpdatedCommentsSrlsByMemberSrl', $aParam);
-		//var_Dump($aComsToSync);
-		if(count($aComsToSync))
-		{
-			$aComSrls = [];
-			foreach( $aComsToSync as $nIdx => $aVal)
-				$aComSrls[] = $aVal['comment_srl'];
-			$aRst['aComSrls'] = $aComSrls;
-		}
-		unset($aComsToSync);
 		unset($oMysql);
 		return $aRst;
 	}
