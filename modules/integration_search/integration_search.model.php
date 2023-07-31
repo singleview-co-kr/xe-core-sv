@@ -15,7 +15,117 @@ class integration_searchModel extends module
 	function init()
 	{
 	}
+	public function getModuleConfig()
+	{
+		$oModuleModel = getModel('module');
+		$oConfig = $oModuleModel->getModuleConfig('integration_search');
+		unset($oModuleModel);
+		if(!$oConfig) 
+			$oConfig = new stdClass;
+		if(!$oConfig->skin) 
+			$oConfig->skin = 'default';
+		if($oConfig->ncp_allowed_ip)
+		{
+			$aAllowedIp = explode(',', $oConfig->ncp_allowed_ip);
+			$oConfig->ncp_allowed_ip = [];
+			foreach($aAllowedIp as $nIdx => $sAllowedIp)
+				$oConfig->ncp_allowed_ip[$sAllowedIp] = 1;
+			unset($aAllowedIp);
+		}
+		return $oConfig;
+	}
+	/**
+	 * NCP cloud Search 
+	 *
+	 * @param string $sTarget choose target. exclude or include for $module_srls_list
+	 * @param string $aModuleSrls module_srl list to string type. ef - 102842,59392,102038
+	 * @param string $search_keyword Keyword
+	 * @param integer $page page of page navigation
+	 * @param integer $list_count list count of page navigation
+	 *
+	 * @return BaseObject output document list
+	 */
+	public function getNcpCloudSearch($sTarget, $aModuleSrls, $search_keyword, $page=1, $list_count = 20)
+	{
+		$oModuleModel = getModel('module');
+		$oConfig = $oModuleModel->getModuleConfig('integration_search');
+		unset($oModuleModel);
+		$sNcpCloudSearchApi = _XE_PATH_.'modules/integration_search/svncp.cloud_search.php';
+		if(is_readable($sNcpCloudSearchApi))
+			require_once($sNcpCloudSearchApi);
+		else
+		{
+			echo 'weird error has been occured on '.__FILE__.':'.__LINE__.'<BR>';	
+			exit;
+		}
+		$oSvNcpCloudSearch = new svNcpCloudSearch();
+		$oSvNcpCloudSearch->setUserConfig(['ncp_access_key' => $oConfig->ncp_access_key,
+										 'ncp_secret_key' => $oConfig->ncp_secret_key,
+										 'idx_title' => $oConfig->idx_title,
+										 'display_cnt' => $list_count]);
+		//$oSvNcpCloudSearch->setHttpMethod('post');
+		$oSvNcpCloudSearch->setDomain($oConfig->domain_name);
+		$nStartPosition = ($page - 1) * $list_count + 1;
+		$oSvNcpCloudSearch->setStartPosition($nStartPosition);
+		$oSvNcpCloudSearch->setQuery($search_keyword);
+		$oResponse = $oSvNcpCloudSearch->getSearchList();
+		unset($oSvNcpCloudSearch);
+		unset($oConfig);
+		
+		$nTotalPage = (int)ceil($oResponse->nTotalCount / $oResponse->nDisplay);
+		$oRst = new BaseObject();
+		$oRst->total_count = $oResponse->nTotalCount;
+		$oRst->total_page = $nTotalPage;
+		$oRst->page = $page;
+		// $total_count, $total_page, $cur_page, $page_count = 10)
+		$oRst->page_navigation = new PageHandler($oResponse->nTotalCount, $nTotalPage, $page, $list_count);
+		// object(PageHandler)#218 (7) { ["total_count"]=> int(313) ["total_page"]=> int(63) ["cur_page"]=> int(1) ["page_count"]=> int(10) ["first_page"]=> int(1) ["last_page"]=> int(63) ["point"]=> int(0) }
+// var_dump($oResponse->aItems);
+// echo '<BR>';
+		$oRst->data = [];
+		if(!count($oResponse->aItems))
+		{
+			unset($oResponse);
+			return $oRst;
+		}
+	
+		$oDocumentModel = getModel('document');
+		$aCandidateDoc = $oDocumentModel->getDocuments($oResponse->aItems);
+		unset($oDocumentModel);
+		
+		if(!count($aCandidateDoc))
+		{
+			unset($oResponse);
+			return $oRst;
+		}
+			
+		$aRankedDoc = [];
+		foreach($oResponse->aItems as $nIdx=>$nDocSrl)
+			$aRankedDoc[$nDocSrl] = $aCandidateDoc[$nDocSrl];
+		unset($aCandidateDoc);
+		$aTargetModuleSrls = [];
+		foreach($aModuleSrls as $nIdx => $nModuleSrl)
+			$aTargetModuleSrls[$nModuleSrl] = 1;
 
+		foreach($aRankedDoc as $nIdx => $oDoc)
+		{
+//echo __FILE__.':'.__LINE__.'<BR>';
+//var_dump($oDoc->variables['document_srl'],$oDoc->variables['module_srl'], $oDoc->variables['title']);
+//echo '<BR>';
+			if($oDoc->variables['module_srl'] == 0) // exclude 'trash'
+				continue;
+			if($sTarget == 'exclude' && $aTargetModuleSrls[$oDoc->variables['module_srl']] != 1) // excluding module specified
+				$oRst->data[$nIdx] = $oDoc;
+			elseif($aTargetModuleSrls[$oDoc->variables['module_srl']] == 1) // including module specified
+				$oRst->data[$nIdx] = $oDoc;
+		}
+//var_dump($oRst);
+//exit;
+		unset($oResponse);
+		unset($aRankedDoc);
+		unset($aTargetModuleSrls);
+		return $oRst;
+	}
 	/**
 	 * Search documents
 	 *
@@ -28,7 +138,7 @@ class integration_searchModel extends module
 	 *
 	 * @return BaseObject output document list
 	 */
-	function getDocuments($target, $module_srls_list, $search_target, $search_keyword, $page=1, $list_count = 20)
+	public function getDocuments($target, $module_srls_list, $search_target, $search_keyword, $page=1, $list_count = 20)
 	{
 		if(is_array($module_srls_list)) $module_srls_list = implode(',',$module_srls_list);
 
@@ -59,7 +169,6 @@ class integration_searchModel extends module
 
 		return $oDocumentModel->getDocumentList($args);
 	}
-
 	/**
 	 * Search comment
 	 *
@@ -71,7 +180,7 @@ class integration_searchModel extends module
 	 *
 	 * @return BaseObject output comment list
 	 */
-	function getComments($target, $module_srls_list, $search_keyword, $page=1, $list_count = 20)
+	public function getComments($target, $module_srls_list, $search_keyword, $page=1, $list_count = 20)
 	{
 		$args = new stdClass();
 
@@ -102,40 +211,20 @@ class integration_searchModel extends module
 		if(!$output->toBool()|| !$output->data) return $output;
 		return $output;
 	}
-
 	/**
-	 * Search trackbacks
+	 * Search for attachments. call function _getFiles().
 	 *
 	 * @param string $target choose target. exclude or include for $module_srls_list
 	 * @param string $module_srls_list module_srl list to string type. ef - 102842,59392,102038
-	 * @param string $search_target Target
 	 * @param string $search_keyword Keyword
 	 * @param integer $page page of page navigation
 	 * @param integer $list_count list count of page navigation
 	 *
-	 * @return BaseObject output trackback list
+	 * @return BaseObject
 	 */
-	function getTrackbacks($target, $module_srls_list, $search_target = "title", $search_keyword, $page=1, $list_count = 20)
+	public function getFiles($target, $module_srls_list, $search_keyword, $page=1, $list_count = 20)
 	{
-		$oTrackbackModel = getAdminModel('trackback');
-		if(!$oTrackbackModel) return new BaseObject();
-		$args = new stdClass();
-
-		if(is_array($module_srls_list)) $module_srls = implode(',',$module_srls_list);
-		else $module_srls = $module_srls_list;
-		if($target == 'exclude') $args->exclude_module_srl = $module_srls;
-		else $args->module_srl = $module_srls;
-		$args->page = $page;
-		$args->list_count = $list_count;
-		$args->page_count = 10;
-		$args->search_target = $search_target;
-		$args->search_keyword = $search_keyword;
-		$args->sort_index = 'list_order';
-		$args->order_type = 'asc';
-		// Get a list of documents
-		$output = $oTrackbackModel->getTotalTrackbackList($args);
-		if(!$output->toBool()|| !$output->data) return $output;
-		return $output;
+		return $this->_getFiles($target, $module_srls_list, $search_keyword, $page, $list_count, 'N');
 	}
 
 	/**
@@ -150,7 +239,7 @@ class integration_searchModel extends module
 	 *
 	 * @return BaseObject output file list
 	 */
-	function _getFiles($target, $module_srls_list, $search_keyword, $page, $list_count, $direct_download = 'Y')
+	private function _getFiles($target, $module_srls_list, $search_keyword, $page, $list_count, $direct_download = 'Y')
 	{
 		$args = new stdClass();
 
@@ -236,38 +325,6 @@ class integration_searchModel extends module
 		}
 
 		return $output;
-	}
-
-	/**
-	 * Search Multimedia. call function _getFiles().
-	 *
-	 * @param string $target choose target. exclude or include for $module_srls_list
-	 * @param string $module_srls_list module_srl list to string type. ef - 102842,59392,102038
-	 * @param string $search_keyword Keyword
-	 * @param integer $page page of page navigation
-	 * @param integer $list_count list count of page navigation
-	 *
-	 * @return BaseObject
-	 */
-	function getImages($target, $module_srls_list, $search_keyword, $page=1, $list_count = 20)
-	{
-		return $this->_getFiles($target, $module_srls_list, $search_keyword, $page, $list_count);
-	}
-
-	/**
-	 * Search for attachments. call function _getFiles().
-	 *
-	 * @param string $target choose target. exclude or include for $module_srls_list
-	 * @param string $module_srls_list module_srl list to string type. ef - 102842,59392,102038
-	 * @param string $search_keyword Keyword
-	 * @param integer $page page of page navigation
-	 * @param integer $list_count list count of page navigation
-	 *
-	 * @return BaseObject
-	 */
-	function getFiles($target, $module_srls_list, $search_keyword, $page=1, $list_count = 20)
-	{
-		return $this->_getFiles($target, $module_srls_list, $search_keyword, $page, $list_count, 'N');
 	}
 }
 /* End of file integration_search.model.php */

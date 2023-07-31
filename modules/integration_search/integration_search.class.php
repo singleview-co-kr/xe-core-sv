@@ -14,10 +14,15 @@ class integration_search extends ModuleObject
 	 */
 	function moduleInstall()
 	{
-		// Registered in action forward
 		$oModuleController = getController('module');
-		$oModuleController->insertActionForward('integration_search', 'view', 'IS');
+		$oModuleModel = &getModel('module');
+		if(!$oModuleModel->getTrigger('document.insertDocument', 'integration_search', 'controller', 'triggerNcpUpload', 'after')) 
+			$oModuleController->insertTrigger('document.insertDocument', 'integration_search', 'controller', 'triggerNcpUpload', 'after');
 
+		// Registered in action forward
+		$oModuleController->insertActionForward('integration_search', 'view', 'IS');
+		unset($oModuleModel);
+		unset($oModuleController);
 		return new BaseObject();
 	}
 
@@ -34,7 +39,6 @@ class integration_search extends ModuleObject
 		if($oModuleModel->needUpdate($version_update_id))
 		{
 			$config = $oModuleModel->getModuleConfig('integration_search');
-
 			if($config->skin)
 			{
 				$config_parse = explode('.', $config->skin);
@@ -47,7 +51,11 @@ class integration_search extends ModuleObject
 
 			$oModuleController->insertUpdatedLog($version_update_id);
 		}
-
+		if(!$oModuleModel->getTrigger('document.insertDocument', 'integration_search', 'controller', 'triggerNcpUpload', 'after')) 
+			return true;
+		
+		unset($oModuleModel);
+		unset($oModuleController);
 		return false;
 	}
 
@@ -82,7 +90,11 @@ class integration_search extends ModuleObject
 
 			$oModuleController->insertUpdatedLog($version_update_id);
 		}
+		if(!$oModuleModel->getTrigger('document.insertDocument', 'integration_search', 'controller', 'triggerNcpUpload', 'after')) 
+			$oModuleController->insertTrigger('document.insertDocument', 'integration_search', 'controller', 'triggerNcpUpload', 'after');
 
+		unset($oModuleModel);
+		unset($oModuleController);
 		return new BaseObject(0, 'success_updated');
 	}
 

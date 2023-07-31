@@ -18,6 +18,8 @@ class integration_searchView extends integration_search
 	 */
 	var $skin = 'default';
 
+	protected $_g_oConfig = null;
+
 	/**
 	 * Initialization
 	 *
@@ -28,14 +30,11 @@ class integration_searchView extends integration_search
 		// Check permissions
 		if(!$this->grant->access) return new BaseObject(-1,'msg_not_permitted');
 		
-		$oModuleModel = getModel('module');
-		$oConfig = $oModuleModel->getModuleConfig('integration_search');
-		unset($oModuleModel);
-		if(!$oConfig) $oConfig = new stdClass;
-		if(!$oConfig->skin)	$oConfig->skin = 'default';
-		$template_path = sprintf('%sskins/%s', $this->module_path, $oConfig->skin);
+		$oISModel = getModel('integration_search');
+		$this->_g_oConfig = $oISModel->getModuleConfig();
+
+		$template_path = sprintf('%sskins/%s', $this->module_path, $this->_g_oConfig->skin);
 		// Template path
-		unset($oConfig);
 		$this->setTemplatePath($template_path);
 	}
 
@@ -46,21 +45,18 @@ class integration_searchView extends integration_search
 	 */
 	function IS()
 	{
-		$oModuleModel = getModel('module');
-		$config = $oModuleModel->getModuleConfig('integration_search');
-		unset($oModuleModel);
-
-		$skin_vars = ($config->skin_vars) ? unserialize($config->skin_vars) : new stdClass;
+		$skin_vars = ($this->_g_oConfig->skin_vars) ? unserialize($this->_g_oConfig->skin_vars) : new stdClass;
 		Context::set('module_info', $skin_vars);
 
-		$target = $config->target;
-		if(!$target) $target = 'include';
+		$target = $this->_g_oConfig->target;
+		if(!$target) 
+			$target = 'include';
 
-		if(empty($config->target_module_srl))
+		if(empty($this->_g_oConfig->target_module_srl))
 			$module_srl_list = array();
 		else
-			$module_srl_list = explode(',',$config->target_module_srl);
-
+			$module_srl_list = explode(',',$this->_g_oConfig->target_module_srl);
+		
 		// https://github.com/xpressengine/xe-core/issues/1522
 		// 검색 대상을 지정하지 않았을 때 검색 제한
 		if($target === 'include' && !count($module_srl_list))
@@ -84,16 +80,28 @@ class integration_searchView extends integration_search
 		// Create integration search model object
 		if($is_keyword)
 		{
+			$bNcpExecuted = false;
 			$oIS = getModel('integration_search');
 			switch($where)
 			{
 				case 'document' :
-					$search_target = Context::get('search_target');
-					if(!in_array($search_target, array('title','content','title_content','tag'))) $search_target = 'title';
-					Context::set('search_target', $search_target);
-
-					$output = $oIS->getDocuments($target, $module_srl_list, $search_target, $is_keyword, $page, 10);
+					if($this->_g_oConfig->use_ncp_cloud_search == 'Y' )
+					{
+						if(!$this->_g_oConfig->ncp_allowed_ip || $this->_g_oConfig->ncp_allowed_ip[$_SERVER['REMOTE_ADDR']] == 1)
+						{
+							$output = $oIS->getNcpCloudSearch($target, $module_srl_list, $is_keyword, $page, 10);
+							$bNcpExecuted = true;
+						}
+					}
+					if(!$bNcpExecuted)
+					{
+						$search_target = Context::get('search_target');
+						if(!in_array($search_target, array('title','content','title_content','tag'))) $search_target = 'title';
+						Context::set('search_target', $search_target);
+						$output = $oIS->getDocuments($target, $module_srl_list, $search_target, $is_keyword, $page, 10);
+					}
 					Context::set('output', $output);
+					Context::set('bNcpExecuted', $bNcpExecuted);
 					$this->setTemplateFile("document", $page);
 					break;
 				case 'comment' :
@@ -101,33 +109,27 @@ class integration_searchView extends integration_search
 					Context::set('output', $output);
 					$this->setTemplateFile("comment", $page);
 					break;
-				case 'trackback' :
-					$search_target = Context::get('search_target');
-					if(!in_array($search_target, array('title','url','blog_name','excerpt'))) $search_target = 'title';
-					Context::set('search_target', $search_target);
-
-					$output = $oIS->getTrackbacks($target, $module_srl_list, $search_target, $is_keyword, $page, 10);
-					Context::set('output', $output);
-					$this->setTemplateFile("trackback", $page);
-					break;
-				case 'multimedia' :
-					$output = $oIS->getImages($target, $module_srl_list, $is_keyword, $page,20);
-					Context::set('output', $output);
-					$this->setTemplateFile("multimedia", $page);
-					break;
 				case 'file' :
 					$output = $oIS->getFiles($target, $module_srl_list, $is_keyword, $page, 20);
 					Context::set('output', $output);
 					$this->setTemplateFile("file", $page);
 					break;
 				default :
-					$output['document'] = $oIS->getDocuments($target, $module_srl_list, 'title', $is_keyword, $page, 5);
+					if($this->_g_oConfig->use_ncp_cloud_search == 'Y' )
+					{
+						if(!$this->_g_oConfig->ncp_allowed_ip || $this->_g_oConfig->ncp_allowed_ip[$_SERVER['REMOTE_ADDR']] == 1)
+						{
+							$output['document'] = $oIS->getNcpCloudSearch($target, $module_srl_list, $is_keyword, $page, 5);
+							$bNcpExecuted = true;
+						}
+					}
+					if(!$bNcpExecuted)
+						$output['document'] = $oIS->getDocuments($target, $module_srl_list, 'title', $is_keyword, $page, 5);
 					$output['comment'] = $oIS->getComments($target, $module_srl_list, $is_keyword, $page, 5);
-					$output['trackback'] = $oIS->getTrackbacks($target, $module_srl_list, 'title', $is_keyword, $page, 5);
-					$output['multimedia'] = $oIS->getImages($target, $module_srl_list, $is_keyword, $page, 5);
 					$output['file'] = $oIS->getFiles($target, $module_srl_list, $is_keyword, $page, 5);
 					Context::set('search_result', $output);
 					Context::set('search_target', 'title');
+					Context::set('bNcpExecuted', $bNcpExecuted);
 					$this->setTemplateFile("index", $page);
 					break;
 			}

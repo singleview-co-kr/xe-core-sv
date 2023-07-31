@@ -25,23 +25,34 @@ class integration_searchAdminController extends integration_search
 	{
 		// Get configurations (using module model object)
 		$oModuleModel = getModel('module');
-		$config = $oModuleModel->getModuleConfig('integration_search');
+		$oConfig = $oModuleModel->getModuleConfig('integration_search');
+		unset($oModuleModel);
+// var_Dump($args = Context::getRequestVars());
+		$oArgs = new stdClass;
+		if(!Context::get('use_ncp_cloud_search')) 
+			$oArgs->use_ncp_cloud_search = '';
+		else
+			$oArgs->use_ncp_cloud_search = Context::get('use_ncp_cloud_search');
 
-//var_Dump($args = Context::getRequestVars());
-//exit;
-		$args = new stdClass;
-		$args->skin = Context::get('skin');
-		$args->layout_srl = Context::get('layout_srl');
-		$args->mlayout_srl = Context::get('mlayout_srl');
-		$args->mskin = Context::get('mskin');
-		$args->target = Context::get('target');
-		$args->target_module_srl = Context::get('target_module_srl');
-		if(!$args->target_module_srl) $args->target_module_srl = '';
-		$args->skin_vars = $config->skin_vars;
+		$oArgs->ncp_allowed_ip = Context::get('ncp_allowed_ip');
+		$oArgs->ncp_access_key = Context::get('ncp_access_key');
+		$oArgs->ncp_secret_key = Context::get('ncp_secret_key');
+		$oArgs->domain_name = Context::get('domain_name');
+		$oArgs->idx_title = Context::get('idx_title');
+		$oArgs->skin = Context::get('skin');
+		$oArgs->layout_srl = Context::get('layout_srl');
+		$oArgs->mlayout_srl = Context::get('mlayout_srl');
+		$oArgs->mskin = Context::get('mskin');
+		$oArgs->target = Context::get('target');
+		$oArgs->target_module_srl = Context::get('target_module_srl');
+		if(!$oArgs->target_module_srl) $oArgs->target_module_srl = '';
+		$oArgs->skin_vars = $oConfig->skin_vars;
 
 		$oModuleController = getController('module');
-		$output = $oModuleController->insertModuleConfig('integration_search',$args);
-
+		$output = $oModuleController->insertModuleConfig('integration_search',$oArgs);
+		unset($oArgs);
+		unset($oModuleController);
+// exit;
 		$returnUrl = Context::get('success_return_url') ? Context::get('success_return_url') : getNotEncodedUrl('', 'module', 'admin', 'act', 'dispIntegration_searchAdminContent');
 		return $this->setRedirectUrl($returnUrl, $output);
 	}
@@ -129,6 +140,83 @@ class integration_searchAdminController extends integration_search
 		$returnUrl = Context::get('success_return_url') ? Context::get('success_return_url') : getNotEncodedUrl('', 'module', 'admin', 'act', 'dispIntegration_searchAdminSkinInfo');
 		return $this->setRedirectUrl($returnUrl, $output);
 	}
+	/**
+	 * upsert all allowed docs into NCP cloud search
+	 *
+	 * @return mixed
+	 */
+	public function procIntegration_searchAdminUpsertAllDocs()
+	{
+echo __FILE__.':'.__LINE__.'<BR>';
+		$oModuleModel = getModel('module');
+		$oConfig = $oModuleModel->getModuleConfig('integration_search');
+		unset($oModuleModel);
+		var_dump($oConfig);
+
+		// $aTargetModuleSrls = [];
+		// if(strlen($oConfig->target_module_srl))
+		// {
+		// 	$aModuleSrls = explode(',', $oConfig->target_module_srl);
+		// 	foreach($aModuleSrls as $nIdx => $nModuleSrl)
+		// 		$aTargetModuleSrls[$nModuleSrl] = 1;
+		// 	unset($aModuleSrls);
+		// }
+		// var_dump($aTargetModuleSrls);
+		
+		$sWhereClause = null;
+		if(strlen($oConfig->target_module_srl))
+		{
+			$sWhereClause = ' WHERE `module_srl`';
+			if($oConfig->target == 'exclude')
+				$sWhereClause .= ' NOT'; // IN ('.$oConfig->target_module_srl.')';
+			// elseif($oConfig->target == 'include')
+			$sWhereClause .= ' IN ('.$oConfig->target_module_srl.')';
+		}
+
+		$sNcpCloudSearchApi = _XE_PATH_.'modules/integration_search/svncp.cloud_search.php';
+		if(is_readable($sNcpCloudSearchApi))
+			require_once($sNcpCloudSearchApi);
+		else
+		{
+			echo 'weird error has been occured on '.__FILE__.':'.__LINE__.'<BR>';	
+			exit;
+		}
+		$oContextDbInfo = Context::getDBInfo();
+
+		$oSourceDbInfo = new stdClass();
+		$oSourceDbInfo->sPort = $oContextDbInfo->master_db['db_port'];
+		$oSourceDbInfo->sHostname = $oContextDbInfo->master_db['db_hostname'];
+		$oSourceDbInfo->sUserid = $oContextDbInfo->master_db['db_userid'];
+		$oSourceDbInfo->sPassword = $oContextDbInfo->master_db['db_password'];
+		$oSourceDbInfo->sDatabase = $oContextDbInfo->master_db['db_database'];
+
+		$oSqlInfo = new stdClass();
+		$oSqlInfo->sKeyField = 'document_srl';
+		$oSqlInfo->sSqlStmt = 'SELECT `document_srl`, `title`, `content`, `tags` FROM `'.$oContextDbInfo->master_db['db_table_prefix'].'documents`'.$sWhereClause;
+
+		$oReqInfo = new stdClass();
+		$oReqInfo->oSourceDbInfo = $oSourceDbInfo;
+		$oReqInfo->oSqlInfo = $oSqlInfo;
+
+		var_dump($oReqInfo->oSqlInfo);
+		exit;
+
+		$oSvNcpCloudSearch = new svNcpCloudSearch();
+		$oSvNcpCloudSearch->setUserConfig(['ncp_access_key' => $oConfig->ncp_access_key,
+										 'ncp_secret_key' => $oConfig->ncp_secret_key,
+										 'idx_title' => $oConfig->idx_title]);
+		$oSvNcpCloudSearch->setDomain($oConfig->domain_name);
+		$oSvNcpCloudSearch->upsertDoc($oReqInfo);
+		unset($oConfig);
+		unset($oSvNcpCloudSearch);
+		unset($oContextDbInfo);
+		unset($oReqInfo);
+		unset($oSourceDbInfo);
+		unset($oSqlInfo);
+
+exit;		
+	}
+	
 }
 /* End of file integration_search.admin.controller.php */
 /* Location: ./modules/integration_search/integration_search.admin.controller.php */

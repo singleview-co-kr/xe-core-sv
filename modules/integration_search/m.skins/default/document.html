@@ -2,7 +2,7 @@
 
 <h3 class="subTitle">{$lang->document} <span>({number_format($output->total_count)})</span></h3>
 
-<ul class="subNavigation">
+<ul class="subNavigation" cond="!$bNcpExecuted">
     <!--@foreach($lang->is_search_option['document'] as $key => $val)-->
     <li value="{$key}" class="<!--@if($search_target == $key)-->on<!--@end--><!--@if($key=="tag")--> last<!--@end-->"><a href="{getUrl('where','document','search_target',$key,'page',1,'division','')}">{$val}</a></li>
     <!--@end-->

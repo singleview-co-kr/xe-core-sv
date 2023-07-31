@@ -59,6 +59,66 @@
 		</div>
 	</section>
 	<section class="section">
+		<h1>{$lang->ncp_cloud_search_settings}</h1>
+		<div class="x_control-group">
+			<label class="x_control-label">{$lang->use}</label>
+			<div class="x_controls">
+				<label class="x_inline" for="use_ncp_cloud_search"><input type="checkbox" name="use_ncp_cloud_search" id="use_ncp_cloud_search" value="Y" checked="checked"|cond="$config->use_ncp_cloud_search == 'Y'" /> {$lang->use_ncp_cloud_search}</label>
+				<a href="#use_ncp_cloud_search_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="use_ncp_cloud_search_help" class="x_help-block" hidden>{$lang->about_use_ncp_cloud_search}</p>
+			</div>
+		</div>
+		<div class="x_control-group">
+			<label class="x_control-label" for="ncp_allowed_ip">{$lang->ncp_allowed_ip}</label>
+			<div class="x_controls">
+				<input type="text" name="ncp_allowed_ip" value="{$config->ncp_allowed_ip}" />
+				<a href="#ncp_allowed_ip_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="ncp_allowed_ip_help" class="x_help-block" hidden>{$lang->about_ncp_allowed_ip}</p>
+				<BR>{$lang->current_ip}: {$my_ip}
+			</div>
+		</div>
+		<div class="x_control-group">
+			<label class="x_control-label" for="mlayout_srl">{$lang->ncp_access_key}</label>
+			<div class="x_controls">
+				<input type="text" required name="ncp_access_key" value="{$config->ncp_access_key}" />
+				<a href="#ncp_access_key_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="ncp_access_key_help" class="x_help-block" hidden>{$lang->about_ncp_access_key}</p>
+			</div>
+		</div>
+		<div class="x_control-group">
+			<label class="x_control-label" for="ncp_secret_key">{$lang->ncp_secret_key}</label>
+			<div class="x_controls">
+				<input type="text" required name="ncp_secret_key" value="{$config->ncp_secret_key}" />
+				<a href="#ncp_secret_key_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="ncp_secret_key_help" class="x_help-block" hidden>{$lang->about_ncp_secret_key}</p>
+			</div>
+		</div>
+		<div class="x_control-group">
+			<label class="x_control-label" for="idx_title">{$lang->domain_name}</label>
+			<div class="x_controls">
+				<input type="text" required name="domain_name" value="{$config->domain_name}" />
+				<a href="#domain_name_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="domain_name_help" class="x_help-block" hidden>{$lang->about_domain_name}</p>
+			</div>
+		</div>
+		<div class="x_control-group">
+			<label class="x_control-label" for="idx_title">{$lang->idx_title}</label>
+			<div class="x_controls">
+				<input type="text" required name="idx_title" value="{$config->idx_title}" />
+				<a href="#idx_title_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="idx_title_help" class="x_help-block" hidden>{$lang->about_idx_title}</p>
+			</div>
+		</div>
+		<div class="x_control-group">
+			<label class="x_control-label" for="idx_title">{$lang->all_docs_upload}</label>
+			<div class="x_controls">
+				<button class="x_btn" onclick="upsertAllDocs();return false;">{$lang->cmd_all_docs_upload}</button>
+				<a href="#all_docs_upload_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
+				<p id="all_docs_upload_help" class="x_help-block" hidden>{$lang->about_all_docs_upload}</p>
+			</div>
+		</div>
+	</section>
+	<section class="section">
 		<h1>{$lang->mobile_settings}</h1>
 		<div class="x_control-group">
 			<label class="x_control-label">{$lang->mobile_view}</label>
@@ -92,3 +152,16 @@
 		<button class="x_btn x_btn-primary" type="submit">{$lang->cmd_registration}</button>
 	</div>
 </form>
+
+<!--- hidden form to upsert all docs into NCP cloud search begin ----->
+<form action="./" method="post" id='frmUpsertAllDocs' name="frmUpsertAllDocs">
+	<input type='hidden' name='module' id='module' value='integration_search'/>
+	<input type='hidden' name='act' id='act' value='procIntegration_searchAdminUpsertAllDocs'/>
+</form>
+<script type="text/javascript">
+function upsertAllDocs()
+{
+	document.frmUpsertAllDocs.submit();
+}
+</script>
+<!--- hidden form to upsert all docs into NCP cloud search end ----->
