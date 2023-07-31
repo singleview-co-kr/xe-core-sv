@@ -112,7 +112,7 @@
 		<div class="x_control-group">
 			<label class="x_control-label" for="idx_title">{$lang->all_docs_upload}</label>
 			<div class="x_controls">
-				<button class="x_btn" onclick="upsertAllDocs();return false;">{$lang->cmd_all_docs_upload}</button>
+				<button class="x_btn" onclick="uploadDbAll(); return false;">{$lang->cmd_all_docs_upload}</button>
 				<a href="#all_docs_upload_help" class="x_icon-question-sign" data-toggle>{$lang->help}</a>
 				<p id="all_docs_upload_help" class="x_help-block" hidden>{$lang->about_all_docs_upload}</p>
 			</div>
@@ -154,14 +154,14 @@
 </form>
 
 <!--- hidden form to upsert all docs into NCP cloud search begin ----->
-<form action="./" method="post" id='frmUpsertAllDocs' name="frmUpsertAllDocs">
+<form action="./" method="post" id='frmUploadDbAll' name="frmUploadDbAll">
 	<input type='hidden' name='module' id='module' value='integration_search'/>
-	<input type='hidden' name='act' id='act' value='procIntegration_searchAdminUpsertAllDocs'/>
+	<input type='hidden' name='act' id='act' value='procIntegration_searchAdminUploadDbAll'/>
 </form>
 <script type="text/javascript">
-function upsertAllDocs()
+function uploadDbAll()
 {
-	document.frmUpsertAllDocs.submit();
+	document.frmUploadDbAll.submit();
 }
 </script>
 <!--- hidden form to upsert all docs into NCP cloud search end ----->

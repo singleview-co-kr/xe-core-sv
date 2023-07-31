@@ -145,7 +145,7 @@ class integration_searchAdminController extends integration_search
 	 *
 	 * @return mixed
 	 */
-	public function procIntegration_searchAdminUpsertAllDocs()
+	public function procIntegration_searchAdminUploadDbAll()
 	{
 echo __FILE__.':'.__LINE__.'<BR>';
 		$oModuleModel = getModel('module');

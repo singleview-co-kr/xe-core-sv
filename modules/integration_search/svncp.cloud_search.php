@@ -125,6 +125,8 @@ class ncpCloudSearch
 		// 기본 데이터 설정
 		$this->_g_sUnixtimestamp = round(microtime(true) * 1000);
 		$this->_g_sApiUrl = '/CloudSearch/real/v1/domain/'.$this->_g_sDomainNameTag.'/document';
+		// $this->_g_sApiUrl = '/CloudSearch/real/v1/domain/'.$this->_g_sDomainNameTag.'/document/manage/db_upload?limit=10&page=0';
+		// $this->_g_sApiUrl = '/CloudSearch/real/v1/db_upload/check_connection';
 	}
 
 	public function setUserConfig($aConfig)
@@ -189,41 +191,83 @@ class ncpCloudSearch
 
 	private function _requestHttp($sJsonQueryDSL)
 	{
-		if(!strlen($sJsonQueryDSL) || !strlen($this->_g_sOperationTarget))
+		//if(!strlen($this->_g_sOperationTarget))
+		//	return false;
+		if($this->_g_bPostMethod && !strlen($sJsonQueryDSL))
+		{
+			echo __FILE__.':'.__LINE__.'<BR>';
 			return false;
+		}
 
 		if(!$this->_validateConfiguration())
 			return false;
 
 		// http 호출 헤더값 설정
 		$aHttpHeader = [];
-		$aHttpHeader[] = "x-ncp-apigw-timestamp:".$this->_g_sUnixtimestamp;
-		$aHttpHeader[] = "x-ncp-iam-access-key:".$this->_g_sNcpAccessKey;
-		$aHttpHeader[] = "x-ncp-apigw-signature-v2:".$this->_makeSignature();
+		$aHttpHeader[] = "x-ncp-apigw-timestamp: ".$this->_g_sUnixtimestamp;
+		$aHttpHeader[] = "x-ncp-iam-access-key: ".$this->_g_sNcpAccessKey;
+		$aHttpHeader[] = "x-ncp-apigw-signature-v2: ".$this->_makeSignature();
 		$aHttpHeader[] = "Content-Type: application/json";
 		echo __FILE__.':'.__LINE__.'<BR>';
 		var_dump($this->_g_sApiServer.$this->_g_sApiUrl.$this->_g_sOperationTarget);
+		echo '<BR>';
+		//var_dump($this->_g_bPostMethod);
+		//echo '<BR>';
 		// api 호출
 		$oCh = curl_init();
 		curl_setopt($oCh, CURLOPT_URL, $this->_g_sApiServer.$this->_g_sApiUrl.$this->_g_sOperationTarget);
 		curl_setopt($oCh, CURLOPT_SSL_VERIFYPEER, FALSE);
 		curl_setopt($oCh, CURLOPT_RETURNTRANSFER, TRUE);	
-		curl_setopt($oCh, CURLOPT_POST, $this->_g_bPostMethod);
 		curl_setopt($oCh, CURLOPT_HTTPHEADER, $aHttpHeader);
 		// https://zzdd1558.tistory.com/294   Request Body 방식의 검색질의
-		curl_setopt($oCh, CURLOPT_POSTFIELDS, $sJsonQueryDSL);
+		curl_setopt($oCh, CURLOPT_POST, $this->_g_bPostMethod);
+		if($this->_g_bPostMethod)
+		{
+			curl_setopt($oCh, CURLOPT_POSTFIELDS, $sJsonQueryDSL);
+			echo __FILE__.':'.__LINE__.'<BR>';
+			var_dump($sJsonQueryDSL);
+			echo '<BR>';
+		}
 		$sResponse = curl_exec($oCh);
 		curl_close($oCh);
 		unset($oCh);
 		unset($aHttpHeader);
 		// {"message":"there is no such service : search_yuhanclorox"
+		
 		echo __FILE__.':'.__LINE__.'<BR>';
 		var_dump($sResponse);
-		exit;
+		//exit;
 		return $sResponse;
 	} 
 
 	public function upsertDoc($oReqParam)
+	{
+		$this->_g_sOperationTarget = '/manage';
+		// https://api.ncloud-docs.com/docs/analytics-cloudsearch-managedocument
+		$sJsonQueryDSL = '{
+		  "requests": [{
+			  "type": "upsert",
+			  "content": {
+				"document_srl": '.$oReqParam->nDocSrl.',
+				"title": "'.$oReqParam->sTitle.'",
+				"content": "'.$oReqParam->sContent.'",
+				"tag": "'.$oReqParam->sTags.'"
+			  }
+		   }]
+		}';
+
+		$sResponse = $this->_requestHttp($sJsonQueryDSL);
+		if($sResponse)
+			$oNcpRst = json_decode($sResponse);
+		else
+		{
+			$oNcpRst = new stdClass();
+			$oNcpRst->result = 'bad';
+		}
+		return $oNcpRst;
+	}
+	
+	public function uploadDb($oReqParam)
 	{
 		$this->_g_sOperationTarget = '/manage/db_upload';
 		// https://api.ncloud-docs.com/docs/analytics-cloudsearch-postdbupload
@@ -235,13 +279,37 @@ class ncpCloudSearch
 			"password": "'.$oReqParam->oSourceDbInfo->sPassword.'",
 			"db": "'.$oReqParam->oSourceDbInfo->sDatabase.'",
 			"charset": "utf8",
+			
 			"keyField": "'.$oReqParam->oSqlInfo->sKeyField.'",
 			"sql": "'.$oReqParam->oSqlInfo->sSqlStmt.'",
-			"connectTimeout": 4,
+			"connectTimeout": 4
 		}';
-		// "indexTypeField": "index_type",  // optional field
+		// "indexTypeField": "[필드명]",
+		// "connectTimeout": 4 뒤에 , 붙이면 "{"failedValidation":true, 반환
 		var_dump($sJsonQueryDSL);
 		$sResponse = $this->_requestHttp($sJsonQueryDSL);
+		if($sResponse)
+		{
+			;
+		}
+	}
+
+	public function checkDbConnection($oReqParam)
+	{
+		// $this->_g_sApiUrl = '/CloudSearch/real/v1/db_upload/check_connection';
+		// https://api.ncloud-docs.com/docs/analytics-cloudsearch-postdbuploadcheckconnection
+		$sJsonQueryDSL = '{
+			"dbKind": "mysql",
+			"host": "'.$oReqParam->oSourceDbInfo->sHostname.'",
+			"port": '.$oReqParam->oSourceDbInfo->sPort.',
+			"user": "'.$oReqParam->oSourceDbInfo->sUserid.'",
+			"password": "'.$oReqParam->oSourceDbInfo->sPassword.'",
+			"db": "'.$oReqParam->oSourceDbInfo->sDatabase.'",
+			"charset": "utf8",
+			"connectTimeout": 4
+		}';
+		$sResponse = $this->_requestHttp($sJsonQueryDSL);
+		var_dump($sResponse);
 		if($sResponse)
 		{
 			;
@@ -251,9 +319,6 @@ class ncpCloudSearch
 	public function getSearchList()
 	{
 		$this->_g_sOperationTarget = '/search';
-
-		// if(!$this->_validateConfiguration())
-		// 	return false;
 
 		$oRst = $this->_getNcpSearchCacheAbs();
 		if($oRst->bCacheFound)
@@ -273,28 +338,6 @@ class ncpCloudSearch
 					}
 				}
 			}';
-			// var_dump($sJsonQueryDSL);
-			// exit;
-			// http 호출 헤더값 설정
-			// $aHttpHeader = [];
-			// $aHttpHeader[] = "x-ncp-apigw-timestamp:".$this->_g_sUnixtimestamp;
-			// $aHttpHeader[] = "x-ncp-iam-access-key:".$this->_g_sNcpAccessKey;
-			// $aHttpHeader[] = "x-ncp-apigw-signature-v2:".$this->_makeSignature();
-			// $aHttpHeader[] = "Content-Type: application/json";
-			// // api 호출
-			// $oCh = curl_init();
-			// curl_setopt($oCh, CURLOPT_URL, $this->_g_sApiServer.$this->_g_sApiUrl);
-			// curl_setopt($oCh, CURLOPT_SSL_VERIFYPEER, FALSE);
-			// curl_setopt($oCh, CURLOPT_RETURNTRANSFER, TRUE);	
-			// curl_setopt($oCh, CURLOPT_POST, $this->_g_bPostMethod);
-			// curl_setopt($oCh, CURLOPT_HTTPHEADER, $aHttpHeader);
-			// // https://zzdd1558.tistory.com/294   Request Body 방식의 검색질의
-			// curl_setopt($oCh, CURLOPT_POSTFIELDS, $sJsonQueryDSL);
-			// $sResponse = curl_exec($oCh);
-			// curl_close($oCh);
-			// unset($oCh);
-			// unset($aHttpHeader);
-			// echo __FILE__.':'.__LINE__.'<BR>';
 			$sResponse = $this->_requestHttp($sJsonQueryDSL);
 			if($sResponse)
 			{
@@ -319,6 +362,9 @@ class ncpCloudSearch
 			.$this->_g_sNewLine
 			.$this->_g_sNcpAccessKey;	
 		// hmac_sha256 암호화
+		echo __FILE__.':'.__LINE__.'<BR>';
+		var_dump($sAuthMsg);
+		echo '<BR>';
 		$sSignatureMsg = hash_hmac('sha256', $sAuthMsg, $this->_g_sNcpSecretKey, true);
 		return base64_encode($sSignatureMsg);
 	}
