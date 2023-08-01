@@ -14,20 +14,24 @@ class integration_searchController extends integration_search
 	{
 	}
 	/**
-	 * A trigger to upload inserted document to NCP cloud search
+	 * A trigger to delete old document to NCP cloud search
 	 * @param object $obj Trigger object
 	 * @return BaseObject
 	 */
-	public function __triggerNcpUpload($oNewDoc)
+	public function triggerNcpDelete($oOldDoc)
 	{
-		// var_dump($oNewDoc->module_srl);
-		if(!$oNewDoc->document_srl) 
+		if(!$oOldDoc->document_srl) 
 			return new BaseObject();
 
 		$oModuleModel = getModel('module');
 		$oConfig = $oModuleModel->getModuleConfig('integration_search');
 		unset($oModuleModel);
-		// var_dump($oConfig);
+
+		if($oConfig->use_ncp_cloud_search != 'Y')  // NCP 사용일 때만 작동
+		{
+			unset($oConfig);
+			return new BaseObject();
+		}
 
 		$aTargetModuleSrls = [];
 		if(strlen($oConfig->target_module_srl))
@@ -37,18 +41,15 @@ class integration_searchController extends integration_search
 				$aTargetModuleSrls[$nModuleSrl] = 1;
 			unset($aModuleSrls);
 		}
-		// var_dump($aTargetModuleSrls);
 
 		if($oConfig->target == 'exclude' && $aTargetModuleSrls[$oNewDoc->module_srl] == 1)
 		{
 			unset($aTargetModuleSrls);
-			// echo __FILE__.':'.__LINE__.'<BR>';
 			return new BaseObject();
 		}
 		elseif($oConfig->target == 'include' && $aTargetModuleSrls[$oNewDoc->module_srl] != 1)
 		{
 			unset($aTargetModuleSrls);
-			// echo __FILE__.':'.__LINE__.'<BR>';
 			return new BaseObject();
 		}
 		unset($aTargetModuleSrls);
@@ -61,27 +62,16 @@ class integration_searchController extends integration_search
 			echo 'weird error has been occured on '.__FILE__.':'.__LINE__.'<BR>';	
 			exit;
 		}
-
 		$oSvNcpCloudSearch = new svNcpCloudSearch();
 		$oSvNcpCloudSearch->setUserConfig(['ncp_access_key' => $oConfig->ncp_access_key,
-										 'ncp_secret_key' => $oConfig->ncp_secret_key,
-										 'idx_title' => $oConfig->idx_title]);
+										 'ncp_secret_key' => $oConfig->ncp_secret_key]);
 		
 		$oSvNcpCloudSearch->setDomain($oConfig->domain_name);
-		// $oSvNcpCloudSearch->setHttpMethod('post');
-		$oNewDocInfo = new stdClass();
-		$oNewDocInfo->nDocSrl = $oNewDoc->document_srl;
-		$oNewDocInfo->sTitle =  str_replace(array('\'', '"', PHP_EOL), '', strip_tags($oNewDoc->title));
-		$oNewDocInfo->sContent = str_replace(array('\'', '"', PHP_EOL), ' ', strip_tags($oNewDoc->content));
-		$oNewDocInfo->sTags = str_replace(array('\'', '"'), '', strip_tags($oNewDoc->tags));
-		$oRst = $oSvNcpCloudSearch->upsertDoc($oNewDocInfo);
-		var_dump($oRst);
+		$oRst = $oSvNcpCloudSearch->deleteDoc($oOldDoc->document_srl);
 		// $oNcpRst->result == 'ok' if succeeded
 
 		unset($oConfig);
-		unset($oNewDocInfo);
 		unset($oSvNcpCloudSearch);
-		exit;
 		return new BaseObject();
 	}
 
@@ -99,7 +89,12 @@ class integration_searchController extends integration_search
 		$oModuleModel = getModel('module');
 		$oConfig = $oModuleModel->getModuleConfig('integration_search');
 		unset($oModuleModel);
-		// var_dump($oConfig);
+		
+		if($oConfig->use_ncp_cloud_search != 'Y')  // NCP 사용일 때만 작동
+		{
+			unset($oConfig);
+			return new BaseObject();
+		}
 
 		$aTargetModuleSrls = [];
 		if(strlen($oConfig->target_module_srl))
@@ -109,18 +104,15 @@ class integration_searchController extends integration_search
 				$aTargetModuleSrls[$nModuleSrl] = 1;
 			unset($aModuleSrls);
 		}
-		// var_dump($aTargetModuleSrls);
 
 		if($oConfig->target == 'exclude' && $aTargetModuleSrls[$oNewDoc->module_srl] == 1)
 		{
 			unset($aTargetModuleSrls);
-			// echo __FILE__.':'.__LINE__.'<BR>';
 			return new BaseObject();
 		}
 		elseif($oConfig->target == 'include' && $aTargetModuleSrls[$oNewDoc->module_srl] != 1)
 		{
 			unset($aTargetModuleSrls);
-			// echo __FILE__.':'.__LINE__.'<BR>';
 			return new BaseObject();
 		}
 		unset($aTargetModuleSrls);
@@ -155,9 +147,8 @@ class integration_searchController extends integration_search
 										 'ncp_secret_key' => $oConfig->ncp_secret_key,
 										 'idx_title' => $oConfig->idx_title]);
 		$oSvNcpCloudSearch->setDomain($oConfig->domain_name);
-		// $oSvNcpCloudSearch->setHttpMethod('post');
 		$oRst = $oSvNcpCloudSearch->uploadDb($oReqInfo);
-		var_dump($oRst);
+		//var_dump($oRst);
 		// $oNcpRst->result == 'ok' if succeeded
 		unset($oConfig);
 		unset($oSvNcpCloudSearch);
@@ -165,8 +156,6 @@ class integration_searchController extends integration_search
 		unset($oReqInfo);
 		unset($oSourceDbInfo);
 		unset($oSqlInfo);
-
-		exit;
 		return new BaseObject();
 	}
 }

@@ -4,6 +4,11 @@
  * @author singleview(root@singleview.co.kr)
  * @brief  svncpCloudSearch class
  */
+
+/**
+ * @brief ncpCloudSearch의 자식 클래스
+ * 추상 메소드 구현
+ **/
 class svNcpCloudSearch extends ncpCloudSearch
 {
 /**
@@ -95,6 +100,9 @@ class svNcpCloudSearch extends ncpCloudSearch
 	}
 }
 
+/**
+ * @brief NCP cloud search API
+ **/
 class ncpCloudSearch
 {
 	protected $_g_sIdxKey = null;
@@ -102,9 +110,9 @@ class ncpCloudSearch
 	protected $_g_nStartPos = 1;
 	protected $_g_nDisplayCnt = 10;
 	private $_g_sApiServer = 'https://cloudsearch.apigw.ntruss.com';
-	private $_g_sDomainNameTag = '[%domain_name%]';
-	private $_g_sApiUrl = null;
-	private $_g_sOperationTarget = null;
+	private $_g_sDomainName = null;
+	private $_g_sApiRootUrl = null;
+	private $_g_sApiUrlFull = null;
 	private $_g_sSpace = ' ';
 	private $_g_sNewLine = "\n";
 	private $_g_sApiCallMethod = 'POST';
@@ -124,14 +132,14 @@ class ncpCloudSearch
 		// https://github.com/NaverCloudPlatform/cloudsearch-sample/
 		// 기본 데이터 설정
 		$this->_g_sUnixtimestamp = round(microtime(true) * 1000);
-		$this->_g_sApiUrl = '/CloudSearch/real/v1/domain/'.$this->_g_sDomainNameTag.'/document';
-		// $this->_g_sApiUrl = '/CloudSearch/real/v1/domain/'.$this->_g_sDomainNameTag.'/document/manage/db_upload?limit=10&page=0';
-		// $this->_g_sApiUrl = '/CloudSearch/real/v1/db_upload/check_connection';
+		$this->_g_sApiRootUrl = '/CloudSearch/real/v1'; // /domain/'.$this->_g_sDomainNameTag.'/document';
 	}
-
+/**
+ * @brief API 설정값 입력
+ **/
 	public function setUserConfig($aConfig)
 	{
-		$aMandatory = ['ncp_access_key', 'ncp_secret_key', 'idx_title'];
+		$aMandatory = ['ncp_access_key', 'ncp_secret_key']; //, 'idx_title'];
 		foreach($aMandatory as $sKey)
 		{
 			if(!array_key_exists($sKey, $aConfig))
@@ -142,17 +150,22 @@ class ncpCloudSearch
 		}
 		$this->_g_sNcpAccessKey = $aConfig['ncp_access_key'];
 		$this->_g_sNcpSecretKey = $aConfig['ncp_secret_key'];
-		$this->_g_sIdxKey = $aConfig['idx_title'];
+		if(array_key_exists('idx_title', $aConfig))
+			$this->_g_sIdxKey = $aConfig['idx_title'];
 		if(array_key_exists('display_cnt', $aConfig))
 			$this->_g_nDisplayCnt = $aConfig['display_cnt'];
 	}
-
+/**
+ * @brief table position 설정
+ **/
 	public function setStartPosition($nPos)
 	{
 		if($nPos > 1)
 			$this->_g_nStartPos = $nPos;
 	}
-
+/**
+ * @brief 검색 키워드 설정
+ **/
 	public function setQuery($sTerm)
 	{
 		if(!strlen($sTerm))
@@ -162,45 +175,77 @@ class ncpCloudSearch
 		}
 		$this->_g_sQuery = trim($sTerm);
 	}
-
-	public function setHttpMethod($sMethod)
+/**
+ * @brief 검색 키워드 설정
+ **/
+	protected function _setHttpMethod($sMethod)
 	{
 		$sMethod = strtoupper($sMethod);
-		$aValidMethod = ['POST', 'GET'];
+		$aValidMethod = ['POST', 'GET', 'DELETE', 'PATCH'];
 
 		if(in_array($sMethod, $aValidMethod))
 			$this->_g_sApiCallMethod = $sMethod;
 		else
 			$this->_g_sApiCallMethod = 'POST';
 
-		if($this->_g_sApiCallMethod == 'GET')
-			$this->_g_bPostMethod = false;
-		else
+		if($this->_g_sApiCallMethod == 'POST')
 			$this->_g_bPostMethod = true;
+		else
+			$this->_g_bPostMethod = false;
 	}
-
+/**
+ * @brief 클라우드 서치의 도메인명 입력
+ **/
 	public function setDomain($sDomainName)
 	{
+		$sDomainName = trim($sDomainName);
 		if(!strlen($sDomainName))
 		{
 			echo "invalid domain name<BR>";
 			return;
 		}
-		$this->_g_sApiUrl = str_replace($this->_g_sDomainNameTag, $sDomainName, $this->_g_sApiUrl);
+		$this->_g_sDomainName = $sDomainName;
 	}
-
-	private function _requestHttp($sJsonQueryDSL)
+/**
+ * @brief NCP API 통신을 위한 암호문 생성
+ * ref: https://guide.ncloud-docs.com/docs/apigw-myproducts#%EC%97%90%EB%9F%AC-%EC%BD%94%EB%93%9C
+ **/
+	private function _makeSignature()
 	{
-		//if(!strlen($this->_g_sOperationTarget))
-		//	return false;
+		// hmac으로 암호화할 문자열 설정
+		$sAuthMsg = 
+			$this->_g_sApiCallMethod
+			.$this->_g_sSpace
+			.$this->_g_sApiUrlFull
+			.$this->_g_sNewLine
+			.$this->_g_sUnixtimestamp
+			.$this->_g_sNewLine
+			.$this->_g_sNcpAccessKey;	
+		// hmac_sha256 암호화
+		$sSignatureMsg = hash_hmac('sha256', $sAuthMsg, $this->_g_sNcpSecretKey, true);
+		return base64_encode($sSignatureMsg);
+	}
+/**
+ * @brief API 통신
+ **/
+	private function _requestHttp($sJsonQueryDSL=null)
+	{
+		if(!strlen($this->_g_sApiUrlFull))
+			return false;
 		if($this->_g_bPostMethod && !strlen($sJsonQueryDSL))
 		{
 			echo __FILE__.':'.__LINE__.'<BR>';
 			return false;
 		}
-
-		if(!$this->_validateConfiguration())
-			return false;
+		$aNotNull = ['_g_sNcpAccessKey', '_g_sNcpSecretKey'];
+		foreach($aNotNull as $sLbl)
+		{
+			if(!$this->{$sLbl})
+			{
+				echo $sLbl." must be filled<BR>";
+				return false;
+			}
+		}
 
 		// http 호출 헤더값 설정
 		$aHttpHeader = [];
@@ -208,14 +253,15 @@ class ncpCloudSearch
 		$aHttpHeader[] = "x-ncp-iam-access-key: ".$this->_g_sNcpAccessKey;
 		$aHttpHeader[] = "x-ncp-apigw-signature-v2: ".$this->_makeSignature();
 		$aHttpHeader[] = "Content-Type: application/json";
-		echo __FILE__.':'.__LINE__.'<BR>';
-		var_dump($this->_g_sApiServer.$this->_g_sApiUrl.$this->_g_sOperationTarget);
-		echo '<BR>';
+		//echo __FILE__.':'.__LINE__.'<BR>';
+		//var_dump($this->_g_sApiUrlFull);
+		//echo '<BR>';
 		//var_dump($this->_g_bPostMethod);
 		//echo '<BR>';
 		// api 호출
 		$oCh = curl_init();
-		curl_setopt($oCh, CURLOPT_URL, $this->_g_sApiServer.$this->_g_sApiUrl.$this->_g_sOperationTarget);
+		// curl_setopt($oCh, CURLOPT_URL, $this->_g_sApiServer.$this->_g_sApiRootUrl.$this->_g_sOperationTarget);
+		curl_setopt($oCh, CURLOPT_URL,  $this->_g_sApiServer.$this->_g_sApiUrlFull);
 		curl_setopt($oCh, CURLOPT_SSL_VERIFYPEER, FALSE);
 		curl_setopt($oCh, CURLOPT_RETURNTRANSFER, TRUE);	
 		curl_setopt($oCh, CURLOPT_HTTPHEADER, $aHttpHeader);
@@ -224,9 +270,9 @@ class ncpCloudSearch
 		if($this->_g_bPostMethod)
 		{
 			curl_setopt($oCh, CURLOPT_POSTFIELDS, $sJsonQueryDSL);
-			echo __FILE__.':'.__LINE__.'<BR>';
-			var_dump($sJsonQueryDSL);
-			echo '<BR>';
+			//echo __FILE__.':'.__LINE__.'<BR>';
+			//var_dump($sJsonQueryDSL);
+			//echo '<BR>';
 		}
 		$sResponse = curl_exec($oCh);
 		curl_close($oCh);
@@ -234,43 +280,92 @@ class ncpCloudSearch
 		unset($aHttpHeader);
 		// {"message":"there is no such service : search_yuhanclorox"
 		
-		echo __FILE__.':'.__LINE__.'<BR>';
-		var_dump($sResponse);
+		//echo __FILE__.':'.__LINE__.'<BR>';
+		//var_dump($sResponse);
 		//exit;
 		return $sResponse;
 	} 
-
+/**
+ * @brief QueryDSL로 개별 문서 업로드
+ * plain text로만 구성된 문서 업로드 용
+ * ref: https://api.ncloud-docs.com/docs/analytics-cloudsearch-managedocument
+ **/
 	public function upsertDoc($oReqParam)
 	{
-		$this->_g_sOperationTarget = '/manage';
-		// https://api.ncloud-docs.com/docs/analytics-cloudsearch-managedocument
+		$oNcpRst = new stdClass();
+		$oNcpRst->result = null;
+		if(!$this->_g_sDomainName)
+		{
+			$oNcpRst->result = 'domain name not defined';
+			return $oNcpRst;
+		}
+		
+		$aRemoveMark = ['\'', '"', PHP_EOL];
+		$this->_g_sApiUrlFull = $this->_g_sApiRootUrl.'/domain/'.$this->_g_sDomainName.'/document/manage';
 		$sJsonQueryDSL = '{
 		  "requests": [{
 			  "type": "upsert",
 			  "content": {
 				"document_srl": '.$oReqParam->nDocSrl.',
-				"title": "'.$oReqParam->sTitle.'",
-				"content": "'.$oReqParam->sContent.'",
-				"tag": "'.$oReqParam->sTags.'"
+				"title": "'.str_replace($aRemoveMark, '', strip_tags($oReqParam->sTitle)).'",
+				"content": "'.str_replace($aRemoveMark, '', strip_tags($oReqParam->sContent)).'",
+				"tag": "'.str_replace($aRemoveMark, '', strip_tags($oReqParam->sTags)).'"
 			  }
 		   }]
 		}';
-
+		unset($aRemoveMark);
 		$sResponse = $this->_requestHttp($sJsonQueryDSL);
 		if($sResponse)
 			$oNcpRst = json_decode($sResponse);
 		else
-		{
-			$oNcpRst = new stdClass();
 			$oNcpRst->result = 'bad';
-		}
 		return $oNcpRst;
 	}
-	
+/**
+ * @brief QueryDSL로 개별 문서 삭제
+ * ref: https://api.ncloud-docs.com/docs/analytics-cloudsearch-managedocument
+ **/
+	public function deleteDoc($nDocSrl)
+	{
+		$oNcpRst = new stdClass();
+		$oNcpRst->result = null;
+		if(!$this->_g_sDomainName)
+		{
+			$oNcpRst->result = 'domain name not defined';
+			return $oNcpRst;
+		}
+		
+		$this->_g_sApiUrlFull = $this->_g_sApiRootUrl.'/domain/'.$this->_g_sDomainName.'/document/manage';
+		$sJsonQueryDSL = '{
+		   "requests" : [
+			  {
+				 "type" : "delete",
+				 "key" : "'.$nDocSrl.'"
+			  }
+		  ]
+		}';
+		$sResponse = $this->_requestHttp($sJsonQueryDSL);
+		if($sResponse)
+			$oNcpRst = json_decode($sResponse);
+		else
+			$oNcpRst->result = 'bad';
+		return $oNcpRst;
+	}
+/**
+ * @brief cloud search API가 문서 DB 서버에 직접 접속해서 추출 문서 업로드
+ * ref: https://api.ncloud-docs.com/docs/analytics-cloudsearch-postdbupload
+ **/	
 	public function uploadDb($oReqParam)
 	{
-		$this->_g_sOperationTarget = '/manage/db_upload';
-		// https://api.ncloud-docs.com/docs/analytics-cloudsearch-postdbupload
+		$oNcpRst = new stdClass();
+		$oNcpRst->result = null;
+		if(!$this->_g_sDomainName)
+		{
+			$oNcpRst->result = 'domain name not defined';
+			return $oNcpRst;
+		}
+		$this->_setHttpMethod('post');
+		$this->_g_sApiUrlFull = $this->_g_sApiRootUrl.'/domain/'.$this->_g_sDomainName.'/document/manage/db_upload';
 		$sJsonQueryDSL = '{
 			"dbKind": "mysql",
 			"host": "'.$oReqParam->oSourceDbInfo->sHostname.'",
@@ -279,25 +374,28 @@ class ncpCloudSearch
 			"password": "'.$oReqParam->oSourceDbInfo->sPassword.'",
 			"db": "'.$oReqParam->oSourceDbInfo->sDatabase.'",
 			"charset": "utf8",
-			
 			"keyField": "'.$oReqParam->oSqlInfo->sKeyField.'",
 			"sql": "'.$oReqParam->oSqlInfo->sSqlStmt.'",
 			"connectTimeout": 4
 		}';
-		// "indexTypeField": "[필드명]",
+		// "indexTypeField": "[필드명]",  // optional, upsert if null
 		// "connectTimeout": 4 뒤에 , 붙이면 "{"failedValidation":true, 반환
-		var_dump($sJsonQueryDSL);
+		//var_dump($sJsonQueryDSL);
 		$sResponse = $this->_requestHttp($sJsonQueryDSL);
 		if($sResponse)
-		{
-			;
-		}
+			$oNcpRst = json_decode($sResponse);
+		else
+			$oNcpRst->result = 'bad';
+		return $oNcpRst;
 	}
-
+/**
+ * @brief cloud search API가 문서 DB 서버에 접속 테스트
+ * ref: https://api.ncloud-docs.com/docs/analytics-cloudsearch-postdbuploadcheckconnection
+ **/
 	public function checkDbConnection($oReqParam)
 	{
-		// $this->_g_sApiUrl = '/CloudSearch/real/v1/db_upload/check_connection';
-		// https://api.ncloud-docs.com/docs/analytics-cloudsearch-postdbuploadcheckconnection
+		$this->_setHttpMethod('post');
+		$this->_g_sApiUrlFull = $this->_g_sApiRootUrl.'/db_upload/check_connection';
 		$sJsonQueryDSL = '{
 			"dbKind": "mysql",
 			"host": "'.$oReqParam->oSourceDbInfo->sHostname.'",
@@ -315,18 +413,51 @@ class ncpCloudSearch
 			;
 		}
 	}
-
-	public function getSearchList()
+/**
+ * @brief cloud search API가 문서 DB 서버에 직접 접속해서 추출 문서 업로드한 내역 가져오기
+ * ref: 
+ **/
+	public function inquiryDbUploadList()
 	{
-		$this->_g_sOperationTarget = '/search';
-
-		$oRst = $this->_getNcpSearchCacheAbs();
-		if($oRst->bCacheFound)
+		$oNcpRst = new stdClass();
+		$oNcpRst->result = null;
+		if(!$this->_g_sDomainName)
+		{
+			$oNcpRst->result = 'domain name not defined';
+			return $oNcpRst;
+		}
+		$this->_setHttpMethod('get');
+		$this->_g_sApiUrlFull = $this->_g_sApiRootUrl.'/domain/'.$this->_g_sDomainName.'/document/manage/db_upload?limit=10&page=0';
+		$sResponse = $this->_requestHttp();
+		var_dump($sResponse);
+		if($sResponse)
+		{
+			;
+		}
+	}
+/**
+ * @brief 검색 결과 가져오기
+ * ref: https://api.ncloud-docs.com/docs/analytics-cloudsearch-searchdocument
+ **/
+	public function getSearchList($bUseCache=false)
+	{
+		if(!$this->_g_sDomainName)
+		{
+			$oNcpRst = new stdClass();
+			$oNcpRst->result = 'domain name not defined';
+			return $oNcpRst;
+		}
+		$this->_setHttpMethod('post');
+		$this->_g_sApiUrlFull = $this->_g_sApiRootUrl.'/domain/'.$this->_g_sDomainName.'/document/search';
+		
+		if($bUseCache)
+			$oRst = $this->_getNcpSearchCacheAbs();
+		if($bUseCache && $oRst->bCacheFound)
 			$oNcpRst = $this->_constructNcpSearchRstAbs($oRst->oNcpReturn);
 		else
 		{
-			// echo __FILE__.':'.__LINE__.'<BR>';
-			// return;
+			//echo __FILE__.':'.__LINE__.'<BR>';
+			//return;
 			$sJsonQueryDSL = '{
 				"start": '.$this->_g_nStartPos.',
 				"display": '.$this->_g_nDisplayCnt.',
@@ -341,7 +472,8 @@ class ncpCloudSearch
 			$sResponse = $this->_requestHttp($sJsonQueryDSL);
 			if($sResponse)
 			{
-				$this->_setNcpSearchCacheAbs($sResponse);
+				if($bUseCache)
+					$this->_setNcpSearchCacheAbs($sResponse);
 				$oNcpRst = $this->_constructNcpSearchRstAbs($sResponse);
 			}
 		}
@@ -349,44 +481,6 @@ class ncpCloudSearch
 		return $oNcpRst;
 	}
 
-	// https://guide.ncloud-docs.com/docs/apigw-myproducts#%EC%97%90%EB%9F%AC-%EC%BD%94%EB%93%9C
-	private function _makeSignature()
-	{
-		// hmac으로 암호화할 문자열 설정
-		$sAuthMsg = 
-			$this->_g_sApiCallMethod
-			.$this->_g_sSpace
-			.$this->_g_sApiUrl.$this->_g_sOperationTarget
-			.$this->_g_sNewLine
-			.$this->_g_sUnixtimestamp
-			.$this->_g_sNewLine
-			.$this->_g_sNcpAccessKey;	
-		// hmac_sha256 암호화
-		echo __FILE__.':'.__LINE__.'<BR>';
-		var_dump($sAuthMsg);
-		echo '<BR>';
-		$sSignatureMsg = hash_hmac('sha256', $sAuthMsg, $this->_g_sNcpSecretKey, true);
-		return base64_encode($sSignatureMsg);
-	}
-
-	private function _validateConfiguration()
-	{
-		if(strpos($this->_g_sApiUrl, $this->_g_sDomainNameTag))
-		{
-			echo "invalid domain name<BR>";
-			return false;
-		}
-		$aNotNull = ['_g_sNcpAccessKey', '_g_sNcpSecretKey', '_g_sIdxKey']; //, '_g_sQuery'];
-		foreach($aNotNull as $sLbl)
-		{
-			if(!$this->{$sLbl})
-			{
-				echo $sLbl." must be filled<BR>";
-				return false;
-			}
-		}
-		return true;
-	}
 /**
  * @brief 검색 결과 캐쉬 가져오기 abstract
  **/
@@ -419,7 +513,6 @@ class ncpCloudSearch
 // 								 'ncp_secret_key' => 'UtxreayWlZnbRtQZ6dWgBi0ZgTYPjL2iQAwSGCG2',
 // 								 'idx_title' => 'idx_title_content',
 // 								 'display_cnt' => 5]);
-// //$oSvNcpCloudSearch->setHttpMethod('post');
 // $oSvNcpCloudSearch->setDomain('search_yuhanclorox');
 // $oSvNcpCloudSearch->setStartPosition(1);
 // $oSvNcpCloudSearch->setQuery('락스 냄새');

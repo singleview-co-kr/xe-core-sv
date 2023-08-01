@@ -19,6 +19,9 @@ class integration_search extends ModuleObject
 		if(!$oModuleModel->getTrigger('document.insertDocument', 'integration_search', 'controller', 'triggerNcpUpload', 'after')) 
 			$oModuleController->insertTrigger('document.insertDocument', 'integration_search', 'controller', 'triggerNcpUpload', 'after');
 
+		if(!$oModuleModel->getTrigger('document.deleteDocument', 'integration_search', 'controller', 'triggerNcpDelete', 'after')) 
+			$oModuleController->insertTrigger('document.deleteDocument', 'integration_search', 'controller', 'triggerNcpDelete', 'after');
+
 		// Registered in action forward
 		$oModuleController->insertActionForward('integration_search', 'view', 'IS');
 		unset($oModuleModel);
@@ -53,7 +56,8 @@ class integration_search extends ModuleObject
 		}
 		if(!$oModuleModel->getTrigger('document.insertDocument', 'integration_search', 'controller', 'triggerNcpUpload', 'after')) 
 			return true;
-		
+		if(!$oModuleModel->getTrigger('document.deleteDocument', 'integration_search', 'controller', 'triggerNcpDelete', 'after')) 
+			return true;
 		unset($oModuleModel);
 		unset($oModuleController);
 		return false;
@@ -92,6 +96,8 @@ class integration_search extends ModuleObject
 		}
 		if(!$oModuleModel->getTrigger('document.insertDocument', 'integration_search', 'controller', 'triggerNcpUpload', 'after')) 
 			$oModuleController->insertTrigger('document.insertDocument', 'integration_search', 'controller', 'triggerNcpUpload', 'after');
+		if(!$oModuleModel->getTrigger('document.deleteDocument', 'integration_search', 'controller', 'triggerNcpDelete', 'after')) 
+			$oModuleController->insertTrigger('document.deleteDocument', 'integration_search', 'controller', 'triggerNcpDelete', 'after');
 
 		unset($oModuleModel);
 		unset($oModuleController);

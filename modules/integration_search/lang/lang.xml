@@ -70,7 +70,7 @@
 		<value xml:lang="ko"><![CDATA[NCP 엘라스틱 서치로 문서 검색 결과 대체]]></value>
 	</item>
 	<item name="about_use_ncp_cloud_search">
-		<value xml:lang="ko"><![CDATA[<a href='https://guide.ncloud-docs.com/docs/cloudsearch-overview' target='_blank'>API 소개</a>]]></value>
+		<value xml:lang="ko"><![CDATA[<a href='https://guide.ncloud-docs.com/docs/cloudsearch-overview' target='_blank'>API 소개</a> <a href='http://singleview.co.kr/blog/20975' target='_blank'>API 설정 방법</a>]]></value>
 	</item>
 	<item name="ncp_allowed_ip">
 		<value xml:lang="ko"><![CDATA[허용 IP]]></value>
@@ -113,6 +113,12 @@
 	</item>
 	<item name="about_all_docs_upload">
 		<value xml:lang="ko"><![CDATA[API 연동 설정 후 대상 전체 문서를 upsert 실행]]></value>
+	</item>
+	<item name="cloud_search_cache_use">
+		<value xml:lang="ko"><![CDATA[캐쉬 사용]]></value>
+	</item>
+	<item name="about_cloud_search_cache_use">
+		<value xml:lang="ko"><![CDATA[NCP 과금액을 줄여야 하거나, NCP의 쿼리 분석 기능이 불필요하면 선택하세요.]]></value>
 	</item>
 	
 </lang>

@@ -117,6 +117,12 @@
 				<p id="all_docs_upload_help" class="x_help-block" hidden>{$lang->about_all_docs_upload}</p>
 			</div>
 		</div>
+		<div class="x_control-group">
+			<label class="x_control-label" for="use_cache">{$lang->cloud_search_cache_use}</label>
+			<div class="x_controls">
+				<label class="x_inline" for="use_cache"><input type="checkbox" name="use_cache" id="use_cache" value="Y" checked="checked"|cond="$config->use_cache == 'Y'" /> {$lang->about_cloud_search_cache_use}</label>
+			</div>
+		</div>
 	</section>
 	<section class="section">
 		<h1>{$lang->mobile_settings}</h1>

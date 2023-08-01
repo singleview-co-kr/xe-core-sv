@@ -85,7 +85,7 @@ class integration_searchView extends integration_search
 			switch($where)
 			{
 				case 'document' :
-					if($this->_g_oConfig->use_ncp_cloud_search == 'Y' )
+					if($this->_g_oConfig->use_ncp_cloud_search == 'Y')
 					{
 						if(!$this->_g_oConfig->ncp_allowed_ip || $this->_g_oConfig->ncp_allowed_ip[$_SERVER['REMOTE_ADDR']] == 1)
 						{

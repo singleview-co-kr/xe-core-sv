@@ -63,12 +63,11 @@ class integration_searchModel extends module
 										 'ncp_secret_key' => $oConfig->ncp_secret_key,
 										 'idx_title' => $oConfig->idx_title,
 										 'display_cnt' => $list_count]);
-		//$oSvNcpCloudSearch->setHttpMethod('post');
 		$oSvNcpCloudSearch->setDomain($oConfig->domain_name);
 		$nStartPosition = ($page - 1) * $list_count + 1;
 		$oSvNcpCloudSearch->setStartPosition($nStartPosition);
 		$oSvNcpCloudSearch->setQuery($search_keyword);
-		$oResponse = $oSvNcpCloudSearch->getSearchList();
+		$oResponse = $oSvNcpCloudSearch->getSearchList($oConfig->use_cache == 'Y' ? true : false);
 		unset($oSvNcpCloudSearch);
 		unset($oConfig);
 		

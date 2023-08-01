@@ -29,10 +29,15 @@ class integration_searchAdminController extends integration_search
 		unset($oModuleModel);
 // var_Dump($args = Context::getRequestVars());
 		$oArgs = new stdClass;
-		if(!Context::get('use_ncp_cloud_search')) 
+		if(!Context::get('use_ncp_cloud_search'))
 			$oArgs->use_ncp_cloud_search = '';
 		else
 			$oArgs->use_ncp_cloud_search = Context::get('use_ncp_cloud_search');
+
+		if(!Context::get('use_cache'))
+			$oArgs->use_cache = '';
+		else
+			$oArgs->use_cache = Context::get('use_cache');
 
 		$oArgs->ncp_allowed_ip = Context::get('ncp_allowed_ip');
 		$oArgs->ncp_access_key = Context::get('ncp_access_key');
@@ -147,7 +152,7 @@ class integration_searchAdminController extends integration_search
 	 */
 	public function procIntegration_searchAdminUploadDbAll()
 	{
-echo __FILE__.':'.__LINE__.'<BR>';
+//echo __FILE__.':'.__LINE__.'<BR>';
 		$oModuleModel = getModel('module');
 		$oConfig = $oModuleModel->getModuleConfig('integration_search');
 		unset($oModuleModel);
@@ -198,23 +203,25 @@ echo __FILE__.':'.__LINE__.'<BR>';
 		$oReqInfo->oSourceDbInfo = $oSourceDbInfo;
 		$oReqInfo->oSqlInfo = $oSqlInfo;
 
-		var_dump($oReqInfo->oSqlInfo);
-		exit;
+		//var_dump($oReqInfo->oSqlInfo);
+		//echo '<BR>';
+		//exit;
 
 		$oSvNcpCloudSearch = new svNcpCloudSearch();
 		$oSvNcpCloudSearch->setUserConfig(['ncp_access_key' => $oConfig->ncp_access_key,
 										 'ncp_secret_key' => $oConfig->ncp_secret_key,
 										 'idx_title' => $oConfig->idx_title]);
 		$oSvNcpCloudSearch->setDomain($oConfig->domain_name);
-		$oSvNcpCloudSearch->upsertDoc($oReqInfo);
+		$oRst = $oSvNcpCloudSearch->uploadDb($oReqInfo);
+		//var_dump($oRst);
+		//echo '<BR>';
 		unset($oConfig);
 		unset($oSvNcpCloudSearch);
 		unset($oContextDbInfo);
 		unset($oReqInfo);
 		unset($oSourceDbInfo);
 		unset($oSqlInfo);
-
-exit;		
+//exit;		
 	}
 	
 }
