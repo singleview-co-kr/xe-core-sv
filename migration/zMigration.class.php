@@ -15,6 +15,7 @@ class zMigration
 	var $target_charset = 'UTF-8';
 	var $db_info = null;
 	var $start_seq = null;
+	var $mid = null;
 	
 	function zMigration()
 	{
@@ -46,6 +47,11 @@ class zMigration
 	function setItemCount($count)
 	{
 		$this->item_count = $count;
+	}
+
+	function setMid($mid)
+	{
+		$this->mid = $mid;
 	}
 
 	function setFilename($filename)
@@ -241,7 +247,7 @@ class zMigration
 
 		if($this->module_type == 'member') printf('<members count="%d" pubDate="%s">%s', $this->item_count, date("YmdHis"), "\r\n");
 		else if($this->module_type == 'message') printf('<messages count="%d" pubDate="%s">%s', $this->item_count, date("YmdHis"), "\r\n");
-		else printf('<posts count="%d" startSeq="%d" id="%s" pubDate="%s">%s', $this->item_count, $this->start_seq, $this->module_id, date("YmdHis"), "\r\n");
+		else printf('<posts count="%d" startSeq="%d" id="%s" mid="%s" pubDate="%s">%s', $this->item_count, $this->start_seq, $this->module_id, $this->mid, date("YmdHis"), "\r\n");
 	}
 
 	function printFooter()

@@ -232,7 +232,8 @@
 		}
         $module_info_result = $oMigration->query($query);
         $module_info = $oMigration->fetch($module_info_result);
-        $module_title = $module_info->browser_title;
+		$oMigration->setMid($module_info->mid);
+        // $module_title = $module_info->browser_title;
         
         // 헤더 정보를 출력
         $oMigration->setItemCount($limit_count);
@@ -263,18 +264,11 @@
 		if($db_info->db_type == 'cubrid')
 		{
 			$query = sprintf('select * from "%s_documents" where "module_srl" = \'%d\' order by "document_srl" %s', $db_info->db_table_prefix, $module_srl, $limit_query);
-			$mid_query = sprintf("select * from %s_modules where module_srl = \'%d\'", $db_info->db_table_prefix, $module_srl);
 		}
 		else
 		{
 			$query = sprintf("select * from %s_documents where module_srl = '%d' order by document_srl %s", $db_info->db_table_prefix, $module_srl, $limit_query);
-			$mid_query = sprintf("select mid from %s_modules where module_srl = '%d'", $db_info->db_table_prefix, $module_srl);
 		}
-		$mid_rst = $oMigration->query($mid_query);
-		$mid_info = $oMigration->fetch($mid_rst);
-		$mid_name = $mid_info->mid;
-		unset($mid_info);
-
         $document_result = $oMigration->query($query);
 		
 		$obj = new stdClass();
@@ -304,7 +298,6 @@
 			$obj->tags = null;
 			
 			$obj->document_srl = $document_info->document_srl;
-			$obj->mid = $mid_name;
 
 			if(!isset($document_info->status))
 				$document_info->status = 'PUBLIC';
