@@ -282,6 +282,18 @@
 		<value xml:lang="en"><![CDATA[If you want to use comment validation before displaying on your module frontend select USE, otherwise select NOT USE.]]></value>
 		<value xml:lang="jp"><![CDATA[管理者承認後コメントを公開します。]]></value>
 	</item>
+	<item name="cmd_forbid_comment_days_old">
+		<value xml:lang="ko"><![CDATA[오래된 글에 댓글 금지]]></value>
+	</item>
+	<item name="about_forbid_comment_days_old">
+		<value xml:lang="ko"><![CDATA[X일이 경과한 글에는 댓글 작성할 수 없습니다. 공란이면 이 기능은 작동하지 않습니다.]]></value>
+	</item>
+	<item name="cmd_allow_old_comment_for_admin">
+		<value xml:lang="ko"><![CDATA[관리자는 항상 댓글 허용]]></value>
+	</item>
+	<item name="about_allow_old_comment_for_admin">
+		<value xml:lang="ko"><![CDATA[오래된 글에 댓글 금지 기능이 작동할 때 관리자에게는 항상 허용합니다.]]></value>
+	</item>
 	<item name="published">
 		<value xml:lang="en"><![CDATA[Publish status]]></value>
 		<value xml:lang="ko"><![CDATA[발행 상태]]></value>

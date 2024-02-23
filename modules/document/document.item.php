@@ -1106,6 +1106,33 @@ class documentItem extends BaseObject
 	 */
 	function isEnableComment()
 	{
+		// Return false if the document is expired
+		$oModuleModel = getModel('module');
+		$oCommentConfig  = $oModuleModel->getModulePartConfig('comment', $this->get('module_srl'));
+		$nForbidCommentDaysOld = intval($oCommentConfig->forbid_comment_days_old);
+		$sAllowOldComment4Admin = $oCommentConfig->allow_old_comment_for_admin;
+		unset($oCommentConfig);
+		unset($oModuleModel);
+
+		$oMemberModel = getModel('member');
+		$oLoggedInfo = $oMemberModel->getLoggedInfo();
+		unset($oMemberModel);
+
+		if($oLoggedInfo->is_admin == 'Y' && $sAllowOldComment4Admin == 'Y'){ // allow admin to write comment
+			$bCheckCommentPrivilege = false;
+		}
+		else $bCheckCommentPrivilege = true;
+		unset($oLoggedInfo);
+
+		if( $bCheckCommentPrivilege && $nForbidCommentDaysOld ) {
+			$targetDate = date_create($this->get('regdate'));
+			$startDate = new DateTime(date('Y-m-d'));
+			$interval = date_diff($startDate, $targetDate);
+			unset($startDate);
+			unset($targetDate);
+			if( $interval->days > $nForbidCommentDaysOld ) return false;
+		}
+
 		// Return false if not authorized, if a secret document, if the document is set not to allow any comment
 		if (!$this->allowComment()) return false;
 		if(!$this->isGranted() && $this->isSecret()) return false;

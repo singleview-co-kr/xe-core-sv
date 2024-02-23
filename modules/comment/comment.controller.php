@@ -1344,6 +1344,18 @@ class commentController extends comment
 			$comment_config->use_comment_validation = 'N';
 		}
 
+		$forbid_comment_days_old = Context::get('forbid_comment_days_old');
+		if($forbid_comment_days_old)
+		{
+			$comment_config->forbid_comment_days_old = $forbid_comment_days_old;
+		}
+
+		$comment_config->allow_old_comment_for_admin = Context::get('allow_old_comment_for_admin');
+		if(!$comment_config->allow_old_comment_for_admin)
+		{
+			$comment_config->allow_old_comment_for_admin = 'N';
+		}
+
 		for($i = 0; $i < count($module_srl); $i++)
 		{
 			$srl = trim($module_srl[$i]);
