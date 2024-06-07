@@ -88,6 +88,7 @@ class XeXmlParser
 	 */
 	function parse($input = '', $arg1 = NULL, $arg2 = NULL)
 	{
+		global $G_XE_GLOBALS;
 		// Save the compile starting time for debugging
 		if(__DEBUG__ == 3)
 		{
@@ -96,7 +97,7 @@ class XeXmlParser
 
 		$this->lang = Context::getLangType();
 
-		$this->input = $input ? $input : $GLOBALS['HTTP_RAW_POST_DATA'];
+		$this->input = $input ? $input : $G_XE_GLOBALS['HTTP_RAW_POST_DATA'];
 		$this->input = str_replace(array('', ''), array('', ''), $this->input);
 
 		// extracts a supported language
@@ -143,7 +144,7 @@ class XeXmlParser
 		// Save compile starting time for debugging
 		if(__DEBUG__ == 3)
 		{
-			$GLOBALS['__xmlparse_elapsed__'] += getMicroTime() - $start;
+			$G_XE_GLOBALS['__xmlparse_elapsed__'] += getMicroTime() - $start;
 		}
 
 		return $output;

@@ -59,17 +59,18 @@ class TemplateHandler
 	 */
 	static public function &getInstance()
 	{
+		global $G_XE_GLOBALS;
 		static $oTemplate = NULL;
 
 		if(__DEBUG__ == 3)
 		{
-			if(!isset($GLOBALS['__TemplateHandlerCalled__']))
+			if(!isset($G_XE_GLOBALS['__TemplateHandlerCalled__']))
 			{
-				$GLOBALS['__TemplateHandlerCalled__'] = 1;
+				$G_XE_GLOBALS['__TemplateHandlerCalled__'] = 1;
 			}
 			else
 			{
-				$GLOBALS['__TemplateHandlerCalled__']++;
+				$G_XE_GLOBALS['__TemplateHandlerCalled__']++;
 			}
 		}
 
@@ -138,6 +139,7 @@ class TemplateHandler
 	 */
 	public function compile($tpl_path, $tpl_filename, $tpl_file = '')
 	{
+		global $G_XE_GLOBALS;
 		$buff = false;
 
 		// store the starting time for debug information
@@ -204,7 +206,7 @@ class TemplateHandler
 		// store the ending time for debug information
 		if(__DEBUG__ == 3)
 		{
-			$GLOBALS['__template_elapsed__'] += getMicroTime() - $start;
+			$G_XE_GLOBALS['__template_elapsed__'] += getMicroTime() - $start;
 		}
 
 		return $output;
@@ -395,11 +397,12 @@ class TemplateHandler
 	 */
 	private function _fetch($buff)
 	{
+		global $G_XE_GLOBALS;
 		if(!$buff)
 		{
 			return;
 		}
-		$__Context = &$GLOBALS['__Context__'];
+		$__Context = &$G_XE_GLOBALS['__Context__'];
 		$__Context->tpl_path = $this->path;
 
 		if($_SESSION['is_logged'])

@@ -396,7 +396,8 @@ class commentItem extends BaseObject
 
 	function getRegdateGM()
 	{
-		return $this->getRegdate('D, d M Y H:i:s') . ' ' . $GLOBALS['_time_zone'];
+		global $G_XE_GLOBALS;
+		return $this->getRegdate('D, d M Y H:i:s') . ' ' . $G_XE_GLOBALS['_time_zone'];
 	}
 
 	function getUpdate($format = 'Y.m.d H:i:s')
@@ -492,6 +493,7 @@ class commentItem extends BaseObject
 	 */
 	function getSignature()
 	{
+		global $G_XE_GLOBALS;
 		// pass if the posting not exists.
 		if(!$this->isExists() || !$this->get('member_srl'))
 		{
@@ -503,14 +505,14 @@ class commentItem extends BaseObject
 		$signature = $oMemberModel->getSignature($this->get('member_srl'));
 
 		// check if max height of the signiture is specified on the member module
-		if(!isset($GLOBALS['__member_signature_max_height']))
+		if(!isset($G_XE_GLOBALS['__member_signature_max_height']))
 		{
 			$oModuleModel = getModel('module');
 			$member_config = $oModuleModel->getModuleConfig('member');
-			$GLOBALS['__member_signature_max_height'] = $member_config->signature_max_height;
+			$G_XE_GLOBALS['__member_signature_max_height'] = $member_config->signature_max_height;
 		}
 
-		$max_signature_height = $GLOBALS['__member_signature_max_height'];
+		$max_signature_height = $G_XE_GLOBALS['__member_signature_max_height'];
 
 		if($max_signature_height)
 		{

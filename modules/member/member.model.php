@@ -338,12 +338,13 @@ class memberModel extends member
 	 */
 	function getMemberInfoByMemberSrl($member_srl, $site_srl = 0, $columnList = array())
 	{
+		global $G_XE_GLOBALS;
 		if(!$member_srl) return;
 
 		//columnList size zero... get full member info
-		if(!$GLOBALS['__member_info__'][$member_srl] || count((array)$columnList) == 0)
+		if(!$G_XE_GLOBALS['__member_info__'][$member_srl] || count((array)$columnList) == 0)
 		{
-			$GLOBALS['__member_info__'][$member_srl] = false;
+			$G_XE_GLOBALS['__member_info__'][$member_srl] = false;
 
 			$oCacheHandler = CacheHandler::getInstance('object');
 			if($oCacheHandler->isSupport())
@@ -351,10 +352,10 @@ class memberModel extends member
 				$columnList = array();
 				$object_key = 'member_info:' . getNumberingPath($member_srl) . $member_srl;
 				$cache_key = $oCacheHandler->getGroupKey('member', $object_key);
-				$GLOBALS['__member_info__'][$member_srl] = $oCacheHandler->get($cache_key);
+				$G_XE_GLOBALS['__member_info__'][$member_srl] = $oCacheHandler->get($cache_key);
 			}
 
-			if($GLOBALS['__member_info__'][$member_srl] === false)
+			if($G_XE_GLOBALS['__member_info__'][$member_srl] === false)
 			{
 				$args = new stdClass();
 				$args->member_srl = $member_srl;
@@ -367,11 +368,11 @@ class memberModel extends member
 				$this->arrangeMemberInfo($output->data, $site_srl);
 
 				//insert in cache
-				if($oCacheHandler->isSupport()) $oCacheHandler->put($cache_key, $GLOBALS['__member_info__'][$member_srl]);
+				if($oCacheHandler->isSupport()) $oCacheHandler->put($cache_key, $G_XE_GLOBALS['__member_info__'][$member_srl]);
 			}
 		}
 
-		return $GLOBALS['__member_info__'][$member_srl];
+		return $G_XE_GLOBALS['__member_info__'][$member_srl];
 	}
 
 	/**
@@ -379,7 +380,8 @@ class memberModel extends member
 	 */
 	function arrangeMemberInfo($info, $site_srl = 0)
 	{
-		if(!$GLOBALS['__member_info__'][$info->member_srl])
+		global $G_XE_GLOBALS;
+		if(!$G_XE_GLOBALS['__member_info__'][$info->member_srl])
 		{
 			$oModuleModel = getModel('module');
 			$config = $oModuleModel->getModuleConfig('member');
@@ -445,10 +447,10 @@ class memberModel extends member
 				$info->blog = '';
 			}
 
-			$GLOBALS['__member_info__'][$info->member_srl] = $info;
+			$G_XE_GLOBALS['__member_info__'][$info->member_srl] = $info;
 		}
 
-		return $GLOBALS['__member_info__'][$info->member_srl];
+		return $G_XE_GLOBALS['__member_info__'][$info->member_srl];
 	}
 
 	/**
@@ -617,7 +619,8 @@ class memberModel extends member
 	 */
 	function getGroups($site_srl = 0)
 	{
-		if(!$GLOBALS['__group_info__'][$site_srl])
+		global $G_XE_GLOBALS;
+		if(!$G_XE_GLOBALS['__group_info__'][$site_srl])
 		{
 			$result = array();
 
@@ -658,9 +661,9 @@ class memberModel extends member
 				$result[$val->group_srl] = $val;
 			}
 
-			$GLOBALS['__group_info__'][$site_srl] = $result;
+			$G_XE_GLOBALS['__group_info__'][$site_srl] = $result;
 		}
-		return $GLOBALS['__group_info__'][$site_srl];
+		return $G_XE_GLOBALS['__group_info__'][$site_srl];
 	}
 
 	public function getApiGroups()
@@ -910,9 +913,10 @@ class memberModel extends member
 	 */
 	function getProfileImage($member_srl)
 	{
-		if(!isset($GLOBALS['__member_info__']['profile_image'][$member_srl]))
+		global $G_XE_GLOBALS;
+		if(!isset($G_XE_GLOBALS['__member_info__']['profile_image'][$member_srl]))
 		{
-			$GLOBALS['__member_info__']['profile_image'][$member_srl] = null;
+			$G_XE_GLOBALS['__member_info__']['profile_image'][$member_srl] = null;
 			$exts = array('gif','jpg','png');
 			for($i=0;$i<3;$i++)
 			{
@@ -925,13 +929,13 @@ class memberModel extends member
 					$info->height = $height;
 					$info->src = Context::getRequestUri().$image_name_file . '?' . date('YmdHis', filemtime($image_name_file));
 					$info->file = './'.$image_name_file;
-					$GLOBALS['__member_info__']['profile_image'][$member_srl] = $info;
+					$G_XE_GLOBALS['__member_info__']['profile_image'][$member_srl] = $info;
 					break;
 				}
 			}
 		}
 
-		return $GLOBALS['__member_info__']['profile_image'][$member_srl];
+		return $G_XE_GLOBALS['__member_info__']['profile_image'][$member_srl];
 	}
 
 	/**
@@ -939,7 +943,8 @@ class memberModel extends member
 	 */
 	function getImageName($member_srl)
 	{
-		if(!isset($GLOBALS['__member_info__']['image_name'][$member_srl]))
+		global $G_XE_GLOBALS;
+		if(!isset($G_XE_GLOBALS['__member_info__']['image_name'][$member_srl]))
 		{
 			$image_name_file = sprintf('files/member_extra_info/image_name/%s%d.gif', getNumberingPath($member_srl), $member_srl);
 			if(file_exists($image_name_file))
@@ -950,11 +955,11 @@ class memberModel extends member
 				$info->height = $height;
 				$info->src = Context::getRequestUri().$image_name_file. '?' . date('YmdHis', filemtime($image_name_file));
 				$info->file = './'.$image_name_file;
-				$GLOBALS['__member_info__']['image_name'][$member_srl] = $info;
+				$G_XE_GLOBALS['__member_info__']['image_name'][$member_srl] = $info;
 			}
-			else $GLOBALS['__member_info__']['image_name'][$member_srl] = null;
+			else $G_XE_GLOBALS['__member_info__']['image_name'][$member_srl] = null;
 		}
-		return $GLOBALS['__member_info__']['image_name'][$member_srl];
+		return $G_XE_GLOBALS['__member_info__']['image_name'][$member_srl];
 	}
 
 	/**
@@ -962,7 +967,8 @@ class memberModel extends member
 	 */
 	function getImageMark($member_srl)
 	{
-		if(!isset($GLOBALS['__member_info__']['image_mark'][$member_srl]))
+		global $G_XE_GLOBALS;
+		if(!isset($G_XE_GLOBALS['__member_info__']['image_mark'][$member_srl]))
 		{
 			$image_mark_file = sprintf('files/member_extra_info/image_mark/%s%d.gif', getNumberingPath($member_srl), $member_srl);
 			if(file_exists($image_mark_file))
@@ -972,12 +978,12 @@ class memberModel extends member
 				$info->height = $height;
 				$info->src = Context::getRequestUri().$image_mark_file . '?' . date('YmdHis', filemtime($image_mark_file));
 				$info->file = './'.$image_mark_file;
-				$GLOBALS['__member_info__']['image_mark'][$member_srl] = $info;
+				$G_XE_GLOBALS['__member_info__']['image_mark'][$member_srl] = $info;
 			}
-			else $GLOBALS['__member_info__']['image_mark'][$member_srl] = null;
+			else $G_XE_GLOBALS['__member_info__']['image_mark'][$member_srl] = null;
 		}
 
-		return $GLOBALS['__member_info__']['image_mark'][$member_srl];
+		return $G_XE_GLOBALS['__member_info__']['image_mark'][$member_srl];
 	}
 
 
@@ -986,7 +992,8 @@ class memberModel extends member
 	 */
 	function getGroupImageMark($member_srl,$site_srl=0)
 	{
-		if(!isset($GLOBALS['__member_info__']['group_image_mark'][$member_srl]))
+		global $G_XE_GLOBALS;
+		if(!isset($G_XE_GLOBALS['__member_info__']['group_image_mark'][$member_srl]))
 		{
 			$oModuleModel = getModel('module');
 			$config = $oModuleModel->getModuleConfig('member');
@@ -1010,17 +1017,17 @@ class memberModel extends member
 							$info->title = $group_info->title;
 							$info->description = $group_info->description;
 							$info->src = $group_info->image_mark;
-							$GLOBALS['__member_info__']['group_image_mark'][$member_srl] = $info;
+							$G_XE_GLOBALS['__member_info__']['group_image_mark'][$member_srl] = $info;
 							break;
 						}
 					}
 				}
 			}
-			if (!$info) $GLOBALS['__member_info__']['group_image_mark'][$member_srl] == 'N';
+			if (!$info) $G_XE_GLOBALS['__member_info__']['group_image_mark'][$member_srl] == 'N';
 		}
-		if ($GLOBALS['__member_info__']['group_image_mark'][$member_srl] == 'N') return null;
+		if ($G_XE_GLOBALS['__member_info__']['group_image_mark'][$member_srl] == 'N') return null;
 
-		return $GLOBALS['__member_info__']['group_image_mark'][$member_srl];
+		return $G_XE_GLOBALS['__member_info__']['group_image_mark'][$member_srl];
 	}
 
 	/**
@@ -1028,18 +1035,19 @@ class memberModel extends member
 	 */
 	function getSignature($member_srl)
 	{
-		if(!isset($GLOBALS['__member_info__']['signature'][$member_srl]))
+		global $G_XE_GLOBALS;
+		if(!isset($G_XE_GLOBALS['__member_info__']['signature'][$member_srl]))
 		{
 			$filename = sprintf('files/member_extra_info/signature/%s%d.signature.php', getNumberingPath($member_srl), $member_srl);
 			if(file_exists($filename))
 			{
 				$buff = FileHandler::readFile($filename);
 				$signature = preg_replace('/<\?.*?\?>/', '', $buff);
-				$GLOBALS['__member_info__']['signature'][$member_srl] = $signature;
+				$G_XE_GLOBALS['__member_info__']['signature'][$member_srl] = $signature;
 			}
-			else $GLOBALS['__member_info__']['signature'][$member_srl] = null;
+			else $G_XE_GLOBALS['__member_info__']['signature'][$member_srl] = null;
 		}
-		return $GLOBALS['__member_info__']['signature'][$member_srl];
+		return $G_XE_GLOBALS['__member_info__']['signature'][$member_srl];
 	}
 
 	public function getSmsAuthKey($sSmsAuthKey)

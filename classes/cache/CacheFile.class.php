@@ -23,11 +23,12 @@ class CacheFile extends CacheBase
 	 */
 	public static function getInstance()
 	{
-		if(!$GLOBALS['__CacheFile__'])
+		global $G_XE_GLOBALS;
+		if(!$G_XE_GLOBALS['__CacheFile__'])
 		{
-			$GLOBALS['__CacheFile__'] = new CacheFile();
+			$G_XE_GLOBALS['__CacheFile__'] = new CacheFile();
 		}
-		return $GLOBALS['__CacheFile__'];
+		return $G_XE_GLOBALS['__CacheFile__'];
 	}
 
 	/**

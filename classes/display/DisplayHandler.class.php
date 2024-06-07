@@ -133,6 +133,7 @@ class DisplayHandler extends Handler
 	 */
 	function _debugOutput()
 	{
+		global $G_XE_GLOBALS;
 		if(!__DEBUG__)
 		{
 			return;
@@ -178,13 +179,13 @@ class DisplayHandler extends Handler
 							'Elapsed time >>> Total : ' . sprintf('%0.5f sec', $end - __StartTime__),
 							array(array('DB queries', 'class file load', 'Template compile', 'XmlParse compile', 'PHP', 'Widgets', 'Trans Content'),
 								array(
-									sprintf('%0.5f sec', $GLOBALS['__db_elapsed_time__']),
-									sprintf('%0.5f sec', $GLOBALS['__elapsed_class_load__']),
-									sprintf('%0.5f sec (%d called)', $GLOBALS['__template_elapsed__'], $GLOBALS['__TemplateHandlerCalled__']),
-									sprintf('%0.5f sec', $GLOBALS['__xmlparse_elapsed__']),
-									sprintf('%0.5f sec', $end - __StartTime__ - $GLOBALS['__template_elapsed__'] - $GLOBALS['__xmlparse_elapsed__'] - $GLOBALS['__db_elapsed_time__'] - $GLOBALS['__elapsed_class_load__']),
-									sprintf('%0.5f sec', $GLOBALS['__widget_excute_elapsed__']),
-									sprintf('%0.5f sec', $GLOBALS['__trans_content_elapsed__'])
+									sprintf('%0.5f sec', $G_XE_GLOBALS['__db_elapsed_time__']),
+									sprintf('%0.5f sec', $G_XE_GLOBALS['__elapsed_class_load__']),
+									sprintf('%0.5f sec (%d called)', $G_XE_GLOBALS['__template_elapsed__'], $G_XE_GLOBALS['__TemplateHandlerCalled__']),
+									sprintf('%0.5f sec', $G_XE_GLOBALS['__xmlparse_elapsed__']),
+									sprintf('%0.5f sec', $end - __StartTime__ - $G_XE_GLOBALS['__template_elapsed__'] - $G_XE_GLOBALS['__xmlparse_elapsed__'] - $G_XE_GLOBALS['__db_elapsed_time__'] - $G_XE_GLOBALS['__elapsed_class_load__']),
+									sprintf('%0.5f sec', $G_XE_GLOBALS['__widget_excute_elapsed__']),
+									sprintf('%0.5f sec', $G_XE_GLOBALS['__trans_content_elapsed__'])
 								)
 							)
 						),
@@ -193,16 +194,16 @@ class DisplayHandler extends Handler
 			}
 
 			// display DB query history
-			if((__DEBUG__ & 4) && $GLOBALS['__db_queries__'])
+			if((__DEBUG__ & 4) && $G_XE_GLOBALS['__db_queries__'])
 			{
 				$queries_output = array(array('Result/'.PHP_EOL.'Elapsed time', 'Query ID', 'Query'));
-				foreach($GLOBALS['__db_queries__'] as $query)
+				foreach($G_XE_GLOBALS['__db_queries__'] as $query)
 				{
 					$queries_output[] = array($query['result'] . PHP_EOL . sprintf('%0.5f', $query['elapsed_time']), str_replace(_XE_PATH_, '', $query['called_file']) . PHP_EOL . $query['called_method'] . '()' . PHP_EOL . $query['query_id'], $query['query']);
 				}
 				$firephp->fb(
 						array(
-							'DB Queries >>> ' . count($GLOBALS['__db_queries__']) . ' Queries, ' . sprintf('%0.5f sec', $GLOBALS['__db_elapsed_time__']),
+							'DB Queries >>> ' . count($G_XE_GLOBALS['__db_queries__']) . ' Queries, ' . sprintf('%0.5f sec', $G_XE_GLOBALS['__db_elapsed_time__']),
 							$queries_output
 						),
 						'TABLE'
@@ -232,20 +233,20 @@ class DisplayHandler extends Handler
 				// total execution time
 				$buff[] = sprintf("\n- Total elapsed time : %0.5f sec", $end - __StartTime__);
 
-				$buff[] = sprintf("\tclass file load elapsed time \t: %0.5f sec", $GLOBALS['__elapsed_class_load__']);
-				$buff[] = sprintf("\tTemplate compile elapsed time\t: %0.5f sec (%d called)", $GLOBALS['__template_elapsed__'], $GLOBALS['__TemplateHandlerCalled__']);
-				$buff[] = sprintf("\tXmlParse compile elapsed time\t: %0.5f sec", $GLOBALS['__xmlparse_elapsed__']);
-				$buff[] = sprintf("\tPHP elapsed time \t\t\t\t: %0.5f sec", $end - __StartTime__ - $GLOBALS['__template_elapsed__'] - $GLOBALS['__xmlparse_elapsed__'] - $GLOBALS['__db_elapsed_time__'] - $GLOBALS['__elapsed_class_load__']);
-				$buff[] = sprintf("\tDB class elapsed time \t\t\t: %0.5f sec", $GLOBALS['__dbclass_elapsed_time__'] - $GLOBALS['__db_elapsed_time__']);
+				$buff[] = sprintf("\tclass file load elapsed time \t: %0.5f sec", $G_XE_GLOBALS['__elapsed_class_load__']);
+				$buff[] = sprintf("\tTemplate compile elapsed time\t: %0.5f sec (%d called)", $GLOBG_XE_GLOBALSALS['__template_elapsed__'], $G_XE_GLOBALS['__TemplateHandlerCalled__']);
+				$buff[] = sprintf("\tXmlParse compile elapsed time\t: %0.5f sec", $G_XE_GLOBALS['__xmlparse_elapsed__']);
+				$buff[] = sprintf("\tPHP elapsed time \t\t\t\t: %0.5f sec", $end - __StartTime__ - $G_XE_GLOBALS['__template_elapsed__'] - $G_XE_GLOBALS['__xmlparse_elapsed__'] - $G_XE_GLOBALS['__db_elapsed_time__'] - $G_XE_GLOBALS['__elapsed_class_load__']);
+				$buff[] = sprintf("\tDB class elapsed time \t\t\t: %0.5f sec", $G_XE_GLOBALS['__dbclass_elapsed_time__'] - $G_XE_GLOBALS['__db_elapsed_time__']);
 
 				// widget execution time
-				$buff[] = sprintf("\tWidgets elapsed time \t\t\t: %0.5f sec", $GLOBALS['__widget_excute_elapsed__']);
+				$buff[] = sprintf("\tWidgets elapsed time \t\t\t: %0.5f sec", $G_XE_GLOBALS['__widget_excute_elapsed__']);
 
 				// layout execution time
-				$buff[] = sprintf("\tLayout compile elapsed time \t: %0.5f sec", $GLOBALS['__layout_compile_elapsed__']);
+				$buff[] = sprintf("\tLayout compile elapsed time \t: %0.5f sec", $G_XE_GLOBALS['__layout_compile_elapsed__']);
 
 				// Widgets, the editor component replacement time
-				$buff[] = sprintf("\tTrans Content \t\t\t\t\t: %0.5f sec", $GLOBALS['__trans_content_elapsed__']);
+				$buff[] = sprintf("\tTrans Content \t\t\t\t\t: %0.5f sec", $G_XE_GLOBALS['__trans_content_elapsed__']);
 			}
 			// DB Logging
 			if(__DEBUG__ & 4)
@@ -255,12 +256,12 @@ class DisplayHandler extends Handler
 					return;
 				}
 
-				if($GLOBALS['__db_queries__'])
+				if($G_XE_GLOBALS['__db_queries__'])
 				{
-					$buff[] = sprintf("\n- DB Queries : %d Queries. %0.5f sec", count($GLOBALS['__db_queries__']), $GLOBALS['__db_elapsed_time__']);
+					$buff[] = sprintf("\n- DB Queries : %d Queries. %0.5f sec", count($G_XE_GLOBALS['__db_queries__']), $G_XE_GLOBALS['__db_elapsed_time__']);
 					$num = 0;
 
-					foreach($GLOBALS['__db_queries__'] as $query)
+					foreach($G_XE_GLOBALS['__db_queries__'] as $query)
 					{
 						if($query['result'] == 'Success')
 						{

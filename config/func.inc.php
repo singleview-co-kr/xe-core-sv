@@ -507,14 +507,15 @@ function isSiteID($domain)
  */
 function cut_str($string, $cut_size = 0, $tail = '...')
 {
+	global $G_XE_GLOBALS;
 	if($cut_size < 1 || !$string)
 	{
 		return $string;
 	}
 
-	if($GLOBALS['use_mb_strimwidth'] || function_exists('mb_strimwidth'))
+	if($G_XE_GLOBALS['use_mb_strimwidth'] || function_exists('mb_strimwidth'))
 	{
-		$GLOBALS['use_mb_strimwidth'] = TRUE;
+		$G_XE_GLOBALS['use_mb_strimwidth'] = TRUE;
 		return mb_strimwidth($string, 0, $cut_size + 4, $tail, 'utf-8');
 	}
 
@@ -563,7 +564,8 @@ function cut_str($string, $cut_size = 0, $tail = '...')
  */
 function zgap()
 {
-	$time_zone = $GLOBALS['_time_zone'];
+	global $G_XE_GLOBALS;
+	$time_zone = $G_XE_GLOBALS['_time_zone'];
 	if($time_zone < 0)
 	{
 		$to = -1;
@@ -1618,7 +1620,7 @@ function requirePear()
 		set_include_path(_XE_PATH_ . "libs/PEAR.1.9.5" . PATH_SEPARATOR . get_include_path());
 		$sPhpVerLevel = 7;
 	}
-	else  // PHP8.0  XE1 can't updage over PHP8.0 as PHP8.1 deprecates $GLOBALS var
+	else
 	{
 		set_include_path(_XE_PATH_ . "libs/PEAR.1.10.13" . PATH_SEPARATOR . get_include_path());
 		$sPhpVerLevel = 8;

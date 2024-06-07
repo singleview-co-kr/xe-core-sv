@@ -276,11 +276,12 @@ class EmbedFilter
 	 */
 	public static function getInstance()
 	{
-		if(!isset($GLOBALS['__EMBEDFILTER_INSTANCE__']))
+		global $G_XE_GLOBALS;
+		if(!isset($G_XE_GLOBALS['__EMBEDFILTER_INSTANCE__']))
 		{
-			$GLOBALS['__EMBEDFILTER_INSTANCE__'] = new EmbedFilter();
+			$G_XE_GLOBALS['__EMBEDFILTER_INSTANCE__'] = new EmbedFilter();
 		}
-		return $GLOBALS['__EMBEDFILTER_INSTANCE__'];
+		return $G_XE_GLOBALS['__EMBEDFILTER_INSTANCE__'];
 	}
 
 	public function getWhiteUrlList()

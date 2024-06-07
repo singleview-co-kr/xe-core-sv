@@ -6,6 +6,7 @@
  */
 function pointLevelIconTrans($matches)
 {
+	global $G_XE_GLOBALS;
 	$member_srl = $matches[3];
 	if($member_srl < 1)
 	{
@@ -21,22 +22,22 @@ function pointLevelIconTrans($matches)
 		return $orig_text . $matches[5] . '</' . $matches[6] . '>';
 	}
 
-	if(!isset($GLOBALS['_pointLevelIcon'][$member_srl]))
+	if(!isset($G_XE_GLOBALS['_pointLevelIcon'][$member_srl]))
 	{
 		// Get point configuration
-		if(!$GLOBALS['_pointConfig'])
+		if(!$G_XE_GLOBALS['_pointConfig'])
 		{
 			$oModuleModel = getModel('module');
-			$GLOBALS['_pointConfig'] = $oModuleModel->getModuleConfig('point');
+			$G_XE_GLOBALS['_pointConfig'] = $oModuleModel->getModuleConfig('point');
 		}
-		$config = $GLOBALS['_pointConfig'];
+		$config = $G_XE_GLOBALS['_pointConfig'];
 
 		// Get point model
-		if(!$GLOBALS['_pointModel'])
+		if(!$G_XE_GLOBALS['_pointModel'])
 		{
-			$GLOBALS['_pointModel'] = getModel('point');
+			$G_XE_GLOBALS['_pointModel'] = getModel('point');
 		}
-		$oPointModel = &$GLOBALS['_pointModel'];
+		$oPointModel = &$G_XE_GLOBALS['_pointModel'];
 
 		// Get points
 		if(!$oPointModel->isExistsPoint($member_srl))
@@ -69,9 +70,9 @@ function pointLevelIconTrans($matches)
 		$title = sprintf('%s:%s%s%s, %s:%s/%s', Context::getLang('point'), $point, $config->point_name, $per ? ' (' . $per . ')' : '', Context::getLang('level'), $level, $config->max_level);
 		$alt = sprintf('[%s:%s]', Context::getLang('level'), $level);
 
-		$GLOBALS['_pointLevelIcon'][$member_srl] = sprintf('<img src="%s" alt="%s" title="%s" class="xe_point_level_icon" style="vertical-align:middle;margin-right:3px;" />', $level_icon, $alt, $title);
+		$G_XE_GLOBALS['_pointLevelIcon'][$member_srl] = sprintf('<img src="%s" alt="%s" title="%s" class="xe_point_level_icon" style="vertical-align:middle;margin-right:3px;" />', $level_icon, $alt, $title);
 	}
-	$text = $GLOBALS['_pointLevelIcon'][$member_srl];
+	$text = $G_XE_GLOBALS['_pointLevelIcon'][$member_srl];
 
 	return $orig_text . $text . $matches[5] . '</' . $matches[6] . '>';
 }

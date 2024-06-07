@@ -347,6 +347,7 @@ if(!class_exists('AddonMemberCaptcha', false))
 
 		function inlineDisplay()
 		{
+			
 			unset($_SESSION['member_captcha_authed']);
 			$this->createKeyword();
 
@@ -381,12 +382,14 @@ EOD;
 		}
 
 	}
-	$GLOBALS['__AddonMemberCaptcha__'] = new AddonMemberCaptcha;
-	$GLOBALS['__AddonMemberCaptcha__']->setInfo($addon_info);
-	Context::set('oMemberCaptcha', $GLOBALS['__AddonMemberCaptcha__']);
+	global $G_XE_GLOBALS;
+	$G_XE_GLOBALS['__AddonMemberCaptcha__'] = new AddonMemberCaptcha;
+	$G_XE_GLOBALS['__AddonMemberCaptcha__']->setInfo($addon_info);
+	Context::set('oMemberCaptcha', $G_XE_GLOBALS['__AddonMemberCaptcha__']);
 }
 
-$oAddonMemberCaptcha = &$GLOBALS['__AddonMemberCaptcha__'];
+global $G_XE_GLOBALS;
+$oAddonMemberCaptcha = &$G_XE_GLOBALS['__AddonMemberCaptcha__'];
 
 if(method_exists($oAddonMemberCaptcha, $called_position))
 {

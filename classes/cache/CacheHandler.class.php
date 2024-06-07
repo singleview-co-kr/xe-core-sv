@@ -30,12 +30,13 @@ class CacheHandler extends Handler
 	 */
 	public static function &getInstance($target = 'object', $info = null, $always_use_file = false)
 	{
+		global $G_XE_GLOBALS;
 		$cache_handler_key = $target . ($always_use_file ? '_file' : '');
-		if(!$GLOBALS['__XE_CACHE_HANDLER__'][$cache_handler_key])
+		if(!$G_XE_GLOBALS['__XE_CACHE_HANDLER__'][$cache_handler_key])
 		{
-			$GLOBALS['__XE_CACHE_HANDLER__'][$cache_handler_key] = new CacheHandler($target, $info, $always_use_file);
+			$G_XE_GLOBALS['__XE_CACHE_HANDLER__'][$cache_handler_key] = new CacheHandler($target, $info, $always_use_file);
 		}
-		return $GLOBALS['__XE_CACHE_HANDLER__'][$cache_handler_key];
+		return $G_XE_GLOBALS['__XE_CACHE_HANDLER__'][$cache_handler_key];
 	}
 
 	/**

@@ -410,6 +410,7 @@ class layoutModel extends layout
 	 */
 	function _getInstalledLayoutDirectories($layoutType = 'P')
 	{
+		global $G_XE_GLOBALS;
 		if($layoutType == 'M')
 		{
 			$directory = './m.layouts';
@@ -421,11 +422,11 @@ class layoutModel extends layout
 			$globalValueKey = 'PC_LAYOUT_DIRECTORIES';
 		}
 
-		if($GLOBALS[$globalValueKey]) return $GLOBALS[$globalValueKey];
+		if($G_XE_GLOBALS[$globalValueKey]) return $G_XE_GLOBALS[$globalValueKey];
 
 		$searchedList = FileHandler::readDir($directory);
 		if (!$searchedList) $searchedList = array();
-		$GLOBALS[$globalValueKey] = $searchedList;
+		$G_XE_GLOBALS[$globalValueKey] = $searchedList;
 
 		return $searchedList;
 	}

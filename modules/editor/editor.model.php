@@ -23,13 +23,14 @@ class editorModel extends editor
 	 */
 	function getEditorConfig($module_srl = null)
 	{
-		if(!$GLOBALS['__editor_module_config__'][$module_srl] && $module_srl)
+		global $G_XE_GLOBALS;
+		if(!$G_XE_GLOBALS['__editor_module_config__'][$module_srl] && $module_srl)
 		{
 			// Get trackback settings of the selected module
 			$oModuleModel = getModel('module');
-			$GLOBALS['__editor_module_config__'][$module_srl] = $oModuleModel->getModulePartConfig('editor', $module_srl);
+			$G_XE_GLOBALS['__editor_module_config__'][$module_srl] = $oModuleModel->getModulePartConfig('editor', $module_srl);
 		}
-		$editor_config = $GLOBALS['__editor_module_config__'][$module_srl];
+		$editor_config = $G_XE_GLOBALS['__editor_module_config__'][$module_srl];
 
 		$oModuleModel = getModel('module');
 		$editor_default_config = $oModuleModel->getModuleConfig('editor');

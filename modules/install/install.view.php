@@ -32,6 +32,7 @@ class installView extends install
 	 */
 	function dispInstallIntroduce()
 	{
+		global $G_XE_GLOBALS;
 		$install_config_file = FileHandler::getRealPath('./config/install.config.php');
 		if(file_exists($install_config_file))
 		{
@@ -64,7 +65,7 @@ class installView extends install
 					$v = ($k == 'db_table_prefix') ? $v.'_' : $v;
 					Context::set($k,$v,true);
 				}
-				unset($GLOBALS['__DB__']);
+				unset($G_XE_GLOBALS['__DB__']);
 				Context::set('install_config', true, true);
 				$oInstallController = getController('install');
 				$output = $oInstallController->procInstall();
@@ -177,13 +178,14 @@ class installView extends install
 	 */
 	function dispInstallConfigForm()
 	{
+		global $G_XE_GLOBALS;
 		// Display check_env if not installable
 		if(!$this->install_enable) return $this->dispInstallCheckEnv();
 
 		include _XE_PATH_.'files/config/tmpDB.config.php';
 
 		Context::set('use_rewrite', $_SESSION['use_rewrite']); 
-		Context::set('time_zone', $GLOBALS['time_zone']);
+		Context::set('time_zone', $G_XE_GLOBALS['time_zone']);
 		Context::set('db_type', $db_info->db_type);
 		$this->setTemplateFile('config_form');
 	}

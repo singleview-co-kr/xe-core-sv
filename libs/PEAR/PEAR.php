@@ -61,11 +61,12 @@ if (!defined('PATH_SEPARATOR')) {
     }
 }
 
-$GLOBALS['_PEAR_default_error_mode']     = PEAR_ERROR_RETURN;
-$GLOBALS['_PEAR_default_error_options']  = E_USER_NOTICE;
-$GLOBALS['_PEAR_destructor_object_list'] = array();
-$GLOBALS['_PEAR_shutdown_funcs']         = array();
-$GLOBALS['_PEAR_error_handler_stack']    = array();
+global $G_XE_GLOBALS;
+$G_XE_GLOBALS['_PEAR_default_error_mode']     = PEAR_ERROR_RETURN;
+$G_XE_GLOBALS['_PEAR_default_error_options']  = E_USER_NOTICE;
+$G_XE_GLOBALS['_PEAR_destructor_object_list'] = array();
+$G_XE_GLOBALS['_PEAR_shutdown_funcs']         = array();
+$G_XE_GLOBALS['_PEAR_error_handler_stack']    = array();
 
 @ini_set('track_errors', true);
 
@@ -169,6 +170,7 @@ class PEAR
      */
     function PEAR($error_class = null)
     {
+        global $G_XE_GLOBALS;
         $classname = strtolower(get_class($this));
         if ($this->_debug) {
             print "PEAR constructor called, class=$classname\n";
@@ -181,9 +183,9 @@ class PEAR
             if (method_exists($this, $destructor)) {
                 global $_PEAR_destructor_object_list;
                 $_PEAR_destructor_object_list[] = &$this;
-                if (!isset($GLOBALS['_PEAR_SHUTDOWN_REGISTERED'])) {
+                if (!isset($G_XE_GLOBALS['_PEAR_SHUTDOWN_REGISTERED'])) {
                     register_shutdown_function("_PEAR_call_destructors");
-                    $GLOBALS['_PEAR_SHUTDOWN_REGISTERED'] = true;
+                    $G_XE_GLOBALS['_PEAR_SHUTDOWN_REGISTERED'] = true;
                 }
                 break;
             } else {
@@ -253,13 +255,14 @@ class PEAR
     */
     function registerShutdownFunc($func, $args = array())
     {
+        global $G_XE_GLOBALS;
         // if we are called statically, there is a potential
         // that no shutdown func is registered.  Bug #6445
-        if (!isset($GLOBALS['_PEAR_SHUTDOWN_REGISTERED'])) {
+        if (!isset($G_XE_GLOBALS['_PEAR_SHUTDOWN_REGISTERED'])) {
             register_shutdown_function("_PEAR_call_destructors");
-            $GLOBALS['_PEAR_SHUTDOWN_REGISTERED'] = true;
+            $G_XE_GLOBALS['_PEAR_SHUTDOWN_REGISTERED'] = true;
         }
-        $GLOBALS['_PEAR_shutdown_funcs'][] = array($func, $args);
+        $G_XE_GLOBALS['_PEAR_shutdown_funcs'][] = array($func, $args);
     }
 
     // }}}
@@ -334,12 +337,13 @@ class PEAR
 
     function setErrorHandling($mode = null, $options = null)
     {
+        global $G_XE_GLOBALS;
         if (isset($this) && is_a($this, 'PEAR')) {
             $setmode     = &$this->_default_error_mode;
             $setoptions  = &$this->_default_error_options;
         } else {
-            $setmode     = &$GLOBALS['_PEAR_default_error_mode'];
-            $setoptions  = &$GLOBALS['_PEAR_default_error_options'];
+            $setmode     = &$G_XE_GLOBALS['_PEAR_default_error_mode'];
+            $setoptions  = &$G_XE_GLOBALS['_PEAR_default_error_options'];
         }
 
         switch ($mode) {
@@ -529,6 +533,7 @@ class PEAR
                          $error_class = null,
                          $skipmsg = false)
     {
+        global $G_XE_GLOBALS;
         // The error is yet a PEAR error object
         if (is_object($message)) {
             $code        = $message->getCode();
@@ -552,9 +557,9 @@ class PEAR
                 $mode    = $this->_default_error_mode;
                 $options = $this->_default_error_options;
             // Global error handler
-            } elseif (isset($GLOBALS['_PEAR_default_error_mode'])) {
-                $mode    = $GLOBALS['_PEAR_default_error_mode'];
-                $options = $GLOBALS['_PEAR_default_error_options'];
+            } elseif (isset($G_XE_GLOBALS['_PEAR_default_error_mode'])) {
+                $mode    = $G_XE_GLOBALS['_PEAR_default_error_mode'];
+                $options = $G_XE_GLOBALS['_PEAR_default_error_options'];
             }
         }
 
@@ -600,9 +605,10 @@ class PEAR
     // }}}
     function staticPushErrorHandling($mode, $options = null)
     {
-        $stack = &$GLOBALS['_PEAR_error_handler_stack'];
-        $def_mode    = &$GLOBALS['_PEAR_default_error_mode'];
-        $def_options = &$GLOBALS['_PEAR_default_error_options'];
+        global $G_XE_GLOBALS;
+        $stack = &$G_XE_GLOBALS['_PEAR_error_handler_stack'];
+        $def_mode    = &$G_XE_GLOBALS['_PEAR_default_error_mode'];
+        $def_options = &$G_XE_GLOBALS['_PEAR_default_error_options'];
         $stack[] = array($def_mode, $def_options);
         switch ($mode) {
             case PEAR_ERROR_EXCEPTION:
@@ -635,9 +641,10 @@ class PEAR
 
     function staticPopErrorHandling()
     {
-        $stack = &$GLOBALS['_PEAR_error_handler_stack'];
-        $setmode     = &$GLOBALS['_PEAR_default_error_mode'];
-        $setoptions  = &$GLOBALS['_PEAR_default_error_options'];
+        global $G_XE_GLOBALS;
+        $stack = &$G_XE_GLOBALS['_PEAR_error_handler_stack'];
+        $setmode     = &$G_XE_GLOBALS['_PEAR_default_error_mode'];
+        $setoptions  = &$G_XE_GLOBALS['_PEAR_default_error_options'];
         array_pop($stack);
         list($mode, $options) = $stack[sizeof($stack) - 1];
         array_pop($stack);
@@ -685,13 +692,14 @@ class PEAR
      */
     function pushErrorHandling($mode, $options = null)
     {
-        $stack = &$GLOBALS['_PEAR_error_handler_stack'];
+        global $G_XE_GLOBALS;
+        $stack = &$G_XE_GLOBALS['_PEAR_error_handler_stack'];
         if (isset($this) && is_a($this, 'PEAR')) {
             $def_mode    = &$this->_default_error_mode;
             $def_options = &$this->_default_error_options;
         } else {
-            $def_mode    = &$GLOBALS['_PEAR_default_error_mode'];
-            $def_options = &$GLOBALS['_PEAR_default_error_options'];
+            $def_mode    = &$G_XE_GLOBALS['_PEAR_default_error_mode'];
+            $def_options = &$G_XE_GLOBALS['_PEAR_default_error_options'];
         }
         $stack[] = array($def_mode, $def_options);
 
@@ -716,7 +724,8 @@ class PEAR
     */
     function popErrorHandling()
     {
-        $stack = &$GLOBALS['_PEAR_error_handler_stack'];
+        global $G_XE_GLOBALS;
+        $stack = &$G_XE_GLOBALS['_PEAR_error_handler_stack'];
         array_pop($stack);
         list($mode, $options) = $stack[sizeof($stack) - 1];
         array_pop($stack);
@@ -768,6 +777,7 @@ class PEAR
 
 function _PEAR_call_destructors()
 {
+    global $G_XE_GLOBALS;
     global $_PEAR_destructor_object_list;
     if (is_array($_PEAR_destructor_object_list) &&
         sizeof($_PEAR_destructor_object_list))
@@ -794,8 +804,8 @@ function _PEAR_call_destructors()
     }
 
     // Now call the shutdown functions
-    if (is_array($GLOBALS['_PEAR_shutdown_funcs']) AND !empty($GLOBALS['_PEAR_shutdown_funcs'])) {
-        foreach ($GLOBALS['_PEAR_shutdown_funcs'] as $value) {
+    if (is_array($G_XE_GLOBALS['_PEAR_shutdown_funcs']) AND !empty($G_XE_GLOBALS['_PEAR_shutdown_funcs'])) {
+        foreach ($G_XE_GLOBALS['_PEAR_shutdown_funcs'] as $value) {
             call_user_func_array($value[0], $value[1]);
         }
     }

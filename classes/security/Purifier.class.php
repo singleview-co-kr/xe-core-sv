@@ -22,11 +22,12 @@ class Purifier
 
 	public static function getInstance()
 	{
-		if(!isset($GLOBALS['__PURIFIER_INSTANCE__']))
+		global $G_XE_GLOBALS;
+		if(!isset($G_XE_GLOBALS['__PURIFIER_INSTANCE__']))
 		{
-			$GLOBALS['__PURIFIER_INSTANCE__'] = new Purifier();
+			$G_XE_GLOBALS['__PURIFIER_INSTANCE__'] = new Purifier();
 		}
-		return $GLOBALS['__PURIFIER_INSTANCE__'];
+		return $G_XE_GLOBALS['__PURIFIER_INSTANCE__'];
 	}
 
 	private function _setConfig()

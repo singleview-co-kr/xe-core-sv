@@ -20,11 +20,12 @@ class CacheWincache extends CacheBase
 	 */
 	function getInstance($opt = null)
 	{
-		if(!$GLOBALS['__CacheWincache__'])
+		global $G_XE_GLOBALS;
+		if(!$G_XE_GLOBALS['__CacheWincache__'])
 		{
-			$GLOBALS['__CacheWincache__'] = new CacheWincache();
+			$G_XE_GLOBALS['__CacheWincache__'] = new CacheWincache();
 		}
-		return $GLOBALS['__CacheWincache__'];
+		return $G_XE_GLOBALS['__CacheWincache__'];
 	}
 
 	/**

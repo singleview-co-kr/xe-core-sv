@@ -29,7 +29,7 @@ define('__ZBXE__', __XE__);
 /**
  * Display XE's full version.
  */
-define('__XE_VERSION__', '1.13.2');
+define('__XE_VERSION__', '1.14.0');
 define('__XE_VERSION_ALPHA__', (stripos(__XE_VERSION__, 'alpha') !== false));
 define('__XE_VERSION_BETA__', (stripos(__XE_VERSION__, 'beta') !== false));
 define('__XE_VERSION_RC__', (stripos(__XE_VERSION__, 'rc') !== false));
@@ -332,7 +332,8 @@ if(version_compare(PHP_VERSION, '5.3.0') >= 0)
 	date_default_timezone_set(@date_default_timezone_get());
 }
 
-$GLOBALS['__xe_autoload_file_map'] = array_change_key_case(array(
+global $G_XE_GLOBALS;
+$G_XE_GLOBALS['__xe_autoload_file_map'] = array_change_key_case(array(
 	'CacheBase' => 'classes/cache/CacheHandler.class.php',
 	'CacheHandler' => 'classes/cache/CacheHandler.class.php',
 	'Context' => 'classes/context/Context.class.php',
@@ -444,7 +445,7 @@ if(
 	@mkdir($cache_path, 0755, TRUE);
 	@chmod($cache_path, 0755);
 
-	foreach($GLOBALS['__xe_autoload_file_map'] as $script) {
+	foreach($G_XE_GLOBALS['__xe_autoload_file_map'] as $script) {
 		opcache_invalidate(_XE_PATH_ . $script, true);
 	}
 	opcache_invalidate(_XE_PATH_ . 'config/func.inc.php', true);
@@ -458,18 +459,19 @@ if(__DEBUG__) {
 }
 
 if(__DEBUG__) {
-	$GLOBALS['__elapsed_class_load__'] = 0;
+	$G_XE_GLOBALS['__elapsed_class_load__'] = 0;
 }
 
 function __xe_autoload($class_name)
 {
+	global $G_XE_GLOBALS;
 	if(__DEBUG__) {
 		$time_at = getMicroTime();
 	}
 
-	if(isset($GLOBALS['__xe_autoload_file_map'][strtolower($class_name)]))
+	if(isset($G_XE_GLOBALS['__xe_autoload_file_map'][strtolower($class_name)]))
 	{
-		require _XE_PATH_ . $GLOBALS['__xe_autoload_file_map'][strtolower($class_name)];
+		require _XE_PATH_ . $G_XE_GLOBALS['__xe_autoload_file_map'][strtolower($class_name)];
 	}
 	elseif(preg_match('/^([a-zA-Z0-9_]+?)(Admin)?(View|Controller|Model|Api|Wap|Mobile)?$/', $class_name, $matches))
 	{
@@ -488,7 +490,7 @@ function __xe_autoload($class_name)
 	}
 
 	if(__DEBUG__) {
-		$GLOBALS['__elapsed_class_load__'] += getMicroTime() - $time_at;
+		$G_XE_GLOBALS['__elapsed_class_load__'] += getMicroTime() - $time_at;
 	}
 }
 spl_autoload_register('__xe_autoload');

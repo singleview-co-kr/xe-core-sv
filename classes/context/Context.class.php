@@ -200,23 +200,25 @@ class Context
 	 */
 	function init()
 	{
+		global $G_XE_GLOBALS;
 		// fix missing HTTP_RAW_POST_DATA in PHP 5.6 and above
 		if(!isset($GLOBALS['HTTP_RAW_POST_DATA']) && version_compare(PHP_VERSION, '5.6.0', '>=') === TRUE)
 		{
-			$GLOBALS['HTTP_RAW_POST_DATA'] = file_get_contents("php://input");
+			// In general, php://input should be used instead of $HTTP_RAW_POST_DATA in php 7
+			$G_XE_GLOBALS['HTTP_RAW_POST_DATA'] = file_get_contents("php://input");
 
 			// If content is not XML JSON, unset
-			if(!preg_match('/^[\<\{\[]/', $GLOBALS['HTTP_RAW_POST_DATA']) && strpos($_SERVER['CONTENT_TYPE'], 'json') === FALSE && strpos($_SERVER['HTTP_CONTENT_TYPE'], 'json') === FALSE)
+			if(!preg_match('/^[\<\{\[]/', $G_XE_GLOBALS['HTTP_RAW_POST_DATA']) && strpos($_SERVER['CONTENT_TYPE'], 'json') === FALSE && strpos($_SERVER['HTTP_CONTENT_TYPE'], 'json') === FALSE)
 			{
-				unset($GLOBALS['HTTP_RAW_POST_DATA']);
+				unset($G_XE_GLOBALS['HTTP_RAW_POST_DATA']);
 			}
 		}
 
-		// set context variables in $GLOBALS (to use in display handler)
-		if(is_null($GLOBALS['__Context__']))
-			$GLOBALS['__Context__'] = new stdClass();
-		$this->context = &$GLOBALS['__Context__'];
-		$this->context->lang = &$GLOBALS['lang'];
+		// set context variables in $G_XE_GLOBALS (to use in display handler)
+		if(is_null($G_XE_GLOBALS['__Context__']))
+			$G_XE_GLOBALS['__Context__'] = new stdClass();
+		$this->context = &$G_XE_GLOBALS['__Context__'];
+		$this->context->lang = &$G_XE_GLOBALS['lang'];
 		$this->context->_COOKIE = $_COOKIE;
 
 		// 20140429 editor/image_link
@@ -375,7 +377,7 @@ class Context
 		}
 
 		// load common language file
-		$this->lang = &$GLOBALS['lang'];
+		$this->lang = &$G_XE_GLOBALS['lang'];
 		$this->loadLang(_XE_PATH_ . 'common/lang/');
 
 		// check if using rewrite module
@@ -506,11 +508,11 @@ class Context
 
 		if(!$db_info->time_zone)
 			$db_info->time_zone = date('O');
-		$GLOBALS['_time_zone'] = $db_info->time_zone;
+		$G_XE_GLOBALS['_time_zone'] = $db_info->time_zone;
 
 		if($db_info->qmail_compatibility != 'Y')
 			$db_info->qmail_compatibility = 'N';
-		$GLOBALS['_qmail_compatibility'] = $db_info->qmail_compatibility;
+		$G_XE_GLOBALS['_qmail_compatibility'] = $db_info->qmail_compatibility;
 
 		if(!$db_info->use_db_session)
 			$db_info->use_db_session = 'N';
@@ -860,6 +862,7 @@ class Context
 	public static function loadLang($path)
 	{
 		global $lang;
+		global $G_XE_GLOBALS;
 
 		$self = self::getInstance();
 		if(!$self->lang_type)
@@ -889,6 +892,8 @@ class Context
 		{
 			$self->loaded_lang_files[] = $filename;
 			include($filename);
+			// global $lang 은 $GLOBALS['lang']와 동가
+			$G_XE_GLOBALS['lang'] = $lang;
 		}
 		else
 		{
@@ -905,6 +910,7 @@ class Context
 	function _evalxmlLang($path)
 	{
 		global $lang;
+		global $G_XE_GLOBALS;
 
 		if(!$path) return;
 
@@ -927,6 +933,7 @@ class Context
 		{
 			$this->loaded_lang_files[] = $_path;
 			eval($content);
+			$G_XE_GLOBALS['lang'] = $lang;
 		}
 	}
 
@@ -1009,13 +1016,14 @@ class Context
 	 */
 	public static function getLang($code)
 	{
+		global $G_XE_GLOBALS;
 		if(!$code)
 		{
 			return;
 		}
-		if($GLOBALS['lang']->{$code})
+		if($G_XE_GLOBALS['lang']->{$code})
 		{
-			return $GLOBALS['lang']->{$code};
+			return $G_XE_GLOBALS['lang']->{$code};
 		}
 		return $code;
 	}
@@ -1029,11 +1037,12 @@ class Context
 	 */
 	public static function setLang($code, $val)
 	{
-		if(!isset($GLOBALS['lang']))
+		global $G_XE_GLOBALS;
+		if(!isset($G_XE_GLOBALS['lang']))
 		{
-			$GLOBALS['lang'] = new stdClass();
+			$G_XE_GLOBALS['lang'] = new stdClass();
 		}
-		$GLOBALS['lang']->{$code} = $val;
+		$G_XE_GLOBALS['lang']->{$code} = $val;
 	}
 
 	/**
@@ -1186,13 +1195,14 @@ class Context
 	 */
 	public static function setRequestMethod($type = '')
 	{
+		global $G_XE_GLOBALS;
 		$self = self::getInstance();
 
 		$self->js_callback_func = $self->getJSCallbackFunc();
 
 		($type && $self->request_method = $type) or
 				((strpos($_SERVER['CONTENT_TYPE'], 'json') || strpos($_SERVER['HTTP_CONTENT_TYPE'], 'json')) && $self->request_method = 'JSON') or
-				($GLOBALS['HTTP_RAW_POST_DATA'] && $self->request_method = 'XMLRPC') or
+				($G_XE_GLOBALS['HTTP_RAW_POST_DATA'] && $self->request_method = 'XMLRPC') or
 				($self->js_callback_func && $self->request_method = 'JS_CALLBACK') or
 				($self->request_method = $_SERVER['REQUEST_METHOD']);
 	}
@@ -1290,13 +1300,14 @@ class Context
 	 */
 	function _setJSONRequestArgument()
 	{
+		global $G_XE_GLOBALS;
 		if($this->getRequestMethod() != 'JSON')
 		{
 			return;
 		}
 
 		$params = array();
-		parse_str($GLOBALS['HTTP_RAW_POST_DATA'], $params);
+		parse_str($G_XE_GLOBALS['HTTP_RAW_POST_DATA'], $params);
 
 		foreach($params as $key => $val)
 		{
@@ -1312,12 +1323,13 @@ class Context
 	 */
 	function _setXmlRpcArgument()
 	{
+		global $G_XE_GLOBALS;
 		if($this->getRequestMethod() != 'XMLRPC')
 		{
 			return;
 		}
 
-		$xml = $GLOBALS['HTTP_RAW_POST_DATA'];
+		$xml = $G_XE_GLOBALS['HTTP_RAW_POST_DATA'];
 		if(Security::detectingXEE($xml))
 		{
 			header("HTTP/1.0 400 Bad Request");

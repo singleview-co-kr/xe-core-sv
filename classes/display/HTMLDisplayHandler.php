@@ -11,6 +11,7 @@ class HTMLDisplayHandler
 	 */
 	function toDoc(&$oModule)
 	{
+		global $G_XE_GLOBALS;
 		$oTemplate = TemplateHandler::getInstance();
 
 		// SECISSUE https://github.com/xpressengine/xe-core/issues/1583
@@ -128,7 +129,7 @@ class HTMLDisplayHandler
 
 				if(__DEBUG__ == 3)
 				{
-					$GLOBALS['__layout_compile_elapsed__'] = getMicroTime() - $start;
+					$G_XE_GLOBALS['__layout_compile_elapsed__'] = getMicroTime() - $start;
 				}
 
 				if(stripos($_SERVER['HTTP_USER_AGENT'], 'MSIE') !== FALSE && (Context::get('_use_ssl') == 'optional' || Context::get('_use_ssl') == 'always'))
@@ -147,6 +148,7 @@ class HTMLDisplayHandler
 	 */
 	function prepareToPrint(&$output)
 	{
+		global $G_XE_GLOBALS;
 		if(Context::getResponseMethod() != 'HTML')
 		{
 			return;
@@ -204,7 +206,7 @@ class HTMLDisplayHandler
 
 		if(__DEBUG__ == 3)
 		{
-			$GLOBALS['__trans_content_elapsed__'] = getMicroTime() - $start;
+			$G_XE_GLOBALS['__trans_content_elapsed__'] = getMicroTime() - $start;
 		}
 
 		// Remove unnecessary information

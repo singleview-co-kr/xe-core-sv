@@ -252,6 +252,7 @@ class pageView extends page
 	 */
 	function executeFile($target_file, $caching_interval, $cache_file)
 	{
+		global $G_XE_GLOBALS;
 		// Cancel if the file doesn't exist
 		if(!file_exists(FileHandler::getRealPath($target_file))) return;
 
@@ -287,7 +288,7 @@ class pageView extends page
 			FileHandler::writeFile($cache_file, $content);
 		}
 
-		$__Context = &$GLOBALS['__Context__'];
+		$__Context = &$G_XE_GLOBALS['__Context__'];
 		$__Context->tpl_path = $filepath;
 
 		include($cache_file);

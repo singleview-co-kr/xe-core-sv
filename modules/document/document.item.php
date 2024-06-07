@@ -126,6 +126,7 @@ class documentItem extends BaseObject
 
 	function setAttribute($attribute, $load_extra_vars=true)
 	{
+		global $G_XE_GLOBALS;
 		if(!$attribute->document_srl)
 		{
 			$this->document_srl = null;
@@ -146,10 +147,10 @@ class documentItem extends BaseObject
 		$oDocumentModel = getModel('document');
 		if($load_extra_vars)
 		{
-			$GLOBALS['XE_DOCUMENT_LIST'][$attribute->document_srl] = $this;
+			$G_XE_GLOBALS['XE_DOCUMENT_LIST'][$attribute->document_srl] = $this;
 			$oDocumentModel->setToAllDocumentExtraVars();
 		}
-		$GLOBALS['XE_DOCUMENT_LIST'][$this->document_srl] = $this;
+		$G_XE_GLOBALS['XE_DOCUMENT_LIST'][$this->document_srl] = $this;
 	}
 
 	function isExists()
@@ -584,12 +585,14 @@ class documentItem extends BaseObject
 
 	function getRegdateGM()
 	{
-		return $this->getRegdate('D, d M Y H:i:s').' '.$GLOBALS['_time_zone'];
+		global $G_XE_GLOBALS;
+		return $this->getRegdate('D, d M Y H:i:s').' '.$G_XE_GLOBALS['_time_zone'];
 	}
 
 	function getRegdateDT()
 	{
-		return $this->getRegdate('Y-m-d').'T'.$this->getRegdate('H:i:s').substr($GLOBALS['_time_zone'],0,3).':'.substr($GLOBALS['_time_zone'],3,2);
+		global $G_XE_GLOBALS;
+		return $this->getRegdate('Y-m-d').'T'.$this->getRegdate('H:i:s').substr($G_XE_GLOBALS['_time_zone'],0,3).':'.substr($G_XE_GLOBALS['_time_zone'],3,2);
 	}
 
 	function getUpdate($format = 'Y.m.d H:i:s')
@@ -615,7 +618,8 @@ class documentItem extends BaseObject
 
 	function getUpdateDT()
 	{
-		return $this->getUpdate('Y-m-d').'T'.$this->getUpdate('H:i:s').substr($GLOBALS['_time_zone'],0,3).':'.substr($GLOBALS['_time_zone'],3,2);
+		global $G_XE_GLOBALS;
+		return $this->getUpdate('Y-m-d').'T'.$this->getUpdate('H:i:s').substr($G_XE_GLOBALS['_time_zone'],0,3).':'.substr($G_XE_GLOBALS['_time_zone'],3,2);
 	}
 
 	function getPermanentUrl()
@@ -811,6 +815,7 @@ class documentItem extends BaseObject
 
 	function getThumbnail($width = 80, $height = 0, $thumbnail_type = '')
 	{
+		global $G_XE_GLOBALS;
 		// Return false if the document doesn't exist
 		if(!$this->document_srl) return;
 
@@ -843,12 +848,12 @@ class documentItem extends BaseObject
 		// Get thumbnai_type information from document module's configuration
 		if(!in_array($thumbnail_type, array('crop','ratio')))
 		{
-			$config = $GLOBALS['__document_config__'];
+			$config = $G_XE_GLOBALS['__document_config__'];
 			if(!$config)
 			{
 				$oDocumentModel = getModel('document');
 				$config = $oDocumentModel->getDocumentConfig();
-				$GLOBALS['__document_config__'] = $config;
+				$G_XE_GLOBALS['__document_config__'] = $config;
 			}
 			$thumbnail_type = $config->thumbnail_type;
 		}
@@ -1172,21 +1177,22 @@ class documentItem extends BaseObject
 	 */
 	function getSignature()
 	{
+		global $G_XE_GLOBALS;
 		// Pass if a document doesn't exist
 		if(!$this->isExists() || !$this->get('member_srl')) return;
 		// Get signature information
 		$oMemberModel = getModel('member');
 		$signature = $oMemberModel->getSignature($this->get('member_srl'));
 		// Check if a maximum height of signiture is set in the member module
-		if(!isset($GLOBALS['__member_signature_max_height']))
+		if(!isset($G_XE_GLOBALS['__member_signature_max_height']))
 		{
 			$oModuleModel = getModel('module');
 			$member_config = $oModuleModel->getModuleConfig('member');
-			$GLOBALS['__member_signature_max_height'] = $member_config->signature_max_height;
+			$G_XE_GLOBALS['__member_signature_max_height'] = $member_config->signature_max_height;
 		}
 		if($signature)
 		{
-			$max_signature_height = $GLOBALS['__member_signature_max_height'];
+			$max_signature_height = $G_XE_GLOBALS['__member_signature_max_height'];
 			if($max_signature_height) $signature = sprintf('<div style="max-height:%dpx;overflow:auto;overflow-x:hidden;height:expression(this.scrollHeight > %d ? \'%dpx\': \'auto\')">%s</div>', $max_signature_height, $max_signature_height, $max_signature_height, $signature);
 		}
 

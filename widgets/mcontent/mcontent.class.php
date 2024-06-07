@@ -207,6 +207,7 @@ class mcontent extends WidgetHandler
 
 	function _getDocumentItems($args)
 	{
+		global $G_XE_GLOBALS;
 		// Get model object of the document module and make the result as an object
 		$oDocumentModel = getModel('document');
 		// Get categories
@@ -237,14 +238,14 @@ class mcontent extends WidgetHandler
 			{
 				$oDocument = new documentItem();
 				$oDocument->setAttribute($attribute, false);
-				$GLOBALS['XE_DOCUMENT_LIST'][$oDocument->document_srl] = $oDocument;
+				$G_XE_GLOBALS['XE_DOCUMENT_LIST'][$oDocument->document_srl] = $oDocument;
 				$document_srls[] = $oDocument->document_srl;
 			}
 			$oDocumentModel->setToAllDocumentExtraVars();
 
 			for($i=0,$c=count($document_srls);$i<$c;$i++)
 			{
-				$oDocument = $GLOBALS['XE_DOCUMENT_LIST'][$document_srls[$i]];
+				$oDocument = $G_XE_GLOBALS['XE_DOCUMENT_LIST'][$document_srls[$i]];
 				$document_srl = $oDocument->document_srl;
 				$module_srl = $oDocument->get('module_srl');
 				$category_srl = $oDocument->get('category_srl');

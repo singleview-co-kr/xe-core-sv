@@ -6,6 +6,7 @@
  * */
 function memberTransImageName($matches)
 {
+	global $G_XE_GLOBALS;
 	// If member_srl < 0, then return text only in the body
 	$member_srl = $matches[3];
 	if($member_srl < 0)
@@ -22,11 +23,11 @@ function memberTransImageName($matches)
 	$nick_name = $matches[5];
 
 	// Initialize global variable for cache
-	if(!isset($GLOBALS['_transImageNameList'][$member_srl]))
+	if(!isset($G_XE_GLOBALS['_transImageNameList'][$member_srl]))
 	{
-		$GLOBALS['_transImageNameList'][$member_srl] = new stdClass();
+		$G_XE_GLOBALS['_transImageNameList'][$member_srl] = new stdClass();
 	}
-	$_tmp = &$GLOBALS['_transImageNameList'][$member_srl];
+	$_tmp = &$G_XE_GLOBALS['_transImageNameList'][$member_srl];
 	
 	// If pre-defined data in the global variables, return it
 	if(!$_tmp->cached)

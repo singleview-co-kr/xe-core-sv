@@ -141,6 +141,7 @@ class DB
 	 */
 	public static function getInstance($db_type = NULL)
 	{
+		global $G_XE_GLOBALS;
 		if(!$db_type)
 		{
 			$db_type = Context::getDBType();
@@ -150,11 +151,11 @@ class DB
 			return new BaseObject(-1, 'msg_db_not_setted');
 		}
 
-		if(!isset($GLOBALS['__DB__']))
+		if(!isset($G_XE_GLOBALS['__DB__']))
 		{
-			$GLOBALS['__DB__'] = array();
+			$G_XE_GLOBALS['__DB__'] = array();
 		}
-		if(!isset($GLOBALS['__DB__'][$db_type]))
+		if(!isset($G_XE_GLOBALS['__DB__'][$db_type]))
 		{
 			$class_name = 'DB' . ucfirst($db_type);
 			$class_file = _XE_PATH_ . "classes/db/$class_name.class.php";
@@ -165,11 +166,11 @@ class DB
 
 			// get a singletone instance of the database driver class
 			require_once($class_file);
-			$GLOBALS['__DB__'][$db_type] = call_user_func(array($class_name, 'create'));
-			$GLOBALS['__DB__'][$db_type]->db_type = $db_type;
+			$G_XE_GLOBALS['__DB__'][$db_type] = call_user_func(array($class_name, 'create'));
+			$G_XE_GLOBALS['__DB__'][$db_type]->db_type = $db_type;
 		}
 
-		return $GLOBALS['__DB__'][$db_type];
+		return $G_XE_GLOBALS['__DB__'][$db_type];
 	}
 
 	/**
@@ -388,6 +389,7 @@ class DB
 	 */
 	function actFinish()
 	{
+		global $G_XE_GLOBALS;
 		if(!$this->query)
 		{
 			return;
@@ -395,7 +397,7 @@ class DB
 		$this->act_finish = getMicroTime();
 		$elapsed_time = $this->act_finish - $this->act_start;
 		$this->elapsed_time = $elapsed_time;
-		$GLOBALS['__db_elapsed_time__'] += $elapsed_time;
+		$G_XE_GLOBALS['__db_elapsed_time__'] += $elapsed_time;
 
 		$site_module_info = Context::get('site_module_info');
 		$log = array();
@@ -464,7 +466,8 @@ class DB
 	*/
 	function setQueryLog($log)
 	{
-		$GLOBALS['__db_queries__'][] = $log;
+		global $G_XE_GLOBALS;
+		$G_XE_GLOBALS['__db_queries__'][] = $log;
 	}
 
 	/**
@@ -1322,6 +1325,7 @@ class DB
 	 */
 	function actDBClassFinish()
 	{
+		global $G_XE_GLOBALS;
 		if(!$this->query)
 		{
 			return;
@@ -1329,7 +1333,7 @@ class DB
 		$this->act_dbclass_finish = getMicroTime();
 		$elapsed_dbclass_time = $this->act_dbclass_finish - $this->act_dbclass_start;
 		$this->elapsed_dbclass_time = $elapsed_dbclass_time;
-		$GLOBALS['__dbclass_elapsed_time__'] += $elapsed_dbclass_time;
+		$G_XE_GLOBALS['__dbclass_elapsed_time__'] += $elapsed_dbclass_time;
 	}
 
 	/**

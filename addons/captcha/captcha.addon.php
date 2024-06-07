@@ -370,12 +370,14 @@ EOD;
 		}
 
 	}
-	$GLOBALS['__AddonCaptcha__'] = new AddonCaptcha;
-	$GLOBALS['__AddonCaptcha__']->setInfo($addon_info);
-	Context::set('oCaptcha', $GLOBALS['__AddonCaptcha__']);
+	global $G_XE_GLOBALS;
+	$G_XE_GLOBALS['__AddonCaptcha__'] = new AddonCaptcha;
+	$G_XE_GLOBALS['__AddonCaptcha__']->setInfo($addon_info);
+	Context::set('oCaptcha', $G_XE_GLOBALS['__AddonCaptcha__']);
 }
 
-$oAddonCaptcha = &$GLOBALS['__AddonCaptcha__'];
+global $G_XE_GLOBALS;
+$oAddonCaptcha = &$G_XE_GLOBALS['__AddonCaptcha__'];
 
 if(method_exists($oAddonCaptcha, $called_position))
 {

@@ -538,9 +538,10 @@ class adminAdminModel extends admin
 	 */
 	function getThemeInfo($theme_name, $layout_list = NULL)
 	{
-		if($GLOBALS['__ThemeInfo__'][$theme_name])
+		global $G_XE_GLOBALS;
+		if($G_XE_GLOBALS['__ThemeInfo__'][$theme_name])
 		{
-			return $GLOBALS['__ThemeInfo__'][$theme_name];
+			return $G_XE_GLOBALS['__ThemeInfo__'][$theme_name];
 		}
 
 		$info_file = _XE_PATH_ . 'themes/' . $theme_name . '/conf/info.xml';
@@ -683,19 +684,19 @@ class adminAdminModel extends admin
 
 			if($is_theme)
 			{
-				if(!$GLOBALS['__ThemeModuleSkin__'][$module_name])
+				if(!$G_XE_GLOBALS['__ThemeModuleSkin__'][$module_name])
 				{
-					$GLOBALS['__ThemeModuleSkin__'][$module_name] = array();
-					$GLOBALS['__ThemeModuleSkin__'][$module_name]['skins'] = array();
+					$G_XE_GLOBALS['__ThemeModuleSkin__'][$module_name] = array();
+					$G_XE_GLOBALS['__ThemeModuleSkin__'][$module_name]['skins'] = array();
 					$moduleInfo = $oModuleModel->getModuleInfoXml($module_name);
-					$GLOBALS['__ThemeModuleSkin__'][$module_name]['title'] = $moduleInfo->title;
+					$G_XE_GLOBALS['__ThemeModuleSkin__'][$module_name]['title'] = $moduleInfo->title;
 				}
-				$GLOBALS['__ThemeModuleSkin__'][$module_name]['skins'][$skin_info->name] = $oModuleModel->loadSkinInfo($skin_info->path, '', '');
+				$G_XE_GLOBALS['__ThemeModuleSkin__'][$module_name]['skins'][$skin_info->name] = $oModuleModel->loadSkinInfo($skin_info->path, '', '');
 			}
 		}
 		$theme_info->skin_infos = $skins;
 
-		$GLOBALS['__ThemeInfo__'][$theme_name] = $theme_info;
+		$G_XE_GLOBALS['__ThemeInfo__'][$theme_name] = $theme_info;
 		return $theme_info;
 	}
 
@@ -705,9 +706,10 @@ class adminAdminModel extends admin
 	 */
 	function getModulesSkinList()
 	{
-		if($GLOBALS['__ThemeModuleSkin__']['__IS_PARSE__'])
+		global $G_XE_GLOBALS;
+		if($G_XE_GLOBALS['__ThemeModuleSkin__']['__IS_PARSE__'])
 		{
-			return $GLOBALS['__ThemeModuleSkin__'];
+			return $G_XE_GLOBALS['__ThemeModuleSkin__'];
 		}
 		$searched_list = FileHandler::readDir('./modules');
 		sort($searched_list);
@@ -727,19 +729,19 @@ class adminAdminModel extends admin
 
 			if(is_array($skin_list) && count($skin_list) > 0 && !in_array($val, $exceptionModule))
 			{
-				if(!$GLOBALS['__ThemeModuleSkin__'][$val])
+				if(!$G_XE_GLOBALS['__ThemeModuleSkin__'][$val])
 				{
-					$GLOBALS['__ThemeModuleSkin__'][$val] = array();
+					$G_XE_GLOBALS['__ThemeModuleSkin__'][$val] = array();
 					$moduleInfo = $oModuleModel->getModuleInfoXml($val);
-					$GLOBALS['__ThemeModuleSkin__'][$val]['title'] = $moduleInfo->title;
-					$GLOBALS['__ThemeModuleSkin__'][$val]['skins'] = array();
+					$G_XE_GLOBALS['__ThemeModuleSkin__'][$val]['title'] = $moduleInfo->title;
+					$G_XE_GLOBALS['__ThemeModuleSkin__'][$val]['skins'] = array();
 				}
-				$GLOBALS['__ThemeModuleSkin__'][$val]['skins'] = array_merge($GLOBALS['__ThemeModuleSkin__'][$val]['skins'], $skin_list);
+				$G_XE_GLOBALS['__ThemeModuleSkin__'][$val]['skins'] = array_merge($G_XE_GLOBALS['__ThemeModuleSkin__'][$val]['skins'], $skin_list);
 			}
 		}
-		$GLOBALS['__ThemeModuleSkin__']['__IS_PARSE__'] = TRUE;
+		$G_XE_GLOBALS['__ThemeModuleSkin__']['__IS_PARSE__'] = TRUE;
 
-		return $GLOBALS['__ThemeModuleSkin__'];
+		return $G_XE_GLOBALS['__ThemeModuleSkin__'];
 	}
 
 	/**

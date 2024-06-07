@@ -378,7 +378,8 @@ class seoController extends seo
 
 	private function _getDT($sYyyymmddhhmmss)
 	{
-		return $this->_getDatetime($sYyyymmddhhmmss, 'Y-m-d').'T'.$this->_getDatetime($sYyyymmddhhmmss, 'H:i:s').substr($GLOBALS['_time_zone'],0,3).':'.substr($GLOBALS['_time_zone'],3,2);
+		global $G_XE_GLOBALS;
+		return $this->_getDatetime($sYyyymmddhhmmss, 'Y-m-d').'T'.$this->_getDatetime($sYyyymmddhhmmss, 'H:i:s').substr($G_XE_GLOBALS['_time_zone'],0,3).':'.substr($G_XE_GLOBALS['_time_zone'],3,2);
 	}
 	
 	private function _getDatetime($sYyyymmddhhmmss, $format = 'Y.m.d H:i:s')

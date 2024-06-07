@@ -25,7 +25,8 @@
 * OLE_ChainedBlockStream::stream_open().
 * @var  array
 */
-$GLOBALS['_OLE_INSTANCES'] = array();
+global $G_XE_GLOBALS;
+$G_XE_GLOBALS['_OLE_INSTANCES'] = array();
 
 /**
 * OLE package base class.
@@ -196,6 +197,7 @@ class PHPExcel_Shared_OLE
 	*/
 	public function getStream($blockIdOrPps)
 	{
+		global $G_XE_GLOBALS;
 		static $isRegistered = false;
 		if (!$isRegistered) {
 			stream_wrapper_register('ole-chainedblockstream',
@@ -206,8 +208,8 @@ class PHPExcel_Shared_OLE
 		// Store current instance in global array, so that it can be accessed
 		// in OLE_ChainedBlockStream::stream_open().
 		// Object is removed from self::$instances in OLE_Stream::close().
-		$GLOBALS['_OLE_INSTANCES'][] = $this;
-		$instanceId = end(array_keys($GLOBALS['_OLE_INSTANCES']));
+		$G_XE_GLOBALS['_OLE_INSTANCES'][] = $this;
+		$instanceId = end(array_keys($G_XE_GLOBALS['_OLE_INSTANCES']));
 
 		$path = 'ole-chainedblockstream://oleInstanceId=' . $instanceId;
 		if ($blockIdOrPps instanceof PHPExcel_Shared_OLE_PPS) {

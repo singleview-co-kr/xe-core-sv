@@ -67,6 +67,7 @@ class moduleController extends module
 	 */
 	function insertTrigger($trigger_name, $module, $type, $called_method, $called_position)
 	{
+		global $G_XE_GLOBALS;
 		$args = new stdClass();
 		$args->trigger_name = $trigger_name;
 		$args->module = $module;
@@ -78,7 +79,7 @@ class moduleController extends module
 		if($output->toBool())
 		{
 			//remove from cache
-			$GLOBALS['__triggers__'] = NULL;
+			$G_XE_GLOBALS['__triggers__'] = NULL;
 			$oCacheHandler = CacheHandler::getInstance('object', NULL, TRUE);
 			if($oCacheHandler->isSupport())
 			{
@@ -96,6 +97,7 @@ class moduleController extends module
 	 */
 	function deleteTrigger($trigger_name, $module, $type, $called_method, $called_position)
 	{
+		global $G_XE_GLOBALS;
 		$args = new stdClass();
 		$args->trigger_name = $trigger_name;
 		$args->module = $module;
@@ -107,7 +109,7 @@ class moduleController extends module
 		if($output->toBool())
 		{
 			//remove from cache
-			$GLOBALS['__triggers__'] = NULL;
+			$G_XE_GLOBALS['__triggers__'] = NULL;
 			$oCacheHandler = CacheHandler::getInstance('object', NULL, TRUE);
 			if($oCacheHandler->isSupport())
 			{
@@ -125,6 +127,7 @@ class moduleController extends module
 	 */
 	function deleteModuleTriggers($module)
 	{
+		global $G_XE_GLOBALS;
 		$args = new stdClass();
 		$args->module = $module;
 
@@ -132,7 +135,7 @@ class moduleController extends module
 		if($output->toBool())
 		{
 			//remove from cache
-			$GLOBALS['__triggers__'] = NULL;
+			$G_XE_GLOBALS['__triggers__'] = NULL;
 			$oCacheHandler = CacheHandler::getInstance('object', NULL, TRUE);
 			if($oCacheHandler->isSupport())
 			{

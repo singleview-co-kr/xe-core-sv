@@ -442,6 +442,7 @@ class widgetController extends widget
 	 */
 	function execute($widget, $args, $javascript_mode = false, $escaped = true)
 	{
+		global $G_XE_GLOBALS;
 		// Save for debug run-time widget
 		if(__DEBUG__==3) $start = getMicroTime();
 		$before = microtime(true);
@@ -642,7 +643,7 @@ class widgetController extends widget
 
 		$output = $widget_content_header . $widget_content_body . $widget_content_footer;
 		// Debug widget creation time information added to the results
-		if(__DEBUG__==3) $GLOBALS['__widget_excute_elapsed__'] += getMicroTime() - $start;
+		if(__DEBUG__==3) $G_XE_GLOBALS['__widget_excute_elapsed__'] += getMicroTime() - $start;
 
 		$after = microtime(true);
 
@@ -663,12 +664,13 @@ class widgetController extends widget
 	 */
 	function getWidgetObject($widget)
 	{
+		global $G_XE_GLOBALS;
 		if(!preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/', $widget))
 		{
 			return Context::getLang('msg_invalid_request');
 		}
 
-		if(!$GLOBALS['_xe_loaded_widgets_'][$widget])
+		if(!$G_XE_GLOBALS['_xe_loaded_widgets_'][$widget])
 		{
 			// Finding the location of a widget
 			$oWidgetModel = getModel('widget');
@@ -692,9 +694,9 @@ class widgetController extends widget
 
 			$oWidget->widget_path = $path;
 
-			$GLOBALS['_xe_loaded_widgets_'][$widget] = $oWidget;
+			$G_XE_GLOBALS['_xe_loaded_widgets_'][$widget] = $oWidget;
 		}
-		return $GLOBALS['_xe_loaded_widgets_'][$widget];
+		return $G_XE_GLOBALS['_xe_loaded_widgets_'][$widget];
 	}
 
 	function compileWidgetStyle($widgetStyle,$widget,$widget_content_body, $args, $javascript_mode)

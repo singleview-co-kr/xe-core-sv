@@ -18,11 +18,12 @@ class CacheApc extends CacheBase
 	 */
 	function getInstance($opt = null)
 	{
-		if(!$GLOBALS['__CacheApc__'])
+		global $G_XE_GLOBALS;
+		if(!$G_XE_GLOBALS['__CacheApc__'])
 		{
-			$GLOBALS['__CacheApc__'] = new CacheApc();
+			$G_XE_GLOBALS['__CacheApc__'] = new CacheApc();
 		}
-		return $GLOBALS['__CacheApc__'];
+		return $G_XE_GLOBALS['__CacheApc__'];
 	}
 
 	/**

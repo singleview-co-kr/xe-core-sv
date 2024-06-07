@@ -74,6 +74,7 @@ class PHPExcel_Shared_OLE_ChainedBlockStream
 	 */
 	public function stream_open($path, $mode, $options, &$openedPath)
 	{
+		global $G_XE_GLOBALS;
 		if ($mode != 'r') {
 			if ($options & STREAM_REPORT_ERRORS) {
 				trigger_error('Only reading is supported', E_USER_WARNING);
@@ -85,14 +86,14 @@ class PHPExcel_Shared_OLE_ChainedBlockStream
 		parse_str(substr($path, 25), $this->params);
 		if (!isset($this->params['oleInstanceId'],
 				   $this->params['blockId'],
-				   $GLOBALS['_OLE_INSTANCES'][$this->params['oleInstanceId']])) {
+				   $G_XE_GLOBALS['_OLE_INSTANCES'][$this->params['oleInstanceId']])) {
 
 			if ($options & STREAM_REPORT_ERRORS) {
 				trigger_error('OLE stream not found', E_USER_WARNING);
 			}
 			return false;
 		}
-		$this->ole = $GLOBALS['_OLE_INSTANCES'][$this->params['oleInstanceId']];
+		$this->ole = $G_XE_GLOBALS['_OLE_INSTANCES'][$this->params['oleInstanceId']];
 
 		$blockId = $this->params['blockId'];
 		$this->data = '';
@@ -134,8 +135,9 @@ class PHPExcel_Shared_OLE_ChainedBlockStream
 	 */
 	public function stream_close()
 	{
+		global $G_XE_GLOBALS;
 		$this->ole = null;
-		unset($GLOBALS['_OLE_INSTANCES']);
+		unset($G_XE_GLOBALS['_OLE_INSTANCES']);
 	}
 
 	/**

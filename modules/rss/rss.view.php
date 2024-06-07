@@ -26,6 +26,7 @@ class rssView extends rss
 	 */
 	function rss($document_list = null, $rss_title = null, $add_description = null)
 	{
+		global $G_XE_GLOBALS;
 		$oDocumentModel = getModel('document');
 		$oModuleModel = getModel('module');
 		$oModuleController = getController('module');
@@ -153,7 +154,7 @@ class rssView extends rss
 				$info->date = date('Y-m-d\TH:i:sP');
 				break;
 			default:
-				$info->date = date("D, d M Y H:i:s").' '.$GLOBALS['_time_zone'];
+				$info->date = date("D, d M Y H:i:s").' '.$G_XE_GLOBALS['_time_zone'];
 				break;
 		}
 

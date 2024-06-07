@@ -628,7 +628,8 @@ class moduleModel extends module
 	 */
 	function getTriggers($trigger_name, $called_position)
 	{
-		if(is_null($GLOBALS['__triggers__']))
+		global $G_XE_GLOBALS;
+		if(is_null($G_XE_GLOBALS['__triggers__']))
 		{
 			$triggers = FALSE;
 			$oCacheHandler = CacheHandler::getInstance('object', NULL, TRUE);
@@ -648,11 +649,11 @@ class moduleModel extends module
 			}
 			foreach($triggers as $item)
 			{
-				$GLOBALS['__triggers__'][$item->trigger_name][$item->called_position][] = $item;
+				$G_XE_GLOBALS['__triggers__'][$item->trigger_name][$item->called_position][] = $item;
 			}
 		}
 
-		return $GLOBALS['__triggers__'][$trigger_name][$called_position];
+		return $G_XE_GLOBALS['__triggers__'][$trigger_name][$called_position];
 	}
 
 	/**
@@ -697,10 +698,11 @@ class moduleModel extends module
 	 */
 	function loadModuleExtends()
 	{
+		global $G_XE_GLOBALS;
 		$cache_file = './files/config/module_extend.php';
 		$cache_file = FileHandler::getRealPath($cache_file);
 
-		if(!isset($GLOBALS['__MODULE_EXTEND__']))
+		if(!isset($G_XE_GLOBALS['__MODULE_EXTEND__']))
 		{
 			// check pre install
 			if(file_exists(FileHandler::getRealPath('./files')) && !file_exists($cache_file))
@@ -724,15 +726,15 @@ class moduleModel extends module
 
 			if(file_exists($cache_file))
 			{
-				$GLOBALS['__MODULE_EXTEND__'] = include($cache_file);
+				$G_XE_GLOBALS['__MODULE_EXTEND__'] = include($cache_file);
 			}
 			else
 			{
-				$GLOBALS['__MODULE_EXTEND__'] = array();
+				$G_XE_GLOBALS['__MODULE_EXTEND__'] = array();
 			}
 		}
 
-		return $GLOBALS['__MODULE_EXTEND__'];
+		return $G_XE_GLOBALS['__MODULE_EXTEND__'];
 	}
 
 	/**
@@ -1052,6 +1054,7 @@ class moduleModel extends module
 	 */
 	function getSkins($path, $dir = 'skins')
 	{
+		global $G_XE_GLOBALS;
 		if(substr($path, -1) == '/')
 		{
 			$path = substr($path, 0, -1);
@@ -1094,7 +1097,7 @@ class moduleModel extends module
 				$skinInfos = $info->skin_infos;
 				if(isset($skinInfos[$module]) && $skinInfos[$module]->is_theme)
 				{
-					$themeSkinInfo = $GLOBALS['__ThemeModuleSkin__'][$module]['skins'][$skinInfos[$module]->name];
+					$themeSkinInfo = $G_XE_GLOBALS['__ThemeModuleSkin__'][$module]['skins'][$skinInfos[$module]->name];
 					$skin_list[$skinInfos[$module]->name] = $themeSkinInfo;
 				}
 			}
@@ -1378,6 +1381,7 @@ class moduleModel extends module
 	 */
 	function getModuleConfig($module, $site_srl = 0)
 	{
+		global $G_XE_GLOBALS;
 		$config = false;
 		// cache controll
 		$oCacheHandler = CacheHandler::getInstance('object', null, true);
@@ -1390,7 +1394,7 @@ class moduleModel extends module
 
 		if($config === false)
 		{
-			if(!$GLOBALS['__ModuleConfig__'][$site_srl][$module])
+			if(!$G_XE_GLOBALS['__ModuleConfig__'][$site_srl][$module])
 			{
 				$args = new stdClass();
 				$args->module = $module;
@@ -1404,10 +1408,10 @@ class moduleModel extends module
 				{
 					$oCacheHandler->put($cache_key, $config);
 				}
-				$GLOBALS['__ModuleConfig__'][$site_srl][$module] = $config;
+				$G_XE_GLOBALS['__ModuleConfig__'][$site_srl][$module] = $config;
 			}
             
-			return $GLOBALS['__ModuleConfig__'][$site_srl][$module];
+			return $G_XE_GLOBALS['__ModuleConfig__'][$site_srl][$module];
 		}
         if(is_null($config))
             $config = new stdClass();
@@ -1420,6 +1424,7 @@ class moduleModel extends module
 	 */
 	function getModulePartConfig($module, $module_srl)
 	{
+		global $G_XE_GLOBALS;
 		$config = false;
 		// cache controll
 		$oCacheHandler = CacheHandler::getInstance('object', null, true);
@@ -1432,7 +1437,7 @@ class moduleModel extends module
 
 		if($config === false)
 		{
-			if(!isset($GLOBALS['__ModulePartConfig__'][$module][$module_srl]))
+			if(!isset($G_XE_GLOBALS['__ModulePartConfig__'][$module][$module_srl]))
 			{
 				$args = new stdClass();
 				$args->module = $module;
@@ -1446,9 +1451,9 @@ class moduleModel extends module
 				{
 					$oCacheHandler->put($cache_key, $config);
 				}
-				$GLOBALS['__ModulePartConfig__'][$module][$module_srl] = $config;
+				$G_XE_GLOBALS['__ModulePartConfig__'][$module][$module_srl] = $config;
 			}
-			return $GLOBALS['__ModulePartConfig__'][$module][$module_srl];
+			return $G_XE_GLOBALS['__ModulePartConfig__'][$module][$module_srl];
 		}
 
 		return $config;

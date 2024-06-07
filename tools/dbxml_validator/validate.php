@@ -1565,6 +1565,7 @@ try
 			*/
 			public static function setMysqlDBInfo()
 			{
+				global $G_XE_GLOBALS;
 				$db_info = (object)NULL;
 				$db_info->master_db =
 					array
@@ -1584,14 +1585,14 @@ try
 
 				self::setDBInfo($db_info);
 
-				if(array_key_exists('__DB__', $GLOBALS)
+				if(array_key_exists('__DB__', $G_XE_GLOBALS)
 							&&
-						array_key_exists($db_info->master_db['db_type'], $GLOBALS['__DB__']))
+						array_key_exists($db_info->master_db['db_type'], $G_XE_GLOBALS['__DB__']))
 				{
 				}
 				else
 				{
-					$GLOBALS['__DB__'][$db_info->master_db['db_type']] =
+					$G_XE_GLOBALS['__DB__'][$db_info->master_db['db_type']] =
 						new DBMysqlConnectWrapper();
 				}
 
@@ -1607,6 +1608,7 @@ try
 			*/
 			public static function setMysqliDBInfo()
 			{
+				global $G_XE_GLOBALS;
 				$db_info = (object)NULL;
 				$db_info->master_db =
 					array
@@ -1626,14 +1628,14 @@ try
 
 				self::setDBInfo($db_info);
 
-				if(array_key_exists('__DB__', $GLOBALS)
+				if(array_key_exists('__DB__', $G_XE_GLOBALS)
 							&&
-						array_key_exists($db_info->master_db['db_type'], $GLOBALS['__DB__']))
+						array_key_exists($db_info->master_db['db_type'], $G_XE_GLOBALS['__DB__']))
 				{
 				}
 				else
 				{
-					$GLOBALS['__DB__'][$db_info->master_db['db_type']] =
+					$G_XE_GLOBALS['__DB__'][$db_info->master_db['db_type']] =
 						new DBMysqliConnectWrapper();
 				}
 
@@ -1649,6 +1651,7 @@ try
 			*/
 			public static function setCubridDBInfo()
 			{
+				global $G_XE_GLOBALS;
 				$db_info = (object)NULL;
 				$db_info->master_db =
 					array
@@ -1668,14 +1671,14 @@ try
 
 				self::setDBInfo($db_info);
 
-				if(array_key_exists('__DB__', $GLOBALS)
+				if(array_key_exists('__DB__', $G_XE_GLOBALS)
 							&&
-						array_key_exists($db_info->master_db['db_type'], $GLOBALS['__DB__']))
+						array_key_exists($db_info->master_db['db_type'], $G_XE_GLOBALS['__DB__']))
 				{
 				}
 				else
 				{
-					$GLOBALS['__DB__'][$db_info->master_db['db_type']] =
+					$G_XE_GLOBALS['__DB__'][$db_info->master_db['db_type']] =
 						new DBCubridConnectWrapper();
 				}
 
@@ -1691,6 +1694,7 @@ try
 			*/
 			public static function setMssqlDBInfo()
 			{
+				global $G_XE_GLOBALS;
 				$db_info = (object)NULL;
 				$db_info->master_db =
 					array
@@ -1710,14 +1714,14 @@ try
 
 				self::setDBInfo($db_info);
 
-				if(array_key_exists('__DB__', $GLOBALS)
+				if(array_key_exists('__DB__', $G_XE_GLOBALS)
 							&&
-						array_key_exists($db_info->master_db['db_type'], $GLOBALS['__DB__']))
+						array_key_exists($db_info->master_db['db_type'], $G_XE_GLOBALS['__DB__']))
 				{
 				}
 				else
 				{
-					$GLOBALS['__DB__'][$db_info->master_db['db_type']] =
+					$G_XE_GLOBALS['__DB__'][$db_info->master_db['db_type']] =
 						new DBMssqlConnectWrapper();
 				}
 
@@ -1860,6 +1864,7 @@ try
 		$schema_file = $argv[$i++];
 	}
 	
+	global $G_XE_GLOBALS;
 	for(; $i < count($argv); $i++)
 	{
 		try
@@ -1993,13 +1998,13 @@ try
 
 						if($use_schema_language)
 						{
-							$GLOBALS['__DB__'][$db_type]->queries = '';
-							$GLOBALS['__DB__'][$db_type]->createTableByXmlFile($argv[$i]);
+							$G_XE_GLOBALS['__DB__'][$db_type]->queries = '';
+							$G_XE_GLOBALS['__DB__'][$db_type]->createTableByXmlFile($argv[$i]);
 
 							print "\n";
 							print pathinfo($argv[$i], PATHINFO_FILENAME);
 							print " {$db_type} query:\n";
-							print $GLOBALS['__DB__'][$db_type]->queries;
+							print $G_XE_GLOBALS['__DB__'][$db_type]->queries;
 							print "\n";
 						}
 						else
@@ -2018,7 +2023,7 @@ try
 									);
 							$args_array = $args_array->queryTag->getArguments();
 
-							$GLOBALS['__DB__'][$db_type]->queries = '';
+							$G_XE_GLOBALS['__DB__'][$db_type]->queries = '';
 							$k = 1;
 							foreach($args_array as $arg)
 							{
@@ -2122,7 +2127,7 @@ try
 							}
 
 							$resultset = 
-								$GLOBALS['__DB__'][$db_type]->_executeQuery
+								$G_XE_GLOBALS['__DB__'][$db_type]->_executeQuery
 									(
 										$unlink_tmpfile->file_name,		// cache_file
 										(object)$query_user_args,		// source_args
@@ -2139,7 +2144,7 @@ try
 								print "\n";
 								print pathinfo($argv[$i], PATHINFO_FILENAME);
 								print " {$db_type} query:\n";
-								print $GLOBALS['__DB__'][$db_type]->queries;
+								print $G_XE_GLOBALS['__DB__'][$db_type]->queries;
 								print "\n";
 							}
 						}

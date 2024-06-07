@@ -23,11 +23,12 @@ class CacheMemcache extends CacheBase
 	 */
 	function getInstance($url)
 	{
-		if(!$GLOBALS['__CacheMemcache__'])
+		global $G_XE_GLOBALS;
+		if(!$G_XE_GLOBALS['__CacheMemcache__'])
 		{
-			$GLOBALS['__CacheMemcache__'] = new CacheMemcache($url);
+			$G_XE_GLOBALS['__CacheMemcache__'] = new CacheMemcache($url);
 		}
-		return $GLOBALS['__CacheMemcache__'];
+		return $G_XE_GLOBALS['__CacheMemcache__'];
 	}
 
 	/**
@@ -70,21 +71,22 @@ class CacheMemcache extends CacheBase
 	 */
 	function isSupport()
 	{
-		if(isset($GLOBALS['XE_MEMCACHE_SUPPORT']))
+		global $G_XE_GLOBALS;
+		if(isset($G_XE_GLOBALS['XE_MEMCACHE_SUPPORT']))
 		{
-			return $GLOBALS['XE_MEMCACHE_SUPPORT'];
+			return $G_XE_GLOBALS['XE_MEMCACHE_SUPPORT'];
 		}
 		if($this->SelectedExtension === 'Memcached')
 		{
-			return $GLOBALS['XE_MEMCACHE_SUPPORT'] = $this->Memcache->set('xe', 'xe', 1); 
+			return $G_XE_GLOBALS['XE_MEMCACHE_SUPPORT'] = $this->Memcache->set('xe', 'xe', 1); 
 		}
 		elseif($this->SelectedExtension === 'Memcache')
 		{
-			return $GLOBALS['XE_MEMCACHE_SUPPORT'] = $this->Memcache->set('xe', 'xe', MEMCACHE_COMPRESSED, 1); 
+			return $G_XE_GLOBALS['XE_MEMCACHE_SUPPORT'] = $this->Memcache->set('xe', 'xe', MEMCACHE_COMPRESSED, 1); 
 		}
 		else
 		{
-			return $GLOBALS['XE_MEMCACHE_SUPPORT'] = false;
+			return $G_XE_GLOBALS['XE_MEMCACHE_SUPPORT'] = false;
 		}
 	}
 

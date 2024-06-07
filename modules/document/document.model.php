@@ -54,8 +54,9 @@ class documentModel extends document
 	 */
 	function setToAllDocumentExtraVars()
 	{
+		global $G_XE_GLOBALS;
 		static $checked_documents = array();
-		$_document_list = &$GLOBALS['XE_DOCUMENT_LIST'];
+		$_document_list = &$G_XE_GLOBALS['XE_DOCUMENT_LIST'];
 
 		// XE XE_DOCUMENT_LIST all documents that the object referred to the global variable settings
 		if(count($_document_list) <= 0) return;
@@ -125,7 +126,7 @@ class documentModel extends document
 			}
 			*/
 
-			$GLOBALS['XE_EXTRA_VARS'][$document_srl] = $evars->getExtraVars();
+			$G_XE_GLOBALS['XE_EXTRA_VARS'][$document_srl] = $evars->getExtraVars();
 		}
 	}
 
@@ -139,21 +140,22 @@ class documentModel extends document
 	 */
 	function getDocument($document_srl=0, $is_admin = false, $load_extra_vars=true, $columnList = array())
 	{
+		global $G_XE_GLOBALS;
 		if(!$document_srl) return new documentItem();
 
-		if(!$GLOBALS['XE_DOCUMENT_LIST'][$document_srl])
+		if(!$G_XE_GLOBALS['XE_DOCUMENT_LIST'][$document_srl])
 		{
 			$oDocument = new documentItem($document_srl, $load_extra_vars, $columnList);
 			if(!$oDocument->isExists())
 			{
 				return $oDocument;
 			}
-			$GLOBALS['XE_DOCUMENT_LIST'][$document_srl] = $oDocument;
+			$G_XE_GLOBALS['XE_DOCUMENT_LIST'][$document_srl] = $oDocument;
 			if($load_extra_vars) $this->setToAllDocumentExtraVars();
 		}
-		if($is_admin) $GLOBALS['XE_DOCUMENT_LIST'][$document_srl]->setGrant();
+		if($is_admin) $G_XE_GLOBALS['XE_DOCUMENT_LIST'][$document_srl]->setGrant();
 
-		return $GLOBALS['XE_DOCUMENT_LIST'][$document_srl];
+		return $G_XE_GLOBALS['XE_DOCUMENT_LIST'][$document_srl];
 	}
 
 	/**
@@ -166,6 +168,7 @@ class documentModel extends document
 	 */
 	function getDocuments($document_srls, $is_admin = false, $load_extra_vars=true, $columnList = array())
 	{
+		global $G_XE_GLOBALS;
 		if(is_array($document_srls))
 		{
 			$list_count = count($document_srls);
@@ -191,16 +194,16 @@ class documentModel extends document
 			$document_srl = $attribute->document_srl;
 			if(!$document_srl) continue;
 
-			if(!$GLOBALS['XE_DOCUMENT_LIST'][$document_srl])
+			if(!$G_XE_GLOBALS['XE_DOCUMENT_LIST'][$document_srl])
 			{
 				$oDocument = null;
 				$oDocument = new documentItem();
 				$oDocument->setAttribute($attribute, false);
 				if($is_admin) $oDocument->setGrant();
-				$GLOBALS['XE_DOCUMENT_LIST'][$document_srl] = $oDocument;
+				$G_XE_GLOBALS['XE_DOCUMENT_LIST'][$document_srl] = $oDocument;
 			}
 
-			$result[$attribute->document_srl] = $GLOBALS['XE_DOCUMENT_LIST'][$document_srl];
+			$result[$attribute->document_srl] = $G_XE_GLOBALS['XE_DOCUMENT_LIST'][$document_srl];
 		}
 
 		if($load_extra_vars) $this->setToAllDocumentExtraVars();
@@ -210,7 +213,7 @@ class documentModel extends document
 		{
 			foreach($result as $document_srl => $val)
 			{
-				$output[$document_srl] = $GLOBALS['XE_DOCUMENT_LIST'][$document_srl];
+				$output[$document_srl] = $G_XE_GLOBALS['XE_DOCUMENT_LIST'][$document_srl];
 			}
 		}
 
@@ -227,6 +230,7 @@ class documentModel extends document
 	 */
 	function getDocumentList($obj, $except_notice = false, $load_extra_vars=true, $columnList = array())
 	{
+		global $G_XE_GLOBALS;
 		$sort_check = $this->_setSortIndex($obj, $load_extra_vars);
 		$obj->sort_index = $sort_check->sort_index;
 		$obj->isExtraVars = $sort_check->isExtraVars;
@@ -324,16 +328,16 @@ class documentModel extends document
 		{
 			if($except_notice && $attribute->is_notice == 'Y') continue;
 			$document_srl = $attribute->document_srl;
-			if(!$GLOBALS['XE_DOCUMENT_LIST'][$document_srl])
+			if(!$G_XE_GLOBALS['XE_DOCUMENT_LIST'][$document_srl])
 			{
 				$oDocument = null;
 				$oDocument = new documentItem();
 				$oDocument->setAttribute($attribute, false);
 				if($is_admin) $oDocument->setGrant();
-				$GLOBALS['XE_DOCUMENT_LIST'][$document_srl] = $oDocument;
+				$G_XE_GLOBALS['XE_DOCUMENT_LIST'][$document_srl] = $oDocument;
 			}
 
-			$output->data[$virtual_number] = $GLOBALS['XE_DOCUMENT_LIST'][$document_srl];
+			$output->data[$virtual_number] = $G_XE_GLOBALS['XE_DOCUMENT_LIST'][$document_srl];
 			$virtual_number--;
 		}
 
@@ -343,7 +347,7 @@ class documentModel extends document
 		{
 			foreach($output->data as $number => $document)
 			{
-				$output->data[$number] = $GLOBALS['XE_DOCUMENT_LIST'][$document->document_srl];
+				$output->data[$number] = $G_XE_GLOBALS['XE_DOCUMENT_LIST'][$document->document_srl];
 			}
 		}
 
@@ -361,6 +365,7 @@ class documentModel extends document
 	 */
 	function getNoticeList($obj, $columnList = array())
 	{
+		global $G_XE_GLOBALS;
 		$args = new stdClass();
 		$args->module_srl = $obj->module_srl;
 		$args->category_srl= $obj->category_srl;
@@ -373,20 +378,20 @@ class documentModel extends document
 			$document_srl = $val->document_srl;
 			if(!$document_srl) continue;
 
-			if(!$GLOBALS['XE_DOCUMENT_LIST'][$document_srl])
+			if(!$G_XE_GLOBALS['XE_DOCUMENT_LIST'][$document_srl])
 			{
 				$oDocument = null;
 				$oDocument = new documentItem();
 				$oDocument->setAttribute($val, false);
-				$GLOBALS['XE_DOCUMENT_LIST'][$document_srl] = $oDocument;
+				$G_XE_GLOBALS['XE_DOCUMENT_LIST'][$document_srl] = $oDocument;
 			}
-			$result->data[$document_srl] = $GLOBALS['XE_DOCUMENT_LIST'][$document_srl];
+			$result->data[$document_srl] = $G_XE_GLOBALS['XE_DOCUMENT_LIST'][$document_srl];
 		}
 		$this->setToAllDocumentExtraVars();
 
 		foreach($result->data as $document_srl => $val)
 		{
-			$result->data[$document_srl] = $GLOBALS['XE_DOCUMENT_LIST'][$document_srl];
+			$result->data[$document_srl] = $G_XE_GLOBALS['XE_DOCUMENT_LIST'][$document_srl];
 		}
 
 		return $result;
@@ -400,7 +405,8 @@ class documentModel extends document
 	 */
 	function getExtraKeys($module_srl)
 	{
-		if(!isset($GLOBALS['XE_EXTRA_KEYS'][$module_srl]))
+		global $G_XE_GLOBALS;
+		if(!isset($G_XE_GLOBALS['XE_EXTRA_KEYS'][$module_srl]))
 		{
 			$keys = false;
 			$oCacheHandler = CacheHandler::getInstance('object', null, true);
@@ -476,10 +482,10 @@ class documentModel extends document
 			}
 
 
-			$GLOBALS['XE_EXTRA_KEYS'][$module_srl] = $keys;
+			$G_XE_GLOBALS['XE_EXTRA_KEYS'][$module_srl] = $keys;
 		}
 
-		return $GLOBALS['XE_EXTRA_KEYS'][$module_srl];
+		return $G_XE_GLOBALS['XE_EXTRA_KEYS'][$module_srl];
 	}
 
 	/**
@@ -490,15 +496,16 @@ class documentModel extends document
 	 */
 	function getExtraVars($module_srl, $document_srl)
 	{
-		if(!isset($GLOBALS['XE_EXTRA_VARS'][$document_srl]))
+		global $G_XE_GLOBALS;
+		if(!isset($G_XE_GLOBALS['XE_EXTRA_VARS'][$document_srl]))
 		{
 			// Extended to extract the values of variables set
 			$oDocument = $this->getDocument($document_srl, false);
-			$GLOBALS['XE_DOCUMENT_LIST'][$document_srl] = $oDocument;
+			$G_XE_GLOBALS['XE_DOCUMENT_LIST'][$document_srl] = $oDocument;
 			$this->setToAllDocumentExtraVars();
 		}
-		if(is_array($GLOBALS['XE_EXTRA_VARS'][$document_srl])) ksort($GLOBALS['XE_EXTRA_VARS'][$document_srl]);
-		return $GLOBALS['XE_EXTRA_VARS'][$document_srl];
+		if(is_array($G_XE_GLOBALS['XE_EXTRA_VARS'][$document_srl])) ksort($G_XE_GLOBALS['XE_EXTRA_VARS'][$document_srl]);
+		return $G_XE_GLOBALS['XE_EXTRA_VARS'][$document_srl];
 	}
 
 	/**

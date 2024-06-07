@@ -543,10 +543,11 @@ class Mail extends PHPMailer
 	 */
 	function send()
 	{
+		global $G_XE_GLOBALS;
 		if($this->Mailer == "mail")
 		{
 			$boundary = '----==' . uniqid(rand(), TRUE);
-			$this->eol = $GLOBALS['_qmail_compatibility'] == "Y" ? "\n" : "\r\n";
+			$this->eol = $G_XE_GLOBALS['_qmail_compatibility'] == "Y" ? "\n" : "\r\n";
 			$this->header = "Content-Type: multipart/alternative;" . $this->eol . "\tboundary=\"" . $boundary . "\"" . $this->eol . $this->eol;
 			$this->body = sprintf(
 					"--%s" . $this->eol .

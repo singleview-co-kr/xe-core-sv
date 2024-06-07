@@ -45,6 +45,7 @@ class adminAdminView extends admin
 	 */
 	function init()
 	{
+		global $G_XE_GLOBALS;
 		// forbit access if the user is not an administrator
 		$oMemberModel = getModel('member');
 		$logged_info = $oMemberModel->getLoggedInfo();
@@ -64,8 +65,8 @@ class adminAdminView extends admin
 
 		$db_info = Context::getDBInfo();
 
-		Context::set('time_zone_list', $GLOBALS['time_zone']);
-		Context::set('time_zone', $GLOBALS['_time_zone']);
+		Context::set('time_zone_list', $G_XE_GLOBALS['time_zone']);
+		Context::set('time_zone', $G_XE_GLOBALS['_time_zone']);
 		Context::set('use_rewrite', $db_info->use_rewrite == 'Y' ? 'Y' : 'N');
 		Context::set('use_sso', $db_info->use_sso == 'Y' ? 'Y' : 'N');
 		Context::set('use_html5', $db_info->use_html5 == 'Y' ? 'Y' : 'N');

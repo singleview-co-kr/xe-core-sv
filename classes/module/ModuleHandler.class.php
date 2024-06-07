@@ -974,6 +974,7 @@ class ModuleHandler extends Handler
 	 * */
 	function displayContent($oModule = NULL)
 	{
+		global $G_XE_GLOBALS;
 		// If the module is not set or not an object, set error
 		if(!$oModule || !is_object($oModule))
 		{
@@ -982,7 +983,7 @@ class ModuleHandler extends Handler
 		}
 
 		// If connection to DB has a problem even though it's not install module, set error
-		if($this->module != 'install' && isset($GLOBALS['__DB__']) && $GLOBALS['__DB__'][Context::getDBType()]->isConnected() == FALSE)
+		if($this->module != 'install' && isset($G_XE_GLOBALS['__DB__']) && $G_XE_GLOBALS['__DB__'][Context::getDBType()]->isConnected() == FALSE)
 		{
 			$this->error = 'msg_dbconnect_failed';
 		}
@@ -1175,7 +1176,7 @@ class ModuleHandler extends Handler
 	 * */
 	public static function &getModuleInstance($module, $type = 'view', $kind = '')
 	{
-
+		global $G_XE_GLOBALS;
 		if(__DEBUG__ == 3)
 		{
 			$start_time = getMicroTime();
@@ -1193,13 +1194,13 @@ class ModuleHandler extends Handler
 
 		$key = $module . '.' . ($kind != 'admin' ? '' : 'admin') . '.' . $type;
 
-		if(is_array($GLOBALS['__MODULE_EXTEND__']) && array_key_exists($key, $GLOBALS['__MODULE_EXTEND__']))
+		if(is_array($G_XE_GLOBALS['__MODULE_EXTEND__']) && array_key_exists($key, $G_XE_GLOBALS['__MODULE_EXTEND__']))
 		{
-			$module = $extend_module = $GLOBALS['__MODULE_EXTEND__'][$key];
+			$module = $extend_module = $G_XE_GLOBALS['__MODULE_EXTEND__'][$key];
 		}
 
 		// if there is no instance of the module in global variable, create a new one
-		if(!isset($GLOBALS['_loaded_module'][$module][$type][$kind]))
+		if(!isset($G_XE_GLOBALS['_loaded_module'][$module][$type][$kind]))
 		{
 			ModuleHandler::_getModuleFilePath($module, $type, $kind, $class_path, $high_class_file, $class_file, $instance_name);
 
@@ -1238,26 +1239,26 @@ class ModuleHandler extends Handler
 			$oModule->setModulePath($class_path);
 
 			// If the module has a constructor, run it.
-			if(!isset($GLOBALS['_called_constructor'][$instance_name]))
+			if(!isset($G_XE_GLOBALS['_called_constructor'][$instance_name]))
 			{
-				$GLOBALS['_called_constructor'][$instance_name] = TRUE;
+				$G_XE_GLOBALS['_called_constructor'][$instance_name] = TRUE;
 				if(@method_exists($oModule, $instance_name))
 				{
 					$oModule->{$instance_name}();
 				}
 			}
 
-			// Store the created instance into GLOBALS variable
-			$GLOBALS['_loaded_module'][$module][$type][$kind] = $oModule;
+			// Store the created instance into G_XE_GLOBALS variable
+			$G_XE_GLOBALS['_loaded_module'][$module][$type][$kind] = $oModule;
 		}
 
 		if(__DEBUG__ == 3)
 		{
-			$GLOBALS['__elapsed_class_load__'] += getMicroTime() - $start_time;
+			$G_XE_GLOBALS['__elapsed_class_load__'] += getMicroTime() - $start_time;
 		}
 
 		// return the instance
-		return $GLOBALS['_loaded_module'][$module][$type][$kind];
+		return $G_XE_GLOBALS['_loaded_module'][$module][$type][$kind];
 	}
 
 	private static function _getModuleFilePath($module, $type, $kind, &$classPath, &$highClassFile, &$classFile, &$instanceName)
