@@ -89,6 +89,8 @@ class integration_searchController extends integration_search
 		$oModuleModel = getModel('module');
 		$oConfig = $oModuleModel->getModuleConfig('integration_search');
 		unset($oModuleModel);
+		if(!$oConfig)
+			return new BaseObject();
 		
 		if($oConfig->use_ncp_cloud_search != 'Y')  // NCP 사용일 때만 작동
 		{
