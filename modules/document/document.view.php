@@ -81,7 +81,7 @@ class documentView extends document
 		if(!Context::get('is_logged')) return new BaseObject(-1,'msg_not_permitted');
 		// Taken from a list of selected sessions
 		$flag_list = $_SESSION['document_management'];
-		if(count($flag_list))
+		if(count((array)$flag_list))
 		{
 			foreach($flag_list as $key => $val)
 			{
@@ -90,7 +90,7 @@ class documentView extends document
 			}
 		}
 
-		if(count($document_srl_list))
+		if(count((array)$document_srl_list))
 		{
 			$oDocumentModel = getModel('document');
 			$document_list = $oDocumentModel->getDocuments($document_srl_list, $this->grant->is_admin);

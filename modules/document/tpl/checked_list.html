@@ -7,11 +7,11 @@
 		<h1>{$lang->cmd_manage_document}</h1>
 	</div>
 	<div class="x_modal-body x_form-horizontal" style="max-height:none">
-		<!--@if(count($document_list)==0)-->
+		<!--@if(count((array)$document_list)==0)-->
 		<p>{$lang->msg_not_selected_document}</p>
 		<!--@else-->
 		<div class="x_control-group">
-			<div class="x_control-label">{$lang->checked_count}({count($document_list)})</div>
+			<div class="x_control-label">{$lang->checked_count}({count((array)$document_list)})</div>
 			<div class="x_controls">
 				<ul style="margin-top:5px">
 					<li class="document_list" loop="$document_list => $key, $document">
