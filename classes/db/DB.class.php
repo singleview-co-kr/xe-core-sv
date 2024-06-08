@@ -1201,9 +1201,14 @@ class DB
 		}
 		// Notify to start a query execution
 		$this->actStart($query);
-
 		// Run the query statement
-		$result = $this->__query($query, $connection);
+
+		try {
+			$result = $this->__query($query, $connection);
+		}
+		catch (Exception $e) {
+			return false;
+		}
 
 		// Notify to complete a query execution
 		$this->actFinish();

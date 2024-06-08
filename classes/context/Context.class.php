@@ -450,6 +450,7 @@ class Context
 	 */
 	function loadDBInfo()
 	{
+		global $G_XE_GLOBALS;
 		$self = self::getInstance();
 
 		if(!$self->isInstalled())

@@ -498,7 +498,7 @@ class adminAdminView extends admin
 
 		$ftp_info = Context::getFTPInfo();
 		Context::set('ftp_info', $ftp_info);
-		Context::set('sftp_support', function_exists(ssh2_sftp));
+		Context::set('sftp_support', function_exists('ssh2_sftp'));
 
 		$this->setTemplateFile('config_ftp');
 

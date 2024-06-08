@@ -51,6 +51,9 @@ class board extends ModuleObject
 		$oModuleController->insertTrigger('member.getMemberMenu', 'board', 'controller', 'triggerMemberMenu', 'after');
 
 		// install board module
+		/*
+		XE 최초 설치 시 이 블록은 과거의 php7에서도 실행되지 않았기 때문에 
+		이후에 실행되는 modules\install\script\ko.install.php도 오류없이 실행되었다.
 		$args = new stdClass;
 		$args->site_srl = 0;
 		$output = executeQuery('module.getSite', $args);
@@ -62,7 +65,6 @@ class board extends ModuleObject
 			$args->skin = 'default';
 			$args->site_srl = 0;
 			$output = $oModuleController->insertModule($args);
-
 			if($output->toBool())
 			{
 				$module_srl = $output->get('module_srl');
@@ -74,7 +76,7 @@ class board extends ModuleObject
 				$oModuleController = getController('module');
 				$oModuleController->updateSite($site_args);
 			}
-		}
+		}*/
 
 		return new BaseObject();
 	}

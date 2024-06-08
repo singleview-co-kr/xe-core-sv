@@ -22,11 +22,14 @@ if(!function_exists('iconv'))
 	');
 }
 
+global $G_XE_GLOBALS;
+
 /**
  * Time zone
  * @var array
  */
-$time_zone = array(
+// $time_zone = array(
+$G_XE_GLOBALS['time_zone'] = array(
 	'-1200' => '[GMT -12:00] Baker Island Time',
 	'-1100' => '[GMT -11:00] Niue Time, Samoa Standard Time',
 	'-1000' => '[GMT -10:00] Hawaii-Aleutian Standard Time, Cook Island Time',
