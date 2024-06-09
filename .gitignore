@@ -26,6 +26,8 @@ composer.lock
 
 install.config.php
 
+sitemap.xml
+
 layouts/plain
 layouts/Trendshop*
 layouts/jquerymobile/
@@ -37,6 +39,7 @@ layouts/xet_*
 modules/board/skins/sketchbook5*
 
 addons/sv*
+modules/sv*
 
 modules/multidomain
 modules/appstore
