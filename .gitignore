@@ -36,10 +36,18 @@ layouts/singleskushop/
 layouts/svcheckout_layout/
 layouts/xet_*
 
-modules/board/skins/sketchbook5*
+m.layouts/trendshop
 
 addons/sv*
-modules/sv*
 
+modules/board/skins/sketchbook5*
+modules/member/skins/xet*
+modules/sv*
 modules/multidomain
 modules/appstore
+
+widgets/cameron*
+widgets/xet*
+widgetstyles/Trendshop*
+widgetstyles/plain*
+widgetstyles/trendshop*
