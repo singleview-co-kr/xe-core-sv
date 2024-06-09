@@ -240,7 +240,7 @@ class widgetModel extends widget
 
 						if($options[$j]->attrs->default && $options[$j]->attrs->default=='true')
 						{
-							$buff .= sprintf('$widget_info->extra_var->%s->default_options[%s] = true;', var_export($id, $options[$j]->value->body, true));
+							$buff .= sprintf('$widget_info->extra_var->%s->default_options[%s] = true;', $id, var_export($options[$j]->value->body, true));
 						}
 
 						if($options[$j]->attrs->init && $options[$j]->attrs->init=='true')

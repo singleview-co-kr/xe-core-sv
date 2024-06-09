@@ -2594,7 +2594,7 @@ class Context
 	 *
 	 * @param string $header Add html code after <body>
 	 */
-	function addBodyHeader($header)
+	public static function addBodyHeader($header)
 	{
 		$self = self::getInstance();
 		$self->body_header .= "\n" . $header;
