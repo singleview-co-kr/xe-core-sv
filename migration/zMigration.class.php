@@ -480,7 +480,7 @@ class zMigration
 		}
 
 		// 추가 변수 출력
-		if(count($extra_vars))
+		/*if(count($extra_vars))
 		{
 			print "<extra_vars>\r\n";
 			foreach($extra_vars as $key => $val)
@@ -502,7 +502,7 @@ class zMigration
 				print "</key>\r\n";
 			}
 			print "</extra_vars>\r\n";
-		}
+		}*/
 
 		print "</post>\r\n";
 	}
