@@ -688,7 +688,7 @@ class FileHandler
 		$target_filename = self::getRealPath($target_filename);
 		self::writeFile($target_filename, '');
 		
-		$sPhpVerLevel = requirePear();
+		$sPhpVerLevel = intval(requirePear());
 		if($sPhpVerLevel <= 7)
 		{
 			require_once('HTTP/Request2/Observer/Download.php');
