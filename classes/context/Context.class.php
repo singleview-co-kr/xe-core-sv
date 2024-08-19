@@ -2570,7 +2570,7 @@ class Context
 	 *
 	 * @param string $class_name class name
 	 */
-	function addBodyClass($class_name)
+	public static function addBodyClass($class_name)
 	{
 		$self = self::getInstance();
 		$self->body_class[] = $class_name;
