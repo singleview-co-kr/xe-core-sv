@@ -1384,9 +1384,12 @@ class documentModel extends document
 		if($args->category_srl)
 		{
 			$category_list = $this->getCategoryList($args->module_srl);
-			$category_info = $category_list[$args->category_srl];
-			$category_info->childs[] = $args->category_srl;
-			$args->category_srl = implode(',',$category_info->childs);
+            if( isset( $category_list[$args->category_srl] ) ) 
+            {
+                $category_info = $category_list[$args->category_srl];
+                $category_info->childs[] = $args->category_srl;
+                $args->category_srl = implode(',',$category_info->childs);
+            }
 		}
 
 		// Used to specify the default query id (based on several search options to query id modified)
