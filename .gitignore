@@ -4,6 +4,7 @@ Thumbs.db
 config.user.inc.php
 /files/
 /build/
+/gaectk/
 .vscode
 
 codeception.yml
