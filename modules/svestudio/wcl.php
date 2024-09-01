@@ -134,7 +134,7 @@ class singleviewApi
 			unset($aComParam);
 			$sTitle = $this->_cleanupMarkupStr($aDocInfoToTransmit[0]['title']);
 			$sContent = $this->_cleanupMarkupStr($aDocInfoToTransmit[0]['content']);
-			$sAnswer = $this->_cleanupMarkupStr($aComInfoToTransmit[0]['content']);
+            $sAnswer = isset($aComInfoToTransmit[0]) ? $this->_cleanupMarkupStr($aComInfoToTransmit[0]['content']) : '';
 			$aDocInfo[] = array('document_srl' => $aDocInfoToTransmit[0]['document_srl'], 
 								'module_srl' => $aDocInfoToTransmit[0]['module_srl'], 
 								'title' => $sTitle, 'content' => $sContent,
