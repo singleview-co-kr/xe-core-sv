@@ -1,4 +1,4 @@
-XpressEngine on Apache + PHP8.0
+XpressEngine on Apache + PHP8.2
 ============
 
 [![Build Status](https://travis-ci.org/singleview-co-kr/xe-core-sv.svg?branch=master)](https://travis-ci.org/xpressengine/xe-core)
@@ -8,9 +8,9 @@ XpressEngine on Apache + PHP8.0
 XpressEngine(XE)은 누구나 쉽고 편하고 자유롭게 콘텐츠를 발행을 할 수 있도록 하기 위한 CMS(Content Management System)입니다.
 오픈소스 라이선스로 누구나 사용 또는 개작할 수 있으며, 개방형 프로젝트로서 누구나 개발에 참여할 수 있습니다.
 
-### PHP 8.0 작동 관련
+### PHP 8.2 작동 관련
 
-xe-core-sv는 기존 xe.1.11.6을 기반으로 Apache/2.4.6와 PHP 8.0.24에서 작동 테스트했습니다.
+xe-core-sv는 기존 xe.1.11.6을 기반으로 Apache/2.4.6와 PHP 8.2.13에서 작동 테스트했습니다.
 
 PHP 7에서 정상 작동하던 모든 모듈, 애드온, 위젯, 스킨은 PHP 8의 코드 요구 사항을 충족하도록 수정해야 xe-core-sv에서 작동합니다.
 
