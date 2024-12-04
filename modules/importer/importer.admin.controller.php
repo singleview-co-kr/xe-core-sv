@@ -371,7 +371,7 @@ class importerAdminController extends importer
 			FileHandler::removeFile($target_file);
 			if(!$xmlObj) continue;
 			// List Objects
-			$obj = new stdClass();
+			$obj = new stdClass;
 			$obj->member_srl = getNextSequence();
 			$obj->user_id = base64_decode($xmlObj->member->user_id->body);
 			$obj->password = base64_decode($xmlObj->member->password->body);
@@ -515,6 +515,7 @@ class importerAdminController extends importer
 					FileHandler::writeFile($target_filename, $signature_buff);
 				}
 			}
+			unset($obj);
 		}
 
 		fclose($f);
@@ -549,7 +550,7 @@ class importerAdminController extends importer
 			FileHandler::removeFile($target_file);
 			if(!$xmlObj) continue;
 			// List objects
-			$obj = null;
+			$obj = new stdClass;
 			$obj->receiver = base64_decode($xmlObj->message->receiver->body);
 			$obj->sender = base64_decode($xmlObj->message->sender->body);
 			$obj->title = base64_decode($xmlObj->message->title->body);
@@ -559,18 +560,21 @@ class importerAdminController extends importer
 			$obj->readed_date = base64_decode($xmlObj->message->readed_date->body);
 			// Get member_srl of sender/recipient (If not exists, pass)
 			if(!$obj->sender) continue;
+			$sender_args = new stdClass;
 			$sender_args->user_id = $obj->sender;
 			$sender_output = executeQuery('member.getMemberInfo',$sender_args);
 			$sender_srl = $sender_output->data->member_srl;
 			if(!$sender_srl)
 			{
 				unset($sender_args);
+				$sender_args = new stdClass;
 				$sender_args->email_address = $obj->sender;
 				$sender_output = executeQuery('member.getMemberInfoByEmailAddress',$sender_args);
 				$sender_srl = $sender_output->data->member_srl;
 			}
 			if(!$sender_srl) continue;
 
+			$receiver_args = new stdClass;
 			$receiver_args->user_id = $obj->receiver;
 			if(!$obj->receiver) continue;
 			$receiver_output = executeQuery('member.getMemberInfo',$receiver_args);
@@ -613,6 +617,9 @@ class importerAdminController extends importer
 				$receiver_args->readed_date = $obj->readed_date;
 				$output = executeQuery('communication.sendMessage', $receiver_args);
 			}
+			unset($receiver_args);
+			unset($sender_args);
+			unset($obj);
 		}
 
 		fclose($f);
@@ -660,12 +667,13 @@ class importerAdminController extends importer
 					$sequence = $v->attrs->sequence;
 					$parent = $v->attrs->parent;
 
-					$obj = null;
+					$obj = new stdClass;
 					$obj->title = $category;
 					$obj->module_srl = $module_srl;
 					if($parent) $obj->parent_srl = $match_sequence[$parent];
 
 					$output = $oDocumentController->insertCategory($obj);
+					unset($obj);
 					if($output->toBool()) $match_sequence[$sequence] = $output->get('category_srl');
 				}
 				$oDocumentController = getController('document');
@@ -678,6 +686,7 @@ class importerAdminController extends importer
 		$category_list = $oDocumentModel->getCategoryList($module_srl);
 		if(count($category_list)) foreach($category_list as $key => $val) $category_titles[$val->title] = $val->category_srl;
 
+		$ek_args = new stdClass;
 		$ek_args->module_srl = $module_srl;
 		$output = executeQueryArray('document.getDocumentExtraKeys', $ek_args);
 		if($output->data)
@@ -821,6 +830,7 @@ class importerAdminController extends importer
 					$args->regdate = $obj->regdate;
 					if(!$args->tag) continue;
 					$output = executeQuery('tag.insertTag', $args);
+					unset($args);
 				}
 
 			}
@@ -855,11 +865,11 @@ class importerAdminController extends importer
 					$output = executeQuery('document.insertDocumentExtraVar', $e_args);
 				}
 			}
-
+			unset($obj);
 			fclose($fp);
 			FileHandler::removeFile($target_file);
 		}
-
+		unset($ek_args);
 		fclose($f);
 		// Sync category counts
 		if(count($category_list)) foreach($category_list as $key => $val) $oDocumentController->updateCategoryCount($module_srl, $val->category_srl);
@@ -906,6 +916,7 @@ class importerAdminController extends importer
 				$obj->ipaddress = base64_decode($xmlDoc->trackback->ipaddress->body);
 				$obj->list_order = -1*$obj->trackback_srl;
 				$output = executeQuery('trackback.insertTrackback', $obj);
+				unset($obj);
 				if($output->toBool()) $cnt++;
 
 				$buff = null;
@@ -1046,6 +1057,7 @@ class importerAdminController extends importer
 					$output = executeQuery('comment.insertComment', $obj);
 					if($output->toBool()) $cnt++;
 				}
+				unset($obj);
 
 				$buff = null;
 				$started = false;
@@ -1171,8 +1183,8 @@ class importerAdminController extends importer
 						if($output->toBool())
 						{
 							$uploaded_count++;
-							$tmp_obj = null;
-							$tmp_obj->source_filename = $file_obj->source_filename;
+							// $tmp_obj = new stdClass;
+							// $tmp_obj->source_filename = $file_obj->source_filename;
 							if($file_obj->direct_download == 'Y') $files[$file_obj->source_filename] = $file_obj->uploaded_filename;
 							else $files[$file_obj->source_filename] = getUrl('','module','file','act','procFileDownload','file_srl',$file_obj->file_srl,'sid',$file_obj->sid);
 						}
@@ -1180,6 +1192,7 @@ class importerAdminController extends importer
 				}
 			}
 		}
+		unset( $file_obj );
 		return $uploaded_count;
 	}
 
