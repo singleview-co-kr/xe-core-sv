@@ -502,9 +502,11 @@ class documentController extends document
 			// Change not extra vars but language code of the original document if document's lang_code doesn't exist.
 			if(!$source_obj->get('lang_code'))
 			{
+				$lang_code_args = new stdClass;
 				$lang_code_args->document_srl = $source_obj->get('document_srl');
 				$lang_code_args->lang_code = Context::getLangType();
 				$output = executeQuery('document.updateDocumentsLangCode', $lang_code_args);
+				unset($lang_code_args);
 			}
 			else
 			{
@@ -573,6 +575,8 @@ class documentController extends document
 				return $trigger_output;
 			}
 		}
+
+		if($extra_content) unset($extra_content);
 
 		// commit
 		$oDB->commit();
