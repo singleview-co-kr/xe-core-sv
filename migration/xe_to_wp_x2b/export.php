@@ -5,7 +5,7 @@
      **/
     @set_time_limit(0);
     // zMigration class require
-    require_once('./lib.inc.php');
+    require_once('../lib.inc.php');
     require_once('./zMigration.class.php');
     $oMigration = new zMigration();
 

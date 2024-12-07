@@ -19,8 +19,8 @@
 
         if(!file_exists($config_file)) return;
         include($config_file);
-
-        $info = new stdClass();
+		
+		$info = new stdClass();
         $info->db_type = $db_info->master_db['db_type'];
         $info->db_port = $db_info->master_db['db_port'];
         $info->db_hostname = $db_info->master_db['db_hostname'];
