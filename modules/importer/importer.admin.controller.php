@@ -1034,8 +1034,10 @@ class importerAdminController extends importer
 				else
 				{
 					// Get parent comment infomation
+					$parent_args = new stdClass();
 					$parent_args->comment_srl = $obj->parent_srl;
 					$parent_output = executeQuery('comment.getCommentListItem', $parent_args);
+					unset( $parent_args );
 					// Return if parent comment doesn't exist
 					if(!$parent_output->toBool() || !$parent_output->data) continue;
 					$parent = $parent_output->data;
