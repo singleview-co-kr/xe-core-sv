@@ -232,7 +232,7 @@ l'article qui comporte le mot ne sera pas affichagé.]]></value>
 		<value xml:lang="vi"><![CDATA[Không được phép gửi từ "%s".]]></value>
 	</item>
 	<item name="msg_alert_registered_denied_ip">
-		<value xml:lang="ko"><![CDATA[사이트 관리자에게 문의 바랍니다.]]></value>
+		<value xml:lang="ko"><![CDATA[oops! 500 internal server error]]></value>
 	</item>
 	<item name="msg_alert_trackback_denied">
 		<value xml:lang="ko"><![CDATA[한 글에는 하나의 트랙백만 허용됩니다.]]></value>
