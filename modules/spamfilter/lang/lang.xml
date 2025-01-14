@@ -232,16 +232,7 @@ l'article qui comporte le mot ne sera pas affichagé.]]></value>
 		<value xml:lang="vi"><![CDATA[Không được phép gửi từ "%s".]]></value>
 	</item>
 	<item name="msg_alert_registered_denied_ip">
-		<value xml:lang="ko"><![CDATA[금지 IP에 등록되어 정상적인 활동에 제한을 받게 됐습니다. 사이트 관리자에게 문의 바랍니다.]]></value>
-		<value xml:lang="en"><![CDATA[Your IP address is blacklisted,\n so you may have limitations on normal using of this site.\n If you have any questions on that matter, please contact the site administrator.]]></value>
-		<value xml:lang="jp"><![CDATA[禁止IPに登録され、サイト内で正常な活動が制限されています。管理者にお問い合わせください。]]></value>
-		<value xml:lang="zh-CN"><![CDATA[您的IP已被禁止，详情请联系网站管理员。]]></value>
-		<value xml:lang="zh-TW"><![CDATA[您的IP已被禁止，詳情請聯繫網站管理員。]]></value>
-		<value xml:lang="fr"><![CDATA[Your IP address is blacklisted,\n so you may have limitations on normal using of this site.\n If you have any questions on that matter, please contact to the site administrator. Votre adresse IP est dans la liste noire, \nvous pouvez donc avoir limitation d'activité dans ce site. Si vous avez quelque question sur ce fait, contactez l'administrateur du site, S.V.P.]]></value>
-		<value xml:lang="ru"><![CDATA[Ваш IP-адрес занесен в черный список,\n поэтому Вы можете иметь ограничения на полноценное использование этого сайта.\n Если у Вас есть вопросы насчет этого, пожалуйста, сообщите администратору сайта.]]></value>
-		<value xml:lang="es"><![CDATA[Su dirección IP fue agregaa en la lista negra,\n por lo cual Usted puede tener limitaciones en su uso normal de este sitio.\n Si Usted tiene alguna inquietud sobre el tema, por favor contactese con el administrador del sitio.]]></value>
-		<value xml:lang="tr"><![CDATA[IP adresiniz kara listeye alındı,\n siteyi kullanırken sınırlamalarla karşılaşacaksınız.\n Bu konuda sorularınız varsa, lütfen site yöneticisi ile görüşün.]]></value>
-		<value xml:lang="vi"><![CDATA[IP của bạn đã bị nằm trong danh sách cấm,\n vì vậy bạn bị giới hạn sử dụng trên Website này.\n Nếu bạn có bất cứ thắc mắc gì, xin vui lòng liên hệ với Webmaster để được giải đáp.]]></value>
+		<value xml:lang="ko"><![CDATA[사이트 관리자에게 문의 바랍니다.]]></value>
 	</item>
 	<item name="msg_alert_trackback_denied">
 		<value xml:lang="ko"><![CDATA[한 글에는 하나의 트랙백만 허용됩니다.]]></value>

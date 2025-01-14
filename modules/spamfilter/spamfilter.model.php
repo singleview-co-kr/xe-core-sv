@@ -52,7 +52,7 @@ class spamfilterModel extends spamfilter
 		for($i=0;$i<$count;$i++)
 		{
 			$ip = str_replace('.', '\.', str_replace('*','(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)',$ip_list[$i]->ipaddress));
-			if(preg_match('/^'.$ip.'$/', $ipaddress, $matches)) return new BaseObject(-1,'msg_alert_registered_denied_ip');
+			if(preg_match('/^'.$ip.'/', $ipaddress, $matches)) return new BaseObject(-1,'msg_alert_registered_denied_ip');
 		}
 
 		return new BaseObject();
